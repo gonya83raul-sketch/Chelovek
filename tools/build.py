@@ -72,7 +72,7 @@ shutil.rmtree(os.path.join(LT, APP), ignore_errors=True); shutil.copytree(os.pat
 core = open(os.path.join(LT, APP, 'core.js'), encoding='utf8').read()
 hook = "show(BUILDERS[start] ? start : 'skeleton');"
 assert core.count(hook) == 1
-core = core.replace(hook, hook + " window.__adv = (s) => { for (let i = 0; i < s * 20; i++) cur.update(0.05); }; window.__show = show; window.__built = () => Object.keys(built); window.__glass = () => GLASS.length; window.__mem = () => renderer.info.memory;")
+core = core.replace(hook, hook + " window.__adv = (s) => { for (let i = 0; i < s * 20; i++) cur.update(0.05); }; window.__show = show; window.__built = () => Object.keys(built); window.__glass = () => GLASS.length; window.__cur = () => cur; window.__mem = () => renderer.info.memory;")
 open(os.path.join(LT, APP, 'core.js'), 'w', encoding='utf8').write(core)
 os.makedirs(os.path.join(LT, 'models'), exist_ok=True)
 for f in glob.glob(os.path.join(OUT, 'models', '*.txt')): shutil.copy(f, os.path.join(LT, 'models'))

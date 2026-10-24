@@ -179,6 +179,9 @@ LIB = {
     'vma': ('Ванилилминдальная кислота', 'COc1cc(C(O)C(=O)O)ccc1O'),
     'tyramine': ('Тирамин', 'NCCc1ccc(O)cc1'),
     'hcy': ('Гомоцистеин', 'N[C@@H](CCS)C(=O)O'),
+    'udpglc': ('УДФ-глюкоза', 'O=c1ccn([C@@H]2O[C@H](COP(=O)(O)OP(=O)(O)O[C@H]3O[C@H](CO)[C@@H](O)[C@H](O)[C@H]3O)[C@@H](O)[C@H]2O)c(=O)[nH]1'),
+    'udpgal': ('УДФ-галактоза', 'O=c1ccn([C@@H]2O[C@H](COP(=O)(O)OP(=O)(O)O[C@H]3O[C@H](CO)[C@H](O)[C@H](O)[C@H]3O)[C@@H](O)[C@H]2O)c(=O)[nH]1'),
+    'glyald': ('Глицеральдегид', 'OC[C@@H](O)C=O'),
     'pcr': ('Креатинфосфат', 'CN(CC(=O)O)C(=N)NP(=O)(O)O'),
 }
 

@@ -6,7 +6,7 @@
 function makeCarbdig() {
   rnd = mulberry(4201);
   const scene = bioStage({ rim: 0xf2c14e });
-  const VIEW = { dig: [V3(0.6, -1.95, 0), V3(1.2, 0.2, 19.5)], met: [V3(41.0, -1.5, 0), V3(41.6, 0.3, 17.5)] };
+  const VIEW = { dig: [V3(0.7, -2.1, 0), V3(1.3, 0.2, 22)], met: [V3(41.2, -1.65, 0), V3(41.8, 0.2, 18.5)] };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VIEW.dig[1]);
   const controls = makeControls(camera, VIEW.dig[0]); controls.minDistance = 3; controls.maxDistance = 40;
   const fx = new Sparks(1800, 0.08); scene.add(fx.obj);
@@ -40,7 +40,8 @@ function makeCarbdig() {
   // сахара: шестиугольники (глюкоза, галактоза) и пятиугольник (фруктоза)
   const hexG = new THREE.CylinderGeometry(0.12, 0.12, 0.05, 6), penG = new THREE.CylinderGeometry(0.12, 0.12, 0.05, 5);
   const POOL = []; const MAXS = 260;
-  const glyph = (k) => { const m = new THREE.Mesh(k === 'fru' ? penG : hexG, new THREE.MeshPhysicalMaterial({ color: new THREE.Color(SC[k]).multiplyScalar(0.55), emissive: new THREE.Color(SC[k]), emissiveIntensity: 0.25, roughness: 0.35, clearcoat: 0.6 })); m.rotation.x = Math.PI / 2; G1.add(m); return m; };
+  const GM = Object.fromEntries(Object.entries(SC).map(([k, c]) => [k, new THREE.MeshPhysicalMaterial({ color: new THREE.Color(c).multiplyScalar(0.55), emissive: new THREE.Color(c), emissiveIntensity: 0.25, roughness: 0.35, clearcoat: 0.6 })]));
+  const glyph = (k) => { const m = new THREE.Mesh(k === 'fru' ? penG : hexG, GM[k]); m.rotation.x = Math.PI / 2; G1.add(m); return m; };
   // объект пищи: цепочка остатков
   const ITEMS = [];
   function spawn(kind) {
@@ -55,27 +56,30 @@ function makeCarbdig() {
   }
   function killItem(it) { it.meshes.forEach((m) => { G1.remove(m); }); ITEMS.splice(ITEMS.indexOf(it), 1); }
   // толстая кишка: пузырьки при лактазной недостаточности
-  const colon = new THREE.Mesh(ell3(0.7, 1.0, 0.7, V3(XR + 1.3, 1.6, 0)), new THREE.MeshPhysicalMaterial({ color: new THREE.Color('#C8A090').multiplyScalar(0.25), roughness: 0.5, transparent: true, opacity: 0.45, depthWrite: false })); G1.add(colon);
+  const colon = new THREE.Mesh(ell3(0.7, 1.0, 0.7, V3(XR + 1.3, 1.6, 0)), new THREE.MeshPhysicalMaterial({ color: new THREE.Color('#C8A090').multiplyScalar(0.25), roughness: 0.85, clearcoat: 0, envMapIntensity: 0.2, transparent: true, opacity: 0.45, depthWrite: false })); G1.add(colon);
 
   /* ---------- 2. галактоза и фруктоза в печени ---------- */
   const OX = 41.3; const G2 = new THREE.Group(); G2.position.set(OX, 0, 0); scene.add(G2);
   const NODES = {
-    gal: { m: 'galactose', p: V3(-3.6, 2.2, 0) }, gal1p: { m: 'gal1p', p: V3(-1.5, 2.2, 0) }, udpgal: { m: 'gal1p', p: V3(0.6, 2.9, 0), name: 'УДФ-галактоза' }, g1p: { m: 'g1p', p: V3(0.6, 1.4, 0) }, g6p: { m: 'g6p', p: V3(2.6, 1.4, 0) },
-    fru: { m: 'fructose', p: V3(-3.6, -0.2, 0) }, f1p: { m: 'f1p', p: V3(-1.5, -0.2, 0) }, dhap: { m: 'dhap', p: V3(0.6, 0.15, 0) }, gald: { m: 'gap', p: V3(0.6, -0.75, 0), name: 'глицеральдегид' }, gly: { m: 'pyruvate', p: V3(3.3, -0.3, 0), name: 'гликолиз' },
+    gal: { m: 'galactose', p: V3(-3.8, 1.9, 0) }, gal1p: { m: 'gal1p', p: V3(-1.8, 1.9, 0) }, g1p: { m: 'g1p', p: V3(0.4, 1.9, 0) }, g6p: { m: 'g6p', p: V3(2.4, 1.2, 0) },
+    udpglc: { m: 'udpglc', p: V3(-1.1, 3.35, 0) }, udpgal: { m: 'udpgal', p: V3(0.9, 3.35, 0) },
+    fru: { m: 'fructose', p: V3(-3.8, -0.4, 0) }, f1p: { m: 'f1p', p: V3(-1.8, -0.4, 0) }, dhap: { m: 'dhap', p: V3(0.4, 0.15, 0) }, gald: { m: 'glyald', p: V3(0.4, -0.95, 0) }, gly: { m: 'pyruvate', p: V3(2.6, -0.4, 0), name: 'гликолиз' },
   };
-  Object.values(NODES).forEach((n) => { n.g = molMesh(MOL(n.m), { scale: 0.11, hideH: true }); n.g.position.copy(n.p); G2.add(n.g); n.glow = glowNucleus(G2, n.p, '#FF6A5A', 0.1, 9); n.glow.core.visible = false; n.glow.spr.material.opacity = 0; });
+  Object.values(NODES).forEach((n) => { const mo = MOL(n.m); n.g = molMesh(mo, { scale: n.m.startsWith('udp') ? 0.075 : 0.11, hideH: true }); n.g.position.copy(n.p); G2.add(n.g); n.glow = glowNucleus(G2, n.p, '#FF6A5A', 0.1, 9); n.glow.core.visible = false; n.glow.spr.material.opacity = 0; });
   const STEP = [
-    ['gal', 'gal1p', 'галактокиназа', '#7FE0A0', 'gk'], ['gal1p', 'g1p', 'ГАЛТ (уридилтрансфераза)', '#7FE0A0', 'galt'], ['udpgal', 'g1p', '', '#9FB4FF', 'epi'], ['g1p', 'g6p', 'фосфоглюкомутаза', '#F2C14E', 'pgm'],
-    ['fru', 'f1p', 'фруктокиназа', '#FF9A5C', 'fk'], ['f1p', 'dhap', 'альдолаза B', '#FF9A5C', 'aldB'], ['f1p', 'gald', '', '#FF9A5C', 'aldB2'], ['dhap', 'gly', '', '#F2C14E', 'g1'], ['gald', 'gly', '', '#F2C14E', 'g2'], ['g6p', 'gly', '', '#F2C14E', 'g3'],
+    ['gal', 'gal1p', 'галактокиназа', '#7FE0A0', 'gk'], ['gal1p', 'g1p', 'ГАЛТ', '#7FE0A0', 'galt'], ['udpglc', 'udpgal', '', '#9FB4FF', 'galt2'], ['udpgal', 'udpglc', 'эпимераза', '#9FB4FF', 'epi'], ['g1p', 'g6p', 'фосфоглюкомутаза', '#F2C14E', 'pgm'],
+    ['fru', 'f1p', 'фруктокиназа', '#FF9A5C', 'fk'], ['f1p', 'dhap', 'альдолаза B', '#FF9A5C', 'aldB'], ['f1p', 'gald', '', '#FF9A5C', 'aldB2'], ['dhap', 'gly', '', '#F2C14E', 'g1'], ['gald', 'gly', 'триокиназа', '#F2C14E', 'tri'], ['g6p', 'gly', '', '#F2C14E', 'g3'],
   ];
-  const AR = STEP.map(([a, b, name, col, id]) => ({ id, name, a, b, f: flowArrow(G2, NODES[a].p.clone().add(NODES[b].p.clone().sub(NODES[a].p).normalize().multiplyScalar(0.6)), NODES[b].p.clone().add(NODES[a].p.clone().sub(NODES[b].p).normalize().multiplyScalar(0.6)), col, { bend: id === 'epi' ? 0.4 : 0.12 }) }));
-  const glyc = new THREE.Mesh(blobGeo(0.55, 0.55, 0.55, 61, 0.2, 3), protMat('#F2C14E', 0.35)); glyc.geometry.computeVertexNormals(); glyc.position.set(2.7, 2.55, 0); G2.add(glyc);
-  const fG = flowArrow(G2, NODES.g6p.p.clone().add(V3(0, 0.4, 0)), V3(2.7, 2.0, 0), '#F2C14E', { bend: -0.2 });
+  const BEND = { galt2: 0.35, epi: 0.35, tri: -0.15 };
+  const AR = STEP.map(([a, b, name, col, id]) => ({ id, name, a, b, f: flowArrow(G2, NODES[a].p.clone().add(NODES[b].p.clone().sub(NODES[a].p).normalize().multiplyScalar(0.62)), NODES[b].p.clone().add(NODES[a].p.clone().sub(NODES[b].p).normalize().multiplyScalar(0.62)), col, { bend: BEND[id] ?? 0.12, r: 0.022 }) }));
+  const glyc = new THREE.Mesh(blobGeo(0.45, 0.45, 0.45, 61, 0.2, 3), protMat('#F2C14E', 0.35)); glyc.geometry.computeVertexNormals(); glyc.position.set(2.6, 2.75, 0); G2.add(glyc);
+  const fG = flowArrow(G2, NODES.g1p.p.clone().add(V3(0.45, 0.35, 0)), V3(2.2, 2.65, 0), '#F2C14E', { bend: -0.2, r: 0.02 });
   // хрусталик глаза (галактитол → катаракта) и «батарейка» АТФ (непереносимость фруктозы)
-  const lens = new THREE.Mesh(ell3(0.55, 0.55, 0.22, V3(-3.6, -2.0, 0.2), 40), new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xe8f0ff).multiplyScalar(0.3), roughness: 0.1, transparent: true, opacity: 0.4, clearcoat: 1, depthWrite: false })); G2.add(lens);
-  const lensFog = new THREE.Mesh(ell3(0.5, 0.5, 0.18, V3(-3.6, -2.0, 0.2), 32), new THREE.MeshBasicMaterial({ color: 0xf8f4ec, transparent: true, opacity: 0 })); G2.add(lensFog);
-  const atpBar = new THREE.Mesh(new THREE.BoxGeometry(0.3, 1, 0.3), new THREE.MeshBasicMaterial({ color: 0x7fe0a0, transparent: true, opacity: 0.45 })); atpBar.position.set(-1.5, -1.9, 0.2); G2.add(atpBar);
-  const atpFrame = new THREE.Mesh(new THREE.BoxGeometry(0.42, 1.12, 0.42), new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0.25 })); atpFrame.position.set(-1.5, -1.9, 0.2); G2.add(atpFrame);
+  const LENS = V3(3.6, -1.75, 0.2), ATPP = V3(2.3, -1.75, 0.2);
+  const lens = new THREE.Mesh(ell3(0.45, 0.45, 0.18, LENS, 40), glassMat(0xa8d0ff, { rim: 0.6, base: 0.02, pow: 2 })); G2.add(lens);
+  const lensFog = new THREE.Mesh(ell3(0.4, 0.4, 0.14, LENS, 32), new THREE.MeshBasicMaterial({ color: 0x8a867c, transparent: true, opacity: 0, depthWrite: false })); G2.add(lensFog);
+  const atpBar = new THREE.Mesh(new THREE.BoxGeometry(0.3, 1, 0.3), new THREE.MeshBasicMaterial({ color: 0x4fa070, transparent: true, opacity: 0.55 })); atpBar.position.copy(ATPP); G2.add(atpBar);
+  const atpFrame = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(0.42, 1.12, 0.42)), new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.3 })); atpFrame.position.copy(ATPP); G2.add(atpFrame);
 
   /* ---------- состояние ---------- */
   const st = { t: 0, mode: 'dig', labels: true, rot: false, fly: null, msg: null, food: 'mix', lacDef: false, absorbed: { glc: 0, fru: 0, gal: 0 }, toColon: 0, gas: 0, defect: 'none', acc: { gal1p: 0, f1p: 0 }, atp: 1, lensO: 0, sugar: 1, auto: true, nextT: 0, queue: [] };
@@ -89,7 +93,7 @@ function makeCarbdig() {
       if (st.auto && t > st.nextT) { st.nextT = t + 2.6; meal(); }
       st.queue = st.queue.filter(([k, at]) => { if (t >= at) { if (ITEMS.length < 70) spawn(k); return false; } return true; });
       AMY.forEach((a, i) => { a.m.position.set(Math.sin(t * 0.3 + a.ph) * 2.6, 2.4 + 0.5 * Math.sin(t * 0.5 + a.ph * 1.7), 0.3); a.m.rotation.y += dt; });
-      BB.forEach((b) => { b.m.material.emissiveIntensity = 0.02; if (b.k === 'lac') { b.m.visible = !st.lacDef; } });
+      BB.forEach((b) => { if (b.k === 'lac') { b.m.visible = !st.lacDef; } });
       [...ITEMS].forEach((it) => {
         it.age += dt;
         if (it.stage === 'lumen') {
@@ -131,7 +135,7 @@ function makeCarbdig() {
     }
     if (st.mode === 'met') {
       const gk = st.defect !== 'gk', galt = st.defect !== 'galt', fk = st.defect !== 'fk', aldB = st.defect !== 'aldB';
-      const on = { gk, galt, epi: galt, pgm: true, fk, aldB, aldB2: aldB, g1: true, g2: aldB, g3: true };
+      const on = { gk, galt: gk && galt, galt2: gk && galt, epi: gk && galt, pgm: true, fk, aldB: fk && aldB, aldB2: fk && aldB, g1: true, tri: fk && aldB, g3: true };
       AR.forEach((a) => { a.f.mat.uniforms.uTime.value = t; a.f.mat.uniforms.uOn.value = on[a.id] ? 0.9 : 0.04; });
       fG.mat.uniforms.uTime.value = t;
       // накопление промежуточных продуктов при блоке
@@ -139,12 +143,12 @@ function makeCarbdig() {
       st.acc.gal = ((st.defect === 'gk' || st.defect === 'galt') ? 1 : 0); st.acc.fru = st.defect === 'fk' ? 1 : 0;
       const glow = (n, k) => { n.glow.spr.material.opacity = k * (0.6 + 0.3 * Math.sin(t * 4)); n.glow.spr.scale.setScalar(0.6 + 0.8 * k); };
       glow(NODES.gal1p, st.acc.gal1p); glow(NODES.f1p, st.acc.f1p); glow(NODES.gal, st.acc.gal * 0.6); glow(NODES.fru, st.acc.fru * 0.5);
-      st.lensO += (((st.defect === 'galt' || st.defect === 'gk') ? 0.75 : 0) - st.lensO) * dt * 0.25; lensFog.material.opacity = st.lensO;
-      st.atp += ((st.defect === 'aldB' ? 0.35 : 1) - st.atp) * dt * 0.4; atpBar.scale.y = Math.max(0.02, st.atp); atpBar.position.y = -1.9 - 0.5 + st.atp / 2; atpBar.material.color.set(st.atp < 0.6 ? 0xc04a40 : 0x4fa070);
+      st.lensO += (((st.defect === 'galt' || st.defect === 'gk') ? 0.45 : 0) - st.lensO) * dt * 0.25; lensFog.material.opacity = st.lensO;
+      st.atp += ((st.defect === 'aldB' ? 0.35 : 1) - st.atp) * dt * 0.4; atpBar.scale.y = Math.max(0.02, st.atp); atpBar.position.y = ATPP.y - 0.5 + st.atp / 2; atpBar.material.color.set(st.atp < 0.6 ? 0xc04a40 : 0x4fa070);
       st.sugar += ((st.defect === 'aldB' || st.defect === 'galt' ? 0.55 : 1) - st.sugar) * dt * 0.3;
       Object.values(NODES).forEach((n, i) => { n.g.rotation.y += dt * (0.3 + 0.05 * i); });
       glyc.rotation.y += dt * 0.2;
-      if (rnd() < 0.4) { const a = AR[Math.floor(rnd() * AR.length)]; if (on[a.id]) fx.spawn(a.f.curve.getPoint(rnd()).add(G2.position), V3(0, 0, 0), new THREE.Color(a.id.startsWith('g') && a.id.length === 2 ? '#F2C14E' : a.id === 'gk' || a.id === 'galt' || a.id === 'epi' ? '#7FE0A0' : '#FF9A5C'), 0.5, 0, 1.2); }
+      if (rnd() < 0.4) { const a = AR[Math.floor(rnd() * AR.length)]; if (on[a.id]) fx.spawn(a.f.curve.getPoint(rnd()).add(G2.position), V3(0, 0, 0), new THREE.Color(['g1', 'g3', 'pgm', 'tri'].includes(a.id) ? '#F2C14E' : ['gk', 'galt', 'galt2', 'epi'].includes(a.id) ? '#7FE0A0' : '#FF9A5C'), 0.5, 0, 1.2); }
     }
     fx.update(dt);
   }
@@ -156,9 +160,9 @@ function makeCarbdig() {
     rows.forEach(([n, v, c], i) => { const y = 24 + i * ((h - 34) / 4); ctx.fillStyle = c; ctx.globalAlpha = 0.85; ctx.fillRect(120, y, (w - 170) * v / mx, 10); ctx.globalAlpha = 1; ctx.font = '500 9px JetBrains Mono, monospace'; ctx.fillStyle = 'rgba(255,255,255,.7)'; ctx.fillText(n, 12, y + 9); ctx.fillText(String(v), 126 + (w - 170) * v / mx, y + 9); });
   }
   const TXT = {
-    dig: '<b>Переваривание углеводов.</b> Крахмал (цепочки глюкозы) начинает резать <b>амилаза</b> слюны, а главную работу делает <b>амилаза поджелудочной железы</b> (голубые капли) — получаются мальтоза и короткие обрывки. Дисахариды расщепляют ферменты <b>щёточной каймы</b> на микроворсинках: <b>мальтаза</b>, <b>сахараза-изомальтаза</b> (сахароза → глюкоза + фруктоза), <b>лактаза</b> (лактоза → галактоза + глюкоза). Глюкоза и галактоза входят в клетку вместе с Na⁺ через <b>SGLT1</b> (голубые каналы), фруктоза — через <b>GLUT5</b> (оранжевые), а в кровь все выходят через <b>GLUT2</b> (фиолетовые). Клетчатка (целлюлоза) не переваривается: у человека нет ферментов для β-1,4-связей.',
+    dig: '<b>Переваривание углеводов.</b> Крахмал (цепочки глюкозы) начинает резать <b>амилаза</b> слюны, а главную работу делает <b>амилаза поджелудочной железы</b> (голубые капли) — получаются мальтоза и короткие обрывки. Дисахариды расщепляют ферменты <b>щёточной каймы</b> на микроворсинках: <b>мальтаза</b>, <b>сахараза-изомальтаза</b> (сахароза → глюкоза + фруктоза), <b>лактаза</b> (лактоза → галактоза + глюкоза). Глюкоза и галактоза входят в клетку вместе с Na⁺ через <b>SGLT1</b> (голубые переносчики), фруктоза — через <b>GLUT5</b> (оранжевые), а в кровь все выходят через <b>GLUT2</b> (фиолетовые). Клетчатка (целлюлоза) не переваривается: у человека нет ферментов, расщепляющих β-1,4-связи между остатками глюкозы (целлюлаз).',
     lac: '<b>Лактазная недостаточность.</b> У большинства взрослых людей в мире активность лактазы после отлучения от груди снижается (у народов Северной Европы чаще сохраняется — это мутация, закрепившаяся вместе с молочным животноводством). Нерасщеплённая лактоза идёт в толстую кишку: удерживает воду (осмотическая диарея), а бактерии сбраживают её до газов (H₂, CO₂, метан) и кислот — вздутие и боль. Помогают кисломолочные продукты, безлактозное молоко, таблетки лактазы.',
-    met: '<b>Галактоза и фруктоза в печени</b> превращаются в метаболиты глюкозы. <b>Галактоза</b>: галактокиназа → галактозо-1-фосфат → <b>ГАЛТ</b> (галактозо-1-фосфат-уридилтрансфераза) обменивает его на глюкозо-1-фосфат, отбирая УДФ у УДФ-глюкозы; эпимераза превращает УДФ-галактозу обратно в УДФ-глюкозу. <b>Фруктоза</b>: фруктокиназа → фруктозо-1-фосфат → <b>альдолаза B</b> → дигидроксиацетонфосфат и глицеральдегид → гликолиз. Фруктоза обходит главный регуляторный шаг гликолиза (фосфофруктокиназу), поэтому её избыток быстро превращается в жир. Выберите дефект фермента.',
+    met: '<b>Галактоза и фруктоза в печени</b> превращаются в метаболиты глюкозы. <b>Галактоза</b>: галактокиназа → галактозо-1-фосфат → <b>ГАЛТ</b> (галактозо-1-фосфат-уридилтрансфераза) переносит на него УДФ с УДФ-глюкозы: получаются УДФ-галактоза и глюкозо-1-фосфат; <b>эпимераза</b> превращает УДФ-галактозу обратно в УДФ-глюкозу — круг замыкается. <b>Фруктоза</b>: фруктокиназа → фруктозо-1-фосфат → <b>альдолаза B</b> → дигидроксиацетонфосфат и глицеральдегид (его фосфорилирует <b>триокиназа</b>) → гликолиз. Фруктоза обходит главный регуляторный шаг гликолиза (фосфофруктокиназу), поэтому её избыток быстро превращается в жир. Выберите дефект фермента.',
   };
   const DEF = {
     galt: '<b>Галактоземия</b> (дефект ГАЛТ, ~1 : 50 000). После первых кормлений молоком у младенца рвота, желтуха, увеличение печени, гипогликемия. Галактозо-1-фосфат копится и токсичен для печени, почек и мозга; галактоза превращается альдозоредуктазой в <b>галактитол</b>, который накапливается в хрусталике — <b>катаракта</b> (хрусталик мутнеет). Лечение — исключить молоко и лактозу пожизненно; входит в неонатальный скрининг.',
@@ -168,7 +172,7 @@ function makeCarbdig() {
   };
   const labels = [
     { text: 'просвет тонкой кишки', pos: V3(-2.2, 3.55, 0), color: '#C8B8A8', show: () => st.labels && st.mode === 'dig' },
-    { text: 'щёточная кайма', pos: V3(-3.2, YT + 0.75, 0.6), color: '#F2B0B0', show: () => st.labels && st.mode === 'dig' },
+    { text: 'щёточная кайма', pos: V3(-3.6, YT + 1.0, 0.6), color: '#F2B0B0', show: () => st.labels && st.mode === 'dig' },
     { text: 'лактаза', pos: V3(0.25, YT + 0.62, 0.6), color: ENZC.lac, show: () => st.labels && st.mode === 'dig' && !st.lacDef },
     { text: 'сахараза', pos: V3(-1.05, YT + 0.62, 0.6), color: ENZC.suc, show: () => st.labels && st.mode === 'dig' },
     { text: 'мальтаза', pos: V3(-2.4, YT + 0.62, 0.6), color: ENZC.malt, show: () => st.labels && st.mode === 'dig' },
@@ -178,14 +182,11 @@ function makeCarbdig() {
     { text: 'энтероцит', pos: V3(-1.0, YB + 1.1, 0.8), color: '#E8A0A0', show: () => st.labels && st.mode === 'dig' },
     { text: 'капилляр → воротная вена', pos: V3(1.1, YB - 0.95, 0.3), color: '#E06A6A', show: () => st.labels && st.mode === 'dig' },
     { text: 'толстая кишка', pos: V3(XR + 0.9, 2.75, 0), color: '#C8A090', show: () => st.labels && st.mode === 'dig' },
-    { text: 'глюкоза', pos: V3(3.75, 0.25, 0.6), color: SC.glc, show: () => st.labels && st.mode === 'dig' },
-    { text: 'фруктоза', pos: V3(3.75, -0.1, 0.6), color: SC.fru, show: () => st.labels && st.mode === 'dig' },
-    { text: 'галактоза', pos: V3(3.75, -0.45, 0.6), color: SC.gal, show: () => st.labels && st.mode === 'dig' },
-    ...Object.entries(NODES).map(([k, n]) => ({ text: n.name || MOL(n.m).name, pos: n.p.clone().add(V3(OX - 0.55, -0.6, 0.2)), color: k === 'gly' || k === 'g6p' || k === 'g1p' ? '#F2C14E' : ['gal', 'gal1p', 'udpgal'].includes(k) ? '#7FE0A0' : '#FF9A5C', show: () => st.labels && st.mode === 'met' })),
-    ...AR.filter((a) => a.name).map((a) => ({ text: a.name, pos: NODES[a.a].p.clone().lerp(NODES[a.b].p, 0.5).add(V3(OX - 0.6, 0.35, 0.3)), color: '#C8C8D0', show: () => st.labels && st.mode === 'met' })),
-    { text: 'гликоген', pos: V3(OX + 3.35, 2.6, 0.3), color: '#F2C14E', show: () => st.labels && st.mode === 'met' },
-    { text: 'хрусталик (галактитол)', pos: V3(OX - 3.0, -1.5, 0.4), color: '#E8F0FF', show: () => st.labels && st.mode === 'met' },
-    { text: 'АТФ печени', pos: V3(OX - 1.25, -1.2, 0.4), color: '#7FE0A0', show: () => st.labels && st.mode === 'met' },
+    ...Object.entries(NODES).map(([k, n]) => ({ text: n.name || MOL(n.m).name, pos: n.p.clone().add(V3(OX - 0.55, -0.75, 0.2)), color: k === 'gly' || k === 'g6p' || k === 'g1p' ? '#F2C14E' : k.startsWith('udp') ? '#9FB4FF' : ['gal', 'gal1p'].includes(k) ? '#7FE0A0' : '#FF9A5C', show: () => st.labels && st.mode === 'met' })),
+    ...AR.filter((a) => a.name).map((a) => ({ text: a.name, pos: NODES[a.a].p.clone().lerp(NODES[a.b].p, 0.5).add(V3(OX - 0.6, a.id === 'epi' ? -0.55 : a.id === 'tri' ? -0.45 : 0.5, 0.3)), color: '#C8C8D0', show: () => st.labels && st.mode === 'met' })),
+    { text: 'гликоген', pos: V3(OX + 3.1, 3.1, 0.3), color: '#F2C14E', show: () => st.labels && st.mode === 'met' },
+    { text: 'хрусталик (галактитол)', pos: V3(OX + 3.2, -2.35, 0.4), color: '#E8F0FF', show: () => st.labels && st.mode === 'met' },
+    { text: 'АТФ печени', pos: V3(OX + 1.7, -2.75, 0.4), color: '#7FE0A0', show: () => st.labels && st.mode === 'met' },
   ].filter((l) => !l.dyn);
   const amyLab = { text: 'амилаза', pos: V3(0, 0, 0), color: ENZC.amy, show: () => st.labels && st.mode === 'dig' }; labels.push(amyLab);
   const refs = {};
@@ -197,7 +198,7 @@ function makeCarbdig() {
     refs.rebuild = () => {
       box.innerHTML = '';
       if (st.mode === 'dig') box.append(h('div', { class: 'glabel' }, 'Еда'), h('div', { class: 'gctl' }, seg([{ id: 'mix', label: 'Всё' }, { id: 'bread', label: 'Хлеб (крахмал)' }, { id: 'sugar', label: 'Сахар' }, { id: 'milk', label: 'Молоко' }], () => st.food, (v) => { st.food = v; meal(); }), button('Поесть', meal, true), toggle('Сам', () => st.auto, (v) => { st.auto = v; })),
-        h('div', { class: 'gctl', style: 'margin-top:6px' }, toggle('Лактазная недостаточность', () => st.lacDef, (v) => { st.lacDef = v; if (v) { st.food = 'milk'; meal(); } refs.setInfo(); })));
+        h('div', { class: 'gctl', style: 'margin-top:6px' }, toggle('Лактазная недостаточность', () => st.lacDef, (v) => { st.lacDef = v; if (v) { st.food = 'milk'; meal(); } refs.rebuild(); refs.setInfo(); })));
       else box.append(h('div', { class: 'glabel' }, 'Дефект фермента'), h('div', { class: 'gctl' }, seg([{ id: 'none', label: 'Норма' }, { id: 'galt', label: 'Галактоземия', color: '#7FE0A0' }, { id: 'gk', label: 'Галактокиназа', color: '#7FE0A0' }, { id: 'aldB', label: 'Непереносимость фруктозы', color: '#FF9A5C' }, { id: 'fk', label: 'Фруктозурия', color: '#FF9A5C' }], () => st.defect, (v) => { st.defect = v; refs.setInfo(); })));
     };
     refs.rot = toggle('Вращение', () => st.rot, (v) => { st.rot = v; });
@@ -216,7 +217,7 @@ function makeCarbdig() {
   }
   function stats() {
     if (st.mode === 'met') return [['АТФ печени', Math.round(st.atp * 100), '%'], ['Сахар крови', (5 * st.sugar).toFixed(1), 'ммоль/л'], ['Хрусталик', st.lensO > 0.3 ? 'мутнеет' : 'прозрачен', '']];
-    return [['Всосалось', st.absorbed.glc + st.absorbed.fru + st.absorbed.gal, 'молекул'], ['Лактоза в толстую кишку', st.toColon, '']];
+    return [['Всосалось молекул', st.absorbed.glc + st.absorbed.fru + st.absorbed.gal, ''], ['Лактоза в толстую кишку', st.toColon, '']];
   }
   const self = {
     scene, camera, controls, update: update2, ui, onKey, stats, labels, drawScope, accent: '#F2C14E',

@@ -92,6 +92,7 @@ body{font-family:var(--f-body);font-size:15px;line-height:1.5}
   .console{gap:10px 18px;padding:10px 12px}
 }
 .cfg,.subsel{display:none}
+.cfg[hidden]{display:none!important}
 .pill{font:500 12px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:#120F0B;background:var(--accent);border:1px solid var(--accent);border-radius:999px;padding:5px 12px;min-height:32px;cursor:pointer}
 .pill[hidden]{display:none}
 .pill.ghost{color:var(--mute);background:transparent;border-color:var(--line-2)}
@@ -155,7 +156,7 @@ dialog.donate p{color:#D2CBD0;margin:0 0 12px}
     <div class="brand"><span class="bt">Кто <b>мы</b>?</span><span class="bs">от молекулы до мысли</span></div>
     <button class="pill inst" id="inst" type="button" hidden>Установить</button>
     <button class="pill heart" id="donate" type="button" aria-haspopup="dialog"><span aria-hidden="true">♥</span><span class="dtxt">Поддержать</span></button>
-    <button class="cfg" id="cfg" type="button" aria-expanded="false" aria-controls="knobs">Настройки</button>
+    <button class="cfg" id="cfg" hidden type="button" aria-expanded="false" aria-controls="knobs">Настройки</button>
     <div class="knobs" id="knobs" aria-label="Яркость"></div>
     <nav class="tabs" id="sections" role="tablist" aria-label="Темы"></nav>
   </header>
@@ -281,13 +282,11 @@ function glowTexture() {
 const GLOW = glowTexture();
 
 /* яркость: оболочки и свечение, запоминаются в браузере */
-const LOOK = { shell: 0.45, bloom: 0.55 };
-try { const s = JSON.parse(localStorage.getItem('look') || 'null'); if (s && typeof s.shell === 'number' && typeof s.bloom === 'number') Object.assign(LOOK, s); } catch (e) { /* без сохранения */ }
+const LOOK = { shell: 0, bloom: 0 }; // оболочки и свечение выключены (пользователь убрал эти настройки)
 const GLASS = [];
 function applyLook() {
   GLASS.forEach((m) => { m.uniforms.uRim.value = m.userData.rim0 * LOOK.shell; m.uniforms.uBase.value = m.userData.base0 * LOOK.shell; m.uniforms.uGain.value = 0.35 + 0.65 * LOOK.shell; });
-  bloom.strength = 1.1 * LOOK.bloom;
-  try { localStorage.setItem('look', JSON.stringify(LOOK)); } catch (e) { /* без сохранения */ }
+  bloom.strength = 1.1 * LOOK.bloom; bloom.enabled = LOOK.bloom > 0;
 }
 
 function glassMat(color, { rim = 1.0, base = 0.05, pow = 2.4, additive = true } = {}) {
@@ -8986,11 +8985,6 @@ function frame(now) {
   if (cur.drawScope) cur.drawScope(sctx, scopeEl.clientWidth, scopeEl.clientHeight);
   updateStats(now);
 }
-const pct = (v) => `${Math.round(v * 100)}%`;
-$('#knobs').append(
-  h('label', { class: 'knob' }, 'Оболочки', range('shell', 0, 1.5, 0.05, () => LOOK.shell, (v) => { LOOK.shell = v; applyLook(); }, pct)),
-  h('label', { class: 'knob' }, 'Свечение', range('bloom', 0, 1.5, 0.05, () => LOOK.bloom, (v) => { LOOK.bloom = v; applyLook(); }, pct)),
-);
 applyLook();
 /* приложение для телефона (PWA): работает только на собственном сайте, где подключён manifest */
 {
@@ -9014,7 +9008,7 @@ applyLook();
         for (const m of models) { try { const r = await fetch('models/' + m + '.' + MODEL_EXT); if (!r.ok) throw 0; await r.blob(); } catch (e) { bad++; } step(); }
         btn.textContent = bad ? 'Сохранено не всё — повторите' : 'Сохранено ✓'; btn.disabled = !bad;
       });
-      $('#knobs').append(btn);
+      $('#knobs').append(btn); $('#cfg').hidden = false;
     }).catch(() => { /* без офлайна */ });
   }
 }

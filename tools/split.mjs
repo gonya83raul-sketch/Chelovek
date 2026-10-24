@@ -3,7 +3,7 @@
 import { createRequire } from 'module';
 import fs from 'fs';
 import path from 'path';
-const require = createRequire('/opt/node-tools/node_modules/');
+const require = createRequire(fs.existsSync('/opt/node-tools/node_modules/acorn') ? '/opt/node-tools/node_modules/' : path.resolve('node_modules') + '/');
 const acorn = require('acorn');
 const walk = require('acorn-walk');
 const escope = require('eslint-scope');
