@@ -67,6 +67,7 @@ button,select{font-family:inherit}
 .pill.ghost:hover{color:var(--fg)}
 .pill:disabled{opacity:.7;cursor:default}
 .pill svg{width:16px;height:16px;flex:none}
+.lang{font-weight:600;letter-spacing:.04em;min-width:44px;justify-content:center}
 .heart svg{color:#FF7A9A}
 .heart:hover{border-color:#B65A74}
 .cfg,.subsel{display:none}
@@ -180,6 +181,8 @@ dialog.donate p{color:var(--text);margin:0 0 14px}
   .heart{order:1;margin-left:auto;width:44px;min-height:44px;padding:0;justify-content:center}
   .heart .dtxt{display:none}
   .inst{order:1}
+  .lang{order:1;margin-left:auto;min-height:44px}
+  .lang + .heart{margin-left:0}
   .cfg{order:2;display:inline-flex;align-items:center;font:500 13px var(--f-body);color:var(--mute);background:transparent;border:1px solid var(--line-2);border-radius:999px;padding:0 14px;min-height:44px;cursor:pointer}
   .cfg[aria-expanded="true"]{color:var(--fg);border-color:var(--accent)}
   .tabs{order:3}
@@ -217,6 +220,7 @@ dialog.donate p{color:var(--text);margin:0 0 14px}
     <div class="acts">
       <div class="knobs" id="knobs"></div>
       <button class="pill inst" id="inst" type="button" hidden>Установить</button>
+      <button class="pill lang" id="lang" type="button" lang="en" title="English">EN</button>
       <button class="pill heart" id="donate" type="button" aria-haspopup="dialog" aria-label="Поддержать проект"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.5 8.2 3.3 4.5 7 4.5c2.1 0 3.6 1.2 5 3 1.4-1.8 2.9-3 5-3 3.7 0 5.5 3.7 4.3 6.8-1.8 4.6-9.3 9.2-9.3 9.2z"/></svg><span class="dtxt">Поддержать</span></button>
       <button class="cfg" id="cfg" hidden type="button" aria-expanded="false" aria-controls="knobs">Настройки</button>
     </div>
@@ -260,6 +264,12 @@ dialog.donate p{color:var(--text);margin:0 0 14px}
   "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
 } }
 </script>
-<script type="module" src="app6/core.js"></script>
+<script type="module">
+let L = new URLSearchParams(location.search).get('lang');
+try { if (L) localStorage.setItem('lang', L); else L = localStorage.getItem('lang'); } catch (e) { /* без памяти */ }
+if (L !== 'en' && L !== 'ru') L = (navigator.languages || [navigator.language || '']).some((l) => /^(ru|uk|be|kk)/i.test(l)) ? 'ru' : 'en';
+document.documentElement.lang = L;
+import(L === 'en' ? './app7/en/core.js' : './app7/core.js');
+</script>
 </body>
 </html>

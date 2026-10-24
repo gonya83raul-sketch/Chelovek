@@ -14,9 +14,11 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 const MODEL_EXT = 'txt';
 function fetchModel(name) {
   return fetch('models/' + name + '.' + MODEL_EXT).then((r) => { if (!r.ok) throw new Error('HTTP ' + r.status); return MODEL_EXT === 'txt' ? r.text().then((t) => { const b = atob(t.trim()); const u = new Uint8Array(b.length); for (let i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return new Blob([u]); }) : r.blob(); })
-    .then((blob) => { if (typeof DecompressionStream === 'undefined') throw new Error('браузер слишком старый для распаковки модели'); return new Response(blob.stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer(); });
+    .then((blob) => { if (typeof DecompressionStream === 'undefined') throw new Error('browser too old to unpack the model'); return new Response(blob.stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer(); });
 }
 const $ = (s) => document.querySelector(s);
+/* язык сборки: английская сборка (tools/i18n.mjs) меняет 'ru' на 'en' и все русские строки — по словарю data/i18n/en.json */
+const LANG = 'en';
 function h(tag, attrs = {}, ...kids) {
   const el = document.createElement(tag);
   for (const [k, v] of Object.entries(attrs)) {
@@ -57,7 +59,7 @@ let renderer;
 try {
   renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
 } catch (e) {
-  stageEl.append(h('div', { class: 'fallback' }, 'Этому браузеру не удалось запустить 3D-графику (WebGL). Попробуйте открыть страницу в свежем Chrome, Safari или Firefox.'));
+  stageEl.append(h('div', { class: 'fallback' }, 'This browser could not start 3D graphics (WebGL). Try opening the page in an up-to-date Chrome, Safari or Firefox.'));
   throw e;
 }
 renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, matchMedia('(pointer:coarse)').matches ? 1.5 : 2));
@@ -92,11 +94,14 @@ function applyLook() {
   bloom.strength = 1.1 * LOOK.bloom; bloom.enabled = LOOK.bloom > 0;
 }
 
-function glassMat(color, { rim = 1.0, base = 0.05, pow = 2.4, additive = true } = {}) {
+// keep: оболочка видна всегда (клетка, митохондрия, колба — без неё сцена непонятна), не зависит от LOOK.shell
+function glassMat(color, { rim = 1.0, base = 0.05, pow = 2.4, additive = true, keep = false } = {}) {
   const m = makeGlass(color, rim, base, pow, additive);
   m.userData.rim0 = rim; m.userData.base0 = base;
-  m.uniforms.uRim.value = rim * LOOK.shell; m.uniforms.uBase.value = base * LOOK.shell; m.uniforms.uGain.value = 0.35 + 0.65 * LOOK.shell;
-  GLASS.push(m); return m;
+  const k = keep ? 1 : LOOK.shell;
+  m.uniforms.uRim.value = rim * k; m.uniforms.uBase.value = base * k; m.uniforms.uGain.value = 0.35 + 0.65 * k;
+  if (!keep) GLASS.push(m);
+  return m;
 }
 function makeGlass(color, rim, base, pow, additive) {
   return new THREE.ShaderMaterial({
@@ -206,11 +211,11 @@ function range(id, min, max, step, get, set, fmt) {
    x — вперёд (лоб), y — вверх, z — вбок (z>0 левое полушарие)
    ========================================================= */
 const LOBES = [
-  { id: 'front', name: 'Лобная', color: '#E9785F' },
-  { id: 'par', name: 'Теменная', color: '#5E8FEF' },
-  { id: 'temp', name: 'Височная', color: '#5CC48A' },
-  { id: 'occ', name: 'Затылочная', color: '#F2C14E' },
-  { id: 'limb', name: 'Лимбическая', color: '#E58FC4' },
+  { id: 'front', name: 'Frontal', color: '#E9785F' },
+  { id: 'par', name: 'Parietal', color: '#5E8FEF' },
+  { id: 'temp', name: 'Temporal', color: '#5CC48A' },
+  { id: 'occ', name: 'Occipital', color: '#F2C14E' },
+  { id: 'limb', name: 'Limbic', color: '#E58FC4' },
 ];
 const BKP = {   // опорные точки глубоких структур (в координатах модели)
   thal: [V3(0.0, -0.05, 0.2), V3(0.0, -0.05, -0.2)], thalR: V3(0.32, 0.2, 0.2),
@@ -314,7 +319,7 @@ function flyStep(st, camera, controls, dt, rate = 2.6, dur = 2.4) {
 }
 const flyTarget = (target, pos) => ({ target: target.clone(), pos: pos.clone(), t: 0 });
 /* «Что видно» + кнопки: стандартная панель сцены */
-function infoBox(flex = '1 1 320px') { const info = h('div', { class: 'info' }); return { info, el: h('div', { class: 'grp', style: `flex:${flex}` }, h('div', { class: 'glabel' }, 'Что видно'), info) }; }
+function infoBox(flex = '1 1 320px') { const info = h('div', { class: 'info' }); return { info, el: h('div', { class: 'grp', style: `flex:${flex}` }, h('div', { class: 'glabel' }, 'What you see'), info) }; }
 /* клик по объектам сцены */
 function pickOn(selfRef, camera, objects, onHit) {
   const ray = new THREE.Raycaster(), ndc = new THREE.Vector2(); let down = null;
@@ -414,12 +419,31 @@ function placeConsole() {
   placeScope();
 }
 mqMob.addEventListener('change', placeConsole); placeConsole();
+/* тексты разметки страницы: в английской сборке эти строки переводятся словарём */
+if (LANG !== 'ru') {
+  document.documentElement.lang = LANG;
+  const T = (sel, txt, attr) => { const e = $(sel); if (!e) return; if (attr) e.setAttribute(attr, txt); else e.innerHTML = txt; };
+  document.title = 'Who are we? From molecule to mind';
+  T('.brand .bt', 'Who are we?'); T('.brand .bs', 'from molecule to mind');
+  T('#sections', 'Atlas sections by scale', 'aria-label'); T('#subtabs', 'Section topics', 'aria-label'); T('#stage', '3D scene', 'aria-label');
+  T('#inst', 'Install'); T('#donate', 'Support the project', 'aria-label'); T('#donate .dtxt', 'Support'); T('#cfg', 'Settings');
+  T('.dclose button', 'Close', 'aria-label'); T('#donateTitle', 'Support the project');
+  T('#donatebox > p', '“Who are we?” is free and ad-free. New topics, 3D models and the app are built by enthusiasts — if the atlas is useful to you, you can help it grow.');
+  T('.dnet', 'USDT on the TRON network (TRC-20)'); T('#dcopy', 'Copy');
+  T('.dwarn', 'Send only <b>USDT on the TRON network (TRC-20)</b>. Any other coin or network will be lost.');
+  T('.foot', '3D models: visual system — Sergey Burov, muscles — Diego Luján García, pelvic and digestive organs — Education Resource Fund (Sketchfab, CC BY 4.0 license).');
+}
+/* переключатель языка: запоминается, ссылка ?lang=en|ru */
+{ const lb = $('#lang'), other = LANG === 'ru' ? 'en' : 'ru';
+  lb.textContent = other.toUpperCase(); lb.lang = other; lb.title = other === 'en' ? 'English' : 'Русский';
+  lb.addEventListener('click', () => { try { localStorage.setItem('lang', other); } catch (e) { /* без памяти — через ссылку */ } location.href = location.pathname + '?lang=' + other + location.hash; });
+}
 { const dlg = $('#donatebox'), btn = $('#donate'), cp = $('#dcopy');
   btn.addEventListener('click', () => { if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', ''); });
   dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
-  cp.addEventListener('click', () => { const a = $('#daddr').textContent.trim(); const ok = () => { cp.textContent = 'Скопировано ✓'; setTimeout(() => { cp.textContent = 'Копировать'; }, 2000); };
-    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(a).then(ok, () => { getSelection().selectAllChildren($('#daddr')); cp.textContent = 'Выделено — скопируйте'; });
-    else { getSelection().selectAllChildren($('#daddr')); cp.textContent = 'Выделено — скопируйте'; } });
+  cp.addEventListener('click', () => { const a = $('#daddr').textContent.trim(); const ok = () => { cp.textContent = 'Copied ✓'; setTimeout(() => { cp.textContent = 'Copy'; }, 2000); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(a).then(ok, () => { getSelection().selectAllChildren($('#daddr')); cp.textContent = 'Selected — copy it'; });
+    else { getSelection().selectAllChildren($('#daddr')); cp.textContent = 'Selected — copy it'; } });
 }
 { const cfg = $('#cfg'), top = $('.top'); cfg.addEventListener('click', () => { const o = top.classList.toggle('open'); cfg.setAttribute('aria-expanded', String(o)); }); }
 new ResizeObserver(layout).observe(stageEl);
@@ -427,26 +451,26 @@ new ResizeObserver(placeScope).observe(consoleEl);
 
 /* темы и разделы: новая система человека = одна строка здесь */
 const SECTIONS = [
-  { id: 'body', name: 'Тело', scenes: [['#', 'Опора и движение'], ['skeleton', 'Скелет, мышцы и сосуды'], ['#', 'Системы органов'], ['heart', 'Сердце и кровообращение'], ['lungs', 'Дыхание'], ['digest', 'Пищеварение'], ['kidney', 'Почки'], ['blood', 'Кровь'], ['endo', 'Эндокринная система'], ['immune', 'Лимфа и иммунитет'], ['repro', 'Размножение и развитие'], ['menses', 'Менструальный цикл'], ['shealth', 'Влечение и сексуальное здоровье'], ['sresp', 'Цикл полового ответа'], ['chest', 'Грудная клетка и грудь']] },
-  { id: 'cell', name: 'Клетка', scenes: [['cell', 'Живая клетка']] },
-  { id: 'bio', name: 'Биохимия', scenes: [['#', 'Ферменты'], ['enzyme', 'Как работает фермент'], ['kinetics', 'Скорость реакции и ингибиторы'], ['enzmed', 'Регуляция и ферменты в медицине'], ['#', 'Витамины'], ['vitamins', 'Витамины и коферменты'], ['#', 'Энергия'], ['atp', 'АТФ и стадии катаболизма'], ['krebs', 'Пируватдегидрогеназа и цикл Кребса'], ['etc', 'Дыхательная цепь и АТФ-синтаза'], ['radicals', 'Свободные радикалы и антиоксиданты'], ['#', 'Углеводы'], ['glycolysis', 'Гликолиз, глюконеогенез, ПФП'], ['glycogen', 'Гликоген и сахар крови'], ['carbdig', 'Переваривание сахаров, лактоза, фруктоза'], ['#', 'Липиды'], ['membrane', 'Липиды и мембраны'], ['betaox', 'Окисление жиров и кетоновые тела'], ['lipoprot', 'Холестерин и липопротеины'], ['lipogen', 'Синтез жиров, фосфолипиды, ожирение'], ['#', 'Белки и аминокислоты'], ['protein', 'Белки: аминокислоты и укладка'], ['aminoacid', 'Обмен аминокислот и мочевина'], ['amines', 'Биогенные амины, глицин и серин'], ['#', 'Нуклеотиды и гены'], ['dna', 'ДНК: строение, репликация, репарация'], ['express', 'Транскрипция и трансляция'], ['purine', 'Нуклеотиды и подагра'], ['#', 'Гормоны'], ['hormsig', 'Как гормоны действуют на клетку'], ['fedfast', 'Обмен веществ: сытость и голод'], ['#', 'Кровь и печень'], ['hemoglobin', 'Гемоглобин и перенос кислорода'], ['heme', 'Обмен гема и желтухи'], ['bloodchem', 'Кровь: pH, белки плазмы, свёртывание'], ['liver', 'Печень: обезвреживание, алкоголь, парацетамол']] },
-  { id: 'brain', name: 'Мозг', scenes: [
-    ['#', 'Нейроны'], ['soma', 'Строение нейрона'], ['types', 'Типы нейронов'], ['neuron', 'Нейрон и импульс'], ['synapse', 'Синапс и медиаторы'], ['glia', 'Нейроглия'],
-    ['#', 'Устройство'], ['develop', 'Развитие мозга'], ['ventricles', 'Желудочки и оболочки'], ['spinal', 'Спинной мозг'], ['cranial', 'Черепные нервы'], ['stem', 'Ствол мозга'], ['dien', 'Таламус и гипоталамус'],
-    ['hemis', 'Полушария и базальные ганглии'], ['cortex', 'Кора'], ['hippo', 'Гиппокамп и память'], ['cereb', 'Мозжечок'],
-    ['#', 'Химия'], ['brain', 'Системы медиаторов'],
-    ['#', 'Органы чувств'], ['vision', 'Зрение'], ['ear', 'Слух и равновесие'], ['skin', 'Кожа и осязание'], ['chemo', 'Обоняние и вкус'],
+  { id: 'body', name: 'Body', scenes: [['#', 'Support and movement'], ['skeleton', 'Skeleton, muscles and vessels'], ['#', 'Organ systems'], ['heart', 'Heart and circulation'], ['lungs', 'Breathing'], ['digest', 'Digestion'], ['kidney', 'Kidneys'], ['blood', 'Blood'], ['endo', 'Endocrine system'], ['immune', 'Lymph and immunity'], ['repro', 'Reproduction and development'], ['menses', 'Menstrual cycle'], ['shealth', 'Desire and sexual health'], ['sresp', 'Sexual response cycle'], ['chest', 'Thorax and breast']] },
+  { id: 'cell', name: 'Cell', scenes: [['cell', 'Living cell']] },
+  { id: 'bio', name: 'Biochemistry', scenes: [['#', 'Enzymes'], ['enzyme', 'How an enzyme works'], ['kinetics', 'Reaction rate and inhibitors'], ['enzmed', 'Enzyme regulation and enzymes in medicine'], ['#', 'Vitamins'], ['vitamins', 'Vitamins and coenzymes'], ['#', 'Energy'], ['atp', 'ATP and the stages of catabolism'], ['krebs', 'Pyruvate dehydrogenase and the Krebs cycle'], ['etc', 'Respiratory chain and ATP synthase'], ['radicals', 'Free radicals and antioxidants'], ['#', 'Carbohydrates'], ['glycolysis', 'Glycolysis, gluconeogenesis, PPP'], ['glycogen', 'Glycogen and blood sugar'], ['carbdig', 'Sugar digestion, lactose, fructose'], ['#', 'Lipids'], ['membrane', 'Lipids and membranes'], ['betaox', 'Fat oxidation and ketone bodies'], ['lipoprot', 'Cholesterol and lipoproteins'], ['lipogen', 'Fat synthesis, phospholipids, obesity'], ['#', 'Proteins and amino acids'], ['protein', 'Proteins: amino acids and folding'], ['aminoacid', 'Amino acid metabolism and urea'], ['amines', 'Biogenic amines, glycine and serine'], ['#', 'Nucleotides and genes'], ['dna', 'DNA: structure, replication, repair'], ['express', 'Transcription and translation'], ['purine', 'Nucleotides and gout'], ['#', 'Hormones'], ['hormsig', 'How hormones act on the cell'], ['fedfast', 'Metabolism: fed and fasting'], ['#', 'Blood and liver'], ['hemoglobin', 'Hemoglobin and oxygen transport'], ['heme', 'Heme metabolism and jaundice'], ['bloodchem', 'Blood: pH, plasma proteins, clotting'], ['liver', 'Liver: detoxification, alcohol, paracetamol']] },
+  { id: 'brain', name: 'Brain', scenes: [
+    ['#', 'Neurons'], ['soma', 'Neuron structure'], ['types', 'Neuron types'], ['neuron', 'Neuron and impulse'], ['synapse', 'Synapse and neurotransmitters'], ['glia', 'Neuroglia'],
+    ['#', 'Structure'], ['develop', 'Brain development'], ['ventricles', 'Ventricles and meninges'], ['spinal', 'Spinal cord'], ['cranial', 'Cranial nerves'], ['stem', 'Brainstem'], ['dien', 'Thalamus and hypothalamus'],
+    ['hemis', 'Hemispheres and basal ganglia'], ['cortex', 'Cortex'], ['hippo', 'Hippocampus and memory'], ['cereb', 'Cerebellum'],
+    ['#', 'Chemistry'], ['brain', 'Neurotransmitter systems'],
+    ['#', 'Sense organs'], ['vision', 'Vision'], ['ear', 'Hearing and balance'], ['skin', 'Skin and touch'], ['chemo', 'Smell and taste'],
   ] },
 ].map((s) => ({ ...s, scenes: s.scenes.filter(([sid]) => sid === '#' || BUILDERS[sid]) }));
 const secOf = (id) => SECTIONS.find((s) => s.scenes.some(([sid]) => sid === id));
 const firstOf = (s) => s.scenes.find(([sid]) => sid !== '#')[0];
 const lastIn = {}, secNav = $('#sections'), subNav = $('#subtabs');
 // вкладки стоят на шкале масштаба — «от молекулы до мысли»
-const SCALE = { bio: ['10⁻⁹ м', 'молекулы, нанометры'], cell: ['10⁻⁵ м', 'клетки, микрометры'], body: ['1 м', 'органы и тело, метры'], brain: ['мысль', 'от нейрона до мысли'] };
+const SCALE = { bio: ['10⁻⁹ m', 'molecules, nanometers'], cell: ['10⁻⁵ m', 'cells, micrometers'], body: ['1 m', 'organs and body, meters'], brain: ['mind', 'from neuron to mind'] };
 const byScale = (s) => { const i = Object.keys(SCALE).indexOf(s.id); return i < 0 ? 99 : i; };
 [...SECTIONS].sort((a, b) => byScale(a) - byScale(b)).forEach((s) => {
   const sc = SCALE[s.id];
-  secNav.append(h('button', { class: 'tab', role: 'tab', type: 'button', 'data-sec': s.id, 'aria-selected': 'false', title: sc ? 'Масштаб: ' + sc[1] : null, onclick: () => show(lastIn[s.id] || firstOf(s)) },
+  secNav.append(h('button', { class: 'tab', role: 'tab', type: 'button', 'data-sec': s.id, 'aria-selected': 'false', title: sc ? 'Scale: ' + sc[1] : null, onclick: () => show(lastIn[s.id] || firstOf(s)) },
     h('span', { class: 'tsc', 'aria-hidden': 'true' }, sc ? sc[0] : ''), h('span', { class: 'tdot', 'aria-hidden': 'true' }), h('span', { class: 'tn' }, s.name)));
 });
 function renderNav(id) {
@@ -459,7 +483,7 @@ function renderNav(id) {
   const act = subNav.querySelector('.sub[aria-selected="true"]');
   if (act && subNav.scrollHeight > subNav.clientHeight && (act.offsetTop < st || act.offsetTop + act.offsetHeight > st + subNav.clientHeight)) subNav.scrollTop = act.offsetTop - subNav.clientHeight / 3;
   // на телефоне вместо длинного ряда — выпадающий список с группами
-  const sel = h('select', { class: 'subsel', 'aria-label': 'Тема раздела «' + s.name + '»', onchange: (e) => show(e.target.value) }); let og = sel;
+  const sel = h('select', { class: 'subsel', 'aria-label': 'Topics in “' + s.name + '”', onchange: (e) => show(e.target.value) }); let og = sel;
   s.scenes.forEach(([sid, name]) => { if (sid === '#') { og = h('optgroup', { label: name }); sel.append(og); } else { const o = h('option', { value: sid }, name); if (sid === id) o.selected = true; og.append(o); } });
   subNav.append(sel);
 }
@@ -489,13 +513,13 @@ function show(id) {
   if (built[id]) { activate(id); return; }
   renderNav(id);
   const item = (secOf(id) || { scenes: [] }).scenes.find(([s]) => s === id);
-  loadEl.textContent = 'Загружаю «' + (item ? item[1] : id) + '»…'; loadEl.hidden = false;
+  loadEl.textContent = 'Loading “' + (item ? item[1] : id) + '”…'; loadEl.hidden = false;
   loadBuilder(id).then((mk) => {
     if (seq !== showSeq) return;
     const L = []; building = L; let sc;
     try { sc = mk(); } finally { building = null; }
     sc.__listen = L; built[id] = sc; loadEl.hidden = true; activate(id);
-  }).catch((e) => { if (seq !== showSeq) return; loadEl.textContent = 'Не удалось загрузить раздел: ' + (e && e.message || e) + '. Обновите страницу.'; console.error(e); });
+  }).catch((e) => { if (seq !== showSeq) return; loadEl.textContent = 'Couldn’t load the section: ' + (e && e.message || e) + '. Please reload the page.'; console.error(e); });
 }
 function activate(id) {
   loadEl.hidden = true;
@@ -573,19 +597,19 @@ applyLook();
   window.addEventListener('appinstalled', () => { inst.hidden = true; });
   if ('serviceWorker' in navigator && document.querySelector('link[rel="manifest"]')) {
     navigator.serviceWorker.register('sw.js').then(() => {
-      const btn = h('button', { class: 'pill ghost', type: 'button', title: 'Скачать все темы и 3D-модели, чтобы атлас работал без интернета' }, 'Сохранить для офлайна');
+      const btn = h('button', { class: 'pill ghost', type: 'button', title: 'Download all topics and 3D models so the atlas works offline' }, 'Save for offline');
       btn.addEventListener('click', async () => {
         btn.disabled = true;
         try { if (navigator.storage && navigator.storage.persist) await navigator.storage.persist(); } catch (e) { /* не критично */ }
         const files = [...new Set(Object.values(BUILDERS).map(([f]) => f))], models = ['skeleton', 'muscles', 'vision', 'digest', 'repro'];
         const N = files.length + models.length; let n = 0, bad = 0;
-        const step = () => { btn.textContent = 'Сохраняю… ' + Math.round((++n / N) * 100) + '%'; };
+        const step = () => { btn.textContent = 'Saving… ' + Math.round((++n / N) * 100) + '%'; };
         // всё, что страница уже загрузила до установки кэша (three.js, шрифты, сама страница)
         const seen = [location.href.split('#')[0], ...performance.getEntriesByType('resource').map((e) => e.name)].filter((u) => /^https?:/.test(u) && !u.includes('/models/'));
         for (const u of new Set(seen)) { try { await fetch(u, { cache: 'reload' }); } catch (e) { /* шрифт может не скачаться — не страшно */ } }
         for (const f of files) { try { await (chunkP[f] ||= import('./s/' + f + '.js')); } catch (e) { bad++; } step(); }
         for (const m of models) { try { const r = await fetch('models/' + m + '.' + MODEL_EXT); if (!r.ok) throw 0; await r.blob(); } catch (e) { bad++; } step(); }
-        btn.textContent = bad ? 'Сохранено не всё — повторите' : 'Сохранено ✓'; btn.disabled = !bad;
+        btn.textContent = bad ? 'Not everything was saved — try again' : 'Saved ✓'; btn.disabled = !bad;
       });
       $('#knobs').append(btn); $('#cfg').hidden = false;
     }).catch(() => { /* без офлайна */ });
