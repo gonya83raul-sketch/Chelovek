@@ -14,7 +14,7 @@ const EZ_CLASSES = [
 function makeEnzyme() {
   rnd = mulberry(501);
   const scene = bioStage({ rim: 0x7fd6ff });
-  const VIEW = { site: flyTarget(V3(0.3, -1.0, 0), V3(1.4, 0.2, 9.8)), fit: flyTarget(V3(40, -1.0, 0), V3(41.8, 0.6, 13.5)), classes: flyTarget(V3(80, -3.2, 0), V3(80, 14, 24)) };
+  const VIEW = { site: flyTarget(V3(0.3, -1.0, 0), V3(1.4, 0.2, 9.8)), fit: flyTarget(V3(40, -1.0, 0), V3(41.8, 0.6, 13.5)), classes: flyTarget(V3(80, -3.4, 0), V3(80, 15.5, 20)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.site.pos);
   const controls = makeControls(camera, VIEW.site.target); controls.minDistance = 2; controls.maxDistance = 40;
   const fx = new Sparks(1600, 0.08); scene.add(fx.obj);
@@ -60,7 +60,7 @@ function makeEnzyme() {
   /* ---------- 3. классы ферментов ---------- */
   const G3 = new THREE.Group(); G3.position.set(80, 0, 0); scene.add(G3);
   const ST = EZ_CLASSES.map((c, k) => {
-    const a = -Math.PI / 2 + (k / 6) * Math.PI * 2, p = V3(Math.cos(a) * 6.4, 0, Math.sin(a) * 6.4);
+    const a = -Math.PI / 2 + (k / 6) * Math.PI * 2, p = V3(Math.cos(a) * 6.8, 0, Math.sin(a) * 6.8);
     const g = new THREE.Group(); g.position.copy(p); G3.add(g);
     let prot;
     if (c.pdb) {
