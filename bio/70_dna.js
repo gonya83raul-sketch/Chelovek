@@ -7,7 +7,7 @@
 function makeDna() {
   rnd = mulberry(1901);
   const scene = bioStage({ rim: 0x7fd6ff });
-  const VIEW = { struct: flyTarget(V3(0, -1.4, 0), V3(1.2, 0.2, 13)), rep: flyTarget(V3(40, -1.0, 0), V3(40.6, 0.8, 18.5)), repair: flyTarget(V3(80, -1.4, 0), V3(81.2, 0.2, 13)) };
+  const VIEW = { struct: flyTarget(V3(-1.3, -0.7, 0), V3(-0.1, 0.9, 13.5)), rep: flyTarget(V3(40, -1.0, 0), V3(40.6, 0.8, 18.5)), repair: flyTarget(V3(80, -1.4, 0), V3(81.2, 0.2, 13)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.struct.pos);
   const controls = makeControls(camera, VIEW.struct.target); controls.minDistance = 2; controls.maxDistance = 40;
   const fx = new Sparks(1400, 0.08); scene.add(fx.obj);
@@ -28,11 +28,43 @@ function makeDna() {
     const isBase = (n) => !n.includes("'") && !/^(P|OP1|OP2|O1P|O2P)$/.test(n) && /^[NO]/.test(n);
     const hb = new THREE.Group(); g.add(hb); const dashMat = new THREE.MeshBasicMaterial({ color: 0x9fd8ff, transparent: true, opacity: 0.85 });
     for (let i = 0; i < cA.n; i++) { if (!isBase(anA[i])) continue; const a = V3(cA.xyz[i * 3], cA.xyz[i * 3 + 1], cA.xyz[i * 3 + 2]); for (let j = 0; j < cB.n; j++) { if (!isBase(anB[j])) continue; const b = V3(cB.xyz[j * 3], cB.xyz[j * 3 + 1], cB.xyz[j * 3 + 2]); const d = a.distanceTo(b); if (d > 2.55 && d < 3.25) { for (let k = 0; k < 3; k++) { const p0 = a.clone().lerp(b, (k * 2 + 0.6) / 6.6).multiplyScalar(SC), p1 = a.clone().lerp(b, (k * 2 + 1.6) / 6.6).multiplyScalar(SC); const m = new THREE.Mesh(CYL, dashMat); m.position.copy(p0).lerp(p1, 0.5); const dd = p1.clone().sub(p0); m.scale.set(0.012, dd.length(), 0.012); m.quaternion.setFromUnitVectors(V3(0, 1, 0), dd.normalize()); hb.add(m); } } } }
+    // «Строение»: полупрозрачная трубка остова по фосфатам и свой цвет углерода у каждой цепи — две антипараллельные цепи различимы
+    if (!perRes) S.chains.forEach((c, k) => {
+      const tr = nucTrace(c, { scale: SC, r: 1.1, steps: false, color: k ? '#FFB070' : '#7FD6FF' });
+      tr.traverse((o) => { if (o.material) { o.material = o.material.clone(); o.material.transparent = true; o.material.opacity = 0.3; o.material.depthWrite = false; } }); g.add(tr);
+      if (k) parts[c.id].traverse((o) => { if (o.material === atomMat('C')) o.material = atomMat('C', { color: new THREE.Color('#B07A48') }); });
+    });
     return { g, parts, hb };
   }
   /* ---------- 1. строение ---------- */
   const G1 = new THREE.Group(); G1.position.set(0, 0.7, 0); scene.add(G1);
   const D1 = dnaModel(G1, false);
+  G1.rotation.order = 'ZYX'; G1.rotation.y = 0.28; // вращение — вокруг оси спирали (локальная X), лёгкий наклон к зрителю
+  // бороздки: угол остова каждой цепи (по фосфатам) — линейная функция x вдоль оси; малая — меньший угловой зазор между цепями
+  const GRV = (() => {
+    const fit = (c) => {
+      const pts = []; for (let i = 0; i < c.p.length; i += 3) pts.push(V3(c.p[i], c.p[i + 1], c.p[i + 2]).multiplyScalar(SC).applyQuaternion(QX).add(D1.g.position));
+      pts.sort((a, b) => a.x - b.x); const xs = [], as = []; let prev = null;
+      pts.forEach((p) => { let a = Math.atan2(p.z, p.y); if (prev !== null) { while (a - prev > Math.PI) a -= 2 * Math.PI; while (a - prev < -Math.PI) a += 2 * Math.PI; } prev = a; xs.push(p.x); as.push(a); });
+      const n = xs.length, mx = xs.reduce((q, v) => q + v, 0) / n, ma = as.reduce((q, v) => q + v, 0) / n; let sxy = 0, sxx = 0;
+      for (let i = 0; i < n; i++) { sxy += (xs[i] - mx) * (as[i] - ma); sxx += (xs[i] - mx) ** 2; }
+      const k = sxy / sxx; return { k, a0: ma - k * mx, r: pts.reduce((q, p) => q + Math.hypot(p.y, p.z), 0) / n, pts };
+    };
+    const A = fit(S.chains[0]), B = fit(S.chains[1]); const k = (A.k + B.k) / 2;
+    const d = (((B.a0 - A.a0) % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+    const minor = d < Math.PI ? A.a0 + d / 2 : A.a0 + d / 2 + Math.PI;
+    return { k, minor, major: minor + Math.PI, r: (A.r + B.r) / 2, P: [...A.pts, ...B.pts] };
+  })();
+  // точка бороздки, обращённая к камере, ближайшая к x0 (в системе G1)
+  const groovePos = (a0, x0) => {
+    const cl = G1.worldToLocal(camera.position.clone()); const ph = Math.atan2(cl.z, cl.y); const T = 2 * Math.PI / Math.abs(GRV.k);
+    let x = (ph - a0) / GRV.k; x += Math.round((x0 - x) / T) * T;
+    GRV.ok = Math.abs(x) < 2.2; // у концов молекулы бороздка не подписывается
+    return G1.localToWorld(V3(x, Math.cos(ph) * GRV.r * 0.95, Math.sin(ph) * GRV.r * 0.95));
+  };
+  // атом P, ближе всех к камере в правой части — для подписи остова
+  const backbonePos = () => { const cl = G1.worldToLocal(camera.position.clone()); let best = null, bd = 1e9; GRV.P.forEach((p) => { if (p.x < 1.9 || p.x > 3.2) return; const dd = p.distanceTo(cl); if (dd < bd) { bd = dd; best = p; } }); return G1.localToWorld((best || V3(2, 0, 0)).clone()); };
+  const hbMid = (() => { let best = null, bd = 1e9; D1.hb.children.forEach((m) => { const p = m.position.clone().applyQuaternion(QX).add(D1.g.position); const dd = Math.abs(p.x + 2.6); if (dd < bd) { bd = dd; best = p; } }); return best || V3(-2.6, 0, 0); })();
   const seqTxt = S.chains[0].seq;
   /* ---------- 2. вилка репликации ---------- */
   const G2 = new THREE.Group(); G2.position.set(40, 0, 0); scene.add(G2);
@@ -45,14 +77,15 @@ function makeDna() {
     return { g, sA, sB };
   }
   const parent = helixPair(8, '#8FA8C8', '#8FA8C8'); parent.g.position.set(0.5, 0.6, 0); G2.add(parent.g);
-  const lead = helixPair(7, '#8FA8C8', '#5CE0C8'); lead.g.position.set(-0.3, 1.1, 0); lead.g.rotation.z = Math.PI - 0.32; G2.add(lead.g);
-  const lagT = helixPair(7, '#8FA8C8', null, false); lagT.g.position.set(-0.3, 0.1, 0); lagT.g.rotation.z = Math.PI + 0.32; G2.add(lagT.g);
+  // порядок ZYX: спираль крутится вокруг своей оси (локальная X), а направление ветви (поворот по z) не меняется
+  const lead = helixPair(7, '#8FA8C8', '#5CE0C8'); lead.g.position.set(-0.3, 1.1, 0); lead.g.rotation.order = 'ZYX'; lead.g.rotation.z = Math.PI - 0.32; G2.add(lead.g);
+  const lagT = helixPair(7, '#8FA8C8', null, false); lagT.g.position.set(-0.3, 0.1, 0); lagT.g.rotation.order = 'ZYX'; lagT.g.rotation.z = Math.PI + 0.32; G2.add(lagT.g);
   const lagDir = V3(-Math.cos(0.32), -Math.sin(0.32), 0); const lagO = V3(-0.3, 0.1, 0);
   const frags = []; for (let k = 0; k < 5; k++) { const fr = new THREE.Group(); const dna = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.09, 1, 10), organMat('#5CE0C8', 0.55, { emissiveIntensity: 0.08 })); dna.rotation.z = Math.PI / 2; fr.add(dna); const pr = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.3, 10), organMat('#FF5A5A', 0.6, { emissiveIntensity: 0.15 })); pr.rotation.z = Math.PI / 2; fr.add(pr); G2.add(fr); frags.push({ g: fr, dna, pr, s0: 0, len: 0, born: -99 }); }
   const enz = {};
   const eb = (id, pos, r, col, seed) => { const m = new THREE.Mesh(blobGeo(r[0], r[1], r[2], seed, 0.12, 3), protMat(col, 0.38)); m.position.copy(pos); G2.add(m); enz[id] = m; return m; };
   const heli = new THREE.Mesh(new THREE.TorusGeometry(0.42, 0.17, 16, 36), protMat('#F2C14E', 0.42)); heli.rotation.y = Math.PI / 2; heli.position.set(0.55, 0.6, 0); G2.add(heli); enz.heli = heli;
-  eb('topo', V3(4.4, 0.6, 0), [0.45, 0.55, 0.45], '#C77DFF', 3);
+  eb('topo', V3(4.4, 1.22, 0.1), [0.42, 0.4, 0.42], '#C77DFF', 3); // сидит на ДНК, а не нанизана на неё
   eb('polL', V3(-1.3, 1.7, 0.2), [0.55, 0.45, 0.5], '#7FD6FF', 4);
   eb('polG', V3(-1.2, -0.45, 0.2), [0.55, 0.45, 0.5], '#7FD6FF', 5);
   eb('prim', V3(-0.2, -0.2, 0.5), [0.28, 0.24, 0.26], '#FF6A6A', 6);
@@ -66,6 +99,9 @@ function makeDna() {
   const nuc = new THREE.Mesh(blobGeo(0.6, 0.5, 0.5, 12, 0.12, 3), protMat('#F2C14E', 0.38)); G3.add(nuc);
   const polR = new THREE.Mesh(blobGeo(0.55, 0.45, 0.5, 13, 0.12, 3), protMat('#7FD6FF', 0.38)); G3.add(polR);
   const ligR = new THREE.Mesh(blobGeo(0.4, 0.35, 0.35, 14, 0.12, 3), protMat('#FF8AB0', 0.38)); G3.add(ligR);
+  // тиминовый димер: свечение жёлтым вместо цвета атома
+  const YEL = new THREE.Color('#FFD84A');
+  const dimerTint = (g, on) => { molGlow(g, 0); /* сначала свои копии материалов, общий кэш не трогаем */ g.traverse((o) => { if (o.material && o.material.emissive) { if (!o.userData.em0) o.userData.em0 = o.material.emissive.clone(); o.material.emissive.copy(on ? YEL : o.userData.em0); } }); };
   const resPos = (key) => { const m = D3.parts[key]; const b = new THREE.Box3().setFromObject(m); return b.getCenter(V3(0, 0, 0)).sub(G3.position); };
   /* ---------- состояние ---------- */
   const st = { t: 0, mode: 'struct', labels: true, rot: true, fly: null, cyc: 0, msg: null, hb: true };
@@ -73,10 +109,10 @@ function makeDna() {
   const ease = (x) => { const u = clamp(x, 0, 1); return u * u * (3 - 2 * u); };
   function update(dt) {
     st.t += dt; const t = st.t; controls.autoRotate = false; flyStep(st, camera, controls, dt); st.cyc += dt;
-    if (st.mode === 'struct') { if (st.rot) G1.rotation.y += dt * 0.25; D1.hb.visible = st.hb; }
+    if (st.mode === 'struct') { if (st.rot) G1.rotation.x += dt * 0.25; D1.hb.visible = st.hb; }
     if (st.mode === 'rep') {
       const w = 1.2; parent.g.rotation.x += dt * w; lead.g.rotation.x -= dt * w * 0.8; lagT.g.rotation.x += dt * w * 0.8;
-      heli.rotation.x += dt * 4; enz.topo.rotation.x += dt * 2;
+      heli.rotation.x += dt * 4; enz.topo.rotation.y += dt * 0.8;
       // фрагменты Оказаки: каждые 3 с — новый праймер у вилки, растёт прочь от вилки, затем уезжает
       const v = 0.45;
       frags.forEach((f, k) => {
@@ -95,7 +131,7 @@ function makeDna() {
       const T = 16, c = st.cyc % T;
       const dmg = ['A6', 'A7']; const cutR = ['A4', 'A5', 'A6', 'A7', 'A8', 'A9'];
       uv.visible = c < 2.5; uv.material.opacity = 0.12 * (1 - Math.abs(c - 1.2) / 1.3);
-      const dimer = c > 1.5 && c < 7; dmg.forEach((k) => molGlow(D3.parts[k], dimer ? 0.35 + 0.15 * Math.sin(t * 6) : 0));
+      const dimer = c > 1.5 && c < 7; dmg.forEach((k) => { dimerTint(D3.parts[k], dimer); molGlow(D3.parts[k], dimer ? 0.75 + 0.2 * Math.sin(t * 6) : 0); });
       const gone = c > 6 && c < 9.5 ? ease((c - 6) / 1) : c >= 9.5 && c < 12 ? 1 - ease((c - 9.5) / 2.5) : 0;
       cutR.forEach((k) => { molFade(D3.parts[k], 1 - gone * 0.95); if (c > 9.5 && c < 12.5) molGlow(D3.parts[k], 0.2); else if (!dmg.includes(k)) molGlow(D3.parts[k], 0); });
       const site = resPos('A6').clone().lerp(resPos('A7'), 0.5);
@@ -113,10 +149,12 @@ function makeDna() {
     repair: '<b>Повреждение и репарация.</b> Ультрафиолет сшивает два соседних тимина (жёлтое свечение) в <b>тиминовый димер</b> — спираль изгибается, копирование и чтение гена ломаются. <b>Эксцизионная репарация</b>: белки узнают дефект, нуклеаза надрезает цепь по обе стороны и удаляет участок, ДНК-полимераза достраивает его по второй, целой цепи, лигаза сшивает. Наследственный дефект этой системы — <b>пигментная ксеродерма</b>: тысячекратный риск рака кожи от солнца. В клетке каждый день возникают десятки тысяч повреждений ДНК — и почти все исправляются.',
   };
   const labels = [
-    { text: 'сахарофосфатный остов', pos: V3(2.3, 2.2, 0.6), color: '#FF9A30', show: () => st.labels && st.mode === 'struct' },
-    { text: 'пары оснований · H-связи', pos: V3(-0.6, 1.9, 1.2), color: '#9FD8FF', show: () => st.labels && st.mode === 'struct' },
+    { text: 'сахарофосфатный остов', get pos() { return backbonePos(); }, color: '#FF9A30', show: () => st.labels && st.mode === 'struct' },
+    { text: 'пары оснований · H-связи', get pos() { return G1.localToWorld(hbMid.clone()); }, color: '#9FD8FF', show: () => st.labels && st.mode === 'struct' },
+    { text: 'малая бороздка', get pos() { return groovePos(GRV.minor, 0); }, color: '#C8D2E6', show: () => st.labels && st.mode === 'struct' && (groovePos(GRV.minor, 0), GRV.ok) },
+    { text: 'большая бороздка', get pos() { return groovePos(GRV.major, 0); }, color: '#C8D2E6', show: () => st.labels && st.mode === 'struct' && (groovePos(GRV.major, 0), GRV.ok) },
     { text: `5′-${seqTxt}-3′`, pos: V3(-3.2, -0.9, 0), color: '#F2E6C8', show: () => st.labels && st.mode === 'struct' },
-    { text: 'топоизомераза', pos: V3(44.4, 1.4, 0), color: '#C77DFF', show: () => st.labels && st.mode === 'rep' },
+    { text: 'топоизомераза', pos: V3(44.4, 1.9, 0), color: '#C77DFF', show: () => st.labels && st.mode === 'rep' },
     { text: 'геликаза', pos: V3(40.6, 1.4, 0.3), color: '#F2C14E', show: () => st.labels && st.mode === 'rep' },
     { text: 'ведущая цепь', pos: V3(40 - 4.6, 2.7, 0), color: '#5CE0C8', show: () => st.labels && st.mode === 'rep' },
     { text: 'отстающая: фрагменты Оказаки', pos: V3(40 - 6.6, -1.2, 0), color: '#5CE0C8', show: () => st.labels && st.mode === 'rep' },
@@ -127,6 +165,10 @@ function makeDna() {
     { text: 'ДНК-лигаза', pos: V3(40 - 5.6, -2.1, 0.3), color: '#FF8AB0', show: () => st.labels && st.mode === 'rep' },
     { text: 'материнская ДНК', pos: V3(40 + 6.2, 1.4, 0), color: '#8FA8C8', show: () => st.labels && st.mode === 'rep' },
     { text: 'УФ', pos: V3(80, 4.0, 0), color: '#B08AFF', show: () => st.labels && st.mode === 'repair' && st.cyc % 16 < 2.5 },
+    { text: 'тиминовый димер', get pos() { return resPos('A6').lerp(resPos('A7'), 0.5).add(G3.position).add(V3(0.6, -1.2, 0.4)); }, color: '#FFD84A', show: () => st.labels && st.mode === 'repair' && st.cyc % 16 > 1.5 && st.cyc % 16 < 6 },
+    { text: 'нуклеаза (эксцинуклеаза)', get pos() { return nuc.getWorldPosition(V3(0, 0, 0)).add(V3(0.5, 0.55, 0)); }, color: '#F2C14E', show: () => st.labels && st.mode === 'repair' && nuc.visible },
+    { text: 'ДНК-полимераза', get pos() { return polR.getWorldPosition(V3(0, 0, 0)).add(V3(0.5, 0.5, 0)); }, color: '#7FD6FF', show: () => st.labels && st.mode === 'repair' && polR.visible },
+    { text: 'ДНК-лигаза', get pos() { return ligR.getWorldPosition(V3(0, 0, 0)).add(V3(0.4, 0.45, 0)); }, color: '#FF8AB0', show: () => st.labels && st.mode === 'repair' && ligR.visible },
   ];
   const refs = {};
   function ui(el) {
@@ -156,7 +198,7 @@ function makeDna() {
         <p><b>ДНК</b> — полимер дезоксирибонуклеотидов (A, G, C, T), хранит наследственную информацию в ядре и митохондриях. <b>РНК</b> — рибонуклеотиды (A, G, C, U), обычно одноцепочечная: мРНК, тРНК, рРНК и регуляторные РНК.</p>
         <h3>Ферменты репликации</h3><ul><li>Хеликаза, топоизомеразы (мишень хинолонов и некоторых противоопухолевых средств), SSB.</li><li>Праймаза — РНК-затравки.</li><li>ДНК-полимеразы (у человека α, δ, ε) — синтез и корректура 3′→5′.</li><li>ДНК-лигаза. На концах хромосом — теломераза.</li></ul>
         <h3>Мутации</h3><p>Точечные (замена, вставка, выпадение нуклеотида), со сдвигом рамки считывания, хромосомные. Мутагены: УФ и ионизирующее излучение, химические вещества, вирусы. Системы репарации: прямая, эксцизионная (оснований и нуклеотидов), исправление неспаренных оснований (мисмэтч).</p></div>
-      <div><h2>Модели</h2><ul><li>Додекамер ДНК — PDB 1BNA, все тяжёлые атомы; водородные связи найдены по расстоянию между атомами азота и кислорода оснований.</li><li>Вилка репликации и ферменты — схематично.</li></ul></div>
+      <div><h2>Модели</h2><ul><li>Додекамер ДНК — PDB 1BNA, все тяжёлые атомы; водородные связи найдены по расстоянию между атомами азота и кислорода оснований.</li><li>Цепи различаются цветом трубки остова и углерода (голубая и оранжевая); бороздки подписаны там, где они обращены к зрителю.</li><li>Вилка репликации и ферменты — схематично.</li></ul></div>
       <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>3</code> режим</li><li><code>R</code> · <code>N</code></li></ul></div>`,
   };
   setMode('struct'); st.fly = null;
