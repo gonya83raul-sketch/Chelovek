@@ -6,7 +6,7 @@
 const PR_AA = [
   ['gly', 'G', 'np', 0], ['ala', 'A', 'np', 0], ['val', 'V', 'np', 1], ['leu', 'L', 'np', 1], ['ile', 'I', 'np', 1], ['pro', 'P', 'np', 0], ['phe', 'F', 'np', 1], ['trp', 'W', 'np', 1], ['met', 'M', 'np', 1],
   ['ser', 'S', 'pol', 0], ['thr', 'T', 'pol', 1], ['cys', 'C', 'pol', 0], ['tyr', 'Y', 'pol', 0], ['asn', 'N', 'pol', 0], ['gln', 'Q', 'pol', 0],
-  ['asp', 'D', 'acid', 0], ['glu', 'E', 'acid', 0], ['lys', 'K', 'base', 1], ['arg', 'R', 'base', 0], ['his', 'H', 'base', 2],
+  ['asp', 'D', 'acid', 0], ['glu', 'E', 'acid', 0], ['lys', 'K', 'base', 1], ['arg', 'R', 'base', 2], ['his', 'H', 'base', 1],
 ];
 const PR_GR = { np: ['Неполярные (гидрофобные)', '#F2C14E'], pol: ['Полярные незаряженные', '#7FE0A0'], acid: ['Кислые (−)', '#FF6A6A'], base: ['Основные (+)', '#7FA8FF'] };
 const PR_LV = [
@@ -161,7 +161,7 @@ function makeProtein() {
     if (k === 'r' || k === 'к') { refs.rot.click(); return true; } if (k === 'n' || k === 'т') { refs.lab.click(); return true; }
     return false;
   }
-  function stats() { return st.mode === 'aa' ? [['Аминокислот', '20', ''], ['Незаменимых', '8', '']] : st.mode === 'lv' ? [['Гемоглобин', '574', 'аминокислоты'], ['Масса', '64,5', 'кДа']] : [['Состояние', st.fphase || '', '']]; }
+  function stats() { return st.mode === 'aa' ? [['Аминокислот', '20', ''], ['Незаменимых', '9', '']] : st.mode === 'lv' ? [['Гемоглобин', '574', 'аминокислоты'], ['Масса', '64,5', 'кДа']] : [['Состояние', st.fphase || '', '']]; }
   const self = {
     scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#7FD6FF',
     kicker: 'Биохимия · белки', title: 'Белки: от аминокислоты до формы',
