@@ -27,6 +27,9 @@ walk.full(ast, (n) => {
   if (n.type === 'Literal' && typeof n.value === 'string' && CYR.test(n.value) && !isKey(n.value)) pieces.push({ start: n.start, end: n.end, text: n.value, kind: 'str', q: code[n.start] });
   else if (n.type === 'Literal' && n.regex && CYR.test(n.regex.pattern)) pieces.push({ start: n.start, end: n.end, text: n.regex.pattern, kind: 're', flags: n.regex.flags });
   else if (n.type === 'TemplateElement' && CYR.test(n.value.cooked ?? n.value.raw)) pieces.push({ start: n.start, end: n.end, text: n.value.cooked ?? n.value.raw, kind: 'tpl' });
+  // кусочки с одними «ёлочками» (закрывающая кавычка после вставки) — в переводе английские кавычки
+  else if (mode === 'apply' && n.type === 'Literal' && typeof n.value === 'string' && /[«»]/.test(n.value)) pieces.push({ start: n.start, end: n.end, text: n.value, kind: 'str', q: code[n.start], quotes: true });
+  else if (mode === 'apply' && n.type === 'TemplateElement' && /[«»]/.test(n.value.cooked ?? n.value.raw)) pieces.push({ start: n.start, end: n.end, text: n.value.cooked ?? n.value.raw, kind: 'tpl', quotes: true });
 });
 pieces.sort((x, y) => x.start - y.start);
 
@@ -40,7 +43,7 @@ if (mode === 'extract') {
   const miss = new Set();
   let out = '', last = 0;
   for (const p of pieces) {
-    const tr = dict[p.text];
+    const tr = p.quotes ? p.text.replace(/«/g, '“').replace(/»/g, '”') : dict[p.text];
     if (tr == null || tr === '') { miss.add(p.text); continue; }
     let rep;
     if (p.kind === 'str') rep = p.q === "'" ? "'" + tr.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\n/g, '\\n') + "'" : JSON.stringify(tr);
