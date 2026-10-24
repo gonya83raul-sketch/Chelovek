@@ -441,12 +441,23 @@ const SECTIONS = [
 const secOf = (id) => SECTIONS.find((s) => s.scenes.some(([sid]) => sid === id));
 const firstOf = (s) => s.scenes.find(([sid]) => sid !== '#')[0];
 const lastIn = {}, secNav = $('#sections'), subNav = $('#subtabs');
-SECTIONS.forEach((s) => secNav.append(h('button', { class: 'tab', role: 'tab', type: 'button', 'data-sec': s.id, 'aria-selected': 'false', onclick: () => show(lastIn[s.id] || firstOf(s)) }, s.name)));
+// вкладки стоят на шкале масштаба — «от молекулы до мысли»
+const SCALE = { bio: ['10⁻⁹ м', 'молекулы, нанометры'], cell: ['10⁻⁵ м', 'клетки, микрометры'], body: ['1 м', 'органы и тело, метры'], brain: ['мысль', 'от нейрона до мысли'] };
+const byScale = (s) => { const i = Object.keys(SCALE).indexOf(s.id); return i < 0 ? 99 : i; };
+[...SECTIONS].sort((a, b) => byScale(a) - byScale(b)).forEach((s) => {
+  const sc = SCALE[s.id];
+  secNav.append(h('button', { class: 'tab', role: 'tab', type: 'button', 'data-sec': s.id, 'aria-selected': 'false', title: sc ? 'Масштаб: ' + sc[1] : null, onclick: () => show(lastIn[s.id] || firstOf(s)) },
+    h('span', { class: 'tsc', 'aria-hidden': 'true' }, sc ? sc[0] : ''), h('span', { class: 'tdot', 'aria-hidden': 'true' }), h('span', { class: 'tn' }, s.name)));
+});
 function renderNav(id) {
   const s = secOf(id); lastIn[s.id] = id;
   secNav.querySelectorAll('.tab').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.sec === s.id)));
-  subNav.innerHTML = '';
+  const st = subNav.scrollTop; subNav.innerHTML = '';
   s.scenes.forEach(([sid, name]) => subNav.append(sid === '#' ? h('span', { class: 'subhead' }, name) : h('button', { class: 'sub', role: 'tab', type: 'button', 'aria-selected': String(sid === id), onclick: () => show(sid) }, name)));
+  // оглавление слева прокручивается само, чтобы текущая тема была видна
+  subNav.scrollTop = st;
+  const act = subNav.querySelector('.sub[aria-selected="true"]');
+  if (act && subNav.scrollHeight > subNav.clientHeight && (act.offsetTop < st || act.offsetTop + act.offsetHeight > st + subNav.clientHeight)) subNav.scrollTop = act.offsetTop - subNav.clientHeight / 3;
   // на телефоне вместо длинного ряда — выпадающий список с группами
   const sel = h('select', { class: 'subsel', 'aria-label': 'Тема раздела «' + s.name + '»', onchange: (e) => show(e.target.value) }); let og = sel;
   s.scenes.forEach(([sid, name]) => { if (sid === '#') { og = h('optgroup', { label: name }); sel.append(og); } else { const o = h('option', { value: sid }, name); if (sid === id) o.selected = true; og.append(o); } });
