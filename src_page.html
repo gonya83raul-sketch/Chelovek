@@ -761,9 +761,9 @@ function makeSynapse() {
   psd.position.y = POST_T - 0.08; scene.add(psd);
 
   // отросток астроцита манжетой охватывает синапс; переносчики сидят в его внутренней стенке
-  const astroGeo = new THREE.TorusGeometry(3.6, 0.7, 32, 120);
+  const astroGeo = new THREE.TorusGeometry(3.65, 0.62, 32, 120);
   const astro = new THREE.Group();
-  astro.add(new THREE.Mesh(astroGeo, new THREE.MeshPhysicalMaterial({ color: 0x5fc49a, roughness: 0.45, clearcoat: 0.4, envMapIntensity: 0.4, transparent: true, opacity: 0.35, depthWrite: false, side: THREE.DoubleSide })));
+  astro.add(new THREE.Mesh(astroGeo, new THREE.MeshPhysicalMaterial({ color: 0x5fc49a, roughness: 0.45, clearcoat: 0.4, envMapIntensity: 0.4, transparent: true, opacity: 0.26, depthWrite: false, side: THREE.DoubleSide })));
   astro.add(new THREE.Mesh(astroGeo, glassMat(0x7fe0a6, { rim: 0.8, base: 0.03 })));
   astro.rotation.x = Math.PI / 2; astro.scale.set(1, 1, 0.45); astro.position.y = CLEFT_Y; scene.add(astro);
 
@@ -777,7 +777,7 @@ function makeSynapse() {
     const m = new THREE.Mesh(new THREE.ConeGeometry(0.075, 0.2, 10), dpMat); m.position.set(q.x, PRE_B + 0.1, q.z); scene.add(m);
   });
   // митохондрии бутона
-  const moMat = new THREE.MeshPhysicalMaterial({ color: 0xd9663a, roughness: 0.3, clearcoat: 1, transparent: true, opacity: 0.6, depthWrite: false });
+  const moMat = new THREE.MeshPhysicalMaterial({ color: 0xd9663a, roughness: 0.3, clearcoat: 1, transparent: true, opacity: 0.72, depthWrite: false });
   const crMat = new THREE.MeshStandardMaterial({ color: 0xffb07a, roughness: 0.45, emissive: 0x2a0e00 });
   const MITO = [[V3(-1.4, 3.6, 0.6), V3(0.6, 0.2, 0.8)], [V3(1.2, 4.4, -0.8), V3(-0.7, 0.5, 0.3)]];
   MITO.forEach(([p, d]) => {
@@ -2518,7 +2518,8 @@ function makeGlia() {
     if (depth > 0) for (let j = 0; j < kids; j++) treeG(arr, p, d.clone().add(randUnit().multiplyScalar(spread)).normalize(), len * shrink, r1, depth - 1, o);
   }
   function blob(r, sx = 1, sy = 1, sz = 1, seed = 0) {
-    return displaceGeo(new THREE.IcosahedronGeometry(r, 4), (v) => { const n = v.clone().normalize(); const s = 1 + 0.16 * noise3(n.x * 2 + seed, n.y * 2, n.z * 2); v.copy(n.multiplyScalar(r * s)); v.x *= sx; v.y *= sy; v.z *= sz; });
+    const g = new THREE.IcosahedronGeometry(r, 14); g.deleteAttribute('normal'); g.deleteAttribute('uv'); // индексированная сетка: гладкие нормали
+    return displaceGeo(mergeVertices(g), (v) => { const n = v.clone().normalize(); const s = 1 + 0.16 * noise3(n.x * 2 + seed, n.y * 2, n.z * 2); v.copy(n.multiplyScalar(r * s)); v.x *= sx; v.y *= sy; v.z *= sz; });
   }
   const add = (type, obj, parent = scene) => { parent.add(obj); TY[type].objs.push(obj); return obj; };
 
@@ -2527,9 +2528,21 @@ function makeGlia() {
   const capWall = new THREE.Mesh(new THREE.CylinderGeometry(CR, CR, CX * 2, 40, 1, true).rotateZ(Math.PI / 2).translate(0, CY, 0), new THREE.MeshPhysicalMaterial({ color: 0xc0404a, roughness: 0.5, transparent: true, opacity: 0.32, depthWrite: false, side: THREE.DoubleSide }));
   scene.add(capWall);
   scene.add(new THREE.Mesh(capWall.geometry, glassMat(0xff6a6a, { rim: 0.7, base: 0.02 })));
-  const NRBC = 46, rbc = new THREE.InstancedMesh(new THREE.SphereGeometry(0.3, 16, 10).scale(1, 0.36, 1), new THREE.MeshPhysicalMaterial({ color: 0xd23a3a, roughness: 0.4, clearcoat: 0.6, emissive: 0x3a0505 }), NRBC);
-  const rb = Array.from({ length: NRBC }, () => ({ x: rand(-CX, CX), r: rand(0, 0.45), a: rand(0, 6.28), q: new THREE.Quaternion().setFromEuler(new THREE.Euler(rand(0, 3), rand(0, 3), rand(0, 3))), v: rand(1.3, 1.9) }));
+  // эритроциты почти с просвет капилляра: идут гуськом, «монетками» поперёк тока
+  const NRBC = 20, rbc = new THREE.InstancedMesh(new THREE.SphereGeometry(0.55, 20, 12).scale(1, 0.36, 1), new THREE.MeshPhysicalMaterial({ color: 0xd23a3a, roughness: 0.4, clearcoat: 0.6, emissive: 0x3a0505 }), NRBC);
+  const rb = Array.from({ length: NRBC }, (_, i) => ({ x: -CX + (i + 0.5) * (2 * CX / NRBC) + rand(-0.2, 0.2), r: rand(0, 0.12), a: rand(0, 6.28), q: new THREE.Quaternion().setFromEuler(new THREE.Euler(rand(-0.35, 0.35), rand(-0.3, 0.3), Math.PI / 2 + rand(-0.35, 0.35))), v: 1.55 }));
   scene.add(rbc);
+  // эндотелий: вытянутые ядра клеток стенки (плотные контакты эндотелия — основа ГЭБ)
+  const endoMat = new THREE.MeshPhysicalMaterial({ color: 0xd27a80, roughness: 0.5, clearcoat: 0.3, emissive: 0x2a0508 });
+  [[-8.6, 1.9], [-4.4, -0.6], [-0.3, 2.4], [3.6, 0.3], [7.8, 2.9]].forEach(([x, th]) => {
+    const m = new THREE.Mesh(new THREE.SphereGeometry(1, 18, 10), endoMat); m.scale.set(0.45, 0.12, 0.25);
+    m.position.set(x, CY + (CR - 0.04) * Math.sin(th), (CR - 0.04) * Math.cos(th)); m.rotation.x = Math.PI / 2 - th; scene.add(m);
+  });
+  // перицит: тело на стенке и два отростка-обхвата
+  { const pc = new THREE.Group(), pcMat = new THREE.MeshPhysicalMaterial({ color: 0xc98aa0, roughness: 0.45, clearcoat: 0.4, emissive: 0x200810 });
+    const b = new THREE.Mesh(new THREE.SphereGeometry(1, 20, 12), pcMat); b.scale.set(0.42, 0.16, 0.3); b.position.set(0, CR + 0.1, 0); pc.add(b);
+    [-0.45, 0.5].forEach((dx) => { const a = new THREE.Mesh(new THREE.TorusGeometry(CR + 0.06, 0.045, 6, 40, 3.6), pcMat); a.rotation.y = Math.PI / 2; a.rotation.x = -0.25; a.position.x = dx; pc.add(a); });
+    pc.position.set(-1.9, CY, 0); pc.rotation.x = -0.7; scene.add(pc); }
 
   /* ---------- нейроны и синапсы ---------- */
   const neuMat = mat('neu', { sheen: 1, emissive: 0xff5a2a, emissiveIntensity: 0 });
@@ -2563,11 +2576,14 @@ function makeGlia() {
     A.fx.forEach((x, j) => {
       [0, 1].forEach((half) => {
         const th0 = half ? 2.2 + (j % 2) * 0.6 : -1.0 + (j % 2) * 0.5, thl = 3.4;
-        const g = new THREE.CylinderGeometry(CR + 0.07, CR + 0.07, 1.22, 24, 1, true, th0, thl).rotateZ(Math.PI / 2).translate(x, CY, 0);
+        // ножка внахлёст с соседними, края скруглены (толще в середине)
+        const g = displaceGeo(new THREE.CylinderGeometry(1, 1, 1.34, 24, 8, true, th0, thl).rotateZ(Math.PI / 2), (v) => {
+          const rr = CR + 0.035 + 0.05 * smooth(0.67, 0.35, Math.abs(v.x)), k = rr / Math.hypot(v.y, v.z); v.y *= k; v.z *= k;
+        }).translate(x, CY, 0);
         const f = add('astro', new THREE.Mesh(g, footMat)); feet.push(f);
         if (half === 0 || j % 2 === 0) {
           const thc = th0 + thl / 2, tip = V3(x, CY + (CR + 0.08) * Math.sin(thc), (CR + 0.08) * Math.cos(thc));
-          if (tip.y > CY - 0.4) tubeG(astroArr, [A.p.clone(), A.p.clone().lerp(tip, 0.5).add(V3(0, 0.3, 0)), tip], 0.14, 0.06, 18, 7);
+          if (tip.y > CY - 0.4 && (tip.z * A.p.z >= 0 || tip.y > CY + 0.6)) tubeG(astroArr, [A.p.clone(), A.p.clone().lerp(tip, 0.5).add(V3(0, 0.3, 0)), tip], 0.14, 0.06, 18, 7);
         }
       });
     });
@@ -2583,10 +2599,10 @@ function makeGlia() {
   AXP.forEach(([x, y]) => {
     const tgt = V3(x, y, 0); tubeG(oliArr, [O.clone(), O.clone().lerp(tgt, 0.5).add(randUnit().multiplyScalar(0.35)), tgt], 0.1, 0.07, 18, 7);
     [-2.75, 0, 2.75].forEach((z) => {
-      const m = add('oligo', new THREE.Mesh(new THREE.CapsuleGeometry(0.3, 2.0, 6, 18).rotateX(Math.PI / 2), myeMat)); m.position.set(x, y, z);
+      const m = add('oligo', new THREE.Mesh(new THREE.CapsuleGeometry(0.17, 2.3, 6, 18).rotateX(Math.PI / 2), myeMat)); m.position.set(x, y, z);
       if (z === 0) growing.push(m);
     });
-    [-5.5, 5.5].forEach((z) => { const m = add('oligo', new THREE.Mesh(new THREE.CapsuleGeometry(0.3, 2.0, 6, 18).rotateX(Math.PI / 2), myeMat)); m.position.set(x, y, z); });
+    [-5.5, 5.5].forEach((z) => { const m = add('oligo', new THREE.Mesh(new THREE.CapsuleGeometry(0.17, 2.3, 6, 18).rotateX(Math.PI / 2), myeMat)); m.position.set(x, y, z); });
   });
   add('oligo', new THREE.Mesh(mergeGeometries(oliArr), oliMat));
   const NODES = [-6.875, -4.125, -1.375, 1.375, 4.125, 6.875];
@@ -2610,18 +2626,21 @@ function makeGlia() {
   const pruneMat = mat('micro', { emissive: 0x6a4400, emissiveIntensity: 1 });
 
   /* ---------- эпендима и ликвор ---------- */
-  const EY = -5.6, NXE = 14, NZE = 6, epN = NXE * NZE;
+  // эпендима: однослойный кубический эпителий из шестигранных призм; верх прилегает к нейропилю, реснички смотрят в желудочек
+  const EY = -4.3, NXE = 16, NZE = 8, epN = NXE * NZE, EH = 0.75;
   const epMat = mat('epen', { emissive: 0x0a1430, emissiveIntensity: 1 });
-  const epen = add('epen', new THREE.InstancedMesh(new THREE.SphereGeometry(1, 16, 10), epMat, epN));
-  const M4 = new THREE.Matrix4(), ciliaBase = [];
+  const epen = add('epen', new THREE.InstancedMesh(new THREE.CylinderGeometry(0.485, 0.485, EH, 6), epMat, epN));
+  const M4 = new THREE.Matrix4(), ciliaBase = [], epArr = [];
   for (let i = 0; i < NXE; i++) for (let j = 0; j < NZE; j++) {
-    const x = -6.5 + i, z = -2.5 + j; M4.makeScale(0.48, 0.38, 0.48).setPosition(x, EY, z); epen.setMatrixAt(i * NZE + j, M4);
-    for (let k = 0; k < 3; k++) ciliaBase.push(V3(x + rand(-0.22, 0.22), EY - 0.34, z + rand(-0.22, 0.22)));
+    const x = -6.5 + i * 0.866 + (j % 2) * 0.433, z = -2.6 + j * 0.75; M4.makeTranslation(x, EY, z); epen.setMatrixAt(i * NZE + j, M4);
+    for (let k = 0; k < 7; k++) { const a = k / 7 * 6.283 + rand(0, 0.6), rr = rand(0.06, 0.3); ciliaBase.push(V3(x + Math.cos(a) * rr, EY - EH / 2, z + Math.sin(a) * rr)); }
+    if ((i * NZE + j) % 3 === 0) tubeG(epArr, [V3(x, EY + EH / 2 - 0.05, z), V3(x + rand(-0.15, 0.15), EY + EH / 2 + 0.6, z + rand(-0.15, 0.15)), V3(x + rand(-0.3, 0.3), EY + EH / 2 + 1.2, z + rand(-0.3, 0.3))], 0.06, 0.03, 8, 5);
   }
+  add('epen', new THREE.Mesh(mergeGeometries(epArr), epMat)); // базальные отростки
   const ciliaPos = new Float32Array(ciliaBase.length * 6), ciliaGeo = new THREE.BufferGeometry(); ciliaGeo.setAttribute('position', new THREE.BufferAttribute(ciliaPos, 3));
   const ciliaMat = new THREE.LineBasicMaterial({ color: 0xbcd2ff, transparent: true, opacity: 0.85 }); ciliaMat.userData.op = 0.85; ciliaMat.userData.tr = true; TY.epen.mats.push(ciliaMat);
   const cilia = add('epen', new THREE.LineSegments(ciliaGeo, ciliaMat)); cilia.frustumCulled = false;
-  const NL = 420, liq = new Float32Array(NL * 3); for (let i = 0; i < NL; i++) liq.set([rand(-8, 8), rand(-7.9, EY - 0.75), rand(-3, 3)], i * 3);
+  const NL = 420, liq = new Float32Array(NL * 3); for (let i = 0; i < NL; i++) liq.set([rand(-8, 8), rand(-7.9, EY - 1.0), rand(-3, 3)], i * 3);
   const liqGeo = new THREE.BufferGeometry(); liqGeo.setAttribute('position', new THREE.BufferAttribute(liq, 3));
   const liqMat = new THREE.PointsMaterial({ size: 0.12, map: GLOW, color: 0x9fc4ff, transparent: true, opacity: 0.7, depthWrite: false, blending: THREE.AdditiveBlending }); liqMat.userData.op = 0.7; liqMat.userData.tr = true; TY.epen.mats.push(liqMat);
   add('epen', new THREE.Points(liqGeo, liqMat));
@@ -2647,7 +2666,7 @@ function makeGlia() {
   const wrapAx = AXP[0], wrapGeo = new THREE.BufferGeometry();
   { const n = WRAP_TURNS * WRAP_SEG + 1, pos = new Float32Array(n * 2 * 3), idx = [];
     for (let i = 0; i < n; i++) {
-      const th = i / WRAP_SEG * Math.PI * 2, r = AX_R + 0.012 + (i / WRAP_SEG) * 0.03;
+      const th = i / WRAP_SEG * Math.PI * 2, r = AX_R + 0.012 + (i / WRAP_SEG) * 0.011;
       const x = wrapAx[0] + Math.cos(th) * r, y = wrapAx[1] + Math.sin(th) * r;
       pos.set([x, y, -WRAP_L / 2, x, y, WRAP_L / 2], i * 6);
       if (i < n - 1) { const a = i * 2; idx.push(a, a + 1, a + 2, a + 1, a + 3, a + 2); }
@@ -2729,7 +2748,7 @@ function makeGlia() {
       st.wrapT += dt; const w = clamp((st.wrapT - 1.0) / 7, 0, 1); st.wrap = st.wrapT > 9.5 ? 1 : 0.5 * w;
       nakedAx.visible = false; wrapMesh.visible = true;
       const n = Math.floor(w * WRAP_TURNS * WRAP_SEG); wrapGeo.setDrawRange(0, Math.max(0, n) * 6);
-      const th = n / WRAP_SEG * Math.PI * 2, r = AX_R + 0.012 + (n / WRAP_SEG) * 0.03 + 0.03;
+      const th = n / WRAP_SEG * Math.PI * 2, r = AX_R + 0.012 + (n / WRAP_SEG) * 0.011 + 0.03;
       wrapTip.visible = w > 0 && w < 1; wrapTip.position.set(wrapAx[0] + Math.cos(th) * r, wrapAx[1] + Math.sin(th) * r, 0);
       if (st.wrapT > 8.2 && !st.wrapSaid) { st.wrapSaid = true; say('<b>Готово: 7 слоёв мембраны.</b> Теперь ток не утекает сквозь мембрану, и импульс перескакивает от одного перехвата Ранвье к другому (жёлтая искра на соседнем аксоне). Скорость растёт с 0,5–2 м/с у голого волокна до 100 м/с и выше. У человека миелинизация идёт около 20 лет: сначала спинной мозг, позже всего лобная кора.'); }
       if (st.wrap >= 1) { wrapTip.visible = false; st.wrapSaid = false; }
@@ -2767,7 +2786,7 @@ function makeGlia() {
     // реснички и ликвор
     for (let i = 0; i < ciliaBase.length; i++) {
       const b = ciliaBase[i], ph = t * 7 - b.x * 0.9, sw = 0.28 * Math.sin(ph);
-      ciliaPos.set([b.x, b.y, b.z, b.x + sw, b.y - 0.5 + 0.05 * Math.abs(sw), b.z], i * 6);
+      ciliaPos.set([b.x, b.y, b.z, b.x + sw, b.y - 0.6 + 0.06 * Math.abs(sw), b.z], i * 6);
     }
     ciliaGeo.attributes.position.needsUpdate = true;
     for (let i = 0; i < NL; i++) { liq[i * 3] += dt * (0.7 + 0.4 * Math.sin(i)); if (liq[i * 3] > 8) liq[i * 3] -= 16; }
@@ -2779,20 +2798,20 @@ function makeGlia() {
   const show = (type) => () => st.labels && (st.focus === 'all' || st.focus === type);
   const micLbl = { text: 'микроглия', pos: V3(0, 0, 0), color: '#FFCF6B', show: show('micro') };
   const labels = [
-    { text: 'астроцит', pos: ASTRO[0].p.clone().add(V3(0.4, 0.9, 0.3)), color: '#7FD6C8', show: show('astro') },
+    { text: 'астроцит', pos: ASTRO[0].p.clone().add(V3(-0.6, 1.1, 0.3)), color: '#7FD6C8', show: show('astro') },
     { text: 'концевые ножки · ГЭБ', pos: fp.center.clone().add(V3(0, 1.1, 0.5)), color: '#7FD6C8', show: show('astro') },
     { text: 'капилляр', pos: V3(-9.4, CY + 1.2, 0.4), color: '#ff8d7f', show: () => st.labels },
     { text: 'олигодендроцит', pos: O.clone().add(V3(0.5, -0.7, 0.4)), color: '#B9A4FF', show: show('oligo') },
     { text: 'миелин', pos: V3(AXP[0][0], AXP[0][1] + 0.45, 2.75), color: '#F1E7D6', show: show('oligo') },
     { text: 'перехват Ранвье', pos: V3(AXP[2][0] + 0.2, AXP[2][1] + 0.4, 4.125), color: '#F1E7D6', show: show('oligo') },
     micLbl,
-    { text: 'эпендима', pos: V3(7.2, EY, 0), color: '#8FB4FF', show: show('epen') },
+    { text: 'эпендима', pos: V3(-6.4, EY, 3.0), color: '#8FB4FF', show: show('epen') },
     { text: 'ликвор в желудочке', pos: V3(6.6, EY - 1.6, 0.8), color: '#9fc4ff', show: show('epen') },
     { text: 'нейрон', pos: somas[0].clone().add(V3(0.6, 1.0, 0.3)), show: show('neu') },
     { text: 'синапс', pos: syn[3] ? syn[3].p.clone().add(V3(0.25, 0.2, 0)) : V3(0, 0, 0), color: '#ffb070', show: show('neu') },
     { text: 'травма', pos: LES.clone().add(V3(0.4, -0.9, 0)), color: '#ff6a5a', show: () => st.labels && st.trauma },
   ];
-  const _u = update; const update2 = (dt) => { _u(dt); micLbl.pos.copy(MG[0].pos).add(V3(0.4, 0.5, 0.2)); };
+  const _u = update; const update2 = (dt) => { _u(dt); micLbl.pos.copy(MG[0].pos).add(V3(0.4, -0.6, 0.3)); };
 
   let refs = {};
   function ui(el) {
