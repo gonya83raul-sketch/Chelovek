@@ -1,0 +1,20 @@
+{
+ "LOBES::Лобная": "Frontal",
+ "LOBES::Теменная": "Parietal",
+ "LOBES::Височная": "Temporal",
+ "LOBES::Затылочная": "Occipital",
+ "makeKinetics::Скорость": "Rate",
+ "makeExpress::Скорость": "Rate",
+ "makeEtc::Дыхание": "Respiration",
+ "makeEar::Частота": "Frequency",
+ "makeSresp::возбуждение": "arousal",
+ "makeSresp::Идёт": "Play",
+ "makeRadicals::много": "high",
+ "makeRadicals::есть": "present",
+ "makeRadicals::нет": "absent",
+ "makeRadicals::повреждение": "damage",
+ "makeLiver::есть": "present",
+ "makeLiver::Повреждение": "Damage",
+ "makeEnzmed::нет": "none",
+ "makeChest::Грудная клетка": "Chest"
+}

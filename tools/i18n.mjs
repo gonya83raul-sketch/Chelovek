@@ -27,6 +27,8 @@ walk.full(ast, (n) => {
   if (n.type === 'Literal' && typeof n.value === 'string' && CYR.test(n.value) && !isKey(n.value)) pieces.push({ start: n.start, end: n.end, text: n.value, kind: 'str', q: code[n.start] });
   else if (n.type === 'Literal' && n.regex && CYR.test(n.regex.pattern)) pieces.push({ start: n.start, end: n.end, text: n.regex.pattern, kind: 're', flags: n.regex.flags });
   else if (n.type === 'TemplateElement' && CYR.test(n.value.cooked ?? n.value.raw)) pieces.push({ start: n.start, end: n.end, text: n.value.cooked ?? n.value.raw, kind: 'tpl' });
+  // числа с десятичной запятой без букв ('~1,5', '< 0,42') — в переводе точка
+  else if (mode === 'apply' && n.type === 'Literal' && typeof n.value === 'string' && !/[A-Za-zА-Яа-яЁё]/.test(n.value) && /\d,\d/.test(n.value)) pieces.push({ start: n.start, end: n.end, text: n.value, kind: 'str', q: code[n.start], num: true });
   // кусочки с одними «ёлочками» (закрывающая кавычка после вставки) — в переводе английские кавычки
   else if (mode === 'apply' && n.type === 'Literal' && typeof n.value === 'string' && /[«»]/.test(n.value)) pieces.push({ start: n.start, end: n.end, text: n.value, kind: 'str', q: code[n.start], quotes: true });
   else if (mode === 'apply' && n.type === 'TemplateElement' && /[«»]/.test(n.value.cooked ?? n.value.raw)) pieces.push({ start: n.start, end: n.end, text: n.value.cooked ?? n.value.raw, kind: 'tpl', quotes: true });
@@ -44,7 +46,7 @@ if (mode === 'extract') {
   let out = '', last = 0;
   for (const p of pieces) {
     // уточнение по месту: ключ «<имя функции/переменной>::<строка>» важнее общего (одно русское слово — разные переводы)
-    const tr = p.quotes ? p.text.replace(/«/g, '“').replace(/»/g, '”') : (dict[unitOf(p.start) + '::' + p.text] ?? dict[p.text]);
+    const tr = p.num ? p.text.replace(/(\d),(\d)/g, '$1.$2') : p.quotes ? p.text.replace(/«/g, '“').replace(/»/g, '”') : (dict[unitOf(p.start) + '::' + p.text] ?? dict[p.text]);
     if (tr == null || tr === '') { miss.add(p.text); continue; }
     let rep;
     if (p.kind === 'str') rep = p.q === "'" ? "'" + tr.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\n/g, '\\n') + "'" : JSON.stringify(tr);
