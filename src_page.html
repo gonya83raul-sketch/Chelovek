@@ -342,11 +342,14 @@ function applyLook() {
   bloom.strength = 1.1 * LOOK.bloom; bloom.enabled = LOOK.bloom > 0;
 }
 
-function glassMat(color, { rim = 1.0, base = 0.05, pow = 2.4, additive = true } = {}) {
+// keep: оболочка видна всегда (клетка, митохондрия, колба — без неё сцена непонятна), не зависит от LOOK.shell
+function glassMat(color, { rim = 1.0, base = 0.05, pow = 2.4, additive = true, keep = false } = {}) {
   const m = makeGlass(color, rim, base, pow, additive);
   m.userData.rim0 = rim; m.userData.base0 = base;
-  m.uniforms.uRim.value = rim * LOOK.shell; m.uniforms.uBase.value = base * LOOK.shell; m.uniforms.uGain.value = 0.35 + 0.65 * LOOK.shell;
-  GLASS.push(m); return m;
+  const k = keep ? 1 : LOOK.shell;
+  m.uniforms.uRim.value = rim * k; m.uniforms.uBase.value = base * k; m.uniforms.uGain.value = 0.35 + 0.65 * k;
+  if (!keep) GLASS.push(m);
+  return m;
 }
 function makeGlass(color, rim, base, pow, additive) {
   return new THREE.ShaderMaterial({
