@@ -1,0 +1,551 @@
+From 86b578caac08f41617e5ea6fd29d4c962a5e458a Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Sat, 24 Oct 2026 22:23:08 +0000
+Subject: [PATCH 1/3] =?UTF-8?q?protein:=20=CE=B2-=D1=86=D0=B5=D0=BF=D1=8C?=
+ =?UTF-8?q?=20=D1=80=D0=BE=D0=B7=D0=BE=D0=B2=D0=B0=D1=8F=20=D0=B2=20=D1=87?=
+ =?UTF-8?q?=D0=B5=D1=82=D0=B2=D0=B5=D1=80=D1=82=D0=B8=D1=87=D0=BD=D0=BE?=
+ =?UTF-8?q?=D0=B9=20=D1=81=D1=82=D1=80=D1=83=D0=BA=D1=82=D1=83=D1=80=D0=B5?=
+ =?UTF-8?q?,=20=D0=BF=D0=BE=D0=B4=D0=BF=D0=B8=D1=81=D0=B8=20=D1=86=D0=B5?=
+ =?UTF-8?q?=D0=BF=D0=B5=D0=B9=20=D0=B8=20=D0=B3=D0=B5=D0=BC=D0=B0=20=D1=81?=
+ =?UTF-8?q?=D0=BB=D0=B5=D0=B4=D1=83=D1=8E=D1=82=20=D0=B7=D0=B0=20=D0=B2?=
+ =?UTF-8?q?=D1=80=D0=B0=D1=89=D0=B5=D0=BD=D0=B8=D0=B5=D0=BC;=20GroEL=20?=
+ =?UTF-8?q?=D0=B8=20=D0=BB=D0=B8=D0=B7=D0=BE=D1=86=D0=B8=D0=BC=20=D0=B2=20?=
+ =?UTF-8?q?=D0=BE=D0=B4=D0=BD=D0=BE=D0=BC=20=D0=BC=D0=B0=D1=81=D1=88=D1=82?=
+ =?UTF-8?q?=D0=B0=D0=B1=D0=B5,=20=D0=B1=D0=B5=D0=BB=D0=BE=D0=BA=20=D0=B2?=
+ =?UTF-8?q?=20=D1=86=D0=B8=D1=81-=D0=BF=D0=BE=D0=BB=D0=BE=D1=81=D1=82?=
+ =?UTF-8?q?=D0=B8=20=D0=BF=D0=BE=D0=B4=20GroES,=20=D1=80=D0=B0=D0=B7=D1=80?=
+ =?UTF-8?q?=D0=B5=D0=B7=20=D1=88=D0=B0=D0=BF=D0=B5=D1=80=D0=BE=D0=BD=D0=B8?=
+ =?UTF-8?q?=D0=BD=D0=B0;=20H-=D1=81=D0=B2=D1=8F=D0=B7=D0=B8=20=CE=B1-?=
+ =?UTF-8?q?=D1=81=D0=BF=D0=B8=D1=80=D0=B0=D0=BB=D0=B8=20=D0=B2=D0=B8=D0=B4?=
+ =?UTF-8?q?=D0=BD=D1=8B;=20=D0=BF=D0=BE=D0=B4=D0=BF=D0=B8=D1=81=D0=B8=20?=
+ =?UTF-8?q?=D0=B0=D0=BC=D0=B8=D0=BD=D0=BE=D0=BA=D0=B8=D1=81=D0=BB=D0=BE?=
+ =?UTF-8?q?=D1=82=20=D0=BD=D0=B5=20=D0=BD=D0=B0=D0=BB=D0=B5=D0=B7=D0=B0?=
+ =?UTF-8?q?=D1=8E=D1=82?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01CAsbEKYKPKpphinWsqDRBa
+---
+ bio/60_protein.js | 75 +++++++++++++++++++++++++++++++++--------------
+ 1 file changed, 53 insertions(+), 22 deletions(-)
+
+diff --git a/bio/60_protein.js b/bio/60_protein.js
+index 1cc857f..d21499e 100644
+--- a/bio/60_protein.js
++++ b/bio/60_protein.js
+@@ -18,18 +18,28 @@ const PR_LV = [
+ function makeProtein() {
+   rnd = mulberry(1701);
+   const scene = bioStage({ rim: 0x7fd6ff });
+-  const VIEW = { aa: flyTarget(V3(0, -2.0, 0), V3(0, 0.4, 19)), lv: flyTarget(V3(40, -1.2, 0), V3(40.8, 0.8, 14.5)), fold: flyTarget(V3(80, -1.4, 0), V3(81.4, 1.6, 19)) };
++  const VIEW = { aa: flyTarget(V3(0, -1.8, 0), V3(0, 0.6, 21.5)), lv: flyTarget(V3(40, -1.2, 0), V3(40.8, 0.8, 14.5)), fold: flyTarget(V3(80.6, -2.1, 0), V3(81.6, 0.6, 22)) };
+   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.aa.pos);
+   const controls = makeControls(camera, VIEW.aa.target); controls.minDistance = 2; controls.maxDistance = 45;
+   const fx = new Sparks(1200, 0.08); scene.add(fx.obj);
+   /* ---------- 1. аминокислоты ---------- */
+   const G1 = new THREE.Group(); scene.add(G1);
+-  const AAM = PR_AA.map(([id, l, gr, ess], k) => { const col = k % 10, row = Math.floor(k / 10); const m = molMesh(MOL(id), { scale: 0.17, hideH: true }); const g = new THREE.Group(); g.add(m); g.position.set(-7.6 + col * 1.74, -0.15 - row * 1.85, 0); G1.add(g); const ring = new THREE.Mesh(new THREE.TorusGeometry(0.75, 0.02, 8, 48), new THREE.MeshBasicMaterial({ color: new THREE.Color(PR_GR[gr][1]).multiplyScalar(0.7), transparent: true, opacity: 0.25 })); ring.position.y = -0.1; g.add(ring); const pk = new THREE.Mesh(new THREE.SphereGeometry(0.8, 8, 6), new THREE.MeshBasicMaterial({ visible: false })); pk.userData.pick = id; g.add(pk); return { id, l, gr, ess, g, m, ring }; });
++  const AAM = PR_AA.map(([id, l, gr, ess], k) => { const col = k % 10, row = Math.floor(k / 10); const m = molMesh(MOL(id), { scale: 0.2, hideH: true }); const g = new THREE.Group(); g.add(m); g.position.set(-8.78 + col * 1.95, -0.15 - row * 2.15, 0); G1.add(g); const ring = new THREE.Mesh(new THREE.TorusGeometry(0.75, 0.02, 8, 48), new THREE.MeshBasicMaterial({ color: new THREE.Color(PR_GR[gr][1]).multiplyScalar(0.7), transparent: true, opacity: 0.25 })); ring.position.y = -0.1; g.add(ring); const pk = new THREE.Mesh(new THREE.SphereGeometry(0.8, 8, 6), new THREE.MeshBasicMaterial({ visible: false })); pk.userData.pick = id; g.add(pk); return { id, l, gr, ess, g, m, ring }; });
+   /* ---------- 2. уровни структуры ---------- */
+   const G2 = new THREE.Group(); G2.position.set(40, 0.4, 0); scene.add(G2);
+   const HB = PDB('hb'); const hsc = 0.075;
+   const rainbow = (i, n) => new THREE.Color().setHSL(0.66 * (1 - i / n), 0.75, 0.58).getStyle();
+   const chainM = HB.chains.map((c, k) => { const m = cartoon(c, { scale: hsc, color: k === 1 ? rainbow : k % 2 ? '#FF8AB0' : '#7FD6FF', k: 0.6 }); G2.add(m); return m; });
++  // β-цепь B: радуга (N→C) на уровнях 2–3, розовая — в четвертичной структуре
++  const chainBpink = cartoon(HB.chains[1], { scale: hsc, color: '#FF8AB0', k: 0.6 }); G2.add(chainBpink);
++  // центры цепей и железо гема — для подписей, вращающихся вместе с G2
++  const caCen = (c) => { const v = V3(0, 0, 0); for (let i = 0; i < c.ca.length; i += 3) v.add(V3(c.ca[i], c.ca[i + 1], c.ca[i + 2])); return v.multiplyScalar(hsc * 3 / c.ca.length); };
++  const hbC = HB.chains.reduce((v, c) => v.add(caCen(c)), V3(0, 0, 0)).multiplyScalar(1 / HB.chains.length);
++  const cA = caCen(HB.chains[0]), cB2 = caCen(HB.chains[1]);
++  const feOf = (ch) => { const l = HB.ligm.find((q) => q.chain === ch) || HB.ligm[0]; const i = l.el.indexOf('Fe'); return V3(l.xyz[i * 3], l.xyz[i * 3 + 1], l.xyz[i * 3 + 2]).multiplyScalar(hsc); };
++  const feB = feOf('B'), feC = feOf('C');
++  // точка подписи: от центра тетрамера наружу в плоскости экрана (G2 вращается)
++  const scrOut = (p, k) => { const w = G2.localToWorld(p.clone()), c = G2.localToWorld(hbC.clone()), v = camera.getWorldDirection(V3(0, 0, 0)); const d = w.clone().sub(c); d.addScaledVector(v, -d.dot(v)); if (d.length() < 0.2) d.set(0, 1, 0); return w.add(d.normalize().multiplyScalar(k)); };
+   const hemes = HB.ligm.map((l) => { const m = molMesh(l, { scale: hsc }); G2.add(m); return m; });
+   // «нить» первичной структуры: трубка через CA β-цепи
+   const cB = HB.chains[1]; const caB = []; for (let i = 0; i < cB.ca.length; i += 3) caB.push(V3(cB.ca[i], cB.ca[i + 1], cB.ca[i + 2]).multiplyScalar(hsc));
+@@ -37,20 +47,32 @@ function makeProtein() {
+   const beadsGeo = new THREE.SphereGeometry(0.06, 10, 8); const beads = new THREE.InstancedMesh(beadsGeo, new THREE.MeshPhysicalMaterial({ roughness: 0.35, clearcoat: 0.6 }), caB.length); G2.add(beads);
+   for (let i = 0; i < caB.length; i++) beads.setColorAt(i, new THREE.Color(rainbow(i, caB.length)).multiplyScalar(0.7));
+   const hbonds = new THREE.Group(); G2.add(hbonds);
+-  { const c = HB.chains[1]; for (let i = 0; i + 4 < c.seq.length; i++) if (c.ss[i] === 'H' && c.ss[i + 4] === 'H') { const a = caB[i], b = caB[i + 4]; const m = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 1, 5), new THREE.MeshBasicMaterial({ color: 0xff8ab0, transparent: true, opacity: 0.7 })); m.position.copy(a).lerp(b, 0.5); const d = b.clone().sub(a); m.scale.y = d.length(); m.quaternion.setFromUnitVectors(V3(0, 1, 0), d.normalize()); hbonds.add(m); } }
++  // H-связь C=O(i)···H–N(i+4): концы — между CA i/i+1 и CA i+3/i+4 (почти вдоль оси спирали), вынесены к краю ленты, иначе лента их закрывает
++  const axAt = (i) => { const v = V3(0, 0, 0); let n = 0; for (let j = Math.max(0, i - 2); j <= Math.min(caB.length - 1, i + 2); j++) { v.add(caB[j]); n++; } return v.multiplyScalar(1 / n); };
++  const outP = (i, j, f) => { const p = caB[i].clone().lerp(caB[j], f); const d = p.clone().sub(axAt(i)); return p.add(d.lengthSq() > 1e-6 ? d.normalize().multiplyScalar(0.09) : d); };
++  { const c = HB.chains[1]; for (let i = 0; i + 4 < c.seq.length; i++) if (c.ss[i] === 'H' && c.ss[i + 4] === 'H') { const a = outP(i, i + 1, 0.45), b = outP(i + 4, i + 3, 0.45); const m = new THREE.Mesh(new THREE.CylinderGeometry(0.016, 0.016, 1, 5), new THREE.MeshBasicMaterial({ color: 0xffb0cc, transparent: true, opacity: 0.85 })); m.position.copy(a).lerp(b, 0.5); const d = b.clone().sub(a); m.scale.y = d.length(); m.quaternion.setFromUnitVectors(V3(0, 1, 0), d.normalize()); hbonds.add(m); } }
+   const pep = new THREE.Group(); pep.position.set(-3.6, 2.2, 0); G2.add(pep);
+   const aa1 = molMesh(MOL('ala'), { scale: 0.18, hideH: true }), aa2 = molMesh(MOL('gly'), { scale: 0.18, hideH: true }); pep.add(aa1, aa2); const wat = molMesh(MOL('h2o'), { scale: 0.22 }); pep.add(wat);
+   /* ---------- 3. укладка и шаперон ---------- */
+   const G3 = new THREE.Group(); G3.position.set(80, 0, 0); scene.add(G3);
+-  const GR = new THREE.Group(); GR.position.set(2.4, 0.3, 0); G3.add(GR);
+-  const gro = proteinMesh('groel', { scale: 0.021, colorBy: (c) => (c.id >= 'O' ? '#F2C14E' : c.id >= 'H' ? '#7FD6FF' : '#9FB4FF') });
+-  { const ax = pcaAxis(caPoints('groel', 0.021)); gro.quaternion.setFromUnitVectors(ax.v, V3(0, 1, 0)); }
++  // GroEL и лизоцим — в одном масштабе (0,03 ед./Å): белок помещается в полость под крышкой GroES
++  const FSC = 0.03;
++  const GR = new THREE.Group(); GR.position.set(2.4, 0.0, 0); G3.add(GR);
++  const gro = proteinMesh('groel', { scale: FSC, colorBy: (c) => (c.id >= 'O' ? '#F2C14E' : c.id >= 'H' ? '#7FD6FF' : '#9FB4FF'), cart: { hw: 2.4, th: 0.6, cr: 0.5 } });
++  // ось 7-го порядка в 1AON — z; цис-кольцо A–G под крышкой GroES (O–U) — наверх
++  gro.quaternion.setFromUnitVectors(V3(0, 0, -1), V3(0, 1, 0));
+   GR.add(gro);
++  const cenOfCh = (ids) => { const p = caPoints('groel', FSC, ids); return p.reduce((v, q) => v.add(q), V3(0, 0, 0)).multiplyScalar(1 / p.length).applyQuaternion(gro.quaternion); };
++  const cisC = cenOfCh([...'ABCDEFG']), esC = cenOfCh([...'OPQRSTU']);
++  const cavity = cisC.clone().lerp(esC, 0.35); cavity.x = cavity.z = 0; // центр цис-полости на оси
++  // разрез: на время укладки передняя половина шаперонина срезается плоскостью, обращённой к камере
++  const cutP = new THREE.Plane(V3(0, 0, -1), 100);
++  const groMats = []; gro.traverse((o) => { if (o.material) { o.material.clippingPlanes = [cutP]; o.material.side = THREE.DoubleSide; groMats.push(o.material); } });
+   // сворачивающийся белок — лизоцим: натив ↔ клубок
+   const L = PDB('lyz').chains[0]; const N = L.seq.length;
+   const coil = { ...L, ss: 'C'.repeat(N), ca: new Float32Array(N * 3), od: L.od };
+-  { let p = V3(0, 0, 0); for (let i = 0; i < N; i++) { const d = randUnit(); d.y = Math.abs(d.y) * 0.3; p = p.add(d.multiplyScalar(3.8)); if (p.length() > 26) p.multiplyScalar(0.8); coil.ca[i * 3] = p.x; coil.ca[i * 3 + 1] = p.y * 0.6; coil.ca[i * 3 + 2] = p.z; } }
+-  const nat = cartoon(L, { scale: 0.045, color: rainbow }).geometry, unf = cartoon(coil, { scale: 0.045, color: rainbow }).geometry;
++  { let p = V3(0, 0, 0); for (let i = 0; i < N; i++) { const d = randUnit(); d.y = Math.abs(d.y) * 0.3; p = p.add(d.multiplyScalar(3.8)); if (p.length() > 24) p.multiplyScalar(0.8); coil.ca[i * 3] = p.x; coil.ca[i * 3 + 1] = p.y * 0.6; coil.ca[i * 3 + 2] = p.z; } }
++  const nat = cartoon(L, { scale: FSC, color: rainbow, hw: 2.0, th: 0.55, cr: 0.45 }).geometry, unf = cartoon(coil, { scale: FSC, color: rainbow, hw: 2.0, th: 0.55, cr: 0.45 }).geometry;
+   const fold = new THREE.Mesh(nat.clone(), new THREE.MeshPhysicalMaterial({ vertexColors: true, roughness: 0.4, clearcoat: 0.5, envMapIntensity: 0.45, side: THREE.DoubleSide })); G3.add(fold);
+   const pN = nat.attributes.position.array, pU = unf.attributes.position.array;
+   const heat = new THREE.PointLight(0xff6a3a, 0, 8, 1.6); heat.position.set(-3, 1, 2); G3.add(heat);
+@@ -62,23 +84,32 @@ function makeProtein() {
+   const ease = (x) => { const u = clamp(x, 0, 1); return u * u * (3 - 2 * u); };
+   function update(dt) {
+     st.t += dt; const t = st.t; controls.autoRotate = false; flyStep(st, camera, controls, dt); st.cyc += dt;
+-    if (st.mode === 'aa') AAM.forEach((a) => { a.m.rotation.y += dt * (st.sel === a.id ? 1 : 0.35); const s = st.sel === a.id ? 1.25 : 1; a.g.scale.lerp(V3(s, s, s), 1 - Math.exp(-dt * 6)); a.ring.material.opacity = st.sel === a.id ? 0.8 : 0.22; });
++    if (st.mode === 'aa') AAM.forEach((a, i) => { if (st.sel === a.id) a.m.rotation.y += dt; else a.m.rotation.y = 0.6 * Math.sin(t * 0.5 + i * 0.7); /* покачивание: плоские кольца не встают ребром */ const s = st.sel === a.id ? 1.25 : 1; a.g.scale.lerp(V3(s, s, s), 1 - Math.exp(-dt * 6)); a.ring.material.opacity = st.sel === a.id ? 0.8 : 0.22; });
+     if (st.mode === 'lv') {
+       const lv = st.lv;
+-      chainM.forEach((m, k) => { m.visible = lv === 4 || (lv >= 2 && k === 1); }); hemes.forEach((m, k) => { m.visible = lv === 4 || (lv === 3 && k === 1); });
++      chainM.forEach((m, k) => { m.visible = k === 1 ? lv === 2 || lv === 3 : lv === 4; }); chainBpink.visible = lv === 4; hemes.forEach((m, k) => { m.visible = lv === 4 || (lv === 3 && k === 1); });
+       beads.visible = lv === 1; hbonds.visible = lv === 2; pep.visible = lv === 1;
+       if (lv === 1) { const u = ease(Math.min(1, st.cyc / 3)); const dm = new THREE.Object3D(); caB.forEach((p, i) => { dm.position.copy(strandPts[i]).lerp(p.clone().add(V3(0, 0, 0)), 0); dm.scale.setScalar(1); dm.updateMatrix(); beads.setMatrixAt(i, dm.matrix); }); beads.instanceMatrix.needsUpdate = true; const c = st.cyc % 5; aa1.position.set(-0.9 + Math.min(1, c / 2) * 0.45, 0, 0); aa2.position.set(0.9 - Math.min(1, c / 2) * 0.45, 0, 0); wat.visible = c > 2 && c < 4.5; wat.position.set(0, 0.4 + (c - 2) * 0.6, 0.3); aa1.rotation.y = aa2.rotation.y = 0.3; }
+       if (st.rot && lv > 1) G2.rotation.y += dt * 0.2; else if (lv === 1) G2.rotation.y = 0;
+     }
+     if (st.mode === 'fold') {
+       if (st.rot) GR.rotation.y += dt * 0.1;
+-      let u = 0, pos = V3(-2.4, 0.4, 0);
++      let u = 0, pos = V3(-2.4, 0.4, 0), cut = 0;
+       if (st.fmode === 'chap') {
+-        const c = st.cyc % 14; // клубок подходит (0–3), внутри бочки (3–9, сворачивается), выход (9–12)
+-        const inside = GR.position.clone().add(V3(0, -0.6, 0));
+-        if (c < 3) { u = 1; pos = V3(-2.6, 0.6, 0).lerp(inside, ease(c / 3)); } else if (c < 9) { u = 1 - ease((c - 3.5) / 5); pos = inside; } else { u = 0; pos = inside.clone().lerp(V3(-2.6, -0.8, 0), ease((c - 9) / 3)); }
++        const c = st.cyc % 14; // клубок подходит (0–3), внутри полости под GroES (3–9, сворачивается), выход (9–12)
++        const inside = GR.position.clone().add(cavity);
++        const out0 = V3(-2.6, 0.9, 0), out1 = V3(-2.6, -0.6, 0);
++        if (c < 3) { u = 1; pos = out0.clone().lerp(inside, ease(c / 3)); } else if (c < 9) { u = 1 - ease((c - 3.5) / 5); pos = inside; } else { u = 0; pos = inside.clone().lerp(out1, ease((c - 9) / 3)); }
++        cut = ease((c - 1.5) / 1.2) * (1 - ease((c - 11) / 1.5)); // разрез открыт, пока белок внутри
++        st.inside = c > 2.6 && c < 9.6;
+         st.fphase = c < 3 ? 'развёрнутая цепь' : c < 9 ? 'укладка внутри шаперонина' : 'готовый белок';
+-      } else { const c = st.cyc % 12; u = c < 1 ? 0 : c < 4 ? ease((c - 1) / 3) : c < 8 ? 1 : st.fmode === 'heat' ? 1 - ease((c - 8) / 3) : 1; heat.intensity = c > 1 && c < 8 ? 12 : 0; st.fphase = c < 1 ? 'нативный белок' : c < 4 ? 'нагрев: денатурация' : c < 8 ? 'клубок' : 'ренатурация'; pos = V3(-2.4, 0.4, 0); }
++        fold.scale.setScalar(1);
++      } else { const c = st.cyc % 12; u = c < 1 ? 0 : c < 4 ? ease((c - 1) / 3) : c < 8 ? 1 : st.fmode === 'heat' ? 1 - ease((c - 8) / 3) : 1; heat.intensity = c > 1 && c < 8 ? 12 : 0; st.fphase = c < 1 ? 'нативный белок' : c < 4 ? 'нагрев: денатурация' : c < 8 ? 'клубок' : 'ренатурация'; pos = V3(0.6, 0.6, 0); fold.scale.setScalar(1.6); }
++      // плоскость разреза: перпендикулярна взгляду, через ось шаперонина; закрыта — уходит далеко вперёд
++      const n = camera.position.clone().sub(controls.target); n.y = 0; n.normalize();
++      const c0 = GR.getWorldPosition(V3(0, 0, 0));
++      cutP.normal.copy(n).negate(); cutP.constant = n.dot(c0) + 0.15 + (1 - cut) * 20;
++      groMats.forEach((m) => m.color.setScalar(1 - 0.4 * cut)); // в разрезе стенка темнее — белок в полости заметнее
+       const P = fold.geometry.attributes.position.array; for (let i = 0; i < P.length; i++) P[i] = pN[i] + (pU[i] - pN[i]) * u; fold.geometry.attributes.position.needsUpdate = true; if (((t * 30) | 0) % 2 === 0) fold.geometry.computeVertexNormals();
+       fold.position.copy(pos); fold.rotation.y += dt * 0.4;
+       GR.visible = st.fmode === 'chap';
+@@ -90,16 +121,16 @@ function makeProtein() {
+     fold: '<b>Укладка и денатурация.</b> Форму белка задаёт его последовательность, но в тесной клетке длинной цепи помогают <b>шапероны</b>. Справа — реальная структура шаперонина <b>GroEL/GroES</b> (PDB 1AON): два кольца по 7 субъединиц (голубые) и «крышка» GroES (жёлтая) — бочка, внутри которой белок спокойно сворачивается, используя энергию АТФ. Слева — белок (лизоцим): режим «Нагрев» показывает <b>денатурацию</b> — разрушение вторичной и третичной структуры без разрыва пептидных связей; при мягком воздействии она обратима (ренатурация), при сильном — нет (сваренный белок яйца). Денатурируют нагрев, кислоты и щёлочи, соли тяжёлых металлов, спирт, мочевина.',
+   };
+   const labels = [
+-    ...AAM.map((a) => ({ text: `${MOL(a.id).name} · ${a.l}${a.ess === 1 ? ' ★' : a.ess === 2 ? ' ☆' : ''}`, pos: a.g.position.clone().add(V3(-0.7, -0.92, 0)), color: PR_GR[a.gr][1], show: () => st.labels && st.mode === 'aa' })),
++    ...AAM.map((a) => ({ text: `${MOL(a.id).name} · ${a.l}${a.ess === 1 ? ' ★' : a.ess === 2 ? ' ☆' : ''}`, pos: a.g.position.clone().add(V3(-0.55, AAM.indexOf(a) % 2 ? 0.95 : -1.02, 0)), color: PR_GR[a.gr][1], show: () => st.labels && st.mode === 'aa' })),
+     { text: 'N-конец', pos: V3(40 - 6.2, -0.4, 0), color: '#5B8CFF', show: () => st.labels && st.mode === 'lv' && st.lv === 1 },
+     { text: 'C-конец', pos: V3(40 + 6.2, -0.4, 0), color: '#FF6A6A', show: () => st.labels && st.mode === 'lv' && st.lv === 1 },
+     { text: 'пептидная связь + H₂O', pos: V3(40 - 3.8, 3.0, 0), color: '#F2E6C8', show: () => st.labels && st.mode === 'lv' && st.lv === 1 },
+     { text: 'водородные связи α-спирали', pos: V3(41.3, 2.6, 0), color: '#FF8AB0', show: () => st.labels && st.mode === 'lv' && st.lv === 2 },
+-    { text: 'гем', pos: V3(41.5, 0.8, 1.2), color: '#E0773A', show: () => st.labels && st.mode === 'lv' && st.lv >= 3 },
+-    { text: 'α-цепи', pos: V3(38.2, 2.9, 0), color: '#7FD6FF', show: () => st.labels && st.mode === 'lv' && st.lv === 4 },
+-    { text: 'β-цепи', pos: V3(42.2, -1.6, 0), color: '#FF8AB0', show: () => st.labels && st.mode === 'lv' && st.lv === 4 },
+-    { text: 'шаперонин GroEL/GroES', pos: V3(80 + 4.2, 2.6, 0), color: '#7FD6FF', show: () => st.labels && st.mode === 'fold' && st.fmode === 'chap' },
+-    { text: 'белок (лизоцим)', pos: V3(80 - 3.6, 2.0, 0), color: '#F2C14E', show: () => st.labels && st.mode === 'fold' },
++    { text: 'гем', get pos() { return scrOut(st.lv === 4 ? feC : feB, 1.0); }, color: '#E0773A', show: () => st.labels && st.mode === 'lv' && st.lv >= 3 },
++    { text: 'α-цепи', get pos() { return scrOut(cA, 1.8); }, color: '#7FD6FF', show: () => st.labels && st.mode === 'lv' && st.lv === 4 },
++    { text: 'β-цепи', get pos() { return scrOut(cB2, 1.8); }, color: '#FF8AB0', show: () => st.labels && st.mode === 'lv' && st.lv === 4 },
++    { text: 'шаперонин GroEL/GroES', pos: V3(80 + 4.6, 3.3, 0), color: '#7FD6FF', show: () => st.labels && st.mode === 'fold' && st.fmode === 'chap' },
++    { text: 'белок (лизоцим)', get pos() { return fold.getWorldPosition(V3(0, 0, 0)).add(st.fmode !== 'chap' ? V3(-1.4, 1.6, 0) : st.inside ? V3(-3.3, 0.2, 0) : V3(-0.9, 0.9, 0)); }, color: '#F2C14E', show: () => st.labels && st.mode === 'fold' },
+   ];
+   const refs = {};
+   function ui(el) {
+@@ -140,7 +171,7 @@ function makeProtein() {
+         <p>Белки — полимеры из L-α-аминокислот, связанных пептидными связями. Функции: ферменты, транспорт (гемоглобин, альбумин), защита (антитела), движение (актин, миозин), структура (коллаген, кератин), регуляция (гормоны-белки), рецепторы.</p>
+         <h3>Свойства</h3><p>Белки — амфотерные полиэлектролиты; в изоэлектрической точке заряд равен нулю и растворимость минимальна. Их осаждают высаливанием (обратимо) и солями тяжёлых металлов (необратимо); разделяют электрофорезом и хроматографией.</p>
+         <h3>Болезни укладки</h3><p>Неправильно свёрнутые белки слипаются в амилоид: болезни Альцгеймера, Паркинсона, прионные болезни (Крейтцфельдта — Якоба).</p></div>
+-      <div><h2>Модели</h2><ul><li>Гемоглобин — PDB 4HHB, шаперонин — 1AON, лизоцим — 1AKI.</li><li>Развёрнутая цепь — случайный клубок с теми же остатками; переход между клубком и нативной формой — плавная интерполяция, а не реальный путь укладки.</li><li>Аминокислоты — по формулам, без атомов водорода.</li></ul></div>
++      <div><h2>Модели</h2><ul><li>Гемоглобин — PDB 4HHB, шаперонин — 1AON, лизоцим — 1AKI. Шаперонин и лизоцим — в одном масштабе; пока белок внутри, передняя половина шаперонина срезана, чтобы была видна полость под крышкой GroES.</li><li>Развёрнутая цепь — случайный клубок с теми же остатками; переход между клубком и нативной формой — плавная интерполяция, а не реальный путь укладки.</li><li>Аминокислоты — по формулам, без атомов водорода.</li></ul></div>
+       <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>3</code> режим</li><li><code>←</code> <code>→</code> уровень структуры</li><li><code>R</code> · <code>N</code></li></ul></div>`,
+   };
+   setMode('aa'); st.fly = null;
+-- 
+2.43.0
+
+
+From 5364cc6417b9793cfb3d6226922d82babc291668 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Sat, 24 Oct 2026 22:43:08 +0000
+Subject: [PATCH 2/3] =?UTF-8?q?dna:=20=D0=B2=D0=B8=D0=BB=D0=BA=D0=B0=20?=
+ =?UTF-8?q?=E2=80=94=20=D0=B2=D0=B5=D1=82=D0=B2=D0=B8=20=D0=BA=D1=80=D1=83?=
+ =?UTF-8?q?=D1=82=D1=8F=D1=82=D1=81=D1=8F=20=D0=B2=D0=BE=D0=BA=D1=80=D1=83?=
+ =?UTF-8?q?=D0=B3=20=D1=81=D0=B2=D0=BE=D0=B5=D0=B9=20=D0=BE=D1=81=D0=B8=20?=
+ =?UTF-8?q?(rotation.order=20ZYX);=20=D1=81=D1=82=D1=80=D0=BE=D0=B5=D0=BD?=
+ =?UTF-8?q?=D0=B8=D0=B5=20=E2=80=94=20=D0=B2=D1=80=D0=B0=D1=89=D0=B5=D0=BD?=
+ =?UTF-8?q?=D0=B8=D0=B5=20=D0=B2=D0=BE=D0=BA=D1=80=D1=83=D0=B3=20=D0=BE?=
+ =?UTF-8?q?=D1=81=D0=B8=20=D1=81=D0=BF=D0=B8=D1=80=D0=B0=D0=BB=D0=B8,=20?=
+ =?UTF-8?q?=D1=86=D0=B5=D0=BF=D0=B8=20=D1=80=D0=B0=D0=B7=D0=BD=D0=BE=D0=B3?=
+ =?UTF-8?q?=D0=BE=20=D1=86=D0=B2=D0=B5=D1=82=D0=B0=20(=D1=82=D1=80=D1=83?=
+ =?UTF-8?q?=D0=B1=D0=BA=D0=B0=20=D0=BE=D1=81=D1=82=D0=BE=D0=B2=D0=B0=20?=
+ =?UTF-8?q?=D0=B8=20=D1=83=D0=B3=D0=BB=D0=B5=D1=80=D0=BE=D0=B4),=20=D0=BF?=
+ =?UTF-8?q?=D0=BE=D0=B4=D0=BF=D0=B8=D1=81=D0=B8=20=D0=B1=D0=BE=D0=BB=D1=8C?=
+ =?UTF-8?q?=D1=88=D0=BE=D0=B9=20=D0=B8=20=D0=BC=D0=B0=D0=BB=D0=BE=D0=B9=20?=
+ =?UTF-8?q?=D0=B1=D0=BE=D1=80=D0=BE=D0=B7=D0=B4=D0=BA=D0=B8,=20=D0=BF?=
+ =?UTF-8?q?=D0=BE=D0=B4=D0=BF=D0=B8=D1=81=D0=B8=20=D0=BE=D1=81=D1=82=D0=BE?=
+ =?UTF-8?q?=D0=B2=D0=B0=20=D0=B8=20H-=D1=81=D0=B2=D1=8F=D0=B7=D0=B5=D0=B9?=
+ =?UTF-8?q?=20=D1=81=D0=BB=D0=B5=D0=B4=D1=83=D1=8E=D1=82=20=D0=B7=D0=B0=20?=
+ =?UTF-8?q?=D0=BC=D0=BE=D0=BB=D0=B5=D0=BA=D1=83=D0=BB=D0=BE=D0=B9;=20?=
+ =?UTF-8?q?=D1=80=D0=B5=D0=BF=D0=B0=D1=80=D0=B0=D1=86=D0=B8=D1=8F=20?=
+ =?UTF-8?q?=E2=80=94=20=D1=82=D0=B8=D0=BC=D0=B8=D0=BD=D0=BE=D0=B2=D1=8B?=
+ =?UTF-8?q?=D0=B9=20=D0=B4=D0=B8=D0=BC=D0=B5=D1=80=20=D0=B6=D1=91=D0=BB?=
+ =?UTF-8?q?=D1=82=D1=8B=D0=B9,=20=D0=BF=D0=BE=D0=B4=D0=BF=D0=B8=D1=81?=
+ =?UTF-8?q?=D0=B8=20=D1=84=D0=B5=D1=80=D0=BC=D0=B5=D0=BD=D1=82=D0=BE=D0=B2?=
+ =?UTF-8?q?;=20=D1=82=D0=BE=D0=BF=D0=BE=D0=B8=D0=B7=D0=BE=D0=BC=D0=B5?=
+ =?UTF-8?q?=D1=80=D0=B0=D0=B7=D0=B0=20=D0=BD=D0=B5=20=D0=BF=D1=80=D0=BE?=
+ =?UTF-8?q?=D0=BD=D0=B7=D0=B0=D0=B5=D1=82=20=D0=94=D0=9D=D0=9A?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01CAsbEKYKPKpphinWsqDRBa
+---
+ bio/70_dna.js | 64 ++++++++++++++++++++++++++++++++++++++++++---------
+ 1 file changed, 53 insertions(+), 11 deletions(-)
+
+diff --git a/bio/70_dna.js b/bio/70_dna.js
+index 5f411f5..01ca3f0 100644
+--- a/bio/70_dna.js
++++ b/bio/70_dna.js
+@@ -7,7 +7,7 @@
+ function makeDna() {
+   rnd = mulberry(1901);
+   const scene = bioStage({ rim: 0x7fd6ff });
+-  const VIEW = { struct: flyTarget(V3(0, -1.4, 0), V3(1.2, 0.2, 13)), rep: flyTarget(V3(40, -1.0, 0), V3(40.6, 0.8, 18.5)), repair: flyTarget(V3(80, -1.4, 0), V3(81.2, 0.2, 13)) };
++  const VIEW = { struct: flyTarget(V3(-1.3, -0.7, 0), V3(-0.1, 0.9, 13.5)), rep: flyTarget(V3(40, -1.0, 0), V3(40.6, 0.8, 18.5)), repair: flyTarget(V3(80, -1.4, 0), V3(81.2, 0.2, 13)) };
+   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.struct.pos);
+   const controls = makeControls(camera, VIEW.struct.target); controls.minDistance = 2; controls.maxDistance = 40;
+   const fx = new Sparks(1400, 0.08); scene.add(fx.obj);
+@@ -28,11 +28,43 @@ function makeDna() {
+     const isBase = (n) => !n.includes("'") && !/^(P|OP1|OP2|O1P|O2P)$/.test(n) && /^[NO]/.test(n);
+     const hb = new THREE.Group(); g.add(hb); const dashMat = new THREE.MeshBasicMaterial({ color: 0x9fd8ff, transparent: true, opacity: 0.85 });
+     for (let i = 0; i < cA.n; i++) { if (!isBase(anA[i])) continue; const a = V3(cA.xyz[i * 3], cA.xyz[i * 3 + 1], cA.xyz[i * 3 + 2]); for (let j = 0; j < cB.n; j++) { if (!isBase(anB[j])) continue; const b = V3(cB.xyz[j * 3], cB.xyz[j * 3 + 1], cB.xyz[j * 3 + 2]); const d = a.distanceTo(b); if (d > 2.55 && d < 3.25) { for (let k = 0; k < 3; k++) { const p0 = a.clone().lerp(b, (k * 2 + 0.6) / 6.6).multiplyScalar(SC), p1 = a.clone().lerp(b, (k * 2 + 1.6) / 6.6).multiplyScalar(SC); const m = new THREE.Mesh(CYL, dashMat); m.position.copy(p0).lerp(p1, 0.5); const dd = p1.clone().sub(p0); m.scale.set(0.012, dd.length(), 0.012); m.quaternion.setFromUnitVectors(V3(0, 1, 0), dd.normalize()); hb.add(m); } } } }
++    // «Строение»: полупрозрачная трубка остова по фосфатам и свой цвет углерода у каждой цепи — две антипараллельные цепи различимы
++    if (!perRes) S.chains.forEach((c, k) => {
++      const tr = nucTrace(c, { scale: SC, r: 1.1, steps: false, color: k ? '#FFB070' : '#7FD6FF' });
++      tr.traverse((o) => { if (o.material) { o.material = o.material.clone(); o.material.transparent = true; o.material.opacity = 0.3; o.material.depthWrite = false; } }); g.add(tr);
++      if (k) parts[c.id].traverse((o) => { if (o.material === atomMat('C')) o.material = atomMat('C', { color: new THREE.Color('#B07A48') }); });
++    });
+     return { g, parts, hb };
+   }
+   /* ---------- 1. строение ---------- */
+   const G1 = new THREE.Group(); G1.position.set(0, 0.7, 0); scene.add(G1);
+   const D1 = dnaModel(G1, false);
++  G1.rotation.order = 'ZYX'; G1.rotation.y = 0.28; // вращение — вокруг оси спирали (локальная X), лёгкий наклон к зрителю
++  // бороздки: угол остова каждой цепи (по фосфатам) — линейная функция x вдоль оси; малая — меньший угловой зазор между цепями
++  const GRV = (() => {
++    const fit = (c) => {
++      const pts = []; for (let i = 0; i < c.p.length; i += 3) pts.push(V3(c.p[i], c.p[i + 1], c.p[i + 2]).multiplyScalar(SC).applyQuaternion(QX).add(D1.g.position));
++      pts.sort((a, b) => a.x - b.x); const xs = [], as = []; let prev = null;
++      pts.forEach((p) => { let a = Math.atan2(p.z, p.y); if (prev !== null) { while (a - prev > Math.PI) a -= 2 * Math.PI; while (a - prev < -Math.PI) a += 2 * Math.PI; } prev = a; xs.push(p.x); as.push(a); });
++      const n = xs.length, mx = xs.reduce((q, v) => q + v, 0) / n, ma = as.reduce((q, v) => q + v, 0) / n; let sxy = 0, sxx = 0;
++      for (let i = 0; i < n; i++) { sxy += (xs[i] - mx) * (as[i] - ma); sxx += (xs[i] - mx) ** 2; }
++      const k = sxy / sxx; return { k, a0: ma - k * mx, r: pts.reduce((q, p) => q + Math.hypot(p.y, p.z), 0) / n, pts };
++    };
++    const A = fit(S.chains[0]), B = fit(S.chains[1]); const k = (A.k + B.k) / 2;
++    const d = (((B.a0 - A.a0) % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
++    const minor = d < Math.PI ? A.a0 + d / 2 : A.a0 + d / 2 + Math.PI;
++    return { k, minor, major: minor + Math.PI, r: (A.r + B.r) / 2, P: [...A.pts, ...B.pts] };
++  })();
++  // точка бороздки, обращённая к камере, ближайшая к x0 (в системе G1)
++  const groovePos = (a0, x0) => {
++    const cl = G1.worldToLocal(camera.position.clone()); const ph = Math.atan2(cl.z, cl.y); const T = 2 * Math.PI / Math.abs(GRV.k);
++    let x = (ph - a0) / GRV.k; x += Math.round((x0 - x) / T) * T;
++    GRV.ok = Math.abs(x) < 2.2; // у концов молекулы бороздка не подписывается
++    return G1.localToWorld(V3(x, Math.cos(ph) * GRV.r * 0.95, Math.sin(ph) * GRV.r * 0.95));
++  };
++  // атом P, ближе всех к камере в правой части — для подписи остова
++  const backbonePos = () => { const cl = G1.worldToLocal(camera.position.clone()); let best = null, bd = 1e9; GRV.P.forEach((p) => { if (p.x < 1.9 || p.x > 3.2) return; const dd = p.distanceTo(cl); if (dd < bd) { bd = dd; best = p; } }); return G1.localToWorld((best || V3(2, 0, 0)).clone()); };
++  const hbMid = (() => { let best = null, bd = 1e9; D1.hb.children.forEach((m) => { const p = m.position.clone().applyQuaternion(QX).add(D1.g.position); const dd = Math.abs(p.x + 2.6); if (dd < bd) { bd = dd; best = p; } }); return best || V3(-2.6, 0, 0); })();
+   const seqTxt = S.chains[0].seq;
+   /* ---------- 2. вилка репликации ---------- */
+   const G2 = new THREE.Group(); G2.position.set(40, 0, 0); scene.add(G2);
+@@ -45,14 +77,15 @@ function makeDna() {
+     return { g, sA, sB };
+   }
+   const parent = helixPair(8, '#8FA8C8', '#8FA8C8'); parent.g.position.set(0.5, 0.6, 0); G2.add(parent.g);
+-  const lead = helixPair(7, '#8FA8C8', '#5CE0C8'); lead.g.position.set(-0.3, 1.1, 0); lead.g.rotation.z = Math.PI - 0.32; G2.add(lead.g);
+-  const lagT = helixPair(7, '#8FA8C8', null, false); lagT.g.position.set(-0.3, 0.1, 0); lagT.g.rotation.z = Math.PI + 0.32; G2.add(lagT.g);
++  // порядок ZYX: спираль крутится вокруг своей оси (локальная X), а направление ветви (поворот по z) не меняется
++  const lead = helixPair(7, '#8FA8C8', '#5CE0C8'); lead.g.position.set(-0.3, 1.1, 0); lead.g.rotation.order = 'ZYX'; lead.g.rotation.z = Math.PI - 0.32; G2.add(lead.g);
++  const lagT = helixPair(7, '#8FA8C8', null, false); lagT.g.position.set(-0.3, 0.1, 0); lagT.g.rotation.order = 'ZYX'; lagT.g.rotation.z = Math.PI + 0.32; G2.add(lagT.g);
+   const lagDir = V3(-Math.cos(0.32), -Math.sin(0.32), 0); const lagO = V3(-0.3, 0.1, 0);
+   const frags = []; for (let k = 0; k < 5; k++) { const fr = new THREE.Group(); const dna = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.09, 1, 10), organMat('#5CE0C8', 0.55, { emissiveIntensity: 0.08 })); dna.rotation.z = Math.PI / 2; fr.add(dna); const pr = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.3, 10), organMat('#FF5A5A', 0.6, { emissiveIntensity: 0.15 })); pr.rotation.z = Math.PI / 2; fr.add(pr); G2.add(fr); frags.push({ g: fr, dna, pr, s0: 0, len: 0, born: -99 }); }
+   const enz = {};
+   const eb = (id, pos, r, col, seed) => { const m = new THREE.Mesh(blobGeo(r[0], r[1], r[2], seed, 0.12, 3), protMat(col, 0.38)); m.position.copy(pos); G2.add(m); enz[id] = m; return m; };
+   const heli = new THREE.Mesh(new THREE.TorusGeometry(0.42, 0.17, 16, 36), protMat('#F2C14E', 0.42)); heli.rotation.y = Math.PI / 2; heli.position.set(0.55, 0.6, 0); G2.add(heli); enz.heli = heli;
+-  eb('topo', V3(4.4, 0.6, 0), [0.45, 0.55, 0.45], '#C77DFF', 3);
++  eb('topo', V3(4.4, 1.22, 0.1), [0.42, 0.4, 0.42], '#C77DFF', 3); // сидит на ДНК, а не нанизана на неё
+   eb('polL', V3(-1.3, 1.7, 0.2), [0.55, 0.45, 0.5], '#7FD6FF', 4);
+   eb('polG', V3(-1.2, -0.45, 0.2), [0.55, 0.45, 0.5], '#7FD6FF', 5);
+   eb('prim', V3(-0.2, -0.2, 0.5), [0.28, 0.24, 0.26], '#FF6A6A', 6);
+@@ -66,6 +99,9 @@ function makeDna() {
+   const nuc = new THREE.Mesh(blobGeo(0.6, 0.5, 0.5, 12, 0.12, 3), protMat('#F2C14E', 0.38)); G3.add(nuc);
+   const polR = new THREE.Mesh(blobGeo(0.55, 0.45, 0.5, 13, 0.12, 3), protMat('#7FD6FF', 0.38)); G3.add(polR);
+   const ligR = new THREE.Mesh(blobGeo(0.4, 0.35, 0.35, 14, 0.12, 3), protMat('#FF8AB0', 0.38)); G3.add(ligR);
++  // тиминовый димер: свечение жёлтым вместо цвета атома
++  const YEL = new THREE.Color('#FFD84A');
++  const dimerTint = (g, on) => { molGlow(g, 0); /* сначала свои копии материалов, общий кэш не трогаем */ g.traverse((o) => { if (o.material && o.material.emissive) { if (!o.userData.em0) o.userData.em0 = o.material.emissive.clone(); o.material.emissive.copy(on ? YEL : o.userData.em0); } }); };
+   const resPos = (key) => { const m = D3.parts[key]; const b = new THREE.Box3().setFromObject(m); return b.getCenter(V3(0, 0, 0)).sub(G3.position); };
+   /* ---------- состояние ---------- */
+   const st = { t: 0, mode: 'struct', labels: true, rot: true, fly: null, cyc: 0, msg: null, hb: true };
+@@ -73,10 +109,10 @@ function makeDna() {
+   const ease = (x) => { const u = clamp(x, 0, 1); return u * u * (3 - 2 * u); };
+   function update(dt) {
+     st.t += dt; const t = st.t; controls.autoRotate = false; flyStep(st, camera, controls, dt); st.cyc += dt;
+-    if (st.mode === 'struct') { if (st.rot) G1.rotation.y += dt * 0.25; D1.hb.visible = st.hb; }
++    if (st.mode === 'struct') { if (st.rot) G1.rotation.x += dt * 0.25; D1.hb.visible = st.hb; }
+     if (st.mode === 'rep') {
+       const w = 1.2; parent.g.rotation.x += dt * w; lead.g.rotation.x -= dt * w * 0.8; lagT.g.rotation.x += dt * w * 0.8;
+-      heli.rotation.x += dt * 4; enz.topo.rotation.x += dt * 2;
++      heli.rotation.x += dt * 4; enz.topo.rotation.y += dt * 0.8;
+       // фрагменты Оказаки: каждые 3 с — новый праймер у вилки, растёт прочь от вилки, затем уезжает
+       const v = 0.45;
+       frags.forEach((f, k) => {
+@@ -95,7 +131,7 @@ function makeDna() {
+       const T = 16, c = st.cyc % T;
+       const dmg = ['A6', 'A7']; const cutR = ['A4', 'A5', 'A6', 'A7', 'A8', 'A9'];
+       uv.visible = c < 2.5; uv.material.opacity = 0.12 * (1 - Math.abs(c - 1.2) / 1.3);
+-      const dimer = c > 1.5 && c < 7; dmg.forEach((k) => molGlow(D3.parts[k], dimer ? 0.35 + 0.15 * Math.sin(t * 6) : 0));
++      const dimer = c > 1.5 && c < 7; dmg.forEach((k) => { dimerTint(D3.parts[k], dimer); molGlow(D3.parts[k], dimer ? 0.75 + 0.2 * Math.sin(t * 6) : 0); });
+       const gone = c > 6 && c < 9.5 ? ease((c - 6) / 1) : c >= 9.5 && c < 12 ? 1 - ease((c - 9.5) / 2.5) : 0;
+       cutR.forEach((k) => { molFade(D3.parts[k], 1 - gone * 0.95); if (c > 9.5 && c < 12.5) molGlow(D3.parts[k], 0.2); else if (!dmg.includes(k)) molGlow(D3.parts[k], 0); });
+       const site = resPos('A6').clone().lerp(resPos('A7'), 0.5);
+@@ -113,10 +149,12 @@ function makeDna() {
+     repair: '<b>Повреждение и репарация.</b> Ультрафиолет сшивает два соседних тимина (жёлтое свечение) в <b>тиминовый димер</b> — спираль изгибается, копирование и чтение гена ломаются. <b>Эксцизионная репарация</b>: белки узнают дефект, нуклеаза надрезает цепь по обе стороны и удаляет участок, ДНК-полимераза достраивает его по второй, целой цепи, лигаза сшивает. Наследственный дефект этой системы — <b>пигментная ксеродерма</b>: тысячекратный риск рака кожи от солнца. В клетке каждый день возникают десятки тысяч повреждений ДНК — и почти все исправляются.',
+   };
+   const labels = [
+-    { text: 'сахарофосфатный остов', pos: V3(2.3, 2.2, 0.6), color: '#FF9A30', show: () => st.labels && st.mode === 'struct' },
+-    { text: 'пары оснований · H-связи', pos: V3(-0.6, 1.9, 1.2), color: '#9FD8FF', show: () => st.labels && st.mode === 'struct' },
++    { text: 'сахарофосфатный остов', get pos() { return backbonePos(); }, color: '#FF9A30', show: () => st.labels && st.mode === 'struct' },
++    { text: 'пары оснований · H-связи', get pos() { return G1.localToWorld(hbMid.clone()); }, color: '#9FD8FF', show: () => st.labels && st.mode === 'struct' },
++    { text: 'малая бороздка', get pos() { return groovePos(GRV.minor, 0); }, color: '#C8D2E6', show: () => st.labels && st.mode === 'struct' && (groovePos(GRV.minor, 0), GRV.ok) },
++    { text: 'большая бороздка', get pos() { return groovePos(GRV.major, 0); }, color: '#C8D2E6', show: () => st.labels && st.mode === 'struct' && (groovePos(GRV.major, 0), GRV.ok) },
+     { text: `5′-${seqTxt}-3′`, pos: V3(-3.2, -0.9, 0), color: '#F2E6C8', show: () => st.labels && st.mode === 'struct' },
+-    { text: 'топоизомераза', pos: V3(44.4, 1.4, 0), color: '#C77DFF', show: () => st.labels && st.mode === 'rep' },
++    { text: 'топоизомераза', pos: V3(44.4, 1.9, 0), color: '#C77DFF', show: () => st.labels && st.mode === 'rep' },
+     { text: 'геликаза', pos: V3(40.6, 1.4, 0.3), color: '#F2C14E', show: () => st.labels && st.mode === 'rep' },
+     { text: 'ведущая цепь', pos: V3(40 - 4.6, 2.7, 0), color: '#5CE0C8', show: () => st.labels && st.mode === 'rep' },
+     { text: 'отстающая: фрагменты Оказаки', pos: V3(40 - 6.6, -1.2, 0), color: '#5CE0C8', show: () => st.labels && st.mode === 'rep' },
+@@ -127,6 +165,10 @@ function makeDna() {
+     { text: 'ДНК-лигаза', pos: V3(40 - 5.6, -2.1, 0.3), color: '#FF8AB0', show: () => st.labels && st.mode === 'rep' },
+     { text: 'материнская ДНК', pos: V3(40 + 6.2, 1.4, 0), color: '#8FA8C8', show: () => st.labels && st.mode === 'rep' },
+     { text: 'УФ', pos: V3(80, 4.0, 0), color: '#B08AFF', show: () => st.labels && st.mode === 'repair' && st.cyc % 16 < 2.5 },
++    { text: 'тиминовый димер', get pos() { return resPos('A6').lerp(resPos('A7'), 0.5).add(G3.position).add(V3(0.6, -1.2, 0.4)); }, color: '#FFD84A', show: () => st.labels && st.mode === 'repair' && st.cyc % 16 > 1.5 && st.cyc % 16 < 6 },
++    { text: 'нуклеаза (эксцинуклеаза)', get pos() { return nuc.getWorldPosition(V3(0, 0, 0)).add(V3(0.5, 0.55, 0)); }, color: '#F2C14E', show: () => st.labels && st.mode === 'repair' && nuc.visible },
++    { text: 'ДНК-полимераза', get pos() { return polR.getWorldPosition(V3(0, 0, 0)).add(V3(0.5, 0.5, 0)); }, color: '#7FD6FF', show: () => st.labels && st.mode === 'repair' && polR.visible },
++    { text: 'ДНК-лигаза', get pos() { return ligR.getWorldPosition(V3(0, 0, 0)).add(V3(0.4, 0.45, 0)); }, color: '#FF8AB0', show: () => st.labels && st.mode === 'repair' && ligR.visible },
+   ];
+   const refs = {};
+   function ui(el) {
+@@ -156,7 +198,7 @@ function makeDna() {
+         <p><b>ДНК</b> — полимер дезоксирибонуклеотидов (A, G, C, T), хранит наследственную информацию в ядре и митохондриях. <b>РНК</b> — рибонуклеотиды (A, G, C, U), обычно одноцепочечная: мРНК, тРНК, рРНК и регуляторные РНК.</p>
+         <h3>Ферменты репликации</h3><ul><li>Хеликаза, топоизомеразы (мишень хинолонов и некоторых противоопухолевых средств), SSB.</li><li>Праймаза — РНК-затравки.</li><li>ДНК-полимеразы (у человека α, δ, ε) — синтез и корректура 3′→5′.</li><li>ДНК-лигаза. На концах хромосом — теломераза.</li></ul>
+         <h3>Мутации</h3><p>Точечные (замена, вставка, выпадение нуклеотида), со сдвигом рамки считывания, хромосомные. Мутагены: УФ и ионизирующее излучение, химические вещества, вирусы. Системы репарации: прямая, эксцизионная (оснований и нуклеотидов), исправление неспаренных оснований (мисмэтч).</p></div>
+-      <div><h2>Модели</h2><ul><li>Додекамер ДНК — PDB 1BNA, все тяжёлые атомы; водородные связи найдены по расстоянию между атомами азота и кислорода оснований.</li><li>Вилка репликации и ферменты — схематично.</li></ul></div>
++      <div><h2>Модели</h2><ul><li>Додекамер ДНК — PDB 1BNA, все тяжёлые атомы; водородные связи найдены по расстоянию между атомами азота и кислорода оснований.</li><li>Цепи различаются цветом трубки остова и углерода (голубая и оранжевая); бороздки подписаны там, где они обращены к зрителю.</li><li>Вилка репликации и ферменты — схематично.</li></ul></div>
+       <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>3</code> режим</li><li><code>R</code> · <code>N</code></li></ul></div>`,
+   };
+   setMode('struct'); st.fly = null;
+-- 
+2.43.0
+
+
+From 2d0b090b53b908beca09acf3ce511a83880c188a Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Sat, 24 Oct 2026 22:52:10 +0000
+Subject: [PATCH 3/3] =?UTF-8?q?WIP=20protgene=20(=D1=81=D0=BE=D1=85=D1=80?=
+ =?UTF-8?q?=D0=B0=D0=BD=D0=B5=D0=BD=D0=BE=20=D0=BF=D0=B5=D1=80=D0=B5=D0=B4?=
+ =?UTF-8?q?=20=D0=BF=D0=B5=D1=80=D0=B5=D0=BA=D0=BB=D1=8E=D1=87=D0=B5=D0=BD?=
+ =?UTF-8?q?=D0=B8=D0=B5=D0=BC=20=D1=81=D0=B5=D1=81=D1=81=D0=B8=D0=B8)?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ bio/90_hemoglobin.js | 87 +++++++++++++++++++++++++++++++++++---------
+ node_modules         |  1 +
+ 2 files changed, 70 insertions(+), 18 deletions(-)
+ create mode 120000 node_modules
+
+diff --git a/bio/90_hemoglobin.js b/bio/90_hemoglobin.js
+index 0cb23c5..d67a76e 100644
+--- a/bio/90_hemoglobin.js
++++ b/bio/90_hemoglobin.js
+@@ -7,22 +7,41 @@
+ function makeHemoglobin() {
+   rnd = mulberry(2401);
+   const scene = bioStage({ bg: 0x0a0608, rim: 0xff5a5a });
+-  const VIEW = { o2: flyTarget(V3(-0.4, -1.7, 0), V3(1.0, 0.2, 20.5)), heme: flyTarget(V3(39.0, -1.6, 0), V3(40, 5.2, 12.2)), sick: flyTarget(V3(79.8, -1.9, 0), V3(80.4, -0.2, 17)) };
++  const VIEW = { o2: flyTarget(V3(-0.4, -1.7, 0), V3(1.0, 0.2, 20.5)), heme: flyTarget(V3(39.0, -1.6, 0), V3(40, 5.2, 12.2)), sick: flyTarget(V3(79.8, -1.7, 0), V3(80.4, 0.0, 18.5)) };
+   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.o2.pos);
+   const controls = makeControls(camera, VIEW.o2.target); controls.minDistance = 2; controls.maxDistance = 40;
+   const fx = new Sparks(1400, 0.08); scene.add(fx.obj);
+   const HB = PDB('hb'); const SC = 0.075;
+   /* ---------- 1. гемоглобин и O₂ ---------- */
+   const G1 = new THREE.Group(); G1.position.set(0.8, 0.9, 0); scene.add(G1);
+-  const dimer1 = new THREE.Group(), dimer2 = new THREE.Group(); G1.add(dimer1, dimer2);
++  // центр тетрамера и ось поворота димеров (T→R): ось через центр, перпендикулярна оси 2-го порядка
++  const caCen = (ids) => { const p = caPoints('hb', SC, ids); return p.reduce((v, q) => v.add(q), V3(0, 0, 0)).multiplyScalar(1 / p.length); };
++  const hC = caCen(['A', 'B', 'C', 'D']), dC1 = caCen(['A', 'B']), dC2 = caCen(['C', 'D']);
++  const dyad = caCen(['A']).sub(caCen(['C'])).cross(caCen(['B']).sub(caCen(['D']))).normalize();
++  const twAx = dC2.clone().sub(dC1); twAx.addScaledVector(dyad, -twAx.dot(dyad)).normalize(); // линия между димерами ⟂ оси 2-го порядка
++  const piv1 = new THREE.Group(), piv2 = new THREE.Group(); piv1.position.copy(hC); piv2.position.copy(hC); G1.add(piv1, piv2);
++  const dimer1 = new THREE.Group(), dimer2 = new THREE.Group(); dimer1.position.copy(hC).negate(); dimer2.position.copy(hC).negate(); piv1.add(dimer1); piv2.add(dimer2);
+   HB.chains.forEach((c, k) => { const m = cartoon(c, { scale: SC, color: k % 2 ? '#FF8AB0' : '#7FD6FF', k: 0.55 }); (k < 2 ? dimer1 : dimer2).add(m); });
+   const hemeM = HB.ligm.map((l) => { const m = molMesh(l, { scale: SC }); (l.chain === 'A' || l.chain === 'B' ? dimer1 : dimer2).add(m); return m; });
+   const feP = HB.ligm.map((l) => { const i = l.el.indexOf('Fe'); return V3(l.xyz[i * 3], l.xyz[i * 3 + 1], l.xyz[i * 3 + 2]).multiplyScalar(SC); });
+   const feGlow = feP.map((p, k) => glowNucleus(HB.ligm[k].chain === 'A' || HB.ligm[k].chain === 'B' ? dimer1 : dimer2, p, '#FF4A4A', 0.05, 8));
+-  const o2m = feP.map((p, k) => { const m = molMesh(MOL('o2'), { scale: 0.3 }); G1.add(m); return m; });
+-  const surf = surfaceMesh(caPoints('hb', SC), { radius: 0.5, res: 56, mat: glassMat(0xff7a7a, { rim: 0.13, base: 0.004, pow: 2.8 }) }); G1.add(surf);
+-  const cenOf = (id) => { const c = V3(0, 0, 0), a = HB.chains.find((q) => q.id === id).ca; for (let i = 0; i < a.length; i += 3) c.add(V3(a[i], a[i + 1], a[i + 2])); return c.multiplyScalar(SC * 3 / a.length).multiplyScalar(1.35); };
+-  const cenA = cenOf('A'), cenB = cenOf('B');
++  // O₂: связанный — над плоскостью гема с дистальной стороны (против проксимального His F8), Fe–O–O под углом ~120°.
++  // Молекула O₂ и расстояние Fe–O увеличены в 1,6 раза, чтобы были заметны; остальное — в масштабе белка.
++  const O2K = 1.6, O2M = { id: 'o2b', name: 'O₂', el: ['O', 'O'], xyz: new Float32Array([0, 0, 0, 1.048, 0.605, 0]), b: [0, 1], o: [2], n: 2 };
++  const hemeN = HB.ligm.map((l) => {
++    const at = (i) => V3(l.xyz[i * 3], l.xyz[i * 3 + 1], l.xyz[i * 3 + 2]);
++    const fe = at(l.el.indexOf('Fe')); const ns = []; l.el.forEach((e, i) => { if (e === 'N') ns.push(at(i)); });
++    let n = ns[1].clone().sub(ns[0]).cross(ns[2].clone().sub(ns[0])).normalize();
++    const his = HB.resm.find((r) => r.chain === l.chain && (r.name === 'HIS87' || r.name === 'HIS92'));
++    if (his) { let best = null, bd = 1e9; his.el.forEach((e, i) => { if (e !== 'N') return; const q = V3(his.xyz[i * 3], his.xyz[i * 3 + 1], his.xyz[i * 3 + 2]); const d = q.distanceTo(fe); if (d < bd) { bd = d; best = q; } }); if (best && n.dot(best.clone().sub(fe)) > 0) n.negate(); }
++    return n;
++  });
++  const qO2 = hemeN.map((n) => new THREE.Quaternion().setFromUnitVectors(V3(0, 1, 0), n));
++  const o2m = feP.map((p, k) => { const m = molMesh(O2M, { scale: SC * O2K, bondR: 0.16 }); molGlow(m, 0.35); G1.add(m); return m; });
++  const surf = surfaceMesh(caPoints('hb', SC), { radius: 0.5, res: 56, mat: glassMat(0xff7a7a, { rim: 0.12, base: 0.003, pow: 3.0, keep: true }) }); G1.add(surf);
++  const cenA = caCen(['A']), cenB = caCen(['B']);
++  // подпись: от центра тетрамера наружу в плоскости экрана
++  const scrOut = (pW, k) => { const c = G1.localToWorld(hC.clone()), v = camera.getWorldDirection(V3(0, 0, 0)); const d = pW.clone().sub(c); d.addScaledVector(v, -d.dot(v)); if (d.length() < 0.2) d.set(0, 1, 0); return pW.add(d.normalize().multiplyScalar(k)); };
+   const o2out = feP.map((p, k) => V3(Math.cos(k * 1.6) * 5, 2.2 + Math.sin(k) * 1.0, 1.5));
+   /* ---------- 2. гем ---------- */
+   const G2 = new THREE.Group(); G2.position.set(40, 0.2, 0); scene.add(G2);
+@@ -41,6 +60,22 @@ function makeHemoglobin() {
+   const coB = molMesh(coM, { scale: HS }); coB.position.copy(dist).multiplyScalar((1.8 + 0.56) * HS); coB.quaternion.setFromUnitVectors(coAx, dist); hG.add(coB);
+   const feBig = glowNucleus(hG, V3(0, 0, 0), '#FF6A3A', 0.06, 5); feBig.core.visible = false;
+   { const q = new THREE.Quaternion().setFromUnitVectors(dist, V3(0, 1, 0)); hG.quaternion.copy(q); }
++  // координационные связи Fe–N(ε2) His F8 и Fe–O₂ (molFromSet связывает атомы только внутри набора) + водородная связь O₂···His E7
++  const atP = (m, i) => V3(m.xyz[i * 3], m.xyz[i * 3 + 1], m.xyz[i * 3 + 2]).sub(hc).multiplyScalar(HS); // в системе hG (Fe — в нуле)
++  const nearest = (m, el, p) => { let bi = -1, bd = 1e9; m.el.forEach((e, i) => { if (e !== el) return; const d = atP(m, i).distanceTo(p); if (d < bd) { bd = d; bi = i; } }); return atP(m, bi); };
++  const ne2F8 = nearest(his, 'N', V3(0, 0, 0)), o1 = nearest(oxy, 'O', V3(0, 0, 0));
++  const o2far = (() => { const a = atP(oxy, 0), b = atP(oxy, 1); return a.length() > b.length() ? a : b; })();
++  const ne2E7 = nearest(his2, 'N', o2far);
++  const ringC = (m, p0) => { const c = V3(0, 0, 0); let n = 0; m.el.forEach((e, i) => { const q = atP(m, i); if (q.distanceTo(p0) < 2.4 * HS) { c.add(q); n++; } }); return c.multiplyScalar(1 / n); };
++  const hisF8C = ringC(his, ne2F8), hisE7C = ringC(his2, ne2E7);
++  const bondMat = new THREE.MeshPhysicalMaterial({ color: 0xc8906a, roughness: 0.35, clearcoat: 0.5, emissive: 0xff7a3a, emissiveIntensity: 0.15 });
++  const stick = (a, b, r = 0.045, mat = bondMat) => { const m = new THREE.Mesh(CYL, mat); const d = b.clone().sub(a); m.position.copy(a).addScaledVector(d, 0.5); m.scale.set(r, d.length(), r); m.quaternion.setFromUnitVectors(V3(0, 1, 0), d.normalize()); hG.add(m); return m; };
++  stick(V3(0, 0, 0), ne2F8);
++  const feO = stick(V3(0, 0, 0), o1);
++  const feC = stick(V3(0, 0, 0), dist.clone().multiplyScalar(1.8 * HS));
++  const hbDash = new THREE.Group(); hG.add(hbDash); { const dm = new THREE.MeshBasicMaterial({ color: 0x9fd8ff, transparent: true, opacity: 0.85 }); for (let k = 0; k < 4; k++) hbDash.add(stick(o2far.clone().lerp(ne2E7, (k * 2 + 0.5) / 8), o2far.clone().lerp(ne2E7, (k * 2 + 1.5) / 8), 0.018, dm)); }
++  // точка подписи кольца: край порфирина со стороны пиррольного азота
++  const ringEdge = (() => { const ns = []; hm.el.forEach((e, i) => { if (e === 'N') ns.push(atP(hm, i)); }); return ns[0].clone().multiplyScalar(2.9); })();
+   /* ---------- 3. серповидноклеточная анемия ---------- */
+   const G3 = new THREE.Group(); G3.position.set(80, 0, 0); scene.add(G3);
+   const surfGeo = surfaceMesh(caPoints('hb', 0.02), { radius: 0.13, res: 28 }).geometry;
+@@ -49,7 +84,14 @@ function makeHemoglobin() {
+   const fibFree = Array.from({ length: NF }, () => V3(rand(-0.4, 6.2), rand(-1.4, 1.8), rand(-1.6, 1.6)));
+   const rbcGeo = (sickle) => displaceGeo(new THREE.SphereGeometry(1, 64, 48), (v) => { const r2 = v.x * v.x + v.z * v.z; const y = v.y * (0.22 + 0.6 * r2); if (!sickle) { v.y = y; return; } const x = v.x; v.x = x * 1.9; v.z = v.z * 0.42 * (1 - 0.55 * x * x) + 0.95 * x * x - 0.4; v.y = y * 0.85; });
+   const rbcN = rbcGeo(false), rbcS = rbcGeo(true);
+-  const rbc = new THREE.Mesh(rbcN.clone(), organMat('#C83A3A', 0.5, { emissiveIntensity: 0.06 })); rbc.position.set(-2.6, -0.75, 0); rbc.scale.setScalar(1.15); G3.add(rbc);
++  const rbc = new THREE.Mesh(rbcN.clone(), organMat('#C83A3A', 0.5, { emissiveIntensity: 0.06 })); rbc.position.set(-3.0, -0.6, 0); rbc.scale.setScalar(1.6); G3.add(rbc);
++  // волокно — «врезка под лупой»: масштабы клетки (8 мкм) и молекул (6 нм) разные, это показано кругом и линиями-выносками
++  const lupa = new THREE.Group(); G3.add(lupa);
++  { const lm = new THREE.MeshBasicMaterial({ color: 0xffb0b0, transparent: true, opacity: 0.45 }); const LC = V3(3.2, 0.15, 0), LR = 3.0, sc = V3(-2.75, -0.35, 0.5), sr = 0.16;
++    const ring = new THREE.Mesh(new THREE.TorusGeometry(LR, 0.02, 8, 120), lm); ring.position.copy(LC); lupa.add(ring);
++    const sRing = new THREE.Mesh(new THREE.TorusGeometry(sr, 0.015, 8, 40), lm); sRing.position.copy(sc); lupa.add(sRing);
++    const lineM = new THREE.LineBasicMaterial({ color: 0xffb0b0, transparent: true, opacity: 0.4 });
++    [1, -1].forEach((k) => { const g = new THREE.BufferGeometry().setFromPoints([sc.clone().add(V3(0, k * sr, 0)), LC.clone().add(V3(-Math.sqrt(1 - 0.36) * LR, k * 0.6 * LR, 0))]); lupa.add(new THREE.Line(g, lineM)); }); }
+   const pRN = rbcN.attributes.position.array, pRS = rbcS.attributes.position.array;
+   /* ---------- состояние ---------- */
+   const st = { t: 0, mode: 'o2', labels: true, rot: true, fly: null, cyc: 0, msg: null, pO2: 100, ph: 7.4, bpg: false, co: false, fetal: false, mb: false, lig: 'o2', sick: 'deoxy', surf: true };
+@@ -63,13 +105,20 @@ function makeHemoglobin() {
+     if (st.mode === 'o2') {
+       if (st.rot) G1.rotation.y += dt * 0.15; surf.visible = st.surf;
+       const S = satHb(st.pO2); st.S = S; const nb = Math.round(S * 4);
+-      o2m.forEach((m, k) => { const bound = k < nb; const home = feP[k].clone().applyMatrix4((HB.ligm[k].chain === 'A' || HB.ligm[k].chain === 'B' ? dimer1 : dimer2).matrix); const target = bound ? home.clone().add(home.clone().normalize().multiplyScalar(0.25)) : o2out[k]; m.position.lerp(target, 1 - Math.exp(-dt * 2.5)); m.rotation.y += dt; m.visible = !(st.co && k >= 2); feGlow[k].spr.material.opacity = bound ? 0.9 : 0.25; feGlow[k].spr.material.color.set(bound ? '#FF3A3A' : '#8A3A7A'); });
++      const qG = G1.getWorldQuaternion(new THREE.Quaternion()).invert();
++      o2m.forEach((m, k) => {
++        const bound = k < nb; const dm1 = HB.ligm[k].chain === 'A' || HB.ligm[k].chain === 'B' ? dimer1 : dimer2;
++        const home = G1.worldToLocal(dm1.localToWorld(feP[k].clone().addScaledVector(hemeN[k], 1.8 * SC * O2K)));
++        const target = bound ? home : o2out[k];
++        const qT = bound ? qG.clone().multiply(dm1.getWorldQuaternion(new THREE.Quaternion())).multiply(qO2[k]) : new THREE.Quaternion().setFromEuler(new THREE.Euler(t * 0.7 + k, t * 0.5 + k * 2, 0));
++        m.position.lerp(target, 1 - Math.exp(-dt * 2.5)); m.quaternion.slerp(qT, 1 - Math.exp(-dt * 3)); m.visible = !(st.co && k >= 2); feGlow[k].spr.material.opacity = bound ? 0.9 : 0.25; feGlow[k].spr.material.color.set(bound ? '#FF3A3A' : '#8A3A7A'); });
+       // R-состояние: димеры поворачиваются друг относительно друга на ~15°
+-      const R = smooth(0.25, 0.75, S); dimer2.rotation.y += ((R * 0.26) - dimer2.rotation.y) * Math.min(1, dt * 2);
++      const R = smooth(0.25, 0.75, S); st.tw = (st.tw || 0) + ((R * 0.18) - (st.tw || 0)) * Math.min(1, dt * 2);
++      piv1.quaternion.setFromAxisAngle(twAx, -st.tw / 2); piv2.quaternion.setFromAxisAngle(twAx, st.tw / 2);
+     }
+     if (st.mode === 'heme') {
+       G2.rotation.y += st.rot ? dt * 0.3 : 0;
+-      o2b.visible = st.lig === 'o2'; coB.visible = st.lig === 'co';
++      o2b.visible = feO.visible = hbDash.visible = st.lig === 'o2'; coB.visible = feC.visible = st.lig === 'co';
+       feBig.spr.material.color.set(st.lig === 'met' ? '#7A5A3A' : st.lig === 'co' ? '#FF6A9A' : st.lig === 'none' ? '#8A3A7A' : '#FF4A2A');
+     }
+     if (st.mode === 'sick') {
+@@ -97,18 +146,20 @@ function makeHemoglobin() {
+     sick: '<b>Серповидноклеточная анемия</b> — классическая «молекулярная болезнь» (Л. Полинг, 1949). Одна замена в гене β-цепи: глутаминовая кислота → валин в 6-й позиции (HbS). Гидрофобный валин на поверхности молекулы в дезокси-форме прилипает к соседнему гемоглобину — молекулы <b>полимеризуются</b> в длинные жёсткие волокна (14-нитчатые тяжи), и эритроцит деформируется в «серп». Такие клетки закупоривают капилляры (боли, инфаркты органов) и быстро разрушаются (анемия). Носители одного гена HbS устойчивее к тропической малярии — поэтому ген частый в Африке.',
+   };
+   const labels = [
+-    { text: 'α-цепь', get pos() { return cenA.clone().applyMatrix4(dimer1.matrixWorld); }, color: '#7FD6FF', show: () => st.labels && st.mode === 'o2' },
+-    { text: 'β-цепь', get pos() { return cenB.clone().applyMatrix4(dimer1.matrixWorld); }, color: '#FF8AB0', show: () => st.labels && st.mode === 'o2' },
+-    { text: 'гем · Fe²⁺', get pos() { return feP[0].clone().applyMatrix4(dimer1.matrixWorld); }, color: '#FF5A5A', show: () => st.labels && st.mode === 'o2' },
++    { text: 'α-цепь', get pos() { return scrOut(cenA.clone().applyMatrix4(dimer1.matrixWorld), 1.9); }, color: '#7FD6FF', show: () => st.labels && st.mode === 'o2' },
++    { text: 'β-цепь', get pos() { return scrOut(cenB.clone().applyMatrix4(dimer1.matrixWorld), 1.9); }, color: '#FF8AB0', show: () => st.labels && st.mode === 'o2' },
++    { text: 'гем · Fe²⁺', get pos() { return scrOut(feP[2].clone().applyMatrix4(dimer2.matrixWorld), 0.7); }, color: '#FF5A5A', show: () => st.labels && st.mode === 'o2' },
+     { text: 'O₂', get pos() { return o2m[3].getWorldPosition(V3(0, 0, 0)); }, color: '#F04848', show: () => st.labels && st.mode === 'o2' && st.S < 0.9 },
+-    { text: 'порфириновое кольцо', pos: V3(40 - 2.6, 1.8, 0), color: '#9FB4FF', show: () => st.labels && st.mode === 'heme' },
++    { text: 'порфириновое кольцо', get pos() { return hG.localToWorld(ringEdge.clone()); }, color: '#9FB4FF', show: () => st.labels && st.mode === 'heme' },
+     { text: 'Fe²⁺', get pos() { return hG.localToWorld(V3(0, 0, 0)).add(V3(0.45, -0.3, 0.3)); }, color: '#FF6A3A', show: () => st.labels && st.mode === 'heme' && st.lig !== 'met' },
+     { text: 'Fe³⁺', get pos() { return hG.localToWorld(V3(0, 0, 0)).add(V3(0.45, -0.3, 0.3)); }, color: '#C08A5A', show: () => st.labels && st.mode === 'heme' && st.lig === 'met' },
+-    { text: 'проксимальный гистидин', pos: V3(40 + 0.6, -1.4, 0), color: '#7FA8FF', show: () => st.labels && st.mode === 'heme' },
++    { text: 'проксимальный гистидин F8', get pos() { return hG.localToWorld(hisF8C.clone()).add(V3(0.45, -0.1, 0)); }, color: '#7FA8FF', show: () => st.labels && st.mode === 'heme' },
++    { text: 'дистальный гистидин E7', get pos() { return hG.localToWorld(hisE7C.clone()).add(V3(0.45, 0.1, 0)); }, color: '#7FA8FF', show: () => st.labels && st.mode === 'heme' },
+     { text: 'O₂', get pos() { return hG.localToWorld(dist.clone().multiplyScalar(1.1)).add(V3(0.4, 0.1, 0)); }, color: '#F04848', show: () => st.labels && st.mode === 'heme' && st.lig === 'o2' },
+     { text: 'CO', get pos() { return hG.localToWorld(dist.clone().multiplyScalar(1.1)).add(V3(0.4, 0.1, 0)); }, color: '#FF6A9A', show: () => st.labels && st.mode === 'heme' && st.lig === 'co' },
+-    { text: 'волокно HbS', pos: V3(80 + 3.2, 1.5, 0), color: '#C85A5A', show: () => st.labels && st.mode === 'sick' && st.poly > 0.6 },
+-    { text: 'эритроцит', pos: V3(80 - 2.6, 0.35, 0), color: '#FF6A6A', show: () => st.labels && st.mode === 'sick' },
++    { text: 'волокно HbS', pos: V3(80 + 3.4, 1.7, 0.6), color: '#E07A7A', show: () => st.labels && st.mode === 'sick' && st.poly > 0.6 },
++    { text: 'молекулы Hb · увеличено ≈ в 500 раз', pos: V3(80 - 1.9, 2.75, 0), color: '#FFB0B0', show: () => st.labels && st.mode === 'sick' },
++    { text: 'эритроцит (8 мкм)', pos: V3(80 - 4.2, 1.15, 0), color: '#FF6A6A', show: () => st.labels && st.mode === 'sick' },
+   ];
+   const refs = {};
+   function ui(el) {
+@@ -152,7 +203,7 @@ function makeHemoglobin() {
+         <p>Хромопротеин: белок глобин + 4 гема. Норма: 130–160 г/л у мужчин, 120–140 г/л у женщин. Формы: HbA (α₂β₂, 97%), HbA₂ (α₂δ₂), фетальный HbF (α₂γ₂). Производные: оксигемоглобин, дезоксигемоглобин, карбгемоглобин (CO₂ на аминогруппах), карбоксигемоглобин (CO), метгемоглобин (Fe³⁺), гликозилированный HbA1c (отражает средний сахар за 2–3 месяца при диабете).</p>
+         <h3>Перенос CO₂</h3><p>Около 10% CO₂ кровь везёт в виде карбгемоглобина, остальное — в виде бикарбоната: карбоангидраза эритроцитов превращает CO₂ + H₂O в H₂CO₃ → H⁺ + HCO₃⁻; H⁺ захватывает гемоглобин (буфер).</p>
+         <h3>Гемоглобинопатии</h3><p>Качественные (HbS и сотни других мутантных гемоглобинов) и количественные — <b>талассемии</b> (снижен синтез α- или β-цепей).</p></div>
+-      <div><h2>Модели</h2><ul><li>Гемоглобин — PDB 4HHB (дезоксигемоглобин); гем с O₂ и гистидины крупным планом — 1GZX (оксигемоглобин). Поворот димеров при оксигенации показан условно.</li><li>Кривая насыщения — уравнение Хилла (n ≈ 2,8; P50 ≈ 27 мм рт. ст.).</li><li>Волокно HbS и эритроцит — схематично; молекулы в волокне — поверхность реального гемоглобина.</li></ul></div>
++      <div><h2>Модели</h2><ul><li>Гемоглобин — PDB 4HHB (дезоксигемоглобин); гем с O₂ и гистидины крупным планом — 1GZX (оксигемоглобин). Поворот димеров при оксигенации показан условно.</li><li>Кривая насыщения — уравнение Хилла (n ≈ 2,8; P50 ≈ 27 мм рт. ст.).</li><li>Волокно HbS и эритроцит — схематично; молекулы в волокне — поверхность реального гемоглобина, показаны «под лупой» (увеличены примерно в 500 раз относительно клетки). Молекула O₂ в первом режиме увеличена в 1,6 раза.</li></ul></div>
+       <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>3</code> режим</li><li><code>R</code> · <code>N</code></li></ul></div>`,
+   };
+   setMode('o2'); st.fly = null;
+diff --git a/node_modules b/node_modules
+new file mode 120000
+index 0000000..d48f57b
+--- /dev/null
++++ b/node_modules
+@@ -0,0 +1 @@
++/home/user/Chelovek/node_modules
+\ No newline at end of file
+-- 
+2.43.0
+

@@ -1,0 +1,1161 @@
+From 3c23d932175e79ae980dcce7978e97977487131d Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Sat, 24 Oct 2026 22:50:17 +0000
+Subject: [PATCH 1/2] =?UTF-8?q?=D0=9C=D0=BE=D0=B7=D0=B3=20=D0=B8=20=D0=BE?=
+ =?UTF-8?q?=D1=80=D0=B3=D0=B0=D0=BD=D1=8B=20=D1=87=D1=83=D0=B2=D1=81=D1=82?=
+ =?UTF-8?q?=D0=B2:=20=D0=B7=D0=B5=D1=80=D0=BA=D0=B0=D0=BB=D1=8C=D0=BD?=
+ =?UTF-8?q?=D0=BE=D1=81=D1=82=D1=8C=20brainKit=20(=D0=BB=D0=B5=D0=B2=D0=BE?=
+ =?UTF-8?q?=D0=B5=20=D0=BF=D0=BE=D0=BB=D1=83=D1=88=D0=B0=D1=80=D0=B8=D0=B5?=
+ =?UTF-8?q?=20z<0),=20=D0=BC=D0=BE=D0=B7=D0=B6=D0=B5=D1=87=D0=BE=D0=BA/?=
+ =?UTF-8?q?=D1=81=D1=82=D0=B2=D0=BE=D0=BB=20brainKit,=20=D0=BF=D1=80=D0=B0?=
+ =?UTF-8?q?=D0=B2=D0=BA=D0=B8=20dien=20hemis=20cortex=20hippo=20cereb=20br?=
+ =?UTF-8?q?ain=20vision=20ear=20skin=20chemo=20chest=20cell=20=D0=BF=D0=BE?=
+ =?UTF-8?q?=20=D1=80=D0=B5=D1=86=D0=B5=D0=BD=D0=B7=D0=B8=D0=B8?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01CAsbEKYKPKpphinWsqDRBa
+---
+ src_page.html | 510 ++++++++++++++++++++++++++++++--------------------
+ 1 file changed, 302 insertions(+), 208 deletions(-)
+
+diff --git a/src_page.html b/src_page.html
+index 730bdca..ac46d0d 100644
+--- a/src_page.html
++++ b/src_page.html
+@@ -1062,43 +1062,14 @@ function makeBrain() {
+   const camera = new THREE.PerspectiveCamera(36, 1, 0.05, 100); camera.position.set(4.6, 1.5, 5.4);
+   const controls = makeControls(camera, V3(0, -0.35, 0)); controls.minDistance = 2.2; controls.maxDistance = 14; controls.autoRotate = true; controls.autoRotateSpeed = 0.6;
+ 
+-  function hemisphere(side) {
+-    const g = new THREE.SphereGeometry(1, 230, 170);
+-    const c = new THREE.Vector3();
+-    displaceGeo(g, (v) => {
+-      const s = v.clone();
+-      let x = s.x * 1.62, y = s.y * (s.y > 0 ? 1.18 : 0.86), z = s.z * 0.8 * side;
+-      if (y > 0) y *= 1 - 0.08 * Math.max(0, -x); // occipital lower
+-      if (z < -0.48) z = -0.48 - (-0.48 - z) * 0.2; // flat medial wall
+-      if (y < -0.1 && x > -0.7 && x < 1.0 && z > 0.15) y -= 0.22 * smooth(-0.1, -0.6, y) * smooth(0.15, 0.6, z) * (1 - Math.abs(x - 0.15) / 0.85);
+-      const p = V3(x, y, z * side);
+-      const n = noise3(p.x * 2.4 + side * 7, p.y * 2.4, p.z * 2.4), n2 = noise3(p.x * 5.2 + 3, p.y * 5.2, p.z * 5.2 + side * 3);
+-      const ridge = 1 - Math.abs(n), ridge2 = 1 - Math.abs(n2);
+-      const d = 0.075 * ridge * ridge + 0.02 * ridge2 - 0.045;
+-      c.set(0, -0.1, 0); const dir = p.clone().sub(c).normalize();
+-      p.addScaledVector(dir, d);
+-      p.z += side * 0.55;
+-      v.copy(p);
+-    });
+-    return g;
+-  }
+-  const cortexSolid = new THREE.MeshPhysicalMaterial({ color: 0xe0b8c6, roughness: 0.55, clearcoat: 0.35, transparent: true, opacity: 0.1, depthWrite: false, side: THREE.FrontSide, envMapIntensity: 0.5 });
+-  const cortexGlass = glassMat(0xf2c7d6, { rim: 0.62, base: 0.012, pow: 2.0 });
+-  const hemiGeos = [hemisphere(1), hemisphere(-1)];
+-  hemiGeos.forEach((g) => { scene.add(new THREE.Mesh(g, cortexSolid)); scene.add(new THREE.Mesh(g, cortexGlass)); });
+-
+-  const cereGeo = displaceGeo(new THREE.SphereGeometry(1, 160, 110), (v) => {
+-    const fol = 1 + 0.035 * Math.sin(v.y * 46 + v.x * 6) + 0.03 * noise3(v.x * 3, v.y * 3, v.z * 3);
+-    v.set(v.x * 0.72 * fol, v.y * 0.46 * fol, v.z * 1.05 * fol); v.add(V3(-1.28, -0.95, 0));
+-  });
+-  scene.add(new THREE.Mesh(cereGeo, cortexSolid), new THREE.Mesh(cereGeo, glassMat(0xffc9b8, { rim: 0.6, base: 0.012, pow: 2 })));
+-  const stemCurve = new THREE.CatmullRomCurve3([V3(0.05, -0.35, 0), V3(-0.2, -0.85, 0), V3(-0.38, -1.35, 0), V3(-0.48, -2.3, 0)]);
+-  const stemGeo = taperTube(stemCurve, (u) => (u < 0.45 ? 0.26 + 0.1 * Math.sin(u / 0.45 * Math.PI) : 0.2 - 0.06 * (u - 0.45)), 80, 24);
+-  scene.add(new THREE.Mesh(stemGeo, cortexSolid), new THREE.Mesh(stemGeo, glassMat(0xe8c0d0, { rim: 0.6, base: 0.015, pow: 2 })));
++  // оболочка — общая модель brainKit (борозды, мозжечок с листками и ножками, ствол с мостом)
++  brainShell(scene, { opacity: 0.1, rim: 0.62 });
++  const hemiGeos = brainKit().hemi;
+   const innerMat = glassMat(0xb9a4ff, { rim: 0.35, base: 0.01, pow: 1.8 });
+-  [[V3(0.0, -0.05, 0.2), V3(0.32, 0.2, 0.2)], [V3(0.0, -0.05, -0.2), V3(0.32, 0.2, 0.2)]].forEach(([p, s]) => { const m = new THREE.Mesh(new THREE.SphereGeometry(1, 32, 24), innerMat); m.position.copy(p); m.scale.copy(s); scene.add(m); });
++  const innerFill = new THREE.MeshPhysicalMaterial({ color: 0xb9a4ff, roughness: 0.5, transparent: true, opacity: 0.15, depthWrite: false });   // таламус и гипофиз видны, но не закрывают ядра
++  [[V3(0.0, -0.05, 0.2), V3(0.32, 0.2, 0.2)], [V3(0.0, -0.05, -0.2), V3(0.32, 0.2, 0.2)]].forEach(([p, s]) => { [innerFill, innerMat].forEach((mt) => { const m = new THREE.Mesh(new THREE.SphereGeometry(1, 32, 24), mt); m.position.copy(p); m.scale.copy(s); scene.add(m); }); });
+   const cc = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([V3(0.95, -0.05, 0), V3(0.7, 0.32, 0), V3(0, 0.42, 0), V3(-0.65, 0.3, 0), V3(-0.8, 0.12, 0)]), 64, 0.06, 10), innerMat); scene.add(cc);
+-  const pit = new THREE.Mesh(new THREE.SphereGeometry(0.07, 20, 14), innerMat); pit.position.set(0.38, -0.78, 0); scene.add(pit);
++  [innerFill, innerMat].forEach((mt) => { const pit = new THREE.Mesh(new THREE.SphereGeometry(0.07, 20, 14), mt); pit.position.set(0.38, -0.78, 0); scene.add(pit); });
+ 
+   // cortex target points
+   const cortexPts = [];
+@@ -1113,49 +1084,52 @@ function makeBrain() {
+     transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+   });
+   const groups = {}, nucleiLabels = [];
++  // MFB: восходящие пути ствола к передней коре идут сперва вперёд в медиальном пучке переднего мозга (гипоталамус, перегородка), затем веером
++  const MFB = { da: 1, na: 1, ht: 1, his: 1 };
+   function path(sys, a, b, lift = 0.25, r = 0.011) {
+-    const mid = a.clone().lerp(b, 0.5); mid.y += lift; mid.x += (b.x - a.x) * 0.08;
+-    const c = new THREE.CatmullRomCurve3([a, a.clone().lerp(mid, 0.5).add(V3(0, lift * 0.3, 0)), mid, b]);
++    const via = MFB[sys.id] && b.y > -0.2 && b.x > -0.3 && a.x < 0.3 ? V3(0.5, -0.25, 0.1 * Math.sign(b.z || 1)) : null;
++    const a2 = via || a, mid = a2.clone().lerp(b, 0.5); mid.y += lift; mid.x += (b.x - a2.x) * 0.08;
++    const c = new THREE.CatmullRomCurve3(via ? [a, a.clone().lerp(via, 0.5).add(V3(0, 0.05, 0)), via, mid, b] : [a, a.clone().lerp(mid, 0.5).add(V3(0, lift * 0.3, 0)), mid, b]);
+     const m = new THREE.Mesh(new THREE.TubeGeometry(c, 60, r, 6), flowMat(sys.color)); groups[sys.id].add(m);
+   }
+-  function nucleus(sys, p, name, size = 0.05) {
++  function nucleus(sys, p, name, size = 0.05, lp = null) {
+     const g = groups[sys.id];
+     const core = new THREE.Mesh(new THREE.SphereGeometry(size, 16, 12), new THREE.MeshBasicMaterial({ color: new THREE.Color(sys.color).multiplyScalar(2) })); core.position.copy(p); g.add(core);
+-    const spr = new THREE.Sprite(new THREE.SpriteMaterial({ map: GLOW, color: sys.color, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true })); spr.scale.setScalar(size * 9); spr.position.copy(p); g.add(spr);
+-    if (name) nucleiLabels.push({ text: name, pos: p.clone().add(V3(0, 0.1, 0.12)), sys: sys.id });
++    const spr = new THREE.Sprite(new THREE.SpriteMaterial({ map: GLOW, color: sys.color, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true })); spr.scale.setScalar(size * 6); spr.position.copy(p); g.add(spr);
++    if (name) nucleiLabels.push({ text: name, pos: lp || p.clone().add(V3(0, 0.1, 0.12)), sys: sys.id });   // lp — своё место подписи: ядра лежат тесно
+   }
+   SYSTEMS.forEach((s) => { groups[s.id] = new THREE.Group(); scene.add(groups[s.id]); });
+   const S = Object.fromEntries(SYSTEMS.map((s) => [s.id, s]));
+   // DA
+   const SN = [V3(-0.05, -0.55, 0.22), V3(-0.05, -0.55, -0.22)], VTA = [V3(0.0, -0.56, 0.07), V3(0.0, -0.56, -0.07)];
+-  SN.forEach((p, i) => { nucleus(S.da, p, i ? null : 'чёрная субстанция'); const sgn = i ? -1 : 1; path(S.da, p, V3(0.38, 0.08, 0.38 * sgn), 0.2, 0.016); path(S.da, p, V3(0.6, 0.0, 0.32 * sgn), 0.25, 0.012); });
+-  VTA.forEach((p, i) => { nucleus(S.da, p, i ? null : 'вентральная покрышка'); const sgn = i ? -1 : 1; path(S.da, p, V3(0.6, -0.3, 0.18 * sgn), 0.1, 0.016); path(S.da, p, V3(1.38, 0.25, 0.32 * sgn), 0.35); path(S.da, p, V3(1.3, -0.05, 0.42 * sgn), 0.3); });
++  SN.forEach((p, i) => { nucleus(S.da, p, i ? null : 'чёрная субстанция', 0.05, V3(-0.05, -0.64, 0.36)); const sgn = i ? -1 : 1; path(S.da, p, V3(0.38, 0.08, 0.38 * sgn), 0.2, 0.016); path(S.da, p, V3(0.6, 0.0, 0.32 * sgn), 0.25, 0.012); });
++  VTA.forEach((p, i) => { nucleus(S.da, p, i ? null : 'вентральная покрышка', 0.05, V3(0.06, -0.46, 0.16)); const sgn = i ? -1 : 1; path(S.da, p, V3(0.6, -0.3, 0.18 * sgn), 0.1, 0.016); path(S.da, p, V3(1.38, 0.25, 0.32 * sgn), 0.35); path(S.da, p, V3(1.3, -0.05, 0.42 * sgn), 0.3); });
+   nucleus(S.da, V3(0.25, -0.5, 0), null, 0.035); path(S.da, V3(0.25, -0.5, 0), V3(0.38, -0.76, 0), 0.0, 0.014);
+   // NA
+   const LC = [V3(-0.42, -0.98, 0.09), V3(-0.42, -0.98, -0.09)];
+-  LC.forEach((p, i) => { nucleus(S.na, p, i ? null : 'голубое пятно'); });
++  LC.forEach((p, i) => { nucleus(S.na, p, i ? null : 'голубое пятно', 0.05, V3(-0.6, -1.1, 0.2)); });
+   pick(16).forEach((t, j) => path(S.na, LC[t.z > 0 ? 0 : 1], t, 0.5));
+   path(S.na, LC[0], V3(-1.25, -0.8, 0.5), 0.1); path(S.na, LC[1], V3(-1.25, -0.8, -0.5), 0.1); path(S.na, LC[0], V3(-0.48, -2.25, 0.03), -0.05); path(S.na, LC[0], V3(-0.25, -0.32, 0.6), 0.2);
+   // 5-HT
+   const RA = [V3(-0.25, -0.78, 0), V3(-0.33, -1.05, 0), V3(-0.4, -1.32, 0)];
+-  RA.forEach((p, i) => nucleus(S.ht, p, i === 1 ? 'ядра шва' : null, 0.04));
++  RA.forEach((p, i) => nucleus(S.ht, p, i === 1 ? 'ядра шва' : null, 0.04, V3(-0.12, -0.86, 0.12)));
+   pick(14).forEach((t, j) => path(S.ht, RA[j % 2], t, 0.42));
+   path(S.ht, RA[0], V3(0.05, -0.05, 0.2), 0.1); path(S.ht, RA[0], V3(0.05, -0.05, -0.2), 0.1); path(S.ht, RA[2], V3(-0.47, -2.25, -0.03), -0.05);
+   // ACh
+   const MY = [V3(0.45, -0.38, 0.26), V3(0.45, -0.38, -0.26)];
+-  MY.forEach((p, i) => nucleus(S.ach, p, i ? null : 'базальное ядро'));
++  MY.forEach((p, i) => nucleus(S.ach, p, i ? null : 'базальное ядро', 0.05, V3(0.52, -0.12, 0.38)));
+   pick(14, (p) => p.x > -0.9).forEach((t) => path(S.ach, MY[t.z > 0 ? 0 : 1], t, 0.3));
+   path(S.ach, MY[0], V3(-0.25, -0.32, 0.58), 0.05); path(S.ach, MY[1], V3(-0.25, -0.32, -0.58), 0.05);
+   // His
+   const TM = [V3(0.12, -0.5, 0.09), V3(0.12, -0.5, -0.09)];
+-  TM.forEach((p, i) => nucleus(S.his, p, i ? null : 'задний гипоталамус', 0.04));
++  TM.forEach((p, i) => nucleus(S.his, p, i ? null : 'задний гипоталамус', 0.04, V3(0.28, -0.3, 0.12)));
+   pick(12).forEach((t) => path(S.his, TM[t.z > 0 ? 0 : 1], t, 0.35, 0.009));
+ 
+   const st = { sys: 'all', rot: true, labels: true, t: 0 };
+   function apply() {
+     SYSTEMS.forEach((s) => {
+       const on = st.sys === 'all' || st.sys === s.id;
+-      groups[s.id].children.forEach((m) => { if (m.material.uniforms) m.material.uniforms.uOn.value = on ? (st.sys === 'all' ? 0.75 : 1.2) : 0.05; else m.visible = on; });
++      groups[s.id].children.forEach((m) => { if (m.material.uniforms) m.material.uniforms.uOn.value = on ? (st.sys === 'all' ? 0.4 : 1.2) : 0.05; else m.visible = on; });
+     });
+     accentSet(st.sys === 'all' ? '#EFEAE6' : S[st.sys].color);
+   }
+@@ -1253,10 +1227,10 @@ function makeCell() {
+   scene.add(tag(new THREE.Mesh(memGeo, memSolid), 'membrane'));
+   scene.add(new THREE.Mesh(memGeo, glassMat(0x9cc8ff, { rim: 0.85, base: 0.015, pow: 2.3 })));
+   const memIn = new THREE.Mesh(memGeo, glassMat(0x9cc8ff, { rim: 0.35, base: 0.0, pow: 2.6 })); memIn.scale.setScalar(0.985); scene.add(memIn);
+-  { const pos = memGeo.attributes.position, nor = memGeo.attributes.normal, N = 900;
+-    const prot = new THREE.InstancedMesh(new THREE.SphereGeometry(0.075, 10, 8), phys(0xffffff, { roughness: 0.5 }), N);
++  { const pos = memGeo.attributes.position, nor = memGeo.attributes.normal, N = 450;
++    const prot = new THREE.InstancedMesh(new THREE.SphereGeometry(0.05, 10, 8), phys(0xffffff, { roughness: 0.5 }), N);
+     for (let i = 0; i < N; i++) { const k = Math.floor(rnd() * pos.count); const p = V3(pos.getX(k), pos.getY(k), pos.getZ(k)), n = V3(nor.getX(k), nor.getY(k), nor.getZ(k));
+-      dummy.position.copy(p); dummy.quaternion.setFromUnitVectors(Y, n); dummy.scale.set(1, rand(1.2, 2.2), 1); dummy.updateMatrix(); prot.setMatrixAt(i, dummy.matrix); prot.setColorAt(i, new THREE.Color(rnd() < 0.18 ? 0xffc77a : 0xd9e7ff)); }
++      dummy.position.copy(p); dummy.quaternion.setFromUnitVectors(Y, n); dummy.scale.set(1, rand(1.0, 1.6), 1); dummy.updateMatrix(); prot.setMatrixAt(i, dummy.matrix); prot.setColorAt(i, new THREE.Color(rnd() < 0.18 ? 0xffc77a : 0xd9e7ff)); }
+     scene.add(tag(prot, 'membrane')); }
+   ORG.membrane.anchor = V3(-3.1, 3.55, 3.0); ORG.membrane.dist = 17;
+ 
+@@ -1279,26 +1253,30 @@ function makeCell() {
+     scene.add(tag(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 60, 0.038, 6), chromMat), 'nucleus', c === 0));
+   }
+   const NO = NUC.clone().add(V3(0.35, 0.3, -0.25));
+-  scene.add(tag(new THREE.Mesh(displaceGeo(new THREE.IcosahedronGeometry(0.58, 5), (v) => { const n = v.clone().normalize(); v.multiplyScalar(1 + 0.12 * noise3(n.x * 4, n.y * 4, n.z * 4)); v.add(NO); }), phys(0x6e2c64, { roughness: 0.75, clearcoat: 0.2, emissive: 0x1a0616 })), 'nucleolus'));
++  scene.add(tag(new THREE.Mesh(displaceGeo(new THREE.SphereGeometry(0.58, 48, 32), (v) => { const n = v.clone().normalize(); v.multiplyScalar(1 + 0.12 * noise3(n.x * 4, n.y * 4, n.z * 4)); v.add(NO); }), phys(0x6e2c64, { roughness: 0.75, clearcoat: 0.2, emissive: 0x1a0616 })), 'nucleolus'));
+   ORG.nucleolus.anchor = NO.clone(); ORG.nucleolus.dist = 4;
+ 
+   /* rough ER */
+-  const rerMat = phys(0x5fb0d6, { transparent: true, opacity: 0.62, side: THREE.DoubleSide, roughness: 0.32 });
+-  const rerVerts = [];
+-  for (let k = 0; k < 5; k++) {
+-    const r = 2.38 + k * 0.27;
+-    const g = displaceGeo(new THREE.SphereGeometry(r, 90, 44, 0.3, 4.3, 0.55, 1.95), (v) => {
+-      const n = v.clone().normalize(), ph = Math.atan2(n.z, n.x), th = Math.acos(clamp(n.y, -1, 1));
+-      v.multiplyScalar(1 + 0.035 * Math.sin(ph * 9 + k * 1.3) * Math.sin(th * 7 + k) + 0.015 * noise3(n.x * 4 + k, n.y * 4, n.z * 4)); v.add(NUC);
+-    });
+-    const pos = g.attributes.position; for (let i = 0; i < pos.count; i += 3) rerVerts.push(V3(pos.getX(i), pos.getY(i), pos.getZ(i)));
+-    scene.add(tag(new THREE.Mesh(g, rerMat), 'rer', k === 0));
+-  }
+-  { const N = 2600, rm = new THREE.InstancedMesh(new THREE.SphereGeometry(0.034, 8, 6), phys(0xe06a6a, { roughness: 0.6, emissive: 0x200404 }), N);
++  // стопки отдельных цистерн в разных секторах; первая цистерна каждой стопки — продолжение наружной ядерной мембраны (r = 1.04·R ядра)
++  const rerMat = phys(0x5fb0d6, { transparent: true, opacity: 0.45, side: THREE.DoubleSide, roughness: 0.32 });
++  const rerVerts = [], rerAnch = [];
++  [[0.35, 0.75, 4], [1.35, 1.45, 3], [2.4, 0.85, 4], [3.35, 1.55, 3], [0.9, 2.0, 3], [3.9, 0.95, 3]].forEach(([ph0, th0, nL], si) => {
++    for (let k = 0; k < nL; k++) {
++      const r = NUC_R * 1.04 + k * 0.2, phL = 0.75 + 0.08 * k + 0.1 * (si % 2), thL = 0.6;
++      const g = displaceGeo(new THREE.SphereGeometry(r, 40, 20, ph0 - 0.04 * k, phL, th0, thL), (v) => {
++        const n = v.clone().normalize(), ph = Math.atan2(n.z, n.x), th = Math.acos(clamp(n.y, -1, 1));
++        v.multiplyScalar(1 + 0.03 * Math.sin(ph * 9 + k * 1.3) * Math.sin(th * 7 + k) + 0.012 * noise3(n.x * 4 + k, n.y * 4, n.z * 4)); v.add(NUC);
++      });
++      const pos = g.attributes.position; for (let i = 0; i < pos.count; i += 3) rerVerts.push(V3(pos.getX(i), pos.getY(i), pos.getZ(i)));
++      if (k === nL - 1) { const sp = (rr) => V3(-rr * Math.cos(ph0 + phL / 2) * Math.sin(th0 + thL / 2), rr * Math.cos(th0 + thL / 2), rr * Math.sin(ph0 + phL / 2) * Math.sin(th0 + thL / 2)).add(NUC); rerAnch.push(sp(r + 0.1)); }
++      scene.add(tag(new THREE.Mesh(g, rerMat), 'rer', si === 0 && k === 0));
++    }
++  });
++  { const N = 1800, rm = new THREE.InstancedMesh(new THREE.SphereGeometry(0.034, 8, 6), phys(0xe06a6a, { roughness: 0.6, emissive: 0x200404 }), N);
+     for (let i = 0; i < N; i++) { const p = rerVerts[Math.floor(rnd() * rerVerts.length)]; const out = p.clone().sub(NUC).normalize(); dummy.position.copy(p).addScaledVector(out, rnd() < 0.5 ? 0.04 : -0.04); dummy.quaternion.identity(); dummy.scale.setScalar(1); dummy.updateMatrix(); rm.setMatrixAt(i, dummy.matrix); }
+     scene.add(tag(rm, 'rer', false)); }
+   const sph = (r, ph, th) => V3(-r * Math.cos(ph) * Math.sin(th), r * Math.cos(th), r * Math.sin(ph) * Math.sin(th)).add(NUC);
+-  ORG.rer.anchor = sph(3.3, 1.9, 1.35); ORG.rer.dist = 6;
++  ORG.rer.anchor = rerAnch[0].clone(); ORG.rer.dist = 6;
+ 
+   /* smooth ER */
+   const serMat = phys(0x7fd8c4, { transparent: true, opacity: 0.85, roughness: 0.3 });
+@@ -1336,7 +1314,7 @@ function makeCell() {
+   scene.add(tag(cg, 'centro'));
+   const pcm = new THREE.Sprite(new THREE.SpriteMaterial({ map: GLOW, color: 0x7fe0b0, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true, opacity: 0.35 })); pcm.position.copy(C); pcm.scale.setScalar(1.1); scene.add(pcm);
+   ORG.centro.anchor = C.clone(); ORG.centro.dist = 2.6;
+-  const mtMat = phys(0x9be8c6, { transparent: true, opacity: 0.8, emissive: 0x0e3a2a, roughness: 0.3 });
++  const mtMat = phys(0x9be8c6, { transparent: true, opacity: 0.5, emissive: 0x0e3a2a, roughness: 0.3 });
+   const mtCurves = [];
+   const segDist = (p, a, b) => { const ab = b.clone().sub(a), t = clamp(p.clone().sub(a).dot(ab) / ab.lengthSq(), 0, 1); return a.clone().addScaledVector(ab, t).distanceTo(p); };
+   fib(140).forEach((d) => {
+@@ -1369,7 +1347,7 @@ function makeCell() {
+   /* lysosomes & peroxisomes */
+   const lysMat = phys(0x9b6be0, { roughness: 0.35, emissive: 0x1c0b33 }), lysos = [];
+   for (let i = 0; i < 9; i++) { const p = sample((q) => inCell(q, 0.9) && q.distanceTo(NUC) > 3.55 && q.distanceTo(G) > 1.6 && free(q, 0.9)); spots.push(p);
+-    const m = new THREE.Mesh(displaceGeo(new THREE.IcosahedronGeometry(rand(0.2, 0.32), 3), (v) => v.multiplyScalar(1 + 0.08 * noise3(v.x * 8 + i, v.y * 8, v.z * 8))), lysMat); m.position.copy(p); scene.add(tag(m, 'lyso', i === 0)); lysos.push({ m, base: p.clone(), ph: rand(0, 6) }); }
++    const m = new THREE.Mesh(displaceGeo(new THREE.SphereGeometry(rand(0.2, 0.32), 32, 24), (v) => v.multiplyScalar(1 + 0.08 * noise3(v.x * 8 + i, v.y * 8, v.z * 8))), lysMat); m.position.copy(p); scene.add(tag(m, 'lyso', i === 0)); lysos.push({ m, base: p.clone(), ph: rand(0, 6) }); }
+   ORG.lyso.anchor = lysos[0].base.clone(); ORG.lyso.dist = 2.6;
+   const perMat = phys(0x8fd16a, { transparent: true, opacity: 0.5, depthWrite: false }), perCore = phys(0x3f7a2a, { roughness: 0.2, emissive: 0x0c1f06 }), peros = [];
+   for (let i = 0; i < 6; i++) { const p = sample((q) => inCell(q, 0.9) && q.distanceTo(NUC) > 3.55 && q.distanceTo(G) > 1.6 && free(q, 0.9)); spots.push(p);
+@@ -1377,7 +1355,7 @@ function makeCell() {
+   ORG.perox.anchor = peros[0].position.clone(); ORG.perox.dist = 2.2;
+ 
+   /* free ribosomes */
+-  { const N = 1300, fm = new THREE.InstancedMesh(new THREE.SphereGeometry(0.032, 8, 6), phys(0xe06a6a, { roughness: 0.6, emissive: 0x200404 }), N); let first = null;
++  { const N = 700, fm = new THREE.InstancedMesh(new THREE.SphereGeometry(0.032, 8, 6), phys(0xe06a6a, { roughness: 0.6, emissive: 0x200404 }), N); let first = null;
+     for (let i = 0; i < N; i++) { const p = sample((q) => inCell(q, 0.3) && q.distanceTo(NUC) > 2.15); if (!first && q2(p)) first = p.clone(); dummy.position.copy(p); dummy.quaternion.identity(); dummy.scale.setScalar(1); dummy.updateMatrix(); fm.setMatrixAt(i, dummy.matrix); }
+     scene.add(tag(fm, 'ribo')); ORG.ribo.anchor = first || V3(2, -2, 3); ORG.ribo.dist = 2.4;
+     function q2(p) { return p.distanceTo(NUC) > 3.6 && p.y < -1; } }
+@@ -1386,7 +1364,7 @@ function makeCell() {
+   const DN = 2200, dust = new Float32Array(DN * 3);
+   for (let i = 0; i < DN; i++) { const p = sample((q) => inCell(q, 0.2)); dust.set([p.x, p.y, p.z], i * 3); }
+   const dustGeo = new THREE.BufferGeometry(); dustGeo.setAttribute('position', new THREE.BufferAttribute(dust, 3));
+-  scene.add(new THREE.Points(dustGeo, new THREE.PointsMaterial({ size: 0.05, map: GLOW, color: 0x6d86b8, transparent: true, opacity: 0.55, depthWrite: false, blending: THREE.AdditiveBlending })));
++  scene.add(new THREE.Points(dustGeo, new THREE.PointsMaterial({ size: 0.05, map: GLOW, color: 0x6d86b8, transparent: true, opacity: 0.3, depthWrite: false, blending: THREE.AdditiveBlending })));
+ 
+   /* vesicle traffic */
+   const VN = 200;
+@@ -1410,13 +1388,38 @@ function makeCell() {
+   scene.traverse((o) => { const ms = Array.isArray(o.material) ? o.material : o.material ? [o.material] : []; ms.forEach((m) => { m.clippingPlanes = cut; m.clipIntersection = true; }); });
+ 
+   const st = { t: 0, cut: true, labels: true, rot: true, sel: null, focusT: 0, timers: { er: 0, ex: 0.3, en: 0.8, mt: 0, rna: 0 } };
++  /* подписи по виду: якорь, срезанный разрезом или закрытый ядром, скрывается; из нескольких экземпляров
++     (митохондрии, лизосомы, пероксисомы, цистерны ЭПС, микротрубочки) берётся видимый ближайший к камере — и держится, пока виден */
++  const LBL = {}, LVIS = {}, LCUR = {};
++  ORGANELLES.forEach((o) => { LBL[o.id] = ORG[o.id].anchor.clone(); LVIS[o.id] = true; });
++  const CAND = { mito: () => mitos.map((m) => m.g.position), lyso: () => lysos.map((l) => l.m.position), perox: () => peros.map((g) => g.position), rer: () => rerAnch, cyto: () => mtCurves.slice(0, 12).map((c) => c.getPointAt(0.6)) };
++  const camDir = new THREE.Vector3(), rgt = new THREE.Vector3(), tmpQ = new THREE.Vector3();
++  const clipped = (p) => st.cut && cut.every((pl) => pl.distanceToPoint(p) < 0);
++  const hidden = (p, inNuc) => { if (clipped(p)) return true; if (inNuc) return false;
++    const cam = camera.position, d = tmpQ.copy(p).sub(cam), L2 = d.lengthSq(), tt = clamp(NUC.clone().sub(cam).dot(d) / L2, 0, 1), q = cam.clone().addScaledVector(d, tt);
++    return tt < 0.999 && q.distanceTo(NUC) < NUC_R * 0.92 && p.distanceTo(NUC) > NUC_R && !clipped(q); };
++  function placeLabels() {
++    camera.getWorldDirection(camDir); rgt.crossVectors(camDir, Y).normalize();
++    // мембрана — на краю силуэта (вверху слева), ядро — на краю ядра
++    LBL.membrane.copy(memPoint(rgt.clone().multiplyScalar(-0.62).addScaledVector(Y, 0.78)));
++    LBL.nucleus.copy(NUC).addScaledVector(rgt.clone().multiplyScalar(-0.55).addScaledVector(Y, 0.83).normalize(), NUC_R * 1.02);
++    ORGANELLES.forEach((o) => {
++      const id = o.id; if (id === 'membrane' || id === 'nucleus') { LVIS[id] = true; return; }
++      const inNuc = id === 'nucleolus' || id === 'pores';
++      if (CAND[id]) {
++        const list = CAND[id](); let i = LCUR[id];
++        if (i === undefined || hidden(list[i], false)) { let bd = 1e9; i = -1; list.forEach((p, j) => { if (hidden(p, false)) return; const d = p.distanceTo(camera.position); if (d < bd) { bd = d; i = j; } }); }
++        LCUR[id] = i >= 0 ? i : undefined; LVIS[id] = i >= 0; if (i >= 0) LBL[id].copy(list[i]);
++      } else LVIS[id] = !hidden(LBL[id], inNuc);
++    });
++  }
+   const C_SEL = new THREE.Color();
+   ORGANELLES.forEach((o) => ORG[o.id].mats.forEach((m) => { if (!m.userData.e0) m.userData.e0 = { c: m.emissive.clone(), i: m.emissiveIntensity }; }));
+ 
+   function select(id) {
+     if (st.sel) ORG[st.sel].mats.forEach((m) => { m.emissive.copy(m.userData.e0.c); m.emissiveIntensity = m.userData.e0.i; });
+     st.sel = id === 'all' ? null : id; st.focusT = 1.8;
+-    st.focus = st.sel ? { target: ORG[st.sel].anchor, dist: ORG[st.sel].dist } : { target: V3(0, 0, 0), dist: 19 };
++    st.focus = st.sel ? { target: (LBL[st.sel] && LVIS[st.sel] ? LBL[st.sel] : ORG[st.sel].anchor).clone(), dist: ORG[st.sel].dist } : { target: V3(0, 0, 0), dist: 19 };
+     accentSet(st.sel ? ORG[st.sel].color : '#9CC8FF');
+     refs.setInfo && refs.setInfo(); refs.seg && refs.seg.sync();
+   }
+@@ -1434,6 +1437,7 @@ function makeCell() {
+       const dir = camera.position.clone().sub(controls.target).normalize();
+       camera.position.lerp(controls.target.clone().addScaledVector(dir, st.focus.dist), k);
+     }
++    placeLabels();
+     // selection glow
+     if (st.sel) { C_SEL.set(ORG[st.sel].color); const pulse = 0.35 + 0.25 * Math.sin(t * 4); ORG[st.sel].mats.forEach((m) => { m.emissive.copy(C_SEL); m.emissiveIntensity = pulse; }); }
+     // organelle motion
+@@ -1447,7 +1451,7 @@ function makeCell() {
+     dustGeo.attributes.position.needsUpdate = true;
+     // traffic
+     const T = st.timers;
+-    if ((T.er -= dt) < 0) { T.er = 0.45; const dir = G.clone().sub(NUC).normalize().add(randUnit().multiplyScalar(0.45)).normalize(); go(NUC.clone().addScaledVector(dir, 3.45), cisFace.clone().add(randUnit().multiplyScalar(0.25)), 2.6, 0x7fd0ee, 0.8, null, 0.3); }
++    if ((T.er -= dt) < 0) { T.er = 0.45; const dir = G.clone().sub(NUC).normalize().add(randUnit().multiplyScalar(0.45)).normalize(); go(NUC.clone().addScaledVector(dir, 2.85), cisFace.clone().add(randUnit().multiplyScalar(0.25)), 2.6, 0x7fd0ee, 0.8, null, 0.3); }
+     if ((T.ex -= dt) < 0) { T.ex = 0.6; const dir = G.clone().normalize().add(randUnit().multiplyScalar(0.9)); const end = memPoint(dir);
+       go(transFace.clone().add(randUnit().multiplyScalar(0.3)), end, 4, 0xffd08a, 1, (p) => { for (let k = 0; k < 14; k++) sparks.spawn(p, randUnit().multiplyScalar(0.9), C_EXO, 0.6, 2, 1.4); }, 0.6); }
+     if ((T.en -= dt) < 0) { T.en = 1.5; const l = lysos[Math.floor(rnd() * lysos.length)]; const start = memPoint(l.base.clone().add(randUnit().multiplyScalar(2)));
+@@ -1479,7 +1483,7 @@ function makeCell() {
+     if (hit) select(hit.object.userData.org);
+   });
+ 
+-  const labels = ORGANELLES.map((o) => ({ text: o.name, pos: ORG[o.id].anchor, color: o.color, show: () => st.labels && (!st.sel || st.sel === o.id || ['membrane', 'nucleus'].includes(o.id)) }));
++  const labels = ORGANELLES.map((o) => ({ text: o.name, pos: LBL[o.id], color: o.color, show: () => st.labels && (st.sel === o.id || (LVIS[o.id] && (!st.sel || ['membrane', 'nucleus'].includes(o.id)))) }));
+   const refs = {};
+   function ui(el) {
+     const info = h('div', { class: 'info' });
+@@ -3179,11 +3183,12 @@ function makeVision() {
+   }
+   const glassBrain = glassMat(0xf2c7d6, { rim: 0.55, base: 0.01, pow: 2.0 });
+   const solidBrain = new THREE.MeshPhysicalMaterial({ color: 0xe0b8c6, roughness: 0.55, transparent: true, opacity: 0.06, depthWrite: false, envMapIntensity: 0.5 });
+-  const glassCb = glassMat(0xffc9b8, { rim: 0.5, base: 0.012, pow: 2.0 });
++  const glassCb = glassMat(0xffc9b8, { rim: 0.7, base: 0.012, pow: 2.0 });
++  const solidCb = new THREE.MeshPhysicalMaterial({ color: 0xffc9b8, roughness: 0.55, transparent: true, opacity: 0.1, depthWrite: false, envMapIntensity: 0.5 });   // мозжечок отличим от полушарий
+   const glassStem = glassMat(0xb9a4ff, { rim: 0.4, base: 0.01, pow: 1.8 });
+   const boneMat = new THREE.MeshPhysicalMaterial({ color: 0xd9c7a6, roughness: 0.62, clearcoat: 0.15, sheen: 0.3, sheenColor: new THREE.Color(0xfff0d8), envMapIntensity: 0.6, side: THREE.DoubleSide });
+   const v1Mat = { L: null, R: null };
+-  ['L', 'R'].forEach((f) => { v1Mat[f] = new THREE.MeshPhysicalMaterial({ color: new THREE.Color(VIS_FIELD_COL[f]).multiplyScalar(0.35), roughness: 0.5, clearcoat: 0.3, emissive: new THREE.Color(VIS_FIELD_COL[f]), emissiveIntensity: 0.15, transparent: true, opacity: 0.85 }); });
++  ['L', 'R'].forEach((f) => { v1Mat[f] = new THREE.MeshPhysicalMaterial({ color: new THREE.Color(VIS_FIELD_COL[f]).multiplyScalar(0.35), roughness: 0.5, clearcoat: 0.3, emissive: new THREE.Color(VIS_FIELD_COL[f]), emissiveIntensity: 0.08, transparent: true, opacity: 0.55, depthWrite: false }); });   // не закрывают концы лучистости
+   const parts = {};
+   const st = { mode: 'path', field: 'both', lesion: 'none', eye: 'norm', near: 0, labels: true, auto: true, t: 0, front: -1, next: 0.6, loaded: false, err: null, fly: 1, cortexT: { L: -9, R: -9 } };
+ 
+@@ -3207,6 +3212,12 @@ function makeVision() {
+     const set = (n, mat) => { if (parts[n]) parts[n].material = mat; };
+     if (parts.Group2_0) { set('Group2_0', glassBrain); const s2 = parts.Group2_0.clone(); s2.material = solidBrain; parts.Group2_0.parent.add(s2); parts.Group2s = s2; }
+     set('Group3_0', glassCb); set('Group5_0', glassStem); set('Group1_0', boneMat);
++    if (parts.Group3_0) { const c2 = parts.Group3_0.clone(); c2.material = solidCb; parts.Group3_0.parent.add(c2); }
++    if (parts.Group1_0) {   // подпись «глазница» — на ближайшую точку кости
++      holder.updateMatrixWorld(true); const lb = labels.find((l) => l.text === 'глазница'), o = parts.Group1_0, pa = o.geometry.attributes.position, v = new THREE.Vector3(), best = new THREE.Vector3(); let bd = 1e9;
++      for (let i = 0; i < pa.count; i += 3) { v.fromBufferAttribute(pa, i).applyMatrix4(o.matrixWorld); const d = v.distanceToSquared(lb.pos); if (d < bd) { bd = d; best.copy(v); } }
++      if (bd < 1e8) lb.pos.copy(best);
++    }
+     set('Group8_0', v1Mat.L); set('Group9_0', v1Mat.R);
+     ['all1_hrustalik003_0', 'all1_hrustalik004_0'].forEach((n) => { if (parts[n]) parts[n].visible = false; });
+     lens.visible = true;
+@@ -3277,7 +3288,7 @@ function makeVision() {
+         m.uniforms.uFront.value = st.front; m.uniforms.uOn.value = on ? 1 : 0.12;
+         if (on && !blind(n) && st.front > 0.97 && st.front < 1.0) st.cortexT[f] = st.t;
+       });
+-      ['L', 'R'].forEach((f) => { v1Mat[f].emissiveIntensity = 0.15 + 2.2 * Math.exp(-(st.t - st.cortexT[f]) / 0.35); });
++      ['L', 'R'].forEach((f) => { v1Mat[f].emissiveIntensity = 0.08 + 2.2 * Math.exp(-(st.t - st.cortexT[f]) / 0.35); });
+     } else {
+       Object.values(fibMats).forEach((m) => { m.uniforms.uFront.value = -1; m.uniforms.uOn.value = 0.35; });
+       updateOptics();
+@@ -3314,8 +3325,8 @@ function makeVision() {
+   const lp = (text, p, mode, color) => ({ text, pos: V3(...p), color, show: () => st.labels && (mode === 'any' || st.mode === mode) && (st.loaded || mode === 'any') });
+   const labels = [
+     lp('глаз', [-1.7, 0.15, 4.3], 'path'), lp('зрительный нерв', [-1.55, -0.95, 1.97], 'path'), lp('перекрёст (хиазма)', [0.05, -0.55, 0.94], 'path'),
+-    lp('зрительный тракт', [-1.25, -0.45, -0.21], 'path'), lp('≈ коленчатое тело', [-1.45, 0.35, -0.85], 'path'), lp('зрительная лучистость', [-1.95, 1.45, -1.67], 'path'),
+-    lp('зрительная кора · V1', [-1.4, 1.5, -4.3], 'path', VIS_FIELD_COL.L), lp('V1 левого полушария', [1.4, 1.5, -4.3], 'path', VIS_FIELD_COL.R),
++    lp('зрительный тракт', [-1.25, -0.45, -0.21], 'path'), lp('латеральное коленчатое тело', [-1.45, 0.35, -0.85], 'path'), lp('зрительная лучистость', [-1.95, 1.45, -1.67], 'path'),
++    lp('V1 правого полушария', [-1.4, 1.5, -4.3], 'path', VIS_FIELD_COL.L), lp('V1 левого полушария', [1.4, 1.5, -4.3], 'path', VIS_FIELD_COL.R),
+     lp('мышцы глаза', [1.66, 0.25, 3.0], 'path'), lp('мозжечок', [0.1, -2.6, -2.4], 'path'), lp('глазница', [2.9, -0.2, 4.6], 'path'),
+     lp('роговица', [-1.85, 0.0, 4.36], 'eye'), lp('хрусталик', [-1.85, -0.25, 4.02], 'eye'), lp('стекловидное тело', [-1.85, -0.15, 3.55], 'eye'),
+     lp('сетчатка', [-1.85, -0.95, 3.25], 'eye'), lp('зрительный нерв', [-1.85, -0.55, 2.75], 'eye'), lp('предмет', [RAY_X, AXIS_Y + 0.6, 7.0], 'eye'),
+@@ -3380,7 +3391,7 @@ function makeVision() {
+   const lesUpd = update;
+   const self = {
+     scene, camera, controls, ui, onKey, stats, labels, drawScope, accent: '#7FB8FF',
+-    update(dt) { lesUpd(dt); const L = LES[st.lesion]; if (L.pos) lesLabel.pos.set(L.pos[0] + 0.3, L.pos[1] + 0.45, L.pos[2]); lesionSpr.material.opacity = 0.7 + 0.3 * Math.sin(st.t * 5); },
++    update(dt) { lesUpd(dt); const L = LES[st.lesion]; if (L.pos) { const o = st.lesion === 'chiasm' ? [0.45, -0.35, 0.2] : [0.3, 0.45, 0]; lesLabel.pos.set(L.pos[0] + o[0], L.pos[1] + o[1], L.pos[2] + o[2]); } lesionSpr.material.opacity = 0.7 + 0.3 * Math.sin(st.t * 5); },
+     kicker: 'Органы чувств · зрение', title: 'Зрение',
+     lede: 'Путь сигнала от сетчатки до затылочной коры и оптика глаза. Выберите повреждение и посмотрите, какая часть поля зрения пропадёт.',
+     notes: `
+@@ -3403,7 +3414,7 @@ function makeVision() {
+ 
+ /* =========================================================
+    ОБЩИЙ НАБОР: модель мозга для сцен лекций 2–4
+-   x — вперёд (лоб), y — вверх, z — вбок (z>0 левое полушарие)
++   x — вперёд (лоб), y — вверх, z — вбок (правая тройка: z>0 — ПРАВОЕ полушарие, hemi[0]; z<0 — левое, hemi[1])
+    ========================================================= */
+ const LOBES = [
+   { id: 'front', name: 'Лобная', color: '#E9785F' },
+@@ -3417,7 +3428,7 @@ const BKP = {   // опорные точки глубоких структур (
+   pit: V3(0.38, -0.78, 0), chiasm: V3(0.45, -0.58, 0), mam: V3(0.12, -0.58, 0),
+   cc: [V3(0.95, -0.05, 0), V3(0.7, 0.32, 0), V3(0, 0.42, 0), V3(-0.65, 0.3, 0), V3(-0.8, 0.12, 0)],
+   stem: [V3(0.05, -0.35, 0), V3(-0.2, -0.85, 0), V3(-0.38, -1.35, 0), V3(-0.48, -2.3, 0)],
+-  cere: V3(-1.28, -0.95, 0), cereS: V3(0.72, 0.46, 1.05),
++  cere: V3(-1.2, -1.0, 0), cereS: V3(0.72, 0.46, 1.05),
+ };
+ const bkLs = (x) => -0.2 + (0.75 - x) * 0.28;            // боковая (сильвиева) борозда: y(x)
+ const bkCs = (y) => 0.35 - (y + 0.08) * 0.36;           // центральная борозда: x(y)
+@@ -3465,12 +3476,30 @@ function brainKit() {
+     g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+     g.computeVertexNormals(); return g;
+   }
+-  const cere = displaceGeo(new THREE.SphereGeometry(1, 160, 110), (v) => {
+-    const fol = 1 + 0.035 * Math.sin(v.y * 46 + v.x * 6) + 0.03 * noise3(v.x * 3, v.y * 3, v.z * 3);
+-    v.set(v.x * 0.72 * fol, v.y * 0.46 * fol, v.z * 1.05 * fol); v.add(V3(-1.28, -0.95, 0));
+-  });
++  const cere = mergeGeometries([displaceGeo(new THREE.SphereGeometry(1, 160, 110), (v) => {
++    // листки: волнистые борозды (фаза с шумом), у латеральных полюсов гаснут; червь — неглубокая выемка по средней линии
++    const az = Math.abs(v.z), fade = smooth(0.98, 0.7, az);
++    const fol = 1 + (0.035 * Math.sin(v.y * 46 + v.x * 6 + 2.2 * noise3(v.z * 2, v.x, 0)) + 0.03 * noise3(v.x * 3, v.y * 3, v.z * 3)) * (0.35 + 0.65 * fade);
++    const notch = 1 - 0.1 * Math.exp(-((v.z / 0.12) ** 2)) * smooth(-0.2, 0.5, -v.x);
++    v.set(v.x * 0.72 * fol * notch, v.y * 0.46 * fol, v.z * 1.05 * fol * (1 - 0.1 * smooth(0.8, 1, az))); v.add(BKP.cere);
++  }),
++  // средние ножки мозжечка — к мосту
++  ...[1, -1].map((s) => taperTube(new THREE.CatmullRomCurve3([V3(-0.95, -0.98, 0.42 * s), V3(-0.62, -1.02, 0.3 * s), V3(-0.3, -1.0, 0.14 * s)]), (u) => 0.13 - 0.03 * u, 24, 12))]);
+   const stemCurve = new THREE.CatmullRomCurve3(BKP.stem);
+   const stem = taperTube(stemCurve, (u) => (u < 0.45 ? 0.26 + 0.1 * Math.sin(u / 0.45 * Math.PI) : 0.2 - 0.06 * (u - 0.45)), 80, 24);
++  { // мост выпячен вперёд, в продолговатом мозге — пирамиды и оливы
++    const pos = stem.attributes.position, uv = stem.attributes.uv, c = new THREE.Vector3(), p = new THREE.Vector3();
++    for (let i = 0; i < pos.count; i++) {
++      const u = Math.min(uv.getX(i), 1); stemCurve.getPointAt(u, c); p.fromBufferAttribute(pos, i);
++      const dx = p.x - c.x, dz = p.z - c.z, r = Math.hypot(dx, dz) || 1, fwd = Math.max(0, dx / r);
++      p.x += 0.13 * fwd * fwd * Math.sin(Math.PI * smooth(0.12, 0.45, u));                     // мост
++      const med = Math.exp(-(((u - 0.62) / 0.12) ** 2));
++      p.x += 0.035 * med * fwd * Math.exp(-(((Math.abs(dz / r) - 0.35) / 0.25) ** 2));          // пирамиды
++      p.addScaledVector(V3(dx / r, 0, dz / r), 0.05 * med * Math.exp(-(((Math.abs(dz / r) - 0.85) / 0.2) ** 2)) * smooth(-0.3, 0.2, dx / r));   // оливы
++      pos.setXYZ(i, p.x, p.y, p.z);
++    }
++    stem.computeVertexNormals();
++  }
+   BK = { hemi: [hemi(1), hemi(-1)], cere, stem, stemCurve };
+   return BK;
+ }
+@@ -4976,30 +5005,36 @@ function makeDien() {
+   /* ---------- таламусы ---------- */
+   const thal = new THREE.Group(); scene.add(thal);
+   const thalGeo = (s) => displaceGeo(new THREE.SphereGeometry(1, 64, 44), (v) => {
+-    const back = smooth(0, -1, v.x); v.set(v.x * 1.05, v.y * (0.62 + 0.12 * back), v.z * (0.52 + 0.12 * back)); v.x += 0.06 * Math.exp(-(((v.y - 0.3) / 0.25) ** 2)) * smooth(0.6, 1, v.x / 1.05); v.z += 0.62 * s;
++    const back = smooth(0, -1, v.x); v.set(v.x * 1.05, v.y * (0.62 + 0.12 * back), v.z * (0.52 + 0.12 * back)); v.x += 0.06 * Math.exp(-(((v.y - 0.3) / 0.25) ** 2)) * smooth(0.6, 1, v.x / 1.05); v.z += 0.7 * s;   // между таламусами — только III желудочек и межталамическое сращение
+   });
+   [1, -1].forEach((s) => { const g = thalGeo(s); thal.add(new THREE.Mesh(g, mat(0xb9a4ff, { transparent: true, opacity: 0.2, depthWrite: false })), new THREE.Mesh(g, glassMat(0xc9b6ff, { rim: 0.35, base: 0.008, pow: 2 }))); });
+-  { const ad = new THREE.CylinderGeometry(0.14, 0.14, 0.5, 20); ad.rotateX(Math.PI / 2); ad.translate(0.1, 0.02, 0); thal.add(new THREE.Mesh(ad, mat(0xe8e0f0))); }
++  { const ad = new THREE.CylinderGeometry(0.14, 0.14, 0.62, 20); ad.rotateX(Math.PI / 2); ad.translate(0.1, 0.02, 0); thal.add(new THREE.Mesh(ad, mat(0xe8e0f0))); }
+   // ретикулярное ядро — «скорлупа» снаружи
+   const retShell = [1, -1].map((s) => { const g = thalGeo(s); g.scale(1.06, 1.08, 1.0); g.translate(0, 0, 0.1 * s); const m = new THREE.Mesh(g, glassMat(0x8fb4ff, { rim: 0.2, base: 0.003, pow: 1.6 })); thal.add(m); return m; });
+   // ядра
+   const TN = {
+-    limbic: [V3(0.82, 0.28, 0.55), V3(0.82, 0.28, -0.55)], motor: [V3(0.3, -0.05, 0.85), V3(0.3, -0.05, -0.85)], touch: [V3(-0.3, -0.12, 0.8), V3(-0.3, -0.12, -0.8)],
+-    vision: [V3(-0.78, -0.42, 0.88), V3(-0.78, -0.42, -0.88)], hearing: [V3(-0.62, -0.5, 0.58), V3(-0.62, -0.5, -0.58)],
++    limbic: [V3(0.82, 0.28, 0.63), V3(0.82, 0.28, -0.63)], motor: [V3(0.3, -0.05, 0.93), V3(0.3, -0.05, -0.93)], touch: [V3(-0.3, -0.12, 0.88), V3(-0.3, -0.12, -0.88)],
++    vision: [V3(-0.78, -0.42, 0.96), V3(-0.78, -0.42, -0.96)], hearing: [V3(-0.62, -0.5, 0.66), V3(-0.62, -0.5, -0.66)],
+   };
+   const nucG = {};
+   THAL_CH.forEach((c) => { nucG[c.id] = TN[c.id].map((p) => glowNucleus(thal, p, c.color, 0.08, 5)); });
+-  const assoc = [V3(0.1, 0.15, 0.35), V3(0.1, 0.15, -0.35), V3(-0.98, 0.05, 0.62), V3(-0.98, 0.05, -0.62)].map((p, i) => glowNucleus(thal, p, i < 2 ? '#C77DFF' : '#B8E06A', 0.1, 6));
++  const assoc = [V3(0.1, 0.15, 0.43), V3(0.1, 0.15, -0.43), V3(-0.98, 0.05, 0.7), V3(-0.98, 0.05, -0.7)].map((p, i) => glowNucleus(thal, p, i < 2 ? '#C77DFF' : '#B8E06A', 0.1, 6));
+   // III желудочек
+-  const csfM = new THREE.MeshPhysicalMaterial({ color: 0x2f7fc0, transparent: true, opacity: 0.45, emissive: 0x06204a, emissiveIntensity: 0.6, depthWrite: false, side: THREE.DoubleSide });
++  const csfM = new THREE.MeshPhysicalMaterial({ color: 0x2f7fc0, transparent: true, opacity: 0.25, emissive: 0x06204a, emissiveIntensity: 0.3, depthWrite: false, side: THREE.DoubleSide });
+   { const sh = new THREE.Shape(); sh.moveTo(0.95, 0.35); sh.bezierCurveTo(0.3, 0.55, -0.6, 0.5, -0.9, 0.25); sh.bezierCurveTo(-0.85, -0.3, -0.5, -0.9, -0.2, -1.2); sh.bezierCurveTo(0.2, -1.45, 0.55, -1.55, 0.45, -1.7); sh.bezierCurveTo(0.8, -1.4, 1.0, -0.6, 0.95, 0.35);
+     const g = new THREE.ExtrudeGeometry(sh, { depth: 0.08, bevelEnabled: false, curveSegments: 24 }); g.translate(0, 0, -0.04); scene.add(new THREE.Mesh(g, csfM)); }
+   // кора — купол сверху
+   const dome = new THREE.Group(); scene.add(dome);
+-  const domeG = new THREE.SphereGeometry(3.1, 72, 36, 0, Math.PI * 2, 0, Math.PI * 0.42); domeG.scale(1.25, 0.8, 1.05); domeG.translate(-0.1, 0.0, 0);
+-  dome.add(new THREE.Mesh(domeG, glassMat(0xf2c7d6, { rim: 0.25, base: 0.006, pow: 2.4 })));
+-  const CX = { vision: V3(-3.1, 1.5, 0.9), hearing: V3(-0.6, 1.7, 2.6), touch: V3(-0.6, 2.42, 1.0), motor: V3(0.6, 2.4, 1.0), limbic: V3(0.6, 2.1, 0.3) };
+-  Object.entries(CX).forEach(([id, p]) => { const c = THAL_CH.find((q) => q.id === id); const g = new THREE.Mesh(new THREE.CircleGeometry(0.42, 32), new THREE.MeshBasicMaterial({ color: new THREE.Color(c.color).multiplyScalar(0.6), transparent: true, opacity: 0.5, side: THREE.DoubleSide, depthWrite: false })); g.position.copy(p); g.lookAt(V3(0, -0.5, 0)); dome.add(g); });
++  const DR = V3(3.1 * 1.25, 3.1 * 0.8, 3.1 * 1.05), DC = V3(-0.1, 0, 0);   // полуоси и центр купола
++  const domeG = new THREE.SphereGeometry(1, 72, 40, 0, Math.PI * 2, 0, Math.PI * 0.6); domeG.scale(DR.x, DR.y, DR.z); domeG.translate(DC.x, DC.y, DC.z);
++  dome.add(new THREE.Mesh(domeG, new THREE.MeshPhysicalMaterial({ color: 0xe0b8c6, roughness: 0.55, transparent: true, opacity: 0.03, depthWrite: false, side: THREE.DoubleSide, envMapIntensity: 0.4 })), new THREE.Mesh(domeG, glassMat(0xf2c7d6, { rim: 0.45, base: 0.02, pow: 2.2 })));
++  // точка на куполе в направлении p (k < 1 — чуть внутри)
++  const onDome = (p, k = 0.985) => { const d = p.clone().sub(DC); return d.multiplyScalar(k / Math.hypot(d.x / DR.x, d.y / DR.y, d.z / DR.z)).add(DC); };
++  // проекционные поля коры (z>0 — одна сторона; вторая — зеркально): слух — височная доля (извилины Гешля), зрение — затылочный полюс у шпорной борозды (медиально)
++  const CX = { vision: onDome(V3(-3.3, 0.55, 0.35), 0.96), hearing: onDome(V3(-0.3, 0.45, 2.9)), touch: onDome(V3(-0.6, 2.42, 1.0)), motor: onDome(V3(0.6, 2.4, 1.0)), limbic: V3(0.6, 2.1, 0.3) };
++  Object.entries(CX).forEach(([id, p]) => { const c = THAL_CH.find((q) => q.id === id); [1, -1].forEach((s) => {
++    const g = new THREE.Mesh(new THREE.CircleGeometry(0.42, 32), new THREE.MeshBasicMaterial({ color: new THREE.Color(c.color).multiplyScalar(0.6), transparent: true, opacity: 0.5, side: THREE.DoubleSide, depthWrite: false }));
++    g.position.set(p.x, p.y, p.z * s); g.lookAt(id === 'limbic' ? V3(0, -0.5, 0) : id === 'vision' ? DC.clone().setY(p.y) : DC.clone().setY(-0.5)); if (id === 'vision') g.scale.setScalar(0.75); dome.add(g); }); });
+ 
+   /* ---------- входы и выходы таламуса ---------- */
+   const flows = { in: {}, out: {} };
+@@ -5106,12 +5141,12 @@ function makeDien() {
+     hypo: '<b>Гипоталамус</b> — нижняя часть промежуточного мозга, более 30 пар ядер. Здесь центры голода и жажды, полового и родительского поведения, страха и агрессии, сна и биологических часов. Вместе с <b>гипофизом</b> он управляет всеми эндокринными железами: задняя доля выпускает гормоны, сделанные в нейронах гипоталамуса, передняя слушается его либеринов и статинов. Попробуйте опыты.',
+   };
+   const labels = [
+-    ...THAL_CH.map((c) => ({ text: c.nuc, pos: TN[c.id][0].clone().add(V3(0.05, 0.16, 0.2)), color: c.color, show: () => st.labels && st.mode === 'thal' && (st.att === 'none' || st.att === c.id) })),
++    ...THAL_CH.map((c) => ({ text: c.nuc, pos: TN[c.id][0].clone().add({ vision: V3(-0.1, -0.22, 0.25), hearing: V3(-0.2, 0.06, 0.3) }[c.id] || V3(0.05, 0.16, 0.2)), color: c.color, show: () => st.labels && st.mode === 'thal' && (st.att === 'none' || st.att === c.id) })),
+     ...THAL_CH.map((c) => ({ text: c.cortex, pos: CX[c.id].clone().add(V3(0, 0.25, 0)), color: c.color, show: () => st.labels && st.mode === 'thal' && st.att === c.id })),
+     { text: 'подушка', pos: V3(-1.15, 0.25, 0.7), color: '#B8E06A', show: () => st.labels && st.mode === 'thal' && st.att === 'none' },
+     { text: 'медиальные ядра', pos: V3(0.1, 0.35, 0.3), color: '#C77DFF', show: () => st.labels && st.mode === 'thal' && st.att === 'none' },
+     { text: 'ретикулярное ядро', pos: V3(0.3, 0.6, 1.15), color: '#8fb4ff', show: () => st.labels && st.mode === 'thal' && st.att !== 'none' },
+-    { text: 'III желудочек', pos: V3(-0.4, -0.5, 0.05), color: '#8fd4ff', show: () => st.labels },
++    { text: 'III желудочек', pos: V3(0.3, -0.9, 0.05), color: '#8fd4ff', show: () => st.labels },
+     { text: 'кора', pos: V3(-1.5, 2.3, -1.6), color: '#f2c7d6', show: () => st.labels && st.mode === 'thal' },
+     { text: 'эпифиз', pos: pineal.position.clone().add(V3(-0.1, 0.2, 0)), color: '#d8c090', show: () => st.labels },
+     ...Object.entries(HN).map(([id, n]) => ({ text: n.name, pos: n.p[0].clone().add(V3(0.04, 0.08, 0.12)), color: n.c, show: () => st.labels && st.mode === 'hypo' })),
+@@ -5234,21 +5269,28 @@ function makeHemis() {
+   const solid = (id, g, o = {}) => { const m = new THREE.MeshPhysicalMaterial({ color: new THREE.Color(PART[id].color).multiplyScalar(0.34), roughness: 0.5, clearcoat: 0.25, envMapIntensity: 0.3, emissive: new THREE.Color(PART[id].color), emissiveIntensity: 0.06, transparent: true, opacity: 0.92, ...o }); PART[id].mats.push(m); const mesh = new THREE.Mesh(g, m); mesh.userData.pick = id; pick.push(mesh); scene.add(mesh); return mesh; };
+   const bg = new THREE.Group(); scene.add(bg);
+   [1, -1].forEach((s) => {
+-    const caud = new THREE.CatmullRomCurve3([V3(0.62, 0.08, 0.2 * s), V3(0.4, 0.24, 0.23 * s), V3(0.05, 0.3, 0.26 * s), V3(-0.35, 0.22, 0.31 * s), V3(-0.6, 0.0, 0.4 * s), V3(-0.48, -0.25, 0.48 * s), V3(-0.15, -0.36, 0.5 * s), V3(0.08, -0.38, 0.5 * s)]);
+-    solid('caud', taperTube(caud, (u) => (u < 0.12 ? 0.08 + u * 0.4 : 0.13 * Math.pow(1 - u, 1.3) + 0.018), 120, 16));
+-    const put = new THREE.SphereGeometry(1, 40, 28); put.scale(0.32, 0.2, 0.085); put.rotateZ(0.12); put.translate(0.2, -0.04, 0.42 * s); solid('put', put);
+-    const gpe = new THREE.SphereGeometry(1, 32, 24); gpe.scale(0.2, 0.14, 0.05); gpe.translate(0.12, -0.08, 0.335 * s); solid('gp', gpe);
+-    const gpi = new THREE.SphereGeometry(1, 28, 20); gpi.scale(0.13, 0.1, 0.035); gpi.translate(0.1, -0.1, 0.285 * s); solid('gp', gpi, { color: new THREE.Color('#d8b440').multiplyScalar(0.45) });
+-    const cla = new THREE.SphereGeometry(1, 28, 20); cla.scale(0.28, 0.22, 0.012); cla.translate(0.2, -0.04, 0.54 * s); solid('cla', cla);
++    const caud = new THREE.CatmullRomCurve3([V3(0.6, 0.02, 0.2 * s), V3(0.4, 0.24, 0.23 * s), V3(0.05, 0.3, 0.26 * s), V3(-0.35, 0.22, 0.31 * s), V3(-0.6, 0.0, 0.4 * s), V3(-0.48, -0.25, 0.48 * s), V3(-0.15, -0.36, 0.5 * s), V3(0.08, -0.38, 0.5 * s)]);
++    // головка хвостатого ядра — самая толстая часть, выступает в передний рог и спускается к прилежащему ядру
++    solid('caud', taperTube(caud, (u) => (u < 0.15 ? 0.19 - 0.3 * u : 0.145 * Math.pow(1 - u, 1.3) + 0.018), 120, 16));
++    // латерально от таламуса: (задняя ножка внутренней капсулы) → бледный шар → скорлупа → наружная капсула → ограда
++    const put = new THREE.SphereGeometry(1, 40, 28); put.scale(0.32, 0.2, 0.085); put.rotateZ(0.12); put.translate(0.2, -0.04, 0.45 * s); solid('put', put);
++    const gpe = new THREE.SphereGeometry(1, 32, 24); gpe.scale(0.2, 0.14, 0.05); gpe.translate(0.12, -0.08, 0.36 * s); solid('gp', gpe);
++    const gpi = new THREE.SphereGeometry(1, 28, 20); gpi.scale(0.13, 0.1, 0.035); gpi.translate(0.1, -0.1, 0.31 * s); solid('gp', gpi, { color: new THREE.Color('#d8b440').multiplyScalar(0.45) });
++    const cla = new THREE.SphereGeometry(1, 28, 20); cla.scale(0.22, 0.28, 0.012); cla.translate(0.2, -0.04, 0.575 * s); solid('cla', cla, { opacity: 0.35, depthWrite: false });
+     const amy = new THREE.SphereGeometry(0.085, 24, 18); amy.translate(0.16, -0.39, 0.5 * s); solid('amy', amy);
+     const acc = new THREE.SphereGeometry(0.06, 20, 14); acc.translate(0.46, -0.12, 0.16 * s); solid('acc', acc);
+-    const th = new THREE.SphereGeometry(1, 32, 24); th.scale(0.32, 0.2, 0.18); th.translate(0.0, -0.05, 0.2 * s); solid('thal', th, { opacity: 0.6 });
++    const th = new THREE.SphereGeometry(1, 32, 24); th.scale(0.3, 0.19, 0.13); th.translate(-0.2, -0.04, 0.14 * s); solid('thal', th, { opacity: 0.6 });   // кзади и медиальнее чечевицеобразного ядра
+   });
+-  PART.caud.anchor = V3(0.5, 0.32, 0.28); PART.put.anchor = V3(0.42, 0.0, 0.5); PART.gp.anchor = V3(0.02, -0.17, 0.34); PART.cla.anchor = V3(0.2, 0.26, 0.56);
+-  PART.amy.anchor = V3(0.18, -0.44, 0.58); PART.acc.anchor = V3(0.5, -0.16, 0.2); PART.thal.anchor = V3(-0.05, 0.08, 0.22);
++  PART.caud.anchor = V3(0.5, 0.32, 0.28); PART.put.anchor = V3(0.42, 0.0, 0.5); PART.gp.anchor = V3(0.1, -0.2, 0.37); PART.cla.anchor = V3(0.2, 0.3, 0.58);
++  PART.amy.anchor = V3(0.18, -0.44, 0.58); PART.acc.anchor = V3(0.55, -0.22, 0.12); PART.thal.anchor = V3(-0.25, 0.1, 0.16);
+   // чёрная субстанция и субталамическое ядро — участники двигательной петли
+   const SN = [V3(-0.05, -0.47, 0.13), V3(-0.05, -0.47, -0.13)], STN = [V3(0.0, -0.33, 0.17), V3(0.0, -0.33, -0.17)];
+   const snG = SN.map((p) => glowNucleus(scene, p, '#F4C542', 0.035, 8)), stnG = STN.map((p) => glowNucleus(scene, p, '#7FD6C8', 0.03, 8));
++  // форма: чёрная субстанция — вытянутый полумесяц в ножке мозга, субталамическое ядро — «линза»
++  [[SN, '#F4C542', [0.12, 0.025, 0.05], 0.6], [STN, '#7FD6C8', [0.07, 0.025, 0.04], 0.4]].forEach(([P, c, sc, ry]) => P.forEach((p) => {
++    const g = new THREE.SphereGeometry(1, 24, 16); g.scale(...sc); g.rotateY(ry * Math.sign(p.z)); g.translate(p.x, p.y, p.z);
++    scene.add(new THREE.Mesh(g, new THREE.MeshPhysicalMaterial({ color: new THREE.Color(c).multiplyScalar(0.4), emissive: c, emissiveIntensity: 0.35, roughness: 0.5, transparent: true, opacity: 0.8 })));
++  }));
+ 
+   /* ---------- проводящие пути ---------- */
+   const tracts = new THREE.Group(); scene.add(tracts); tracts.visible = false;
+@@ -5257,7 +5299,7 @@ function makeHemis() {
+   const surf = (x, y, s) => { const d = V3(x, y, 0.9 * s).sub(V3(0, -0.1, 0)).normalize(); let r = 0; const pos = brainKit().hemi[s > 0 ? 0 : 1].attributes.position, v = new THREE.Vector3(); let best = -1; for (let i = 0; i < pos.count; i += 2) { v.fromBufferAttribute(pos, i).add(V3(0, 0.1, 0)); const l = v.length(), c = v.dot(d) / l; if (c > best) { best = c; r = l; } } return d.multiplyScalar(r * 0.9).add(V3(0, -0.1, 0)); };
+   [1, -1].forEach((s) => {
+     // проекционные: лучистый венец → внутренняя капсула → ножка мозга
+-    for (let k = 0; k < 14; k++) { const x = -0.9 + k * 0.14, top = surf(x, 0.75 - Math.abs(x) * 0.25, s); fib([top, V3(x * 0.4, 0.25, 0.4 * s), V3(0.08, -0.12, 0.27 * s), V3(0.0, -0.4, 0.15 * s), V3(-0.15, -0.75, 0.08 * s)], '#FF6A5A', 0.007); }
++    for (let k = 0; k < 14; k++) { const x = -0.9 + k * 0.14, top = surf(x, 0.75 - Math.abs(x) * 0.25, s); fib([top, V3(x * 0.4, 0.25, 0.4 * s), V3(0.0, -0.1, 0.25 * s), V3(-0.02, -0.4, 0.15 * s), V3(-0.15, -0.75, 0.08 * s)], '#FF6A5A', 0.007); }
+     // ассоциативные: верхний и нижний продольные пучки, крючковидный, дугообразные U-волокна
+     fib([surf(1.1, 0.2, s), V3(0.6, 0.48, 0.62 * s), V3(-0.2, 0.52, 0.66 * s), V3(-0.9, 0.35, 0.6 * s), surf(-1.4, 0.15, s)], '#5CC48A', 0.014);
+     fib([surf(0.75, -0.45, s), V3(0.2, -0.38, 0.75 * s), V3(-0.6, -0.25, 0.7 * s), surf(-1.35, -0.1, s)], '#5CC48A', 0.012);
+@@ -5282,15 +5324,15 @@ function makeHemis() {
+   const M1 = surf(0.2, 0.85, 1);
+   const LOOP = [
+     new THREE.CatmullRomCurve3([M1, V3(0.25, 0.4, 0.45), V3(0.28, 0.05, 0.45)]),           // кора → стриатум
+-    new THREE.CatmullRomCurve3([V3(0.25, -0.02, 0.42), V3(0.15, -0.08, 0.32), V3(0.1, -0.1, 0.285)]), // стриатум → внутр. бледный шар (торможение)
+-    new THREE.CatmullRomCurve3([V3(0.1, -0.1, 0.285), V3(0.08, -0.08, 0.24), V3(0.05, -0.04, 0.2)]),  // бледный шар → таламус
+-    new THREE.CatmullRomCurve3([V3(0.05, -0.04, 0.2), V3(0.15, 0.4, 0.35), M1]),             // таламус → кора
++    new THREE.CatmullRomCurve3([V3(0.25, -0.02, 0.45), V3(0.15, -0.08, 0.36), V3(0.1, -0.1, 0.31)]), // стриатум → внутр. бледный шар (торможение)
++    new THREE.CatmullRomCurve3([V3(0.1, -0.1, 0.31), V3(-0.02, -0.1, 0.26), V3(-0.12, -0.04, 0.17)]),  // бледный шар → таламус (через капсулу)
++    new THREE.CatmullRomCurve3([V3(-0.12, -0.04, 0.17), V3(0.05, 0.4, 0.35), M1]),             // таламус → кора
+   ];
+-  const DA = new THREE.CatmullRomCurve3([SN[0], V3(0.05, -0.3, 0.3), V3(0.2, -0.05, 0.42)]);
++  const DA = new THREE.CatmullRomCurve3([SN[0], V3(0.05, -0.3, 0.3), V3(0.2, -0.05, 0.45)]);
+   const st = { t: 0, mode: 'bg', sel: null, labels: true, rot: true, fly: null, loopT: -9, park: false, msg: null };
+   function select(id) {
+     st.sel = id === 'all' ? null : id; refs.seg && refs.seg.sync();
+-    BG_PARTS.forEach((p) => PART[p.id].mats.forEach((m) => { m.opacity = !st.sel || st.sel === p.id ? (p.id === 'thal' ? 0.6 : 0.92) : 0.12; m.emissiveIntensity = st.sel === p.id ? 0.45 : 0.06; m.depthWrite = !st.sel || st.sel === p.id; }));
++    BG_PARTS.forEach((p) => PART[p.id].mats.forEach((m) => { m.opacity = !st.sel || st.sel === p.id ? (p.id === 'thal' ? 0.6 : p.id === 'cla' && !st.sel ? 0.35 : 0.92) : 0.12; m.emissiveIntensity = st.sel === p.id ? 0.45 : 0.06; m.depthWrite = st.sel ? st.sel === p.id : p.id !== 'cla'; }));
+     st.msg = null; refs.setInfo && refs.setInfo();
+   }
+   function setMode(m) {
+@@ -5447,9 +5489,10 @@ function makeCortex() {
+   rnd = mulberry(808);
+   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x060509); scene.environment = envTex;
+   labLights(scene, 0xe58fc4);
++  { const k2 = new THREE.DirectionalLight(0xfff1e6, 1.15); k2.position.set(5, 8, -7); scene.add(k2); }   // ключевой свет и для левого полушария (z<0)
+   const VIEWS = {
+-    lat: flyTarget(V3(-0.05, -0.75, 0.55), V3(-0.4, 0.5, 8.6)),
+-    med: flyTarget(V3(-0.05, -0.7, 0.3), V3(-0.4, 0.3, -7.6)),
++    lat: flyTarget(V3(-0.05, -0.75, -0.55), V3(-0.4, 0.5, -8.6)),   // левое полушарие (z<0) снаружи
++    med: flyTarget(V3(-0.05, -0.7, -0.3), V3(-0.4, 0.3, 7.6)),      // его медиальная стенка, правое скрыто
+     top: flyTarget(V3(-0.3, -0.2, 0), V3(-3.2, 6.8, 0.01)),
+     col: flyTarget(V3(0.2, -0.75, 0), V3(4.4, 0.9, 8.0)),
+   };
+@@ -5488,12 +5531,12 @@ function makeCortex() {
+     for (let i = 0; i < pos.count; i += 3) { v.fromBufferAttribute(pos, i); const u = v.z * side - 0.55; if (medial ? u > -0.4 : u < 0.15) continue; const d = (v.x - x) ** 2 + (v.y - y) ** 2 - (medial ? 0 : 0.02 * u); if (d < bd) { bd = d; best = v.clone(); } }
+     return best.add(V3(0, 0, side * (medial ? -0.04 : 0.06)));
+   }
+-  // центры полей (на левом полушарии, z > 0)
++  // центры полей (на левом полушарии: H[1], z < 0)
+   const fieldPos = CX_FIELDS.map(() => ({ s: V3(0, 0, 0), n: 0, m: V3(0, 0, 0), mn: 0 }));
+-  { const { g, field, side } = H[0], pos = g.attributes.position, v = new THREE.Vector3();
++  { const { g, field, side } = H[1], pos = g.attributes.position, v = new THREE.Vector3();
+     for (let i = 0; i < pos.count; i++) { const f = field[i]; if (f < 0) continue; v.fromBufferAttribute(pos, i); const u = v.z * side - 0.55; if (u > 0.25) { fieldPos[f].s.add(v); fieldPos[f].n++; } else if (u < -0.4) { fieldPos[f].m.add(v); fieldPos[f].mn++; } } }
+-  const FPOS = fieldPos.map((p) => (p.n > 30 ? p.s.divideScalar(p.n).add(V3(0, 0, 0.32)) : null));
+-  const FPOSM = fieldPos.map((p) => (p.mn > 30 ? p.m.divideScalar(p.mn).add(V3(0, 0, -0.1)) : null));
++  const FPOS = fieldPos.map((p) => (p.n > 30 ? p.s.divideScalar(p.n).add(V3(0, 0, -0.32)) : null));
++  const FPOSM = fieldPos.map((p) => (p.mn > 30 ? p.m.divideScalar(p.mn).add(V3(0, 0, 0.1)) : null));
+ 
+   /* ---------- шестислойная колонка ---------- */
+   const col = new THREE.Group(); scene.add(col); col.visible = false;
+@@ -5511,7 +5554,7 @@ function makeCortex() {
+   const N = { pyr: [], betz: [], stel: [], spin: [] }, cells = [];
+   const rx = () => rand(-CW / 2 + 0.2, CW / 2 - 0.2), rz = () => rand(-CD / 2 + 0.15, CD / 2 - 0.15);
+   function pyramid(arr, p, size, axonEnd) {
+-    const cone = new THREE.ConeGeometry(size, size * 2.4, 9); cone.translate(p.x, p.y + size * 0.5, p.z); arr.push(cone);
++    const cone = new THREE.ConeGeometry(size, size * 2.4, 16); cone.translate(p.x, p.y + size * 0.5, p.z); arr.push(cone);
+     const apTop = V3(p.x + rand(-0.08, 0.08), TOP - 0.06, p.z + rand(-0.06, 0.06));
+     const ap = new THREE.CatmullRomCurve3([V3(p.x, p.y + size * 1.6, p.z), V3(p.x + rand(-0.05, 0.05), (p.y + apTop.y) / 2, p.z), apTop]);
+     arr.push(taperTube(ap, (u) => size * 0.32 * (1 - u * 0.75), 28, 6));
+@@ -5573,7 +5616,7 @@ function makeCortex() {
+   const st = { t: 0, mode: 'lobes', view: 'lat', sel: null, labels: true, rot: false, fly: VIEWS.lat, sigT: -9, split: false, msg: null, mc: false };
+   function paint() {
+     H.forEach((hh) => {
+-      const a = hh.col.array, src = st.mode === 'lobes' || st.mode === 'lat' ? hh.lobeCol : hh.zoneCol, tint = new THREE.Color(hh.side > 0 ? '#86B6FF' : '#F4B860');
++      const a = hh.col.array, src = st.mode === 'lobes' || st.mode === 'lat' ? hh.lobeCol : hh.zoneCol, tint = new THREE.Color(hh.side < 0 ? '#86B6FF' : '#F4B860');
+       const si = st.sel != null ? CX_F[st.sel].i : -1;
+       for (let i = 0; i < hh.field.length; i++) {
+         let k = 1;
+@@ -5588,14 +5631,14 @@ function makeCortex() {
+   }
+   function setView(v) {
+     st.view = v; refs.viewSeg && refs.viewSeg.sync();
+-    H[1].mesh.visible = v !== 'med'; st.fly = VIEWS[v];
++    H[0].mesh.visible = v !== 'med'; st.fly = VIEWS[v];
+   }
+   function setMode(m) {
+     st.mode = m; st.sel = null; st.selLobe = null; st.msg = null; refs.modeSeg && refs.modeSeg.sync();
+     brain.visible = m !== 'layers'; col.visible = m === 'layers';
+     ccFlow.forEach((f, i) => { if (i < 12) f.uniforms.uOn.value = m === 'lat' && !st.split ? 0.9 : 0; });
+     H.forEach((hh) => { hh.mat.opacity = m === 'lat' ? 0.55 : 1; hh.mat.depthWrite = m !== 'lat'; });
+-    if (m === 'layers') st.fly = VIEWS.col; else if (m === 'lat') { H[1].mesh.visible = true; st.fly = VIEWS.top; st.view = 'top'; } else setView(st.view === 'top' && m !== 'lat' ? 'lat' : st.view);
++    if (m === 'layers') st.fly = VIEWS.col; else if (m === 'lat') { H[0].mesh.visible = true; st.fly = VIEWS.top; st.view = 'top'; } else setView(st.view === 'top' && m !== 'lat' ? 'lat' : st.view);
+     refs.viewSeg && refs.viewSeg.sync(); paint(); refs.setInfo && refs.setInfo();
+   }
+   function signal() { if (st.mode !== 'layers') setMode('layers'); st.sigT = st.t; st.msg = TXT.signal; refs.setInfo(); }
+@@ -5626,16 +5669,16 @@ function makeCortex() {
+     mc: '<b>Колонка.</b> Вернон Маунткасл погружал электрод в соматосенсорную кору кошки вертикально — и все встреченные клетки отвечали на один и тот же стимул. Колонка проходит через все шесть слоёв и работает как отдельный процессор. В первичной зрительной коре соседние микроколонки реагируют на линии разной ориентации.',
+   };
+   const LOBE_LBL = [[0, 0.75, 0.55], [1, -0.55, 0.85], [2, -0.1, -0.5], [3, -1.35, 0.25]].map(([li, x, y]) => ({ li, x, y }));
+-  const latLbl = (t2, x, y, c, cond) => ({ text: t2, pos: V3(x, y, 0), color: c, show: () => st.labels && cond() && camera.position.z > 1, _surf: [x, y] });
++  const latLbl = (t2, x, y, c, cond) => ({ text: t2, pos: V3(x, y, 0), color: c, show: () => st.labels && cond() && camera.position.z < -1, _surf: [x, y] });
+   const labels = [
+     ...LOBE_LBL.map((l) => latLbl(LOBES[l.li].name + ' доля', l.x, l.y, LOBES[l.li].color, () => st.mode === 'lobes' && st.view !== 'med')),
+     latLbl('центральная борозда', bkCs(0.95) + 0.02, 0.95, '#ffffff', () => st.mode === 'lobes' && st.view !== 'med'),
+     latLbl('боковая борозда', -0.1, bkLs(-0.1), '#ffffff', () => st.mode === 'lobes' && st.view !== 'med'),
+     latLbl('теменно-затылочная', bkPo(0.75) - 0.02, 0.75, '#ffffff', () => st.mode === 'lobes' && st.view !== 'med'),
+     { text: 'Лимбическая доля', pos: V3(0, 0, 0), color: LOBES[4].color, show: () => st.labels && st.mode === 'lobes' && st.view === 'med', _med: [-0.2, 0.42] },
+-    { text: 'мозолистое тело', pos: V3(0.0, 0.32, -0.15), color: '#efe8dc', show: () => st.labels && st.mode === 'lobes' && st.view === 'med' },
++    { text: 'мозолистое тело', pos: V3(0.0, 0.32, 0.15), color: '#efe8dc', show: () => st.labels && st.mode === 'lobes' && st.view === 'med' },
+     { text: 'шпорная борозда', pos: V3(0, 0, 0), color: '#F2D14E', show: () => st.labels && st.mode === 'lobes' && st.view === 'med', _med: [-1.35, 0.1] },
+-    ...CX_FIELDS.map((f, i) => ({ text: f.id, pos: FPOS[i] || V3(0, -9, 0), color: '#ffffff', cls: 'num', show: () => st.labels && st.mode === 'zones' && !!FPOS[i] && st.view !== 'med' && camera.position.z > 1 })),
++    ...CX_FIELDS.map((f, i) => ({ text: f.id, pos: FPOS[i] ? FPOS[i].clone().add({ 41: V3(0, 0.07, 0), 42: V3(0, -0.07, 0) }[f.id] || V3(0, 0, 0)) : V3(0, -9, 0), color: '#ffffff', cls: 'num', show: () => st.labels && st.mode === 'zones' && !!FPOS[i] && st.view !== 'med' && camera.position.z < -1 })),
+     ...CX_FIELDS.map((f, i) => ({ text: f.id, pos: FPOSM[i] || V3(0, -9, 0), color: '#ffffff', show: () => st.labels && st.mode === 'zones' && !!FPOSM[i] && st.view === 'med' })),
+     { text: 'Брока', pos: V3(0, 0, 0), color: CX_ZONES.speech, show: () => st.labels && st.mode === 'zones' && st.view === 'lat', _surf: [0.62, -0.02], dy: -0.16 },
+     { text: 'Вернике', pos: V3(0, 0, 0), color: CX_ZONES.speech, show: () => st.labels && st.mode === 'zones' && st.view === 'lat', _surf: [-0.35, -0.02], dy: -0.14 },
+@@ -5645,11 +5688,11 @@ function makeCortex() {
+     { text: 'из таламуса', pos: V3(-0.6, BOT - WM - 0.55, 0), color: '#F4C542', show: () => st.labels && st.mode === 'layers' },
+     { text: 'в мозолистое тело', pos: V3(CW / 2 + 0.25, BOT - WM * 0.6 + 0.12, 0), color: '#4FA3FF', show: () => st.labels && st.mode === 'layers' },
+     { text: 'к спинному мозгу', pos: V3(0.2, BOT - WM - 0.6, 0), color: '#FF6A5A', show: () => st.labels && st.mode === 'layers' },
+-    { text: 'левое: речь, письмо, логика', pos: V3(-0.2, 1.3, 0.75), color: '#86B6FF', show: () => st.labels && st.mode === 'lat' },
+-    { text: 'правое: образы, пространство, музыка', pos: V3(-0.2, 1.3, -0.75), color: '#F4B860', show: () => st.labels && st.mode === 'lat' },
++    { text: 'левое: речь, письмо, логика', pos: V3(-0.2, 1.3, -0.75), color: '#86B6FF', show: () => st.labels && st.mode === 'lat' },
++    { text: 'правое: образы, пространство, музыка', pos: V3(-0.2, 1.3, 0.75), color: '#F4B860', show: () => st.labels && st.mode === 'lat' },
+     { text: 'мозолистое тело', pos: V3(0.0, 0.62, 0), color: '#9fd0ff', show: () => st.labels && st.mode === 'lat' },
+   ];
+-  labels.forEach((l) => { if (l._surf) l.pos.copy(surfAt(0, l._surf[0], l._surf[1])).add(V3(0, l.dy || 0, 0.12)); if (l._med) l.pos.copy(surfAt(0, l._med[0], l._med[1], true)).add(V3(0, 0, -0.1)); });
++  labels.forEach((l) => { if (l._surf) l.pos.copy(surfAt(1, l._surf[0], l._surf[1])).add(V3(0, l.dy || 0, -0.12)); if (l._med) l.pos.copy(surfAt(1, l._med[0], l._med[1], true)).add(V3(0, 0, 0.1)); });
+   const refs = {};
+   function ui(el) {
+     const ib = infoBox('1 1 340px');
+@@ -5727,39 +5770,41 @@ function makeHippo() {
+   const PART = Object.fromEntries(PZ_PARTS.map((p) => [p.id, { ...p, mats: [] }])), pick = [];
+   const add = (id, g, o = {}) => { const m = tissue(new THREE.Color(PART[id].color).multiplyScalar(0.36), { emissive: new THREE.Color(PART[id].color), emissiveIntensity: 0.05, transparent: true, ...o }); PART[id].mats.push(m); const me = new THREE.Mesh(g, m); me.userData.pick = id; pick.push(me); brain.add(me); return me; };
+   const HC = [], FX = [];
++  // открытые концы трубок закрываем сферами — без «чёрных дыр»
++  const capped = (g, c, r0, r1) => { const a = new THREE.SphereGeometry(r0, 16, 12), b = new THREE.SphereGeometry(r1, 16, 12); a.translate(...c.getPointAt(0).toArray()); b.translate(...c.getPointAt(1).toArray()); return mergeGeometries([g, a, b]); };
+   [1, -1].forEach((s) => {
+     const hc = new THREE.CatmullRomCurve3([V3(0.22, -0.46, 0.5 * s), V3(0.0, -0.42, 0.52 * s), V3(-0.3, -0.33, 0.5 * s), V3(-0.55, -0.15, 0.43 * s), V3(-0.66, 0.02, 0.33 * s)]); HC.push(hc);
+-    add('hip', displaceGeo(taperTube(hc, (u) => (u < 0.25 ? 0.1 + 0.04 * Math.sin(u / 0.25 * Math.PI) : 0.1 * (1 - (u - 0.25) * 0.7)), 90, 18), (v) => { v.y += 0.012 * Math.sin(v.x * 60) * smooth(0.05, 0.25, v.x); }));
++    add('hip', capped(displaceGeo(taperTube(hc, (u) => (u < 0.25 ? 0.1 + 0.04 * Math.sin(u / 0.25 * Math.PI) : 0.1 * (1 - (u - 0.25) * 0.7)), 90, 18), (v) => { v.y += 0.012 * Math.sin(v.x * 60) * smooth(0.05, 0.25, v.x); }), hc, 0.1, 0.1 * (1 - 0.75 * 0.7)));
+     const dg = new THREE.CatmullRomCurve3(hc.getPoints(10).map((p) => p.clone().add(V3(0, 0.03, -0.085 * s))));
+     add('hip', taperTube(dg, (u) => 0.025 * (1 - u * 0.5), 60, 8), { color: new THREE.Color('#ff6a5a').multiplyScalar(0.45) });
+     const fx = new THREE.CatmullRomCurve3([V3(-0.66, 0.02, 0.33 * s), V3(-0.62, 0.17, 0.2 * s), V3(-0.35, 0.27, 0.1 * s), V3(0.05, 0.28, 0.05 * s), V3(0.3, 0.16, 0.035 * s), V3(0.36, -0.08, 0.04 * s), V3(0.22, -0.4, 0.05 * s), V3(0.13, -0.56, 0.055 * s)]); FX.push(fx);
+-    add('fx', taperTube(fx, (u) => 0.04 - 0.012 * u, 90, 10));
++    add('fx', capped(taperTube(fx, (u) => 0.04 - 0.012 * u, 90, 10), fx, 0.04, 0.028));
+     const mb = new THREE.SphereGeometry(0.05, 20, 14); mb.translate(0.12, -0.59, 0.06 * s); add('mam', mb);
+     const ant = new THREE.SphereGeometry(1, 20, 14); ant.scale(0.09, 0.07, 0.06); ant.translate(0.27, 0.08, 0.15 * s); add('ant', ant);
+     const th = new THREE.SphereGeometry(1, 30, 20); th.scale(0.32, 0.19, 0.18); th.translate(0.0, -0.06, 0.2 * s);
+     brain.add(new THREE.Mesh(th, tissue(new THREE.Color('#B9A4FF').multiplyScalar(0.3), { transparent: true, opacity: 0.35, depthWrite: false })));
+-    const amy = new THREE.SphereGeometry(0.085, 20, 14); amy.translate(0.33, -0.43, 0.5 * s); add('amy', amy);
+-    // энторинальная кора / парагиппокампальная извилина
+-    const ent = new THREE.CatmullRomCurve3([V3(0.3, -0.6, 0.48 * s), V3(0.0, -0.58, 0.55 * s), V3(-0.35, -0.5, 0.55 * s), V3(-0.7, -0.35, 0.45 * s)]);
+-    add('ent', taperTube(ent, () => 0.055, 50, 10));
++    const amy = new THREE.SphereGeometry(0.085, 20, 14); amy.translate(0.42, -0.34, 0.5 * s); add('amy', amy);   // впереди и выше головки гиппокампа
++    // энторинальная кора / парагиппокампальная извилина — медиальнее и ниже гиппокампа
++    const ent = new THREE.CatmullRomCurve3([V3(0.3, -0.62, 0.4 * s), V3(0.0, -0.62, 0.42 * s), V3(-0.35, -0.55, 0.42 * s), V3(-0.7, -0.38, 0.4 * s)]);
++    add('ent', capped(taperTube(ent, () => 0.055, 50, 10), ent, 0.055, 0.055));
+     // поясная извилина над мозолистым телом
+-    const cg = new THREE.CatmullRomCurve3([V3(0.95, 0.12, 0.09 * s), V3(0.75, 0.52, 0.09 * s), V3(0.0, 0.64, 0.09 * s), V3(-0.7, 0.5, 0.09 * s), V3(-0.95, 0.2, 0.1 * s), V3(-0.85, -0.12, 0.3 * s), V3(-0.7, -0.35, 0.45 * s)]);
+-    const cgG = taperTube(cg, (u) => 0.07 * (1 - 0.35 * smooth(0.7, 1, u)), 120, 12); cgG.scale(1, 1, 1); add('cing', cgG);
++    const cg = new THREE.CatmullRomCurve3([V3(0.95, 0.12, 0.09 * s), V3(0.75, 0.52, 0.09 * s), V3(0.0, 0.64, 0.09 * s), V3(-0.7, 0.5, 0.09 * s), V3(-0.95, 0.2, 0.1 * s), V3(-0.85, -0.12, 0.28 * s), V3(-0.7, -0.38, 0.4 * s)]);
++    add('cing', capped(taperTube(cg, (u) => 0.07 * (1 - 0.35 * smooth(0.7, 1, u)), 120, 12), cg, 0.07, 0.07 * 0.65));
+     // обонятельный мозг
+     const ob = new THREE.SphereGeometry(1, 20, 14); ob.scale(0.13, 0.05, 0.05); ob.translate(1.22, -0.6, 0.13 * s); add('olf', ob);
+     add('olf', taperTube(new THREE.CatmullRomCurve3([V3(1.1, -0.6, 0.13 * s), V3(0.8, -0.58, 0.15 * s), V3(0.55, -0.55, 0.2 * s), V3(0.42, -0.5, 0.35 * s), V3(0.35, -0.48, 0.45 * s)]), () => 0.018, 40, 6));
+   });
+   // мозолистое тело
+-  const cc = taperTube(new THREE.CatmullRomCurve3(BKP.cc.map((p) => p.clone().add(V3(0, 0.04, 0)))), (u) => 0.05 + 0.03 * smooth(0.75, 1, u), 80, 12); cc.scale(1, 1, 3.4);
+-  brain.add(new THREE.Mesh(cc, tissue(new THREE.Color(0xefe8dc).multiplyScalar(0.4), { transparent: true, opacity: 0.4, depthWrite: false })));
+-  // круг Пейпеза (левое полушарие, z > 0)
++  const cc = taperTube(new THREE.CatmullRomCurve3(BKP.cc.map((p) => p.clone().add(V3(0, 0.04, 0)))), (u) => 0.07 + 0.05 * smooth(0.8, 1, u), 80, 12); cc.scale(1, 1, 3.4);   // утолщение — валик
++  brain.add(new THREE.Mesh(cc, tissue(new THREE.Color(0xefe8dc).multiplyScalar(0.4), { transparent: true, opacity: 0.6, depthWrite: false })));
++  // круг Пейпеза (одна сторона, z > 0)
+   const CIRC = [
+     { id: 'hip', c: new THREE.CatmullRomCurve3(HC[0].getPoints(8)), d: 1.0 },
+     { id: 'fx', c: FX[0], d: 1.6 },
+     { id: 'mam', c: new THREE.CatmullRomCurve3([V3(0.12, -0.56, 0.07), V3(0.2, -0.3, 0.1), V3(0.25, -0.05, 0.13), V3(0.27, 0.07, 0.15)]), d: 0.8 },
+     { id: 'ant', c: new THREE.CatmullRomCurve3([V3(0.27, 0.1, 0.15), V3(0.3, 0.35, 0.12), V3(0.4, 0.58, 0.1)]), d: 0.6 },
+-    { id: 'cing', c: new THREE.CatmullRomCurve3([V3(0.4, 0.62, 0.1), V3(0.0, 0.66, 0.1), V3(-0.7, 0.52, 0.1), V3(-0.95, 0.2, 0.11), V3(-0.85, -0.12, 0.3), V3(-0.7, -0.35, 0.45)]), d: 1.6 },
+-    { id: 'ent', c: new THREE.CatmullRomCurve3([V3(-0.7, -0.35, 0.45), V3(-0.3, -0.5, 0.55), V3(0.05, -0.55, 0.55), V3(0.22, -0.46, 0.5)]), d: 1.0 },
++    { id: 'cing', c: new THREE.CatmullRomCurve3([V3(0.4, 0.62, 0.1), V3(0.0, 0.66, 0.1), V3(-0.7, 0.52, 0.1), V3(-0.95, 0.2, 0.11), V3(-0.85, -0.12, 0.28), V3(-0.7, -0.38, 0.4)]), d: 1.6 },
++    { id: 'ent', c: new THREE.CatmullRomCurve3([V3(-0.7, -0.38, 0.4), V3(-0.3, -0.55, 0.42), V3(0.05, -0.62, 0.42), V3(0.22, -0.46, 0.5)]), d: 1.0 },
+   ];
+   const flows = CIRC.map((s) => { const f = flowTubeMat(PART[s.id].color, 0.45, 1.6); f.uniforms.uOn.value = 0; brain.add(new THREE.Mesh(new THREE.TubeGeometry(s.c, 50, 0.016, 6), f)); return f; });
+   const CIRC_T = CIRC.reduce((a, s) => a + s.d, 0);
+@@ -5870,7 +5915,7 @@ function makeHippo() {
+     after: '<b>После ДВП</b> тот же одиночный стимул вызывает в CA1 заметно больший ответ: синапс «запомнил» тренировку. Так в гиппокампе прописываются карты знакомых мест и события дня.',
+   };
+   const labels = [
+-    ...PZ_PARTS.map((p) => ({ text: p.name, pos: { hip: V3(-0.25, -0.22, 0.62), fx: V3(-0.2, 0.36, 0.12), mam: V3(0.12, -0.7, 0.12), ant: V3(0.32, 0.18, 0.22), cing: V3(0.1, 0.78, 0.12), ent: V3(-0.1, -0.68, 0.62), amy: V3(0.4, -0.48, 0.62), olf: V3(1.2, -0.7, 0.2) }[p.id], color: p.color, show: () => st.labels && st.mode === 'papez' && (!st.sel || st.sel === p.id) })),
++    ...PZ_PARTS.map((p) => ({ text: p.name, pos: { hip: V3(-0.32, -0.2, 0.62), fx: V3(-0.2, 0.36, 0.12), mam: V3(0.12, -0.7, 0.12), ant: V3(0.32, 0.18, 0.22), cing: V3(0.1, 0.78, 0.12), ent: V3(-0.1, -0.74, 0.5), amy: V3(0.55, -0.28, 0.6), olf: V3(1.2, -0.7, 0.2) }[p.id], color: p.color, show: () => st.labels && st.mode === 'papez' && (!st.sel || st.sel === p.id) })),
+     { text: 'мозолистое тело', pos: V3(-0.2, 0.5, 0.0), color: '#efe8dc', show: () => st.labels && st.mode === 'papez' && !st.sel },
+     { text: 'таламус', pos: V3(-0.1, -0.05, 0.4), color: '#B9A4FF', show: () => st.labels && st.mode === 'papez' && !st.sel },
+     { text: 'CA1', pos: CA.getPointAt(0.2).add(V3(0.2, 0, 0.1)), color: '#86B6FF', show: () => st.labels && st.mode === 'sec' },
+@@ -5968,7 +6013,7 @@ function makeCereb() {
+   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x060509); scene.environment = envTex;
+   labLights(scene, 0x7fd6c8);
+   const VIEW = {
+-    anat: flyTarget(V3(0.2, -1.0, 0), V3(-4.7, 1.6, 3.7)),
++    anat: flyTarget(V3(0.4, -0.4, 0), V3(3.0, 0.6, 5.2)),   // спереди-сбоку: видны ножки, олива, клочок
+     nuc: flyTarget(V3(-0.6, -0.3, 0), V3(-2.0, 4.9, 0.3)),
+     micro: flyTarget(V3(0, -0.75, 0), V3(6.3, 3.0, 7.6)),
+   };
+@@ -5979,11 +6024,11 @@ function makeCereb() {
+   const RX = 0.72, RY = 0.62, RZ = 1.6, CUT = -0.04;
+   const zoneOf = (x, y, z) => { const az = Math.abs(z); if (x > 0.25 && y < -0.15 && (az < 0.28 || az > 1.0)) return 0; if (az < 0.55) return 1; return 2; };
+   const cbG = displaceGeo(new THREE.SphereGeometry(1, 260, 180), (v) => {
+-    const a = Math.atan2(v.y, v.x), az = Math.abs(v.z);
+-    let r = 1 + 0.02 * Math.sin(a * (34 + 4 * noise3(v.z * 2, 0, 0)) + 0.6 * v.z + 0.8 * noise3(v.x * 2, v.y * 2, v.z * 2)) + 0.014 * noise3(v.x * 6, v.y * 6, v.z * 6);
++    const a = Math.atan2(v.y, v.x), az = Math.abs(v.z), pole = smooth(0.98, 0.75, az);   // у латеральных полюсов листки гаснут
++    let r = 1 + 0.02 * pole * Math.sin(a * (34 + 4 * noise3(v.z * 2, 0, 0)) + 0.6 * v.z + 0.8 * noise3(v.x * 2, v.y * 2, v.z * 2)) + 0.014 * noise3(v.x * 6, v.y * 6, v.z * 6);
+     r -= 0.07 * Math.exp(-(((a - 1.1) / 0.05) ** 2));                           // первичная щель
+     r -= 0.05 * Math.exp(-(((a + 2.3) / 0.05) ** 2));                           // горизонтальная щель
+-    let x = v.x * RX * r, y = v.y * RY * r, z = v.z * RZ * r;
++    let x = v.x * RX * r, y = v.y * RY * r, z = v.z * RZ * r * (1 - 0.15 * smooth(0.85, 1, az));
+     if (az < 0.5) { y -= 0.06 * Math.exp(-(((az - 0.24) / 0.05) ** 2)) * smooth(0, 0.6, Math.abs(v.y) + 0.3); } // околочервная борозда
+     if (x > 0.1) { x -= 0.35 * smooth(0.1, 0.9, v.x) * Math.exp(-((v.z / 0.35) ** 2)); }                        // вырезка спереди (IV желудочек)
+     if (y < 0) y -= 0.1 * Math.exp(-(((az - 0.35) / 0.25) ** 2)) * smooth(0, -0.9, v.y);                       // нижняя поверхность: миндалины
+@@ -6115,8 +6160,10 @@ function makeCereb() {
+   function setMode(m) {
+     st.mode = m; refs.modeSeg && refs.modeSeg.sync(); st.msg = null; st.sel = null;
+     anat.visible = m !== 'micro'; mic.visible = m === 'micro'; cap.visible = m === 'nuc';
+-    Object.values(PED).flat().forEach((p) => { p.mesh.visible = m !== 'nuc'; }); pedFlow.forEach((x) => { x.visible = m !== 'nuc'; }); stem.visible = m !== 'nuc';
++    Object.values(PED).flat().forEach((p) => { p.mesh.visible = m !== 'nuc'; }); pedFlow.forEach((x) => { x.visible = m !== 'nuc'; }); stem.visible = m !== 'nuc'; olive.forEach((o) => { o.visible = m !== 'nuc'; });
+     [cbMat, ...flocc.map((f) => f.material)].forEach((mm) => { mm.clippingPlanes = m === 'nuc' ? [CUTP] : []; mm.needsUpdate = true; });
++    // ядра на срезе тоже рассечены плоскостью, а не стоят над ней
++    Object.values(NUC).flat().forEach((n) => { n.material.clippingPlanes = m === 'nuc' ? [CUTP] : []; n.material.side = m === 'nuc' ? THREE.DoubleSide : THREE.FrontSide; n.material.needsUpdate = true; });
+     cbMat.opacity = m === 'nuc' ? 1 : 1; st.fly = VIEW[m]; applySel(); refs.setInfo && refs.setInfo();
+   }
+   function applySel() {
+@@ -6194,7 +6241,7 @@ function makeCereb() {
+     { text: 'ствол', pos: V3(1.1, -1.4, 0.3), color: '#d8b2b8', show: () => st.labels && st.mode === 'anat' && !st.sel },
+     { text: 'олива', pos: V3(1.3, -0.75, 0.25), color: '#F2C14E', show: () => st.labels && st.mode === 'anat' && !st.sel },
+     ...CB_PED.map((p) => ({ text: p.name.toLowerCase(), pos: { sup: V3(0.8, 0.95, 0.3), mid: V3(0.75, 0.15, 0.9), inf: V3(0.8, -0.7, 0.45) }[p.id], color: p.color, show: () => st.labels && st.mode === 'anat' && (!st.sel || st.sel === p.id) })),
+-    ...CB_NUC.map((n) => ({ text: n.name, pos: V3(n.id === 'dent' ? 0.05 : 0.18, 0.05, n.z + (n.id === 'dent' ? 0.12 : 0)), color: n.color, show: () => st.labels && st.mode === 'nuc' })),
++    ...CB_NUC.map((n) => ({ text: n.name, pos: V3((n.id === 'dent' ? 0.05 : 0.18) + ({ glob: -0.14, emb: 0.14 }[n.id] || 0), 0.05, n.z + (n.id === 'dent' ? 0.12 : 0)), color: n.color, show: () => st.labels && st.mode === 'nuc' })),
+     { text: 'кора', pos: V3(-0.55, CUT, 1.35), color: '#c8b0c0', show: () => st.labels && st.mode === 'nuc' },
+     { text: 'белое вещество', pos: V3(-0.3, CUT, -0.95), color: '#e4dccf', show: () => st.labels && st.mode === 'nuc' },
+     { text: 'молекулярный слой', pos: V3(-BX - 0.05, 0.8, BZ), color: '#d8c8e8', show: () => st.labels && st.mode === 'micro' },
+@@ -7540,7 +7587,7 @@ function makeEar() {
+   rnd = mulberry(1818);
+   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x06070a); scene.environment = envTex;
+   labLights(scene, 0x7fd6ff);
+-  const VIEW = { anat: flyTarget(V3(-0.6, -0.75, 0), V3(-0.9, 0.9, 7.2)), coch: flyTarget(V3(30, -0.8, 0), V3(30.6, 1.5, 6.6)), vest: flyTarget(V3(0.1, -0.15, 0), V3(1.9, 1.5, 4.4)) };
++  const VIEW = { anat: flyTarget(V3(-0.6, -0.75, 0), V3(-0.9, 0.9, 7.2)), coch: flyTarget(V3(30, -0.1, 0), V3(30.6, 2.2, 6.6)), vest: flyTarget(V3(0.1, -0.15, 0), V3(1.9, 1.5, 4.4)) };
+   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(VIEW.anat.pos);
+   const controls = makeControls(camera, VIEW.anat.target); controls.minDistance = 1; controls.maxDistance = 18;
+   const ear = new THREE.Group(); scene.add(ear);
+@@ -7550,11 +7597,17 @@ function makeEar() {
+   const bone = displaceGeo(new THREE.SphereGeometry(1, 48, 36), (v) => { v.set(v.x * 1.6, v.y * 1.25, v.z * 1.0).multiplyScalar(1 + 0.04 * noise3(v.x * 3, v.y * 3, v.z * 3)); }); bone.translate(-0.15, -0.05, 0);
+   ear.add(new THREE.Mesh(bone, new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xe8d8bb).multiplyScalar(0.4), roughness: 0.6, transparent: true, opacity: 0.06, depthWrite: false })), new THREE.Mesh(bone, glassMat(0xf2e6c8, { rim: 0.28, base: 0.008, pow: 2.2 })));
+   /* ---------- наружное ухо ---------- */
+-  const pinna = displaceGeo(new THREE.SphereGeometry(1, 48, 36, 0, Math.PI * 2, 0, Math.PI * 0.55), (v) => { const r = Math.hypot(v.x, v.z); v.set(v.x * 0.55, v.y * 0.35 - 0.3, v.z * 0.85); v.y += 0.04 * Math.sin(r * 18) * r; });
+-  pinna.rotateZ(Math.PI / 2); pinna.translate(-2.55, 0.25, 0); add('outer', pinna, { k: 0.3, mat: { side: THREE.DoubleSide } });
+-  const helix = new THREE.CatmullRomCurve3(Array.from({ length: 24 }, (_, i) => { const a = -0.9 + i / 23 * 4.4; return V3(-2.5, 0.25 + Math.sin(a) * 0.82, Math.cos(a) * 0.52); }));
+-  add('outer', taperTube(helix, (u) => 0.06 * Math.sin(Math.min(1, u * 1.2) * Math.PI) + 0.02, 80, 10));
+-  add('outer', ell3(0.08, 0.16, 0.12, V3(-2.48, -0.62, 0.1)));
++  // ушная раковина — почти плоская пластина в плоскости yz (+z — вперёд, +x — медиально): задний край отстоит от головы,
++  // противозавиток и ладьевидная ямка — мягкие складки, раковинка (concha) — чаша вокруг входа в слуховой проход
++  const PC = V3(-2.45, 0.2, -0.12), PRY = 0.8, PRZ = 0.5;
++  const pinnaX = (a, b) => { const rr = Math.hypot(a, b), dc = Math.hypot(a - 0.25, b + 0.22);
++    return PC.x - 0.28 * smooth(0.2, -1, a) - 0.05 * Math.exp(-(((rr - 0.68) / 0.09) ** 2)) + 0.035 * Math.exp(-(((rr - 0.86) / 0.06) ** 2)) + (dc < 0.4 ? 0.22 * (1 - (dc / 0.4) ** 2) : 0); };
++  const pinna = displaceGeo(new THREE.RingGeometry(0.001, 1, 72, 24), (v) => { const a = v.x, b = v.y; v.set(pinnaX(a, b), PC.y + b * PRY, PC.z + a * PRZ); });
++  add('outer', pinna, { k: 0.3, mat: { side: THREE.DoubleSide } });
++  // завиток: от ножки в раковинке вверх, по переднему и верхнему краю, вниз по заднему — к мочке
++  const helix = new THREE.CatmullRomCurve3(Array.from({ length: 28 }, (_, i) => { const t2 = -0.15 + i / 27 * 4.35, k = i < 3 ? 0.55 + 0.15 * i : 0.98, a = Math.cos(t2) * k, b = Math.sin(t2) * k; return V3(pinnaX(a, b) - 0.03, PC.y + b * PRY, PC.z + a * PRZ); }));
++  add('outer', taperTube(helix, (u) => 0.055 * Math.sin(Math.min(1, u * 1.15) * Math.PI) + 0.02, 90, 10));
++  add('outer', ell3(0.07, 0.2, 0.15, V3(pinnaX(-0.1, -0.95), PC.y - 0.86, PC.z - 0.04)));   // мочка — продолжает нижний край
+   const CANAL = new THREE.CatmullRomCurve3([V3(-2.4, 0.0, 0.05), V3(-1.9, 0.08, 0.0), V3(-1.4, -0.02, -0.02), V3(-0.95, 0.02, 0.0)]);
+   add('outer', taperTube(CANAL, (u) => 0.17 - 0.04 * u, 50, 18), { k: 0.4, mat: { transparent: true, opacity: 0.55, depthWrite: false, side: THREE.DoubleSide } });
+   // перепонка
+@@ -7568,27 +7621,31 @@ function makeEar() {
+   const inc = new THREE.Group(); inc.position.set(-0.72, 0.3, 0); oss.add(inc);
+   add('oss', ell3(0.07, 0.06, 0.06, V3(0, 0, 0)), {}, inc); add('oss', tube([V3(0.02, -0.02, 0), V3(0.06, -0.15, 0.02), V3(0.1, -0.22, 0.02)], 0.018, 10, 6), {}, inc);
+   const stap = new THREE.Group(); stap.position.set(-0.6, 0.08, 0.02); oss.add(stap);
+-  add('oss', tube([V3(0, 0, 0), V3(0.08, 0.04, 0.04), V3(0.18, 0.0, 0.05)], 0.01, 10, 6), {}, stap); add('oss', tube([V3(0, 0, 0), V3(0.08, -0.04, -0.03), V3(0.18, 0.0, -0.04)], 0.01, 10, 6), {}, stap);
+-  add('oss', ell3(0.015, 0.05, 0.06, V3(0.19, 0, 0)), {}, stap);
++  add('oss', tube([V3(0, 0, 0), V3(0.1, 0.04, 0.04), V3(0.22, 0.0, 0.05)], 0.01, 10, 6), {}, stap); add('oss', tube([V3(0, 0, 0), V3(0.1, -0.04, -0.03), V3(0.22, 0.0, -0.04)], 0.01, 10, 6), {}, stap);
++  add('oss', ell3(0.015, 0.05, 0.06, V3(0.23, 0, 0)), {}, stap);   // подножная пластинка — в овальном окне
+   add('eust', tube([V3(-0.6, -0.25, 0.05), V3(-0.45, -0.7, 0.35), V3(-0.25, -1.3, 0.75)], (u) => 0.05 + 0.04 * u, 30, 10), { k: 0.4, mat: { transparent: true, opacity: 0.7 } });
+   /* ---------- внутреннее ухо ---------- */
+-  const COC = V3(0.3, -0.2, 0.05), TURNS = 2.75;
+-  const cochCurve = new THREE.CatmullRomCurve3(Array.from({ length: 120 }, (_, i) => { const u = i / 119, a = u * TURNS * Math.PI * 2, r = 0.5 * (1 - 0.78 * u); return V3(COC.x + u * 0.42, COC.y + Math.cos(a) * r, COC.z + Math.sin(a) * r); }));
++  // улитка: широкое основание (базальный завиток) обращено медиально, к внутреннему слуховому проходу, где из модиолюса выходит улитковый нерв;
++  // купол смотрит латерально и вперёд. Базальный завиток начинается у преддверия (овальное и круглое окна)
++  const COC = V3(0.02, -0.2, 0.05), TURNS = 2.75;
++  const cochCurve = new THREE.CatmullRomCurve3([V3(-0.06, 0.1, 0.06), ...Array.from({ length: 120 }, (_, i) => { const u = i / 119, a = u * TURNS * Math.PI * 2, r = 0.5 * (1 - 0.78 * u); return V3(COC.x + 0.42 * (1 - u) - 0.12 * u, COC.y + Math.cos(a) * r, COC.z + 0.25 * u + Math.sin(a) * r); })]);
+   const cochG = taperTube(cochCurve, (u) => 0.12 * (1 - 0.55 * u), 400, 16);
+   { const pos = cochG.attributes.position, uv = cochG.attributes.uv, col = new Float32Array(pos.count * 3), c = new THREE.Color(); for (let i = 0; i < pos.count; i++) { c.setHSL(0.72 - 0.72 * uv.getX(i) * 0 - 0.62 * (1 - uv.getX(i)), 0.6, 0.6); c.setHSL(0.02 + 0.68 * (1 - uv.getX(i)), 0.65, 0.58); col.set([c.r, c.g, c.b], i * 3); } cochG.setAttribute('color', new THREE.BufferAttribute(col, 3)); }
+   const cochMesh = add('coch', cochG, { k: 0.5, mat: { vertexColors: true, color: new THREE.Color(0x777777), transparent: true, opacity: 0.9 } });
+   const glowSpot = glowNucleus(ear, COC.clone(), '#ffffff', 0.05, 8);
+-  add('vest', ell3(0.16, 0.14, 0.13, V3(-0.05, 0.12, 0.0)), { k: 0.4, mat: { transparent: true, opacity: 0.75 } });
++  add('vest', ell3(0.2, 0.14, 0.13, V3(-0.16, 0.12, 0.0)), { k: 0.4, mat: { transparent: true, opacity: 0.75 } });   // латеральная стенка — у подножной пластинки стремечка
+   const CAN = [
+     { c: V3(0.0, 0.55, -0.05), n: V3(0, 0, 1), name: 'передний' }, { c: V3(0.05, 0.42, -0.35), n: V3(1, 0, 0), name: 'задний' }, { c: V3(-0.25, 0.25, 0.05), n: V3(0, 1, 0.15), name: 'латеральный' },
+   ].map((k) => { const g = new THREE.TorusGeometry(0.28, 0.03, 10, 48); g.lookAt(k.n); g.translate(k.c.x, k.c.y, k.c.z); const m = add('vest', g, { k: 0.5, mat: { transparent: true, opacity: 0.85 } }); return { ...k, m }; });
+-  CAN.forEach((k) => add('vest', ell3(0.05, 0.05, 0.05, k.c.clone().add(V3(-0.2, -0.18, 0.0))), { k: 0.55 }));
+-  add('nerve', tube([COC.clone().add(V3(0.2, 0, 0)), V3(0.8, 0.0, -0.1), V3(1.5, 0.15, -0.2), V3(2.2, 0.2, -0.3)], 0.06, 30, 10), { k: 0.5, mat: { emissiveIntensity: 0.15 } });
++  // ампула — на самом кольце, в точке, ближайшей к преддверию
++  const VC = V3(-0.16, 0.12, 0.0), AMP = [];
++  CAN.forEach((k) => { const d = VC.clone().sub(k.c), n = k.n.clone().normalize(); d.addScaledVector(n, -d.dot(n)).setLength(0.28); AMP.push(k.c.clone().add(d)); add('vest', ell3(0.055, 0.055, 0.055, AMP[AMP.length - 1]), { k: 0.55 }); });
++  add('nerve', tube([V3(0.4, -0.2, 0.05), V3(0.8, -0.05, -0.1), V3(1.5, 0.15, -0.2), V3(2.2, 0.2, -0.3)], 0.06, 30, 10), { k: 0.5, mat: { emissiveIntensity: 0.15 } });   // из основания модиолюса
+   add('nerve', tube([V3(0.05, 0.2, -0.05), V3(0.6, 0.15, -0.1), V3(0.9, 0.05, -0.12)], 0.04, 20, 8), { k: 0.5 });
+-  const NERVE = new THREE.CatmullRomCurve3([COC.clone().add(V3(0.2, 0, 0)), V3(0.8, 0.0, -0.1), V3(1.5, 0.15, -0.2), V3(2.2, 0.2, -0.3)]);
++  const NERVE = new THREE.CatmullRomCurve3([V3(0.4, -0.2, 0.05), V3(0.8, -0.05, -0.1), V3(1.5, 0.15, -0.2), V3(2.2, 0.2, -0.3)]);
+   /* ---------- развёрнутая улитка ---------- */
+   const coch2 = new THREE.Group(); coch2.position.set(30, 0, 0); scene.add(coch2); coch2.visible = false;
+-  const BL = 4.2, BW0 = 0.12, BW1 = 0.5;
++  const BL = 4.2, BW0 = 0.12, BW1 = 0.26;   // у вершины мембрана шире, но не шире протока
+   const bmG = new THREE.PlaneGeometry(BL, 1, 200, 12); bmG.rotateX(-Math.PI / 2);
+   const bmBase = bmG.attributes.position.array.slice();
+   const bmMat = new THREE.MeshPhysicalMaterial({ vertexColors: true, roughness: 0.4, side: THREE.DoubleSide, transparent: true, opacity: 0.95, emissive: 0x101820, emissiveIntensity: 0.4 });
+@@ -7659,18 +7716,18 @@ function makeEar() {
+     spin: '<b>Вращение.</b> Голова поворачивается, а жидкость в канале по инерции отстаёт и отклоняет купулу (фиолетовые частицы идут навстречу) — мозг узнаёт о вращении. При долгом равномерном вращении жидкость догоняет стенки, и ощущение пропадает. А после резкой остановки она продолжает течь — кажется, что мир кружится в обратную сторону: это головокружение.',
+   };
+   const labels = [
+-    { text: 'ушная раковина', pos: V3(-2.55, 1.1, 0.3), color: '#E8B8A0', show: () => st.labels && st.mode === 'anat' },
++    { text: 'ушная раковина', pos: V3(-2.6, 0.95, -0.1), color: '#E8B8A0', show: () => st.labels && st.mode === 'anat' },
+     { text: 'слуховой проход', pos: V3(-1.7, 0.28, 0.1), color: '#E8B8A0', show: () => st.labels && st.mode === 'anat' },
+     { text: 'барабанная перепонка', pos: V3(-0.95, -0.3, 0.2), color: '#F2D8C0', show: () => st.labels && st.mode === 'anat' },
+     { text: 'молоточек · наковальня · стремечко', pos: V3(-0.75, 0.55, 0.1), color: '#F2E6C8', show: () => st.labels && st.mode === 'anat' },
+     { text: 'слуховая труба', pos: V3(-0.35, -1.1, 0.7), color: '#D8A8B0', show: () => st.labels && st.mode === 'anat' },
+-    { text: 'улитка', pos: V3(0.55, -0.7, 0.3), color: '#7FD6FF', show: () => st.labels && st.mode === 'anat' },
++    { text: 'улитка', pos: V3(0.25, -0.75, 0.35), color: '#7FD6FF', show: () => st.labels && st.mode === 'anat' },
+     { text: 'полукружные каналы', pos: V3(0.25, 0.92, 0.0), color: '#C77DFF', show: () => st.labels && st.mode !== 'coch' },
+-    { text: 'слуховой нерв → ствол мозга', pos: V3(1.7, 0.35, -0.2), color: '#F4C542', show: () => st.labels && st.mode === 'anat' },
++    { text: 'слуховой нерв → ствол мозга', pos: V3(1.3, 0.4, -0.2), color: '#F4C542', show: () => st.labels && st.mode === 'anat' },
+     { text: 'основание · 20 кГц', pos: V3(27.8, 0.35, 0.3), color: '#E07070', show: () => st.labels && st.mode === 'coch' },
+     { text: 'вершина · 20 Гц', pos: V3(31.9, 0.35, 0.4), color: '#B08AFF', show: () => st.labels && st.mode === 'coch' },
+     { text: 'основная мембрана', pos: V3(29.4, -0.15, 0.5), color: '#c8d8f0', show: () => st.labels && st.mode === 'coch' },
+-    { text: 'ампула с купулой', pos: V3(-0.3, -0.05, 0.25), color: '#C77DFF', show: () => st.labels && st.mode === 'vest' },
++    { text: 'ампула с купулой', pos: AMP[2].clone().add(V3(0, 0.06, 0.1)), color: '#C77DFF', show: () => st.labels && st.mode === 'vest' },
+     { text: 'преддверие (отолиты)', pos: V3(-0.15, 0.0, 0.2), color: '#C77DFF', show: () => st.labels && st.mode === 'vest' },
+   ];
+   const refs = {};
+@@ -7730,7 +7787,7 @@ function makeSkin() {
+   rnd = mulberry(1919);
+   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x07060a); scene.environment = envTex;
+   labLights(scene, 0xffb08a);
+-  const HOME = flyTarget(V3(0.1, -1.0, 0), V3(4.3, 1.9, 8.4));
++  const HOME = flyTarget(V3(0.1, -0.85, 0), V3(4.3, 2.05, 8.4));
+   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(HOME.pos);
+   const controls = makeControls(camera, HOME.target); controls.minDistance = 1.5; controls.maxDistance = 16;
+   const sk = new THREE.Group(); scene.add(sk);
+@@ -7739,19 +7796,29 @@ function makeSkin() {
+   const LAY = Object.fromEntries(SK_LAYERS.map((l) => [l.id, { ...l, mats: [] }])), REC = Object.fromEntries(SK_REC.map((r) => [r.id, { ...r, mats: [], spikes: [] }])), pick = [];
+   const slab = (y0, y1, top, mat, id) => { const g = new THREE.BoxGeometry(W, y1 - y0, D, 120, 1, 80); g.translate(0, (y0 + y1) / 2, 0); if (top) displaceGeo(g, (v) => { if (v.y > (y0 + y1) / 2) v.y += top(v.x, v.z); }); const m = new THREE.Mesh(g, mat); m.userData.pick = id; pick.push(m); sk.add(m); LAY[id].mats.push(mat); return m; };
+   const lmat = (c, o = {}) => new THREE.MeshPhysicalMaterial({ color: new THREE.Color(c).multiplyScalar(0.42), roughness: 0.55, transparent: true, opacity: 0.5, depthWrite: false, side: THREE.DoubleSide, sheen: 0.3, envMapIntensity: 0.3, ...o });
+-  slab(Y_EPI, Y_TOP, (x, z) => 0.012 * Math.sin(x * 40) * Math.sin(z * 34), lmat('#E8C8B0', { opacity: 0.32, color: new THREE.Color('#E8C8B0').multiplyScalar(0.3) }), 'epi');
+-  const corn = new THREE.Mesh(new THREE.BoxGeometry(W, 0.04, D, 1, 1, 1), new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xf2e6d8).multiplyScalar(0.45), roughness: 0.8, transparent: true, opacity: 0.25, depthWrite: false })); corn.position.y = Y_TOP + 0.01; sk.add(corn);
+-  slab(Y_DER, Y_EPI, papH, lmat('#D89090', { opacity: 0.32 }), 'der');
++  const epiM = slab(Y_EPI, Y_TOP, (x, z) => 0.012 * Math.sin(x * 40) * Math.sin(z * 34), lmat('#E8C8B0', { opacity: 0.32, color: new THREE.Color('#E8C8B0').multiplyScalar(0.3) }), 'epi');
++  displaceGeo(epiM.geometry, (v) => { if (v.y < (Y_EPI + Y_TOP) / 2) v.y += papH(v.x, v.z); });   // гребни эпидермиса между сосочками дермы
++  const corn = new THREE.Mesh(new THREE.BoxGeometry(W, 0.04, D, 120, 1, 80), new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xf2e6d8).multiplyScalar(0.45), roughness: 0.8, transparent: true, opacity: 0.25, depthWrite: false })); corn.position.y = Y_TOP + 0.01; sk.add(corn);
++  const derM = slab(Y_DER, Y_EPI, papH, lmat('#D89090', { opacity: 0.32 }), 'der');
++  // прогиб под зондом: исходные позиции верхних вершин (эпидермис, роговой слой, верх дермы)
++  const DENT = [[epiM.geometry, (Y_EPI + Y_TOP) / 2, 1], [corn.geometry, -1, 1], [derM.geometry, (Y_DER + Y_EPI) / 2, 0.6]].map(([g, yMin, k]) => ({ g, k, yMin, base: g.attributes.position.array.slice() }));
++  let dentOn = false;
++  function dent(px, pz, depth, w2) {
++    if (depth < 1e-4 && !dentOn) return; dentOn = depth >= 1e-4;
++    DENT.forEach(({ g, k, yMin, base }) => { const a = g.attributes.position.array; for (let i = 0; i < a.length; i += 3) { if (base[i + 1] < yMin) continue; const d2 = (base[i] - px) ** 2 + (base[i + 2] - pz) ** 2; a[i + 1] = base[i + 1] - k * depth * Math.exp(-d2 / w2); } g.attributes.position.needsUpdate = true; g.computeVertexNormals(); });
++  }
++  const PAC = [V3(0.3, -0.95, 0.2), V3(-0.4, -1.1, -0.45)];
+   slab(Y_BOT, Y_DER, null, lmat('#F2D890', { opacity: 0.18 }), 'hyp');
+   // жировые дольки
+-  { const arr = []; for (let i = 0; i < 70; i++) { const g = new THREE.SphereGeometry(0.11 + rnd() * 0.06, 12, 10); g.translate(rand(-W / 2 + 0.15, W / 2 - 0.15), rand(Y_BOT + 0.15, Y_DER - 0.12), rand(-D / 2 + 0.15, D / 2 - 0.15)); arr.push(g); } sk.add(new THREE.Mesh(mergeGeometries(arr), organMat('#F2D890', 0.42, { transparent: true, opacity: 0.6 }))); }
++  // дольки не выходят в дерму и не закрывают Пачини
++  { const arr = []; for (let i = 0; i < 90 && arr.length < 64; i++) { const r = 0.11 + rnd() * 0.06, p = V3(rand(-W / 2 + 0.15, W / 2 - 0.15), rand(Y_BOT + 0.15, Y_DER - r - 0.02), rand(-D / 2 + 0.15, D / 2 - 0.15)); if (PAC.some((q) => q.distanceTo(p) < 0.35 + r)) continue; const g = new THREE.SphereGeometry(r, 12, 10); g.translate(p.x, p.y, p.z); arr.push(g); } sk.add(new THREE.Mesh(mergeGeometries(arr), organMat('#F2D890', 0.42, { transparent: true, opacity: 0.6 }))); }
+   // коллагеновые волокна
+-  { const arr = []; for (let i = 0; i < 60; i++) { const p0 = V3(rand(-W / 2, W / 2), rand(Y_DER + 0.1, Y_EPI - 0.15), rand(-D / 2, D / 2)), d = randUnit().setY(rand(-0.2, 0.2)).normalize(); arr.push(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([p0, p0.clone().addScaledVector(d, 0.3).add(randUnit().multiplyScalar(0.05)), p0.clone().addScaledVector(d, 0.6)]), 8, 0.012, 4)); } sk.add(new THREE.Mesh(mergeGeometries(arr), organMat('#f0e0d0', 0.35, { transparent: true, opacity: 0.6 }))); }
++  { const arr = []; for (let i = 0; i < 60; i++) { const p0 = V3(rand(-W / 2 + 0.6, W / 2 - 0.6), rand(Y_DER + 0.1, Y_EPI - 0.15), rand(-D / 2 + 0.6, D / 2 - 0.6)), d = randUnit().setY(rand(-0.2, 0.2)).normalize(); arr.push(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([p0, p0.clone().addScaledVector(d, 0.3).add(randUnit().multiplyScalar(0.05)), p0.clone().addScaledVector(d, 0.6)]), 8, 0.012, 4)); } sk.add(new THREE.Mesh(mergeGeometries(arr), organMat('#f0e0d0', 0.35, { transparent: true, opacity: 0.6 }))); }
+   // сосуды с петлями в сосочках
+   const VESA = [], VESV = [];
+   { const a = [], v = []; const art = new THREE.CatmullRomCurve3([V3(-W / 2, -0.25, 0.4), V3(0, -0.2, 0.35), V3(W / 2, -0.28, 0.4)]), ven = new THREE.CatmullRomCurve3([V3(-W / 2, -0.3, -0.3), V3(0, -0.25, -0.35), V3(W / 2, -0.32, -0.3)]);
+     a.push(taperTube(art, () => 0.04, 40, 8)); v.push(taperTube(ven, () => 0.05, 40, 8));
+-    for (let i = 0; i < 9; i++) { const x = -1.45 + i * 0.36, za = 0.38, zv = -0.32; const top = V3(x, Y_EPI - 0.02 + papH(x, 0.0), 0.02); const ca = new THREE.CatmullRomCurve3([V3(x, -0.22, za), V3(x, 0.4, za * 0.5), top]), cv = new THREE.CatmullRomCurve3([top, V3(x + 0.04, 0.4, zv * 0.5), V3(x, -0.27, zv)]); a.push(new THREE.TubeGeometry(ca, 16, 0.014, 5)); v.push(new THREE.TubeGeometry(cv, 16, 0.014, 5)); VESA.push(ca); VESV.push(cv); }
++    for (let i = 0; i < 9; i++) { const x = -1.45 + i * 0.36, za = 0.38, zv = -0.32; const top = V3(x, Y_EPI - 0.02 + papH(x, 0.0), 0.02); const ca = new THREE.CatmullRomCurve3([V3(x, -0.22, za), V3(x + rand(-0.08, 0.08), 0.4, za * 0.5 + rand(-0.08, 0.08)), top]), cv = new THREE.CatmullRomCurve3([top, V3(x + 0.04 + rand(-0.08, 0.08), 0.4, zv * 0.5 + rand(-0.08, 0.08)), V3(x, -0.27, zv)]); a.push(new THREE.TubeGeometry(ca, 16, 0.014, 5)); v.push(new THREE.TubeGeometry(cv, 16, 0.014, 5)); VESA.push(ca); VESV.push(cv); }
+     var artM = new THREE.MeshPhysicalMaterial({ color: 0xc0404a, emissive: 0x501018, emissiveIntensity: 0.2, roughness: 0.4 }), venM = new THREE.MeshPhysicalMaterial({ color: 0x5068c0, emissive: 0x101840, emissiveIntensity: 0.2, roughness: 0.4 });
+     sk.add(new THREE.Mesh(mergeGeometries(a), artM), new THREE.Mesh(mergeGeometries(v), venM)); }
+   // волосяной фолликул, сальная железа, мышца
+@@ -7760,7 +7827,7 @@ function makeSkin() {
+   sk.add(new THREE.Mesh(ell3(0.1, 0.09, 0.1, V3(-1.0, -0.78, -0.3)), organMat('#C89070', 0.45)));
+   const hairPiv = new THREE.Group(); hairPiv.position.set(-0.7, Y_TOP, -0.3); sk.add(hairPiv);
+   const hairDir = V3(0.15, 1, 0).normalize();
+-  const hair = new THREE.Mesh(tube([V3(-0.3, -1.95, 0), V3(-0.15, -0.9, 0), V3(0, 0, 0), V3(0.18, 0.8, 0.02), V3(0.45, 1.3, 0.05)], (u) => 0.03 * (1 - 0.6 * u), 50, 8), new THREE.MeshPhysicalMaterial({ color: 0x3a2618, roughness: 0.35, clearcoat: 0.8 })); hairPiv.add(hair);
++  const hair = new THREE.Mesh(tube([V3(-0.3, -1.95, 0), V3(-0.15, -0.9, 0), V3(0, 0, 0), V3(0.12, 0.6, 0.02), V3(0.3, 0.95, 0.05)], (u) => 0.03 * (1 - 0.6 * u), 50, 8), new THREE.MeshPhysicalMaterial({ color: 0x3a2618, roughness: 0.35, clearcoat: 0.8 })); hairPiv.add(hair);
+   { const arr = []; for (let i = 0; i < 6; i++) { const g = new THREE.SphereGeometry(0.07, 12, 10); g.translate(-0.68 + rand(-0.06, 0.06), 0.25 + rand(-0.08, 0.08), -0.18 + rand(-0.04, 0.04)); arr.push(g); } sk.add(new THREE.Mesh(mergeGeometries(arr), organMat('#F2E08A', 0.45))); }
+   const ARR = new THREE.CatmullRomCurve3([V3(-0.95, -0.25, -0.3), V3(-0.6, 0.15, -0.3), V3(-0.3, 0.75, -0.3)]);
+   const arrM = organMat('#C85050', 0.5); const arrMesh = new THREE.Mesh(taperTube(ARR, () => 0.03, 20, 8), arrM); sk.add(arrMesh);
+@@ -7777,8 +7844,7 @@ function makeSkin() {
+   const nerveTo = (id, p) => { const c = new THREE.CatmullRomCurve3([V3(p.x - 0.3, Y_DER - 0.2, p.z - 0.2), V3(p.x - 0.15, (p.y + Y_DER) / 2, p.z - 0.1), p]); sk.add(new THREE.Mesh(new THREE.TubeGeometry(c, 16, 0.012, 5), nerveMat)); NERV[id].push(c); return c; };
+   [-0.9, 0.0, 0.55, 1.25].forEach((x, i) => { const z = i % 2 ? 0.25 : -0.55; const p = V3(x, Y_EPI - 0.08 + papH(x, z), z); const g = new THREE.CapsuleGeometry(0.035, 0.12, 6, 12); const pos = g.attributes.position; for (let k = 0; k < pos.count; k++) { pos.setX(k, pos.getX(k) * (1 + 0.15 * Math.sin(pos.getY(k) * 60))); } g.computeVertexNormals(); g.translate(p.x, p.y, p.z); recMesh('meis', g); nerveTo('meis', p.clone().add(V3(0, -0.08, 0))); });
+   [-0.3, 0.35, 1.0, -1.35].forEach((x, i) => { const z = i % 2 ? -0.2 : 0.55; const p = V3(x, Y_EPI + 0.02, z); const g = new THREE.CylinderGeometry(0.04, 0.04, 0.012, 16); g.translate(p.x, p.y, p.z); recMesh('merk', g); nerveTo('merk', p.clone().add(V3(0, -0.01, 0))); });
+-  const PAC = [V3(0.3, -0.95, 0.2), V3(-0.4, -1.1, -0.45)];
+-  PAC.forEach((p) => { for (let k = 0; k < 5; k++) { const g = ell3(0.08 + k * 0.035, 0.13 + k * 0.05, 0.08 + k * 0.035, p, 20); recMesh('pac', g, { transparent: true, opacity: 0.22 + (4 - k) * 0.08, depthWrite: false }); } nerveTo('pac', p.clone().add(V3(0, -0.15, 0))); });
++  PAC.forEach((p) => { for (let k = 0; k < 5; k++) { const g = ell3(0.08 + k * 0.035, 0.13 + k * 0.05, 0.08 + k * 0.035, p, 20); recMesh('pac', g, { transparent: true, opacity: 0.35 + (4 - k) * 0.04, depthWrite: false }); } nerveTo('pac', p.clone().add(V3(0, -0.15, 0))); });
+   [V3(0.15, 0.3, -0.5), V3(1.3, 0.1, -0.2)].forEach((p) => { const g = ell3(0.16, 0.035, 0.035, p, 16); recMesh('ruf', g); const arr = []; for (let k = 0; k < 6; k++) branchTree(arr, p.clone().add(V3(-0.12 + k * 0.05, 0, 0)), randUnit(), 0.06, 0.005, 0, { segs: 4, rad: 3 }); arr.forEach((gg) => sk.add(new THREE.Mesh(gg, nerveMat))); nerveTo('ruf', p); });
+   [-0.55, 0.65, 1.5].forEach((x) => { const p = V3(x, Y_EPI - 0.05, 0.05); const arr = []; for (let k = 0; k < 5; k++) branchTree(arr, p, V3(rand(-0.4, 0.4), 1, rand(-0.4, 0.4)), 0.12, 0.008, 1, { segs: 5, rad: 3 }); const m = new THREE.Mesh(mergeGeometries(arr), rmat('free')); m.userData.pick = 'free'; pick.push(m); sk.add(m); nerveTo('free', p); });
+   // зонд
+@@ -7805,10 +7871,14 @@ function makeSkin() {
+     const k = t - st.stimT, on = k > 0 && k < 3, s = st.stim;
+     probe.visible = (s === 'touch' || s === 'vib') && k < 4.5; needle.visible = s === 'pain' && k < 3.5;
+     const press = on ? smooth(0, 0.3, k) * (1 - smooth(2.7, 3, k)) : 0;
+-    probe.position.set(0.05, Y_TOP + 0.03 + (1 - press) * 0.6 + (s === 'vib' && on ? 0.02 * Math.sin(t * 60) : 0), 0.1);
+-    needle.position.set(0.7, Y_TOP + 0.4 - (on ? smooth(0, 0.4, k) * 0.75 : 0), 0.1); needle.rotation.z = Math.PI;
++    const vibY = s === 'vib' && on ? 0.02 * Math.sin(t * 60) : 0;
++    probe.position.set(0.05, Y_TOP + 0.03 + (1 - press) * 0.6 - 0.12 * press + vibY, 0.1);
++    const nk = on ? smooth(0, 0.4, k) : 0; needle.position.set(0.7, Y_TOP + 0.4 - nk * 0.75, 0.1); needle.rotation.z = Math.PI;
+     sk.scale.x = s === 'stretch' && on ? 1 + 0.12 * press + 0.12 * smooth(0, 0.4, k) * (1 - smooth(2.6, 3, k)) : 1;
+-    // кожа прогибается под зондом
++    // кожа прогибается под зондом (укол — узкая ямка вокруг иглы, пока она не прошла роговой слой)
++    if ((s === 'touch' || s === 'vib') && probe.visible) dent(0.05, 0.1, 0.12 * press - Math.min(0, vibY), 0.08);
++    else if (s === 'pain' && needle.visible) dent(0.7, 0.1, 0.07 * smooth(0, 0.25, k) * (1 - smooth(0.25, 0.45, k)), 0.01);
++    else dent(0, 0, 0, 1);
+     // ответы рецепторов
+     const onset = Math.exp(-(((k - 0.25) / 0.12) ** 2)), offset = Math.exp(-(((k - 2.9) / 0.12) ** 2));
+     if (s === 'touch') { fire('meis', 60 * (onset + offset), dt); fire('merk', on ? 25 * press + 5 : 0, dt); }
+@@ -7837,12 +7907,12 @@ function makeSkin() {
+     { text: 'эпидермис', pos: V3(-W / 2 - 0.05, (Y_TOP + Y_EPI) / 2, D / 2), color: '#E8C8B0', show: () => st.labels },
+     { text: 'дерма', pos: V3(-W / 2 - 0.05, 0.25, D / 2), color: '#D89090', show: () => st.labels },
+     { text: 'подкожная клетчатка', pos: V3(-W / 2 - 0.05, -1.0, D / 2), color: '#F2D890', show: () => st.labels },
+-    { text: 'волос', pos: V3(-0.45, Y_TOP + 0.9, -0.3), color: '#c8a080', show: () => st.labels },
+-    { text: 'сальная железа', pos: V3(-0.55, 0.3, -0.05), color: '#F2E08A', show: () => st.labels },
+-    { text: 'мышца волоса', pos: V3(-0.45, 0.3, -0.35), color: '#E07070', show: () => st.labels },
++    { text: 'волос', pos: V3(-0.42, Y_TOP + 0.85, -0.3), color: '#c8a080', show: () => st.labels },
++    { text: 'сальная железа', pos: V3(-0.6, 0.18, -0.05), color: '#F2E08A', show: () => st.labels },
++    { text: 'мышца волоса', pos: ARR.getPointAt(0.75).add(V3(0.05, 0.05, 0)), color: '#E07070', show: () => st.labels },
+     { text: 'потовая железа', pos: V3(1.1, -0.35, 0.6), color: '#9FD8F0', show: () => st.labels },
+-    { text: 'Мейсснер', pos: V3(-0.9, Y_EPI - 0.05, -0.4), color: '#7FD6FF', show: () => st.labels },
+-    { text: 'Меркель', pos: V3(-0.3, Y_EPI + 0.05, 0.62), color: '#7FE0A0', show: () => st.labels },
++    { text: 'Мейсснер', pos: V3(-0.95, Y_EPI - 0.2, -0.55), color: '#7FD6FF', show: () => st.labels },
++    { text: 'Меркель', pos: V3(-0.3, Y_EPI + 0.12, 0.62), color: '#7FE0A0', show: () => st.labels },
+     { text: 'Пачини', pos: V3(0.5, -0.95, 0.35), color: '#C77DFF', show: () => st.labels },
+     { text: 'Руффини', pos: V3(0.32, 0.32, -0.45), color: '#F2C14E', show: () => st.labels },
+     { text: 'свободные окончания', pos: V3(1.55, Y_EPI + 0.05, 0.15), color: '#FF6A5A', show: () => st.labels },
+@@ -8308,11 +8378,20 @@ function makeChemo() {
+   const sm = new THREE.Group(); scene.add(sm);
+   const cav = displaceGeo(new THREE.SphereGeometry(1, 48, 32), (v) => { v.set(v.x * 1.7, v.y * 0.7, v.z * 0.5); if (v.x < -1.2) v.y -= 0.25 * smooth(-1.2, -1.7, v.x); }); cav.translate(-0.4, -0.25, 0);
+   sm.add(new THREE.Mesh(cav, new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xe8a0a0).multiplyScalar(0.3), roughness: 0.4, transparent: true, opacity: 0.08, depthWrite: false, side: THREE.DoubleSide })), new THREE.Mesh(cav, glassMat(0xffb8b0, { rim: 0.18, base: 0.006, pow: 2.2 })));
+-  [[-0.3, -0.05], [-0.4, -0.35], [-0.5, -0.65]].forEach(([y, dx]) => { const c = new THREE.CatmullRomCurve3([V3(-1.2 + dx, y, -0.1), V3(-0.4, y + 0.03, -0.12), V3(0.5, y - 0.02, -0.1)]); sm.add(new THREE.Mesh(taperTube(c, (u) => 0.06 * Math.sin(u * Math.PI) + 0.02, 30, 10), organMat('#E8A0A0', 0.42))); });
++  // носовые раковины — завитки на латеральной стенке (z = −0.3, камера смотрит на неё с медиальной стороны), по всей высоте полости:
++  // верхняя — короткая, у обонятельной зоны; средняя; нижняя — самая длинная и крупная. «Губа» — подвёрнутый нижний край
++  [[0.12, -0.55, 0.45, 0.7], [-0.2, -1.0, 0.5, 1.0], [-0.52, -1.4, 0.45, 1.3]].forEach(([y, x0, x1, k]) => {
++    const c = new THREE.CatmullRomCurve3([V3(x0, y, 0), V3((x0 + x1) / 2, y + 0.03, 0), V3(x1, y - 0.02, 0)]);
++    const g = taperTube(c, (u) => k * (0.09 * Math.sin(u * Math.PI) + 0.03), 30, 12); g.scale(1, 1.3, 0.5); g.translate(0, 0, -0.3);
++    const lip = taperTube(new THREE.CatmullRomCurve3(c.getPoints(4).map((p) => p.clone().add(V3(0, -0.075 * k, 0)))), (u) => k * (0.04 * Math.sin(u * Math.PI) + 0.012), 30, 8); lip.translate(0, 0, -0.25);
++    sm.add(new THREE.Mesh(mergeGeometries([g, lip]), organMat('#E8A0A0', 0.42)));
++  });
++  // преддверие носа (ноздря)
++  sm.add(new THREE.Mesh(taperTube(new THREE.CatmullRomCurve3([V3(-2.3, -0.85, 0), V3(-2.12, -0.72, 0), V3(-1.9, -0.55, 0)]), (u) => 0.12 + 0.06 * u, 20, 14), organMat('#E8A0A0', 0.42, { transparent: true, opacity: 0.4, depthWrite: false })));
+   const plate = new THREE.Mesh(displaceGeo(new THREE.BoxGeometry(1.5, 0.05, 0.6, 30, 1, 12), (v) => {}), new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xe8d8bb).multiplyScalar(0.4), roughness: 0.6, transparent: true, opacity: 0.5 })); plate.position.set(0.15, 0.5, 0); sm.add(plate);
+   const bulbG = displaceGeo(new THREE.SphereGeometry(1, 40, 28), (v) => { v.set(v.x * 0.75, v.y * 0.22, v.z * 0.25); }); bulbG.translate(0.2, 0.85, 0);
+   sm.add(new THREE.Mesh(bulbG, organMat('#F2D8C0', 0.4, { transparent: true, opacity: 0.45, depthWrite: false })));
+-  const TRACT = new THREE.CatmullRomCurve3([V3(0.9, 0.88, 0), V3(1.5, 0.95, 0), V3(2.2, 1.1, 0), V3(2.8, 1.35, 0)]);
++  const TRACT = new THREE.CatmullRomCurve3([V3(0.9, 0.88, 0), V3(1.4, 0.95, 0), V3(1.8, 1.05, 0), V3(2.2, 1.2, 0)]);
+   sm.add(new THREE.Mesh(taperTube(TRACT, () => 0.07, 30, 10), organMat('#F2D8C0', 0.4)));
+   // клубочки
+   const GLOM = OD_TYPES.map((c, i) => { const p = V3(-0.35 + i * 0.15, 0.82 + (i % 2 ? 0.04 : -0.04), (i % 3 - 1) * 0.08); const n = glowNucleus(sm, p, c, 0.035, 6); n.spr.material.opacity = 0.25; return { p, n, act: 0 }; });
+@@ -8328,19 +8407,22 @@ function makeChemo() {
+   }
+   /* ---------- язык ---------- */
+   const tg = new THREE.Group(); tg.position.set(30, 0, 0); scene.add(tg); tg.visible = false;
+-  const tongueG = displaceGeo(new THREE.SphereGeometry(1, 96, 64), (v) => { let x = v.x * 0.9, y = v.y * 0.28, z = v.z * 1.5; if (z > 0.6) { const k = 1 - 0.45 * (z - 0.6) / 0.9; x *= k; } if (y > 0) y += 0.02 * noise3(v.x * 30, v.y * 30, v.z * 30) - 0.06 * Math.exp(-((x / 0.06) ** 2)); v.set(x, y, z); });
++  // полюса сферы — на кончике и корне, не на спинке
++  const tongueG = displaceGeo(new THREE.SphereGeometry(1, 96, 64).rotateX(Math.PI / 2), (v) => { let x = v.x * 0.9, y = v.y * 0.28, z = v.z * 1.5; if (z > 0.6) { const k = 1 - 0.3 * (z - 0.6) / 0.9; x *= k; } if (y > 0) y += 0.02 * noise3(v.x * 30, v.y * 30, v.z * 30) - 0.06 * Math.exp(-((x / 0.06) ** 2)); v.set(x, y, z); });
+   const tongue = new THREE.Mesh(tongueG, new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xd87880).multiplyScalar(0.36), roughness: 0.5, clearcoat: 0.4, clearcoatRoughness: 0.5, sheen: 0.25, sheenColor: new THREE.Color(0xffb0b8), envMapIntensity: 0.35 })); tg.add(tongue);
+-  const papG = []; for (let i = 0; i < 160; i++) { const z = rand(-0.6, 1.35), x = rand(-0.8, 0.8) * (z > 0.6 ? 1 - 0.45 * (z - 0.6) / 0.9 : 1); if (x * x / 0.64 + z * z / 2.25 > 0.85) continue; const g = new THREE.SphereGeometry(0.022, 8, 6); g.translate(x, 0.27 * Math.sqrt(Math.max(0, 1 - x * x / 0.81 - z * z / 2.25)) + 0.01, z); papG.push(g); }
++  // грибовидные — только впереди пограничной борозды (за V желобоватых их нет), гуще к кончику
++  const papG = []; for (let i = 0; i < 260; i++) { const z = rand(-0.4, 1.35), x = rand(-0.8, 0.8) * (z > 0.6 ? 1 - 0.3 * (z - 0.6) / 0.9 : 1); if (rnd() > 0.35 + 0.5 * (z + 0.4) / 1.75) continue; if (z < -0.5 + Math.abs(x) * 0.6 || x * x / 0.64 + z * z / 2.25 > 0.85) continue; const g = new THREE.SphereGeometry(0.022, 8, 6); g.translate(x, 0.27 * Math.sqrt(Math.max(0, 1 - x * x / 0.81 - z * z / 2.25)) + 0.01, z); papG.push(g); }
+   tg.add(new THREE.Mesh(mergeGeometries(papG), organMat('#FF9AA8', 0.5)));
+   const cvG = []; for (let i = 0; i < 9; i++) { const a = (i - 4) / 4, x = a * 0.5, z = -0.55 + Math.abs(a) * 0.3; const g = new THREE.CylinderGeometry(0.05, 0.05, 0.04, 16); g.translate(x, 0.24, z); cvG.push(g); }
+   tg.add(new THREE.Mesh(mergeGeometries(cvG), organMat('#FFB0B8', 0.55)));
+   [1, -1].forEach((s) => { for (let k = 0; k < 5; k++) { const g = new THREE.BoxGeometry(0.02, 0.06, 0.12); g.translate(0.8 * s, 0.12, -0.3 + k * 0.08); tg.add(new THREE.Mesh(g, organMat('#FFB0B8', 0.5))); } });
+   /* ---------- вкусовая почка ---------- */
+   const bud = new THREE.Group(); bud.position.set(60, 0, 0); scene.add(bud); bud.visible = false;
+-  const epi = new THREE.Mesh(new THREE.BoxGeometry(3, 1.6, 1.6), new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xe8a0a8).multiplyScalar(0.35), roughness: 0.5, transparent: true, opacity: 0.12, depthWrite: false })); epi.position.y = -0.2; bud.add(epi);
++  const epi = new THREE.Mesh(new THREE.BoxGeometry(3, 1.6, 1.6), new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xe8a0a8).multiplyScalar(0.35), roughness: 0.5, transparent: true, opacity: 0.12, depthWrite: false })); epi.position.y = -0.38; bud.add(epi);   // верх эпителия = верх почки: пора открывается на поверхность
++  { const g = new THREE.TorusGeometry(0.07, 0.018, 8, 28); g.rotateX(Math.PI / 2); g.translate(0, 0.42, 0); bud.add(new THREE.Mesh(g, new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xffe0d0).multiplyScalar(0.5), roughness: 0.4, emissive: 0x402820, emissiveIntensity: 0.4 }))); }
+   const budShell = displaceGeo(new THREE.SphereGeometry(1, 40, 30), (v) => { v.set(v.x * 0.42, v.y * 0.62, v.z * 0.42); }); budShell.translate(0, -0.2, 0);
+   bud.add(new THREE.Mesh(budShell, new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xf2d8c0).multiplyScalar(0.4), transparent: true, opacity: 0.2, depthWrite: false, roughness: 0.3 })), new THREE.Mesh(budShell, glassMat(0xffe0d0, { rim: 0.4, base: 0.01, pow: 2 })));
+-  const PORE = V3(0, 0.45, 0);
++  const PORE = V3(0, 0.42, 0);
+   const TC = []; for (let i = 0; i < 26; i++) { const a = i / 26 * Math.PI * 2 + rnd() * 0.2, r = 0.2 + rnd() * 0.1, ty = TASTES[i % 5]; const bot = V3(Math.cos(a) * r, -0.7, Math.sin(a) * r), top = V3(Math.cos(a) * 0.05, 0.35, Math.sin(a) * 0.05);
+     const c = new THREE.CatmullRomCurve3([bot, V3(Math.cos(a) * (r + 0.1), -0.2, Math.sin(a) * (r + 0.1)), top]); const m = new THREE.MeshPhysicalMaterial({ color: new THREE.Color(ty.color).multiplyScalar(0.45), emissive: new THREE.Color(ty.color), emissiveIntensity: 0.1, roughness: 0.4, transparent: true, opacity: 0.85 });
+     bud.add(new THREE.Mesh(taperTube(c, (u) => 0.035 * Math.sin(Math.min(1, u * 1.1) * Math.PI) + 0.008, 20, 8), m));
+@@ -8352,7 +8434,7 @@ function makeChemo() {
+   function setMode(m) { st.mode = m; refs.modeSeg && refs.modeSeg.sync(); st.msg = null; sm.visible = m === 'smell'; tg.visible = m === 'tongue'; bud.visible = m === 'bud'; st.fly = VIEW[m]; refs.setInfo && refs.setInfo(); }
+   function smell(id) { st.odor = ODORS.find((o) => o.id === id); st.odT = st.t; if (st.mode !== 'smell') setMode('smell'); st.msg = st.odor.text; refs.oSeg && refs.oSeg.sync(); refs.setInfo(); }
+   function taste(id) { st.taste = TASTES.find((x) => x.id === id); st.taT = st.t; if (st.mode !== 'bud') setMode('bud'); st.msg = st.taste.text; refs.tSeg && refs.tSeg.sync(); refs.setInfo(); }
+-  const NOSTRIL = V3(-2.1, -0.65, 0);
++  const NOSTRIL = V3(-2.25, -0.8, 0);
+   function update(dt) {
+     st.t += dt; const t = st.t; controls.autoRotate = st.rot && !st.fly; controls.autoRotateSpeed = 0.6;
+     flyStep(st, camera, controls, dt);
+@@ -8377,17 +8459,17 @@ function makeChemo() {
+     bud: '<b>Вкусовая почка</b> — «бочонок» из 50–100 клеток с порой на вершине. Клетки разных типов реагируют на разные вкусы и передают сигнал волокнам лицевого, языкоглоточного и блуждающего нервов → ствол → таламус → вкусовая кора островка. Клетки живут 10–14 дней. Выберите вкус.',
+   };
+   const labels = [
+-    { text: 'ноздря', pos: V3(-2.2, -0.85, 0.1), color: '#E8A0A0', show: () => st.labels && st.mode === 'smell' },
+-    { text: 'носовые раковины', pos: V3(-1.3, -0.45, 0.25), color: '#E8A0A0', show: () => st.labels && st.mode === 'smell' },
++    { text: 'ноздря', pos: V3(-2.35, -0.95, 0.1), color: '#E8A0A0', show: () => st.labels && st.mode === 'smell' },
++    { text: 'носовые раковины', pos: V3(-1.2, -0.62, 0.1), color: '#E8A0A0', show: () => st.labels && st.mode === 'smell' },
+     { text: 'обонятельный эпителий', pos: V3(-0.6, 0.2, 0.25), color: '#7FE0A0', show: () => st.labels && st.mode === 'smell' },
+     { text: 'решётчатая кость', pos: V3(1.0, 0.5, 0.3), color: '#e8d8bb', show: () => st.labels && st.mode === 'smell' },
+     { text: 'обонятельная луковица · клубочки', pos: V3(-0.6, 1.05, 0.2), color: '#F2D8C0', show: () => st.labels && st.mode === 'smell' },
+-    { text: 'обонятельный тракт → кора и миндалина', pos: V3(2.0, 1.25, 0.05), color: '#F4C542', show: () => st.labels && st.mode === 'smell' },
++    { text: 'обонятельный тракт → кора и миндалина', pos: V3(1.6, 1.2, 0.05), color: '#F4C542', show: () => st.labels && st.mode === 'smell' },
+     { text: 'кончик', pos: V3(30, 0.3, 1.5), color: '#ffb0b8', show: () => st.labels && st.mode === 'tongue' },
+     { text: 'желобоватые сосочки', pos: V3(30.6, 0.35, -0.45), color: '#ffb0b8', show: () => st.labels && st.mode === 'tongue' },
+     { text: 'листовидные', pos: V3(30.95, 0.2, -0.1), color: '#ffb0b8', show: () => st.labels && st.mode === 'tongue' },
+     { text: 'грибовидные', pos: V3(29.5, 0.35, 0.6), color: '#ffb0b8', show: () => st.labels && st.mode === 'tongue' },
+-    { text: 'вкусовая пора', pos: V3(60.15, 0.55, 0.05), color: '#ffe0d0', show: () => st.labels && st.mode === 'bud' },
++    { text: 'вкусовая пора', pos: V3(60.12, 0.5, 0.05), color: '#ffe0d0', show: () => st.labels && st.mode === 'bud' },
+     { text: 'рецепторные клетки', pos: V3(60.5, -0.1, 0.3), color: '#ffb0b8', show: () => st.labels && st.mode === 'bud' },
+     { text: 'нервные волокна', pos: V3(60.3, -1.15, 0.1), color: '#F4C542', show: () => st.labels && st.mode === 'bud' },
+   ];
+@@ -8445,7 +8527,7 @@ function makeChest() {
+   rnd = mulberry(2323);
+   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x07060a); scene.environment = envTex;
+   labLights(scene, 0xf2b0c8);
+-  const VIEW = { chest: flyTarget(V3(0, 1.75, 0), V3(2.4, 2.8, 7.4)), breast: flyTarget(V3(30.0, -0.8, 0), V3(33.4, 0.2, 5.6)), lact: flyTarget(V3(30.0, -0.8, 0), V3(30.8, 0.4, 6.6)) };
++  const VIEW = { chest: flyTarget(V3(0, 1.75, 0), V3(2.4, 2.8, 7.4)), breast: flyTarget(V3(30.0, -0.5, 0), V3(33.4, 0.5, 5.6)), lact: flyTarget(V3(30.0, -0.8, 0), V3(30.8, 0.4, 6.6)) };
+   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(VIEW.chest.pos);
+   const controls = makeControls(camera, VIEW.chest.target); controls.minDistance = 1; controls.maxDistance = 18;
+   const body = new THREE.Group(); scene.add(body);
+@@ -8453,7 +8535,7 @@ function makeChest() {
+   const PART = Object.fromEntries([...CH_PARTS, ...BR_PARTS].map((p) => [p.id, { ...p, mats: [] }])), pick = [];
+   const add = (id, g, parent, o = {}) => { const m = organMat(PART[id].color, o.k ?? 0.42, o.mat || {}); PART[id].mats.push(m); const me = new THREE.Mesh(g, m); me.userData.pick = id; pick.push(me); parent.add(me); return me; };
+   /* ---------- грудная клетка ---------- */
+-  const ribG = [], cartG = [], musG = [];
++  const ribG = [], cartG = [], musG = [], cartC = { 1: [], [-1]: [] };
+   for (let i = 0; i < 12; i++) {
+     const y = 2.92 - i * 0.15, w = 0.5 + 0.48 * Math.sin(Math.min(1, (i + 1) / 6) * Math.PI / 2) - (i > 7 ? (i - 7) * 0.05 : 0), drop = 0.32 + i * 0.03;
+     [1, -1].forEach((s) => {
+@@ -8461,8 +8543,11 @@ function makeChest() {
+       const pts = [V3(0.07 * s, y, -0.42), V3(w * 0.72 * s, y - 0.04, -0.38), V3(w * s, y - 0.16, 0.0), V3(w * 0.82 * s, y - drop * 0.75, 0.42 * front)];
+       if (i < 10) pts.push(V3(w * 0.45 * s, y - drop, 0.56));
+       const c = new THREE.CatmullRomCurve3(pts); ribG.push(taperTube(c, () => 0.026, 40, 6));
+-      if (i < 7) cartG.push(tube([pts[pts.length - 1], V3(0.06 * s, 2.82 - i * 0.12, 0.58)], 0.02, 10, 6));
+-      else if (i < 10) cartG.push(tube([pts[pts.length - 1], V3(w * 0.25 * s, y - drop - 0.05, 0.56), V3(0.12 * s, 1.92 - (i - 7) * 0.02, 0.56)], 0.018, 10, 6));
++      if (i < 7) { const cc = new THREE.CatmullRomCurve3([pts[pts.length - 1], V3(0.06 * s, 2.82 - i * 0.12, 0.58)]); cartC[s][i] = cc; cartG.push(taperTube(cc, () => 0.02, 10, 6)); }
++      else if (i < 10) {   // 8–10 рёбра: хрящ сливается с хрящом вышележащего ребра — сплошная рёберная дуга
++        const a = pts[pts.length - 1], b = cartC[s][i - 1].getPointAt(0.45), cc = new THREE.CatmullRomCurve3([a, a.clone().lerp(b, 0.5).add(V3(0, 0.05, 0.02)), b]);
++        cartC[s][i] = cc; cartG.push(taperTube(cc, () => 0.018, 14, 6));
++      }
+       if (i < 11) { const c2 = new THREE.CatmullRomCurve3(pts.slice(0, 4).map((p) => p.clone().add(V3(0, -0.075, 0)))); musG.push(taperTube(c2, () => 0.04, 30, 4)); }
+     });
+   }
+@@ -8481,14 +8566,22 @@ function makeChest() {
+   const lungMat = new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xe89aa8).multiplyScalar(0.4), roughness: 0.6, transparent: true, opacity: 0.16, depthWrite: false });
+   [1, -1].forEach((s) => body.add(new THREE.Mesh(ell3(0.4, 0.68, 0.4, V3(0.5 * s, 2.25, -0.04)), lungMat)));
+   // грудные мышцы и железы (на силуэте, полупрозрачно)
+-  const pecG = []; [1, -1].forEach((s) => { const g = displaceGeo(new THREE.SphereGeometry(1, 32, 20, 0, Math.PI * 2, 0, Math.PI / 2), (v) => { v.set(v.x * 0.42, v.y * 0.06, v.z * 0.32); }); g.rotateX(Math.PI / 2 - 0.15); g.translate(0.42 * s, 2.45, 0.62); pecG.push(g); });
+-  const pec = add('mus', mergeGeometries(pecG), body, { k: 0.38, mat: { transparent: true, opacity: 0.4, depthWrite: false } });
++  // большая грудная мышца — веер: начало от грудины (y 2.0–2.9) и медиальной половины ключицы, сходится к плечевой кости
++  const pecG = []; [1, -1].forEach((s) => {
++    const NT = 18, NU = 22, P = [], idx = [], O = (t) => (t < 0.7 ? V3(0.1 * s, 2.0 + t / 0.7 * 0.9, 0.64) : V3((0.1 + (t - 0.7) / 0.3 * 0.4) * s, 2.9 + (t - 0.7) / 0.3 * 0.1, 0.62 - (t - 0.7) / 0.3 * 0.1));
++    for (let i = 0; i <= NT; i++) { const t = i / NT, o = O(t), ins = V3(1.02 * s, 2.7 + 0.1 * t, 0.28), m = o.clone().lerp(ins, 0.45).add(V3(0, 0, 0.14 - 0.06 * t));
++      const c = new THREE.QuadraticBezierCurve3(o, m, ins); for (let j = 0; j <= NU; j++) { const q = c.getPoint(j / NU); P.push(q.x, q.y, q.z); } }
++    for (let i = 0; i < NT; i++) for (let j = 0; j < NU; j++) { const a = i * (NU + 1) + j, b2 = a + NU + 1; idx.push(a, b2, a + 1, b2, b2 + 1, a + 1); }
++    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(P, 3)); g.setIndex(idx); g.computeVertexNormals(); pecG.push(g.toNonIndexed());
++  });
++  const pec = add('mus', mergeGeometries(pecG), body, { k: 0.38, mat: { transparent: true, opacity: 0.35, depthWrite: false, side: THREE.DoubleSide } });
+   /* ---------- молочная железа (сагиттальный разрез) ---------- */
+   const br = new THREE.Group(); br.position.set(30, 0, 0); scene.add(br); br.visible = false;
+   // грудная стенка: рёбра и мышца, вид сбоку (железа выступает вперёд по +x)
+-  const wallG = []; for (let i = 0; i < 5; i++) { const g = new THREE.CylinderGeometry(0.11, 0.11, 2.6, 16); g.rotateX(Math.PI / 2); g.translate(-1.0, 0.9 - i * 0.55, 0); wallG.push(g); }
++  // только половина за плоскостью разреза (z<0), как и сама железа
++  const wallG = []; for (let i = 0; i < 5; i++) { const g = new THREE.CylinderGeometry(0.11, 0.11, 1.3, 16); g.rotateX(Math.PI / 2); g.translate(-1.0, 0.9 - i * 0.55, -0.65); wallG.push(g); }
+   br.add(new THREE.Mesh(mergeGeometries(wallG), organMat('#E8D8BB', 0.28)));
+-  const pm = new THREE.Mesh(new THREE.BoxGeometry(0.28, 2.8, 2.4), organMat('#B85050', 0.36, { transparent: true, opacity: 0.6, depthWrite: false })); pm.position.set(-0.72, -0.2, 0); br.add(pm);
++  const pm = new THREE.Mesh(new THREE.BoxGeometry(0.28, 2.8, 1.2), organMat('#B85050', 0.36, { transparent: true, opacity: 0.6, depthWrite: false })); pm.position.set(-0.72, -0.2, -0.6); br.add(pm);
+   // форма груди: полусфера, разрезанная по сагиттальной плоскости (видна половина z<0)
+   const BR_C = V3(-0.58, -0.35, 0);
+   const brShape = displaceGeo(new THREE.SphereGeometry(1, 64, 48, Math.PI, Math.PI, 0, Math.PI), (v) => { let x = v.x, y = v.y, z = v.z; if (x < 0) x *= 0.08; else { x *= 1.05; if (y < 0) y *= 1 + 0.15 * x; } v.set(x * 1.0, y * 1.05 - 0.1 * x * x, z * 1.0); });
+@@ -8501,7 +8594,8 @@ function makeChest() {
+   add('fat', cutG, br, { k: 0.4, mat: { transparent: true, opacity: 0.55, side: THREE.DoubleSide, depthWrite: false } });
+   const NIP = V3(BR_C.x + 1.08, BR_C.y - 0.1, 0);
+   add('nip', (() => { const g = new THREE.CylinderGeometry(0.07, 0.09, 0.14, 20); g.rotateZ(Math.PI / 2); g.translate(NIP.x + 0.05, NIP.y, 0); return g; })(), br, { k: 0.5 });
+-  add('nip', (() => { const g = new THREE.TorusGeometry(0.22, 0.02, 8, 40); g.rotateY(Math.PI / 2); g.translate(NIP.x - 0.02, NIP.y, 0); return g; })(), br, { k: 0.5 });
++  // ареола — пигментированный участок кожи (сферический сегмент на поверхности груди, половина z<0)
++  add('nip', (() => { const g = new THREE.SphereGeometry(1.065, 32, 8, Math.PI, Math.PI, 0, 0.22); g.rotateZ(-Math.PI / 2); g.translate(BR_C.x + 0.02, BR_C.y - 0.1, 0); return g; })(), br, { k: 0.5, mat: { color: new THREE.Color('#a86a5a').multiplyScalar(0.55), side: THREE.DoubleSide } });
+   // доли: протоки от соска веером, дольки — гроздья на концах
+   const DUCTS = [], LOBS = [];
+   const ductG = [], lobG = [];
+@@ -8517,9 +8611,9 @@ function makeChest() {
+   const coop = []; for (let i = 0; i < 7; i++) { const a = -1.2 + i / 6 * 2.4; const p0 = V3(-0.66, BR_C.y + Math.sin(a) * 0.9, -0.1 - rnd() * 0.3); const p1 = V3(BR_C.x + Math.max(0.1, Math.cos(a)) * 1.0, BR_C.y + Math.sin(a) * 1.0 - 0.1, -0.15 - rnd() * 0.3); coop.push(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([p0, p0.clone().lerp(p1, 0.5).add(randUnit().multiplyScalar(0.05)), p1]), 12, 0.006, 4)); }
+   add('fat', mergeGeometries(coop), br, { k: 0.6, mat: { color: new THREE.Color('#f0f0e8').multiplyScalar(0.5) } });
+   // жировые дольки
+-  { const arr = []; for (let i = 0; i < 40; i++) { const a = rand(-1.3, 1.3), r = rand(0.3, 0.95); const p = V3(BR_C.x + Math.max(0.05, Math.cos(a)) * r, BR_C.y + Math.sin(a) * r, -rand(0.1, 0.7)); const g = new THREE.SphereGeometry(0.07 + rnd() * 0.05, 10, 8); g.translate(p.x, p.y, p.z); arr.push(g); } add('fat', mergeGeometries(arr), br, { k: 0.38, mat: { transparent: true, opacity: 0.45, depthWrite: false } }); }
++  { const arr = []; for (let i = 0; i < 40; i++) { const a = rand(-1.3, 1.3), sz = 0.07 + rnd() * 0.05, r = rand(0.3, 0.85 - sz); const p = V3(BR_C.x + Math.max(0.05, Math.cos(a)) * r, BR_C.y + Math.sin(a) * r, -rand(0.1, 0.7)); const g = new THREE.SphereGeometry(sz, 10, 8); g.translate(p.x, p.y, p.z); arr.push(g); } add('fat', mergeGeometries(arr), br, { k: 0.38, mat: { transparent: true, opacity: 0.45, depthWrite: false } }); }
+   // лимфоузлы и сосуды к подмышке
+-  const LYM = new THREE.CatmullRomCurve3([V3(BR_C.x + 0.5, BR_C.y + 0.6, -0.3), V3(-0.3, 0.9, -0.5), V3(-0.4, 1.4, -0.8), V3(-0.5, 1.8, -1.0)]);
++  const LYM = new THREE.CatmullRomCurve3([V3(BR_C.x + 0.5, BR_C.y + 0.6, -0.3), V3(-0.3, 0.85, -0.5), V3(-0.4, 1.1, -0.75), V3(-0.5, 1.25, -0.9)]);
+   add('lymph', taperTube(LYM, () => 0.015, 30, 6), br, { k: 0.5 });
+   [0.55, 0.75, 0.95].forEach((u) => add('lymph', ell3(0.06, 0.045, 0.05, LYM.getPointAt(u)), br, { k: 0.5 }));
+   const fx = new Sparks(1800, 0.04); scene.add(fx.obj);
+@@ -8553,8 +8647,8 @@ function makeChest() {
+     { text: 'грудина', pos: V3(0.12, 2.5, 0.68), color: '#F2E6C8', show: () => st.labels && st.mode === 'chest' },
+     { text: 'ключица', pos: V3(0.65, 3.12, 0.35), color: '#F2E6C8', show: () => st.labels && st.mode === 'chest' },
+     { text: 'рёбра', pos: V3(1.05, 2.3, 0.2), color: '#E8D8BB', show: () => st.labels && st.mode === 'chest' },
+-    { text: 'рёберные хрящи', pos: V3(0.35, 2.05, 0.7), color: '#c8d8e0', show: () => st.labels && st.mode === 'chest' },
+-    { text: 'позвоночник', pos: V3(0.15, 2.0, -0.6), color: '#D8C8A8', show: () => st.labels && st.mode === 'chest' },
++    { text: 'рёберные хрящи', pos: V3(0.42, 1.85, 0.62), color: '#c8d8e0', show: () => st.labels && st.mode === 'chest' },
++    { text: 'позвоночник', pos: V3(0.0, 1.55, -0.6), color: '#D8C8A8', show: () => st.labels && st.mode === 'chest' },
+     { text: 'диафрагма', pos: V3(0.7, 1.45, 0.45), color: '#C86A6A', show: () => st.labels && st.mode === 'chest' },
+     { text: 'сердце', pos: BODY.heart.clone().add(V3(0.15, -0.05, 0.3)), color: '#FF8A7A', show: () => st.labels && st.mode === 'chest' },
+     { text: 'большая грудная мышца', pos: V3(29.25, 0.95, 0.2), color: '#D07070', show: () => st.labels && st.mode !== 'chest' },
+@@ -8563,7 +8657,7 @@ function makeChest() {
+     { text: 'млечные протоки', pos: V3(30.25, -0.2, 0.15), color: '#F2D88A', show: () => st.labels && st.mode !== 'chest' },
+     { text: 'сосок и ареола', pos: V3(30.65, -0.6, 0.15), color: '#E09080', show: () => st.labels && st.mode !== 'chest' },
+     { text: 'жировая ткань', pos: V3(29.9, -1.05, 0.1), color: '#F2E0A0', show: () => st.labels && st.mode !== 'chest' },
+-    { text: 'к подмышечным лимфоузлам', pos: V3(29.5, 1.8, -1.0), color: '#7FD6FF', show: () => st.labels && st.mode !== 'chest' },
++    { text: 'к подмышечным лимфоузлам', pos: V3(29.45, 1.38, -0.9), color: '#7FD6FF', show: () => st.labels && st.mode !== 'chest' },
+   ];
+   const refs = {};
+   function ui(el) {
+-- 
+2.43.0
+
+
+From 360267e89717b5dcf6e69b45b35a100eb14767ca Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Sat, 24 Oct 2026 22:52:10 +0000
+Subject: [PATCH 2/2] =?UTF-8?q?WIP=20brain2=20(=D1=81=D0=BE=D1=85=D1=80?=
+ =?UTF-8?q?=D0=B0=D0=BD=D0=B5=D0=BD=D0=BE=20=D0=BF=D0=B5=D1=80=D0=B5=D0=B4?=
+ =?UTF-8?q?=20=D0=BF=D0=B5=D1=80=D0=B5=D0=BA=D0=BB=D1=8E=D1=87=D0=B5=D0=BD?=
+ =?UTF-8?q?=D0=B8=D0=B5=D0=BC=20=D1=81=D0=B5=D1=81=D1=81=D0=B8=D0=B8)?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ node_modules | 1 +
+ 1 file changed, 1 insertion(+)
+ create mode 120000 node_modules
+
+diff --git a/node_modules b/node_modules
+new file mode 120000
+index 0000000..d48f57b
+--- /dev/null
++++ b/node_modules
+@@ -0,0 +1 @@
++/home/user/Chelovek/node_modules
+\ No newline at end of file
+-- 
+2.43.0
+

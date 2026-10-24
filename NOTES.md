@@ -26,6 +26,17 @@
   - токены цвета в `:root`; акцент по-прежнему задаёт каждая сцена (`accentSet`).
 - Черновик карусели для Instagram (лактоза, 7 слайдов 1080×1350): promo/insta.html, рендер `python3 tools/insta_render.py promo/insta.html promo/insta` (папки promo нет в ветке — фоны снимались tools/capture.py со сцены carbdig).
 
+## СТАТУС НА МОМЕНТ ПЕРЕКЛЮЧЕНИЯ СЕССИИ (продолжать отсюда)
+Сделано и запушено в source:
+- Английская версия ГОТОВА: словари data/i18n/en/*.json (перевод 100%, редактура терминов, уточнения по месту в b99_ctx.json, ключи `unit::строка`). Сборка build.py делает out/appN/en/, загрузчик языка (?lang=, localStorage, язык браузера; в lt/ по умолчанию ru), кнопка RU/EN в шапке. Инструмент tools/i18n.mjs (extract/apply). НЕ ОПУБЛИКОВАНО (сайт ещё app6 без EN).
+- Критики 3D-моделей прошли по всем 61 сцене: отчёты в review/*.md (body, brain1, brain2, bio-carb-lipid, bio-enz-energy, bio-protein-gene-blood). Снимки «до» делает `python3 tools/revshots.py <ids>` → lt/rev/.
+- glassMat(color, { keep: true }) — смысловые оболочки видимы.
+Не доделано — исправления моделей (6 групп, работали агенты в git worktree /home/user/wt-<группа>, ветки wt-<группа>):
+- Их незаконченная работа сохранена патчами wip/<группа>.patch (git format-patch от source). Применять: `git checkout -b fix-<группа> <база>; git am wip/<группа>.patch` (база — коммит source, от которого делалась копия: carblip/body ≈ 88cddad…51a1655, protgene 51a1655, brain2/enz/brain1 — позже; при конфликте `git am --3way`). Или проще: `git apply --3way` по одному.
+- Зоны: carblip — bio/40–42, 50–53, bio/01_biokit.js, tools/molrd.py (RDKit-конформеры), фруктоза; body — makeSkeleton…makeSresp + updateLabels (разводка подписей на компьютере); protgene — bio/60–93; brain2 — dien hemis cortex hippo cereb brain vision ear skin chemo chest cell + brainKit (лево/право: в three.js +z — ПРАВАЯ сторона); enz — bio/10–33 (малонат, АТФ-синтаза, мембрана-срез); brain1 — soma types neuron synapse glia develop spinal cranial stem ventricles (почти не начат).
+- Порядок: применить патчи по одному → `python3 tools/mkdata.py` (если менялись mols.json/pdb.json; mols.json — объединять по ключам) → build → `python3 tools/sweep.py $(cat lt/ids.txt)` → снимки revshots → критик повторно → доделать недоделанное по review/*.md → правки текста (ниже) → обновить словарь EN (`node tools/i18n.mjs extract out/_merged.mjs lt/strings.json`, перевести строки из out/_merged_en.mjs.missing.json) → APP=app7 → публикация.
+Инструменты параллельной работы: tools/wt.sh <имя> (копия + сборка), LT_PORT=<порт> для lt.py/sweep.py/revshots.py/mob.py; задания: tools/critic_brief.md, tools/fixer_brief.md, tools/translate_brief.md.
+
 ## ТЕКУЩИЙ ПЛАН (пользователь спит, разрешил делать всё самостоятельно, без подтверждений, с публикациями)
 A. Улучшение 3D-моделей всех сцен: снимки `python3 tools/revshots.py <ids>` → lt/rev/; задание критикам lt/critic_brief.md (копия в tools/critic_brief.md); отчёты lt/review/*.md → исправления → повторная проверка критиками → публикация.
 B. Английская версия: переключатель RU/EN в шапке (справа, рядом с «Поддержать»; на телефоне рядом с ♥), запоминание в localStorage, `?lang=en`; перевод интерфейса, названий тем, подписей, панелей, статистики и текстов всех сцен (медицинская терминология) → критик-проверка → публикация.
