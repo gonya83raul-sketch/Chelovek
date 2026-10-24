@@ -35,8 +35,10 @@ function makeCarbdig() {
   const AMY = []; for (let i = 0; i < 3; i++) { const m = new THREE.Mesh(blobGeo(0.26, 0.22, 0.22, 50 + i, 0.15, 3), protMat(ENZC.amy, 0.5)); m.geometry.computeVertexNormals(); G1.add(m); AMY.push({ m, ph: i * 2.1 }); }
   // транспортёры
   const TR = [];
-  [[-2.2, 'sglt'], [-1.75, 'glut5'], [0.0, 'sglt'], [0.45, 'glut5'], [2.2, 'sglt'], [2.65, 'glut5']].forEach(([x, k]) => { const m = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.3, 12), protMat(k === 'sglt' ? '#7FD6FF' : '#FF9A5C', 0.6)); m.position.set(x, YT, 0.55); G1.add(m); TR.push({ x, k, m, y: YT }); });
-  [-2.0, 0.2, 2.4].forEach((x) => { const m = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.3, 12), protMat('#C77DFF', 0.6)); m.position.set(x, YB, 0.55); G1.add(m); TR.push({ x, k: 'glut2', m, y: YB }); });
+  // белки-переносчики пронизывают мембрану на переднем срезе клетки (z = 0.76)
+  const TRZ = 0.76;
+  [[-2.2, 'sglt'], [-1.75, 'glut5'], [0.0, 'sglt'], [0.45, 'glut5'], [2.2, 'sglt'], [2.65, 'glut5']].forEach(([x, k]) => { const m = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.09, 0.42, 12), protMat(k === 'sglt' ? '#7FD6FF' : '#FF9A5C', 0.6)); m.position.set(x, YT, TRZ); G1.add(m); TR.push({ x, k, m, y: YT }); });
+  [-2.0, 0.2, 2.4].forEach((x) => { const m = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.09, 0.42, 12), protMat('#C77DFF', 0.6)); m.position.set(x, YB, TRZ); G1.add(m); TR.push({ x, k: 'glut2', m, y: YB }); });
   // сахара: шестиугольники (глюкоза, галактоза) и пятиугольник (фруктоза)
   const hexG = new THREE.CylinderGeometry(0.12, 0.12, 0.05, 6), penG = new THREE.CylinderGeometry(0.12, 0.12, 0.05, 5);
   const POOL = []; const MAXS = 260;
@@ -56,16 +58,18 @@ function makeCarbdig() {
   }
   function killItem(it) { it.meshes.forEach((m) => { G1.remove(m); }); ITEMS.splice(ITEMS.indexOf(it), 1); }
   // толстая кишка: пузырьки при лактазной недостаточности
-  const colon = new THREE.Mesh(ell3(0.7, 1.0, 0.7, V3(XR + 1.3, 1.6, 0)), new THREE.MeshPhysicalMaterial({ color: new THREE.Color('#C8A090').multiplyScalar(0.25), roughness: 0.85, clearcoat: 0, envMapIntensity: 0.2, transparent: true, opacity: 0.45, depthWrite: false })); G1.add(colon);
+  // толстая кишка — продолжение просвета (трубка), центр геометрии в начале координат меша, чтобы «раздуваться» от газа
+  const colG = tube([V3(XR + 0.3, 2.9, 0), V3(XR + 1.3, 2.2, 0), V3(XR + 1.4, 0.8, 0)], 0.5); colG.computeBoundingBox(); const colC = colG.boundingBox.getCenter(V3(0, 0, 0)); colG.translate(-colC.x, -colC.y, -colC.z);
+  const colon = new THREE.Mesh(colG, organMat('#C8A090', 0.45, { transparent: true, opacity: 0.7, depthWrite: false })); colon.position.copy(colC); G1.add(colon);
 
   /* ---------- 2. галактоза и фруктоза в печени ---------- */
   const OX = 41.3; const G2 = new THREE.Group(); G2.position.set(OX, 0, 0); scene.add(G2);
   const NODES = {
     gal: { m: 'galactose', p: V3(-3.8, 1.9, 0) }, gal1p: { m: 'gal1p', p: V3(-1.8, 1.9, 0) }, g1p: { m: 'g1p', p: V3(0.4, 1.9, 0) }, g6p: { m: 'g6p', p: V3(2.4, 1.2, 0) },
     udpglc: { m: 'udpglc', p: V3(-1.1, 3.35, 0) }, udpgal: { m: 'udpgal', p: V3(0.9, 3.35, 0) },
-    fru: { m: 'fructose', p: V3(-3.8, -0.4, 0) }, f1p: { m: 'f1p', p: V3(-1.8, -0.4, 0) }, dhap: { m: 'dhap', p: V3(0.4, 0.15, 0) }, gald: { m: 'glyald', p: V3(0.4, -0.95, 0) }, gly: { m: 'pyruvate', p: V3(2.6, -0.4, 0), name: 'гликолиз' },
+    fru: { m: 'fructose', p: V3(-3.8, -0.4, 0) }, f1p: { m: 'f1p', p: V3(-1.8, -0.4, 0) }, dhap: { m: 'dhap', p: V3(0.4, 0.15, 0) }, gald: { m: 'glyald', p: V3(0.4, -0.95, 0) }, gly: { m: 'gap', p: V3(2.7, -0.4, 0), name: 'ГАФ → гликолиз' },
   };
-  Object.values(NODES).forEach((n) => { const mo = MOL(n.m); n.g = molMesh(mo, { scale: n.m.startsWith('udp') ? 0.075 : 0.11, hideH: true }); n.g.position.copy(n.p); G2.add(n.g); n.glow = glowNucleus(G2, n.p, '#FF6A5A', 0.1, 9); n.glow.core.visible = false; n.glow.spr.material.opacity = 0; });
+  Object.values(NODES).forEach((n) => { const mo = MOL(n.m); n.g = molMesh(mo, { scale: n.m.startsWith('udp') ? 0.09 : 0.11, hideH: true }); if (n.m.startsWith('udp')) molGlow(n.g, 0.15); n.g.position.copy(n.p); G2.add(n.g); n.glow = glowNucleus(G2, n.p, '#FF6A5A', 0.1, 9); n.glow.core.visible = false; n.glow.spr.material.opacity = 0; });
   const STEP = [
     ['gal', 'gal1p', 'галактокиназа', '#7FE0A0', 'gk'], ['gal1p', 'g1p', 'ГАЛТ', '#7FE0A0', 'galt'], ['udpglc', 'udpgal', '', '#9FB4FF', 'galt2'], ['udpgal', 'udpglc', 'эпимераза', '#9FB4FF', 'epi'], ['g1p', 'g6p', 'фосфоглюкомутаза', '#F2C14E', 'pgm'],
     ['fru', 'f1p', 'фруктокиназа', '#FF9A5C', 'fk'], ['f1p', 'dhap', 'альдолаза B', '#FF9A5C', 'aldB'], ['f1p', 'gald', '', '#FF9A5C', 'aldB2'], ['dhap', 'gly', '', '#F2C14E', 'g1'], ['gald', 'gly', 'триокиназа', '#F2C14E', 'tri'], ['g6p', 'gly', '', '#F2C14E', 'g3'],
@@ -76,7 +80,8 @@ function makeCarbdig() {
   const fG = flowArrow(G2, NODES.g1p.p.clone().add(V3(0.45, 0.35, 0)), V3(2.2, 2.65, 0), '#F2C14E', { bend: -0.2, r: 0.02 });
   // хрусталик глаза (галактитол → катаракта) и «батарейка» АТФ (непереносимость фруктозы)
   const LENS = V3(3.6, -1.75, 0.2), ATPP = V3(2.3, -1.75, 0.2);
-  const lens = new THREE.Mesh(ell3(0.45, 0.45, 0.18, LENS, 40), glassMat(0xa8d0ff, { rim: 0.6, base: 0.02, pow: 2 })); G2.add(lens);
+  const lens = new THREE.Mesh(ell3(0.45, 0.45, 0.18, LENS, 40), glassMat(0xa8d0ff, { rim: 1.0, base: 0.12, pow: 1.6, keep: true })); G2.add(lens);
+  { const rimL = new THREE.Mesh(new THREE.TorusGeometry(0.45, 0.02, 8, 48), new THREE.MeshBasicMaterial({ color: 0xa8d0ff, transparent: true, opacity: 0.6 })); rimL.position.copy(LENS); G2.add(rimL); } // ободок хрусталика
   const lensFog = new THREE.Mesh(ell3(0.4, 0.4, 0.14, LENS, 32), new THREE.MeshBasicMaterial({ color: 0x8a867c, transparent: true, opacity: 0, depthWrite: false })); G2.add(lensFog);
   const atpBar = new THREE.Mesh(new THREE.BoxGeometry(0.3, 1, 0.3), new THREE.MeshBasicMaterial({ color: 0x4fa070, transparent: true, opacity: 0.55 })); atpBar.position.copy(ATPP); G2.add(atpBar);
   const atpFrame = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(0.42, 1.12, 0.42)), new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.3 })); atpFrame.position.copy(ATPP); G2.add(atpFrame);
@@ -115,7 +120,7 @@ function makeCarbdig() {
           }
           if (it.p.y < YT + 0.3 && it.units.length > 2) it.p.y = YT + 0.3;
         } else if (it.stage === 'in') {
-          it.u += dt * 0.55; const a = V3(it.tr.x, YT + 0.25, 0.55), b = V3(it.tr.x, YT - 0.1, 0.55), c = V3(it.out.x, YB + 0.1, 0.55), d = V3(it.out.x, YB - 0.45, 0.4);
+          it.u += dt * 0.55; const a = V3(it.tr.x, YT + 0.25, TRZ), b = V3(it.tr.x, YT - 0.1, TRZ), c = V3(it.out.x, YB + 0.1, TRZ), d = V3(it.out.x, YB - 0.45, 0.4);
           const u = it.u; it.p.copy(u < 0.25 ? a.clone().lerp(b, u / 0.25) : u < 0.85 ? b.clone().lerp(c, (u - 0.25) / 0.6) : c.clone().lerp(d, (u - 0.85) / 0.15));
           if (u > 0.8) it.out.m.material.emissiveIntensity = 0.6;
           if (u >= 1) { it.stage = 'blood'; it.u = CAP.getUtoTmapping ? 0 : 0; it.cu = clamp((it.p.x - XL + 0.6) / (XR - XL + 1.2), 0, 1); st.absorbed[it.units[0]]++; }
@@ -131,7 +136,7 @@ function makeCarbdig() {
       });
       [...TR, ...BB].forEach((x) => { x.m.material.emissiveIntensity = Math.max(0.03, x.m.material.emissiveIntensity - dt * 1.5); });
       AMY.forEach((a) => { a.m.material.emissiveIntensity = Math.max(0.03, a.m.material.emissiveIntensity - dt); });
-      st.gas = Math.max(0, st.gas - dt * 0.25); colon.material.opacity = 0.45 + 0.3 * clamp(st.gas / 8, 0, 1); colon.scale.setScalar(1 + 0.12 * clamp(st.gas / 8, 0, 1) + 0.02 * Math.sin(t * 6) * (st.gas > 2 ? 1 : 0));
+      st.gas = Math.max(0, st.gas - dt * 0.25); colon.material.opacity = 0.6 + 0.3 * clamp(st.gas / 8, 0, 1); colon.scale.setScalar(1 + 0.12 * clamp(st.gas / 8, 0, 1) + 0.02 * Math.sin(t * 6) * (st.gas > 2 ? 1 : 0));
     }
     if (st.mode === 'met') {
       const gk = st.defect !== 'gk', galt = st.defect !== 'galt', fk = st.defect !== 'fk', aldB = st.defect !== 'aldB';
@@ -182,8 +187,8 @@ function makeCarbdig() {
     { text: 'энтероцит', pos: V3(-1.0, YB + 1.1, 0.8), color: '#E8A0A0', show: () => st.labels && st.mode === 'dig' },
     { text: 'капилляр → воротная вена', pos: V3(1.1, YB - 0.95, 0.3), color: '#E06A6A', show: () => st.labels && st.mode === 'dig' },
     { text: 'толстая кишка', pos: V3(XR + 0.9, 2.75, 0), color: '#C8A090', show: () => st.labels && st.mode === 'dig' },
-    ...Object.entries(NODES).map(([k, n]) => ({ text: n.name || MOL(n.m).name, pos: n.p.clone().add(V3(OX - 0.55, -0.75, 0.2)), color: k === 'gly' || k === 'g6p' || k === 'g1p' ? '#F2C14E' : k.startsWith('udp') ? '#9FB4FF' : ['gal', 'gal1p'].includes(k) ? '#7FE0A0' : '#FF9A5C', show: () => st.labels && st.mode === 'met' })),
-    ...AR.filter((a) => a.name).map((a) => ({ text: a.name, pos: NODES[a.a].p.clone().lerp(NODES[a.b].p, 0.5).add(V3(OX - 0.6, a.id === 'epi' ? -0.55 : a.id === 'tri' ? -0.45 : 0.5, 0.3)), color: '#C8C8D0', show: () => st.labels && st.mode === 'met' })),
+    ...Object.entries(NODES).map(([k, n]) => ({ text: n.name || MOL(n.m).name, pos: n.p.clone().add(k === 'gly' ? V3(OX + 0.35, -0.1, 0.2) : k === 'dhap' ? V3(OX - 0.3, 0.45, 0.2) : V3(OX - 0.55, -0.75, 0.2)), color: k === 'gly' || k === 'g6p' || k === 'g1p' ? '#F2C14E' : k.startsWith('udp') ? '#9FB4FF' : ['gal', 'gal1p'].includes(k) ? '#7FE0A0' : '#FF9A5C', show: () => st.labels && st.mode === 'met' })),
+    ...AR.filter((a) => a.name).map((a) => ({ text: a.name, pos: NODES[a.a].p.clone().lerp(NODES[a.b].p, 0.5).add(V3(OX - 0.6, a.id === 'epi' ? -0.55 : a.id === 'tri' ? -0.45 : a.id === 'galt' ? -0.42 : 0.5, 0.3)), color: '#C8C8D0', show: () => st.labels && st.mode === 'met' })),
     { text: 'гликоген', pos: V3(OX + 3.1, 3.1, 0.3), color: '#F2C14E', show: () => st.labels && st.mode === 'met' },
     { text: 'хрусталик (галактитол)', pos: V3(OX + 3.2, -2.35, 0.4), color: '#E8F0FF', show: () => st.labels && st.mode === 'met' },
     { text: 'АТФ печени', pos: V3(OX + 1.7, -2.75, 0.4), color: '#7FE0A0', show: () => st.labels && st.mode === 'met' },

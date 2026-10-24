@@ -14,26 +14,31 @@ function makeGlycogen() {
   const G1 = new THREE.Group(); G1.position.set(0, 0.9, 0); scene.add(G1);
   const core = new THREE.Mesh(blobGeo(0.28, 0.28, 0.28, 3, 0.12, 4), protMat('#FF8AB0', 0.4)); G1.add(core);
   const RES = []; // {p, q, tier, ta, branch}
+  // сетка-хэш: остаток не ставится вплотную к остатку другой цепи — цепи не проходят друг сквозь друга
+  const GRID = new Map(), gk = (x, y, z) => `${x},${y},${z}`; let CID = 0;
+  const crowded = (p, cid) => { const cx = Math.floor(p.x / 0.1), cy = Math.floor(p.y / 0.1), cz = Math.floor(p.z / 0.1); for (let a = -1; a <= 1; a++) for (let b = -1; b <= 1; b++) for (let c = -1; c <= 1; c++) { const L = GRID.get(gk(cx + a, cy + b, cz + c)); if (L && L.some((r) => r.cid !== cid && r.p.distanceTo(p) < 0.09)) return true; } return false; };
+  const gridAdd = (r) => { const k = gk(Math.floor(r.p.x / 0.1), Math.floor(r.p.y / 0.1), Math.floor(r.p.z / 0.1)); if (!GRID.has(k)) GRID.set(k, []); GRID.get(k).push(r); };
   function chain(start, dir, tier, t0) {
     const n = tier === 0 ? 6 : 9 + Math.floor(rnd() * 4); let p = start.clone(); const d = dir.clone().normalize();
-    const kids = [];
+    const kids = []; const cid = ++CID;
     for (let i = 0; i < n; i++) {
       const rad = p.lengthSq() > 1e-6 ? p.clone().normalize() : d.clone(); d.add(randUnit().multiplyScalar(0.25)).addScaledVector(rad, 0.4).normalize(); if (p.length() > 2.0) d.addScaledVector(rad, -0.9).normalize(); const tw = V3(-d.y, d.x, 0).normalize().multiplyScalar(0.03 * Math.sin(i * 1.7));
-      p = p.clone().addScaledVector(d, 0.105).add(tw);
+      const np = p.clone().addScaledVector(d, 0.105).add(tw); if (i > 1 && crowded(np, cid)) break; p = np;
       const q = new THREE.Quaternion().setFromUnitVectors(V3(0, 1, 0), d);
       const r = { p: p.clone(), q, tier, ta: t0 + i * 0.09, end: i === n - 1, n: i, len: n, kidAt: false };
-      RES.push(r);
-      if (tier < 5 && (i === 2 || (i === 6 && tier > 0))) { r.kidAt = true; kids.push([p.clone(), d.clone().add(randUnit().multiplyScalar(1.1)).normalize(), tier + 1, t0 + i * 0.09 + 0.25]); }
+      r.cid = cid; RES.push(r); gridAdd(r);
+      if (tier < 5 && (i === 2 || (i === 6 && tier > 0))) { r.kidAt = true; const ax = randUnit().cross(d).normalize(); kids.push([p.clone(), d.clone().applyAxisAngle(ax, rand(0.52, 0.7)).normalize(), tier + 1, t0 + i * 0.09 + 0.25]); } // ветвь отходит под 30–40°
     }
     kids.forEach((k) => { if (RES.length < 1700) chain(...k); });
   }
-  [V3(1, 1, 1), V3(-1, -1, 1), V3(-1, 1, -1), V3(1, -1, -1)].forEach((d) => chain(V3(0, 0, 0), d.normalize(), 0, 0));
+  [V3(1, 0, 0), V3(-1, 0, 0), V3(0, 1, 0), V3(0, -1, 0), V3(0, 0, 1), V3(0, 0, -1)].forEach((d) => chain(d.clone().multiplyScalar(0.2), d, 0, 0)); // 6 цепей от гликогенина
   const NR = RES.length; const T_ALL = Math.max(...RES.map((r) => r.ta)) + 0.5;
   const HX = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.06, 0.06, 0.035, 6), new THREE.MeshPhysicalMaterial({ roughness: 0.35, clearcoat: 0.6, envMapIntensity: 0.5 }), NR); G1.add(HX);
   const dm = new THREE.Object3D(), col = new THREE.Color();
   const tierCol = ['#FF8AB0', '#FF9A70', '#FFB060', '#F2C14E', '#E8D27A', '#F2E6C8', '#FFF0D0'];
-  RES.forEach((r, i) => { HX.setColorAt(i, col.set(tierCol[r.tier]).multiplyScalar(0.42)); });
-  const g1p = []; for (let k = 0; k < 10; k++) { const m = molMesh(MOL('g1p'), { scale: 0.06, hideH: true }); m.visible = false; scene.add(m); g1p.push({ m, age: 9, v: V3(0, 0, 0) }); }
+  RES.forEach((r, i) => { HX.setColorAt(i, r.kidAt ? col.set('#FF6A6A').multiplyScalar(0.8) : col.set(tierCol[r.tier]).multiplyScalar(0.42)); }); // точки ветвления α-1,6 — красные
+  const KIDS = RES.filter((r) => r.kidAt && r.tier >= 1);
+  const g1p = []; for (let k = 0; k < 10; k++) { const m = molMesh(MOL('g1p'), { scale: 0.1, hideH: true }); molGlow(m, 0.3); m.visible = false; scene.add(m); g1p.push({ m, age: 9, v: V3(0, 0, 0) }); }
   const udp = []; for (let k = 0; k < 8; k++) { const m = new THREE.Mesh(new THREE.SphereGeometry(0.07, 12, 8), new THREE.MeshBasicMaterial({ color: 0x7fe0a0 })); m.visible = false; scene.add(m); udp.push({ m, age: 9, a: V3(0, 0, 0), b: V3(0, 0, 0) }); }
   /* ---------- сахар крови ---------- */
   const G2 = new THREE.Group(); G2.position.set(40, 0, 0); scene.add(G2);
@@ -42,12 +47,14 @@ function makeGlycogen() {
   const panc = new THREE.Mesh(blobGeo(0.5, 0.12, 0.14, 6, 0.1, 4), organMat('#E8B070', 0.55)); panc.position.set(0.25, 1.2, -0.05); panc.rotation.z = 0.2; G2.add(panc);
   const brain = new THREE.Mesh(ell3(0.3, 0.25, 0.35, BODY.head), organMat('#E0A0B8', 0.45)); G2.add(brain);
   const musL = [1, -1].map((s) => { const m = new THREE.Mesh(tube([V3(0.47 * s, -0.3, 0.05), V3(0.5 * s, -1.2, 0.08), V3(0.48 * s, -2.0, 0.06)], 0.24), organMat('#C0504A', 0.4)); G2.add(m); return m; });
+  [1, -1].forEach((s) => { const k = new THREE.Mesh(blobGeo(0.16, 0.24, 0.12, 8 + s, 0.08, 3), organMat('#A04040', 0.5)); k.position.set(0.4 * s, 0.9, -0.3); G2.add(k); }); // почки
   const fat = new THREE.Mesh(ell3(0.8, 0.35, 0.3, V3(0, 0.6, 0.35)), organMat('#F2D08A', 0.35, { transparent: true, opacity: 0.6 })); G2.add(fat);
   const HEART = BODY.heart.clone();
   const fGlu = [flowArrow(G2, liver.position.clone().add(V3(0.3, 0.2, 0.2)), HEART.clone().add(V3(0, -0.1, 0.1)), '#F2C14E', { bend: 0.3 }), flowArrow(G2, HEART.clone().add(V3(0.1, 0.2, 0)), BODY.head.clone().add(V3(0.1, -0.35, 0)), '#F2C14E', { bend: -0.2 }), flowArrow(G2, HEART.clone().add(V3(0.2, -0.3, 0)), V3(0.5, -0.5, 0.1), '#F2C14E', { bend: -0.25 })];
   const fIns = flowArrow(G2, panc.position.clone().add(V3(0.2, 0.1, 0.2)), liver.position.clone().add(V3(0.3, -0.2, 0.3)), '#7FD6FF', { bend: 0.5 });
   const fGlg = flowArrow(G2, panc.position.clone().add(V3(0.1, 0.15, 0.25)), liver.position.clone().add(V3(0.1, -0.1, 0.4)), '#FF8A5C', { bend: -0.6 });
   /* ---------- состояние ---------- */
+  const LB = { br: V3(0, 0, 0), udp: V3(0, 0, 0), g1p: V3(0, 0, 0) };
   const st = { t: 0, mode: 'build', labels: true, rot: true, fly: null, g: 0, msg: null, glu: 5.0, ins: 0.3, glg: 0.3, meal: -99, diab: 'none', hist: [], hrs: 0, sim: 8, glycL: 0.7 };
   function setMode(m) { st.mode = m; refs.modeSeg && refs.modeSeg.sync(); G1.visible = m !== 'blood'; G2.visible = m === 'blood'; st.fly = VIEW[m]; st.g = m === 'build' ? 0 : T_ALL; st.msg = null; refs.rebuild && refs.rebuild(); refs.setInfo && refs.setInfo(); }
   function update(dt) {
@@ -68,6 +75,10 @@ function makeGlycogen() {
       g1p.forEach((q) => { if (q.age < 2.2) { q.age += dt; q.m.position.addScaledVector(q.v, dt); q.m.rotation.y += dt * 2; } else q.m.visible = false; });
       udp.forEach((u) => { if (u.age < 0.6) { u.age += dt; u.m.position.copy(u.a).lerp(u.b, u.age / 0.6); } else u.m.visible = false; });
       core.rotation.y += dt;
+      // подписи следуют за объектами: ближайшая к зрителю видимая точка ветвления, последние УДФ-глюкоза и Г1Ф
+      let best = null, bz = -1e9; KIDS.forEach((r) => { if (r.ta > st.g) return; const wp = r.p.clone().applyQuaternion(G1.quaternion); if (wp.z > bz) { bz = wp.z; best = wp; } }); if (best) LB.br.copy(best).add(G1.position); st.brOn = !!best;
+      const lu = udp.filter((u) => u.m.visible).sort((a, b) => b.age - a.age)[0]; st.udpOn = !!lu; if (lu) LB.udp.copy(lu.m.position);
+      const lg = g1p.filter((q) => q.m.visible).sort((a, b) => b.age - a.age).find((q) => q.age > 0.3); st.g1pOn = !!lg; if (lg) LB.g1p.copy(lg.m.position);
     }
     if (st.mode === 'blood') {
       // модель: каждая секунда = 15 минут
@@ -106,14 +117,15 @@ function makeGlycogen() {
   };
   const labels = [
     { text: 'гликогенин', pos: V3(0.35, 1.25, 0.3), color: '#FF8AB0', show: () => st.labels && G1.visible },
-    { text: 'α-1,6 ветвление', pos: V3(-1.6, 2.3, 0.4), color: '#F2C14E', show: () => st.labels && G1.visible },
-    { text: 'УДФ-глюкоза', pos: V3(2.0, 2.6, 0.2), color: '#7FE0A0', show: () => st.labels && st.mode === 'build' },
-    { text: 'глюкозо-1-фосфат', pos: V3(2.1, 2.6, 0.2), color: '#FF9A30', show: () => st.labels && st.mode === 'break' },
+    { text: 'α-1,6 ветвление', pos: LB.br, color: '#FF6A6A', show: () => st.labels && G1.visible && st.brOn },
+    { text: 'УДФ-глюкоза', pos: LB.udp, color: '#7FE0A0', show: () => st.labels && st.mode === 'build' && st.udpOn },
+    { text: 'глюкозо-1-фосфат', pos: LB.g1p, color: '#FF9A30', show: () => st.labels && st.mode === 'break' && st.g1pOn },
     { text: 'печень', pos: V3(40 - 1.3, 1.6, 0.3), color: '#E07A5A', show: () => st.labels && st.mode === 'blood' },
     { text: 'поджелудочная', pos: V3(40 + 0.75, 1.0, 0.2), color: '#E8B070', show: () => st.labels && st.mode === 'blood' },
     { text: 'мозг', pos: V3(40.4, 4.4, 0), color: '#E0A0B8', show: () => st.labels && st.mode === 'blood' },
     { text: 'мышцы', pos: V3(40.8, -1.2, 0.2), color: '#C0504A', show: () => st.labels && st.mode === 'blood' },
     { text: 'жировая ткань', pos: V3(40 - 1.0, 0.5, 0.4), color: '#F2D08A', show: () => st.labels && st.mode === 'blood' },
+    { text: 'почки (глюкозурия)', pos: V3(40 + 0.6, 0.75, 0.2), color: '#E07070', show: () => st.labels && st.mode === 'blood' },
   ];
   const refs = {};
   function ui(el) {

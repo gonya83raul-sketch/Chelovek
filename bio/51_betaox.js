@@ -29,9 +29,9 @@ function makeBetaox() {
   }
   /* ---------- 1. липолиз в адипоците ---------- */
   const G1 = new THREE.Group(); scene.add(G1);
-  const cell = new THREE.Mesh(new THREE.SphereGeometry(3.0, 48, 32), glassMat(0xffd080, { rim: 0.22, base: 0.004 })); cell.position.set(-0.5, 0.7, 0); G1.add(cell);
-  const drop = new THREE.Mesh(new THREE.SphereGeometry(2.25, 48, 32), new THREE.MeshPhysicalMaterial({ color: 0x6a4a14, roughness: 0.18, clearcoat: 1, emissive: 0x3a2404, emissiveIntensity: 0.12, envMapIntensity: 0.4, transparent: true, opacity: 0.92 })); drop.position.copy(cell.position); G1.add(drop);
-  const nuc = new THREE.Mesh(ell3(0.5, 0.25, 0.4, V3(-0.5 + 2.4, 0.7 - 1.3, 0.6)), organMat('#9F7BFF', 0.4)); G1.add(nuc);
+  const cell = new THREE.Mesh(new THREE.SphereGeometry(3.0, 48, 32), glassMat(0xffd080, { rim: 0.6, base: 0.02, keep: true })); cell.position.set(-0.5, 0.7, 0); G1.add(cell);
+  const drop = new THREE.Mesh(new THREE.SphereGeometry(2.25, 48, 32), new THREE.MeshPhysicalMaterial({ color: 0x6a4a14, roughness: 0.3, clearcoat: 0.5, clearcoatRoughness: 0.35, emissive: 0x3a2404, emissiveIntensity: 0.12, envMapIntensity: 0.4 })); drop.position.copy(cell.position); G1.add(drop);
+  const nuc = new THREE.Mesh(ell3(0.5, 0.17, 0.4), organMat('#9F7BFF', 0.4)); nuc.position.set(-0.5 + 2.62 * Math.cos(-0.5), 0.7 + 2.62 * Math.sin(-0.5), 0); nuc.rotation.z = -0.5 + Math.PI / 2; G1.add(nuc); // ядро сплющено каплей к краю клетки
   const rec = new THREE.Mesh(blobGeo(0.28, 0.4, 0.28, 3, 0.1, 3), protMat('#FF8A5C', 0.4)); rec.position.set(-0.5 + 2.95 * Math.cos(0.5), 0.7 + 2.95 * Math.sin(0.5), 0); G1.add(rec);
   const horm = molMesh(MOL('adrenaline'), { scale: 0.12, hideH: true }); G1.add(horm);
   const HSL = [0, 1, 2, 3, 4].map((k) => { const a = 0.3 + k * 0.55; const m = new THREE.Mesh(blobGeo(0.2, 0.17, 0.18, k + 12, 0.12, 3), protMat('#7FD6FF', 0.35)); m.position.set(-0.5 + Math.cos(a) * 2.35, 0.7 + Math.sin(a) * 2.35, 0.3); G1.add(m); return m; });
@@ -39,13 +39,22 @@ function makeBetaox() {
   const glys = []; for (let k = 0; k < 4; k++) { const m = molMesh(MOL('glycerol'), { scale: 0.12, hideH: true }); m.visible = false; G1.add(m); glys.push({ m, age: 9, v: V3(0, 0, 0) }); }
   /* ---------- 2. β-окисление ---------- */
   const G2 = new THREE.Group(); G2.position.set(40, 0, 0); scene.add(G2);
-  const mitoOut = new THREE.Mesh(new THREE.CapsuleGeometry(2.6, 6.5, 12, 48), glassMat(0xffb070, { rim: 0.2, base: 0.004 })); mitoOut.rotation.z = Math.PI / 2; mitoOut.position.set(1.4, -0.2, -0.5); G2.add(mitoOut);
-  const mitoIn = new THREE.Mesh(new THREE.CapsuleGeometry(2.3, 6.2, 12, 48), glassMat(0xff8a5c, { rim: 0.22, base: 0.004 })); mitoIn.rotation.z = Math.PI / 2; mitoIn.position.copy(mitoOut.position); G2.add(mitoIn);
-  const cpt = [[-3.6, 1.6, '#C77DFF'], [-3.85, 1.2, '#9FB4FF'], [-3.9, 0.85, '#C77DFF']].map(([x, y, c]) => { const m = new THREE.Mesh(blobGeo(0.22, 0.32, 0.22, x * 10, 0.1, 3), protMat(c, 0.4)); m.position.set(x, y, 0.4); G2.add(m); return m; });
+  const mitoOut = new THREE.Mesh(new THREE.CapsuleGeometry(2.6, 6.5, 12, 48), glassMat(0xffb070, { rim: 0.55, base: 0.025, keep: true })); mitoOut.rotation.z = Math.PI / 2; mitoOut.position.set(1.4, -0.2, -0.5); G2.add(mitoOut);
+  const mitoIn = new THREE.Mesh(new THREE.CapsuleGeometry(2.3, 6.2, 12, 48), glassMat(0xff8a5c, { rim: 0.75, base: 0.04, keep: true })); mitoIn.rotation.z = Math.PI / 2; mitoIn.position.copy(mitoOut.position); G2.add(mitoIn);
+  // кристы — складки внутренней мембраны (сверху и снизу, правее спирали)
+  [[3.6, 1], [4.3, -1], [5.0, 1], [5.7, -1]].forEach(([x, s]) => { const dx = Math.max(0, x - 4.5), h = Math.sqrt(2.3 * 2.3 - dx * dx), hh = h * 1.1; const m = new THREE.Mesh(new THREE.BoxGeometry(0.08, hh, 1.6 * h / 2.3), organMat('#FF8A5C', 0.3)); m.position.set(x, -0.2 + s * (h - 0.1 - hh / 2), -0.5); G2.add(m); });
+  // карнитиновый челнок поперёк мембран: CPT-I во внешней, транслоказа во внутренней, CPT-II на стороне матрикса
+  const SHY = 1.0, SHZ = 0.2;
+  const cpt = [[-4.05, '#C77DFF'], [-3.53, '#9FB4FF'], [-3.18, '#C77DFF']].map(([x, c], k) => { const m = new THREE.Mesh(blobGeo(k === 1 ? 0.12 : 0.15, 0.3, 0.22, x * 10, 0.1, 3), protMat(c, 0.45)); m.position.set(x, SHY, SHZ); G2.add(m); return m; });
   const chain = acyl(16, 0.32); G2.add(chain);
   const carn = molMesh(MOL('carnitine'), { scale: 0.1, hideH: true }); G2.add(carn);
   const acs = []; for (let k = 0; k < 8; k++) { const m = molMesh(MOL('acetyl'), { scale: 0.13, hideH: true }); m.visible = false; G2.add(m); acs.push(m); }
   const spiralC = V3(1.4, -0.4, 0.3);
+  // спираль: один виток = один оборот β-окисления (4 реакции), 7 витков
+  const SPA = (u) => Math.PI + u * Math.PI * 14, SPP = (u) => V3(spiralC.x + Math.cos(SPA(u)) * 1.5, spiralC.y + 1.4 - u * 2.6, spiralC.z + Math.sin(SPA(u)) * 0.6);
+  G2.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(Array.from({ length: 281 }, (_, i) => SPP(i / 280))), 560, 0.025, 6), new THREE.MeshBasicMaterial({ color: 0xffb070, transparent: true, opacity: 0.35, depthWrite: false })));
+  const BEP = (k) => { const a = Math.PI + k * Math.PI / 2; return V3(spiralC.x + Math.cos(a) * 1.75, spiralC.y + 0.95 - k * 0.62, spiralC.z + Math.sin(a) * 0.85); }; // 4 фермента на четвертях витка
+  const BENZ = ['#FFE45A', '#7FD6FF', '#FFD070', '#7FE0A0'].map((c, k) => { const m = new THREE.Mesh(blobGeo(0.22, 0.3, 0.22, 60 + k, 0.1, 3), protMat(c, 0.45)); m.position.copy(BEP(k)); G2.add(m); return m; });
   const toks = [];
   function token(c, p, v) { const m = new THREE.Mesh(new THREE.SphereGeometry(0.1, 14, 10), new THREE.MeshBasicMaterial({ color: new THREE.Color(c), transparent: true })); m.position.copy(p); scene.add(m); toks.push({ m, v, age: 0 }); }
   /* ---------- 3. кетоновые тела ---------- */
@@ -53,20 +62,23 @@ function makeBetaox() {
   bodyShell(G3, { rim: 0.18 });
   const liver = new THREE.Mesh(blobGeo(0.75, 0.42, 0.45, 5, 0.08, 4), organMat('#B0523A', 0.5)); liver.position.set(-0.35, 1.55, 0.15); G3.add(liver);
   const brain = new THREE.Mesh(ell3(0.3, 0.25, 0.35, BODY.head), organMat('#E0A0B8', 0.45)); G3.add(brain);
-  const heart = new THREE.Mesh(ell3(0.22, 0.27, 0.2, BODY.heart), organMat('#C84A50', 0.45)); G3.add(heart);
+  const HEART = BODY.heart.clone().add(V3(0, 0.25, 0));
+  const heart = new THREE.Mesh(ell3(0.22, 0.27, 0.2, HEART), organMat('#C84A50', 0.45)); G3.add(heart);
+  const musc = new THREE.Mesh(tube([V3(-0.47, -0.3, 0.05), V3(-0.5, -1.2, 0.08), V3(-0.48, -2.0, 0.06)], 0.22), organMat('#C0504A', 0.4)); G3.add(musc); // мышца бедра
   const fatT = new THREE.Mesh(ell3(0.9, 0.35, 0.35, V3(0, 0.55, 0.35)), organMat('#F2D08A', 0.35, { transparent: true, opacity: 0.6 })); G3.add(fatT);
-  const kf = [flowArrow(G3, fatT.position.clone().add(V3(-0.2, 0.3, 0.2)), liver.position.clone().add(V3(0, -0.25, 0.3)), '#F2C14E', { bend: 0.4 }), flowArrow(G3, liver.position.clone().add(V3(0.3, 0.3, 0.3)), BODY.head.clone().add(V3(0, -0.3, 0.2)), '#FF8AB0', { bend: -0.25 }), flowArrow(G3, liver.position.clone().add(V3(0.4, 0.2, 0.3)), BODY.heart.clone().add(V3(0, -0.15, 0.15)), '#FF8AB0', { bend: 0.3 }), flowArrow(G3, liver.position.clone().add(V3(0.2, -0.3, 0.3)), V3(-0.5, -0.8, 0.15), '#FF8AB0', { bend: 0.3 })];
+  const kf = [flowArrow(G3, fatT.position.clone().add(V3(-0.2, 0.3, 0.2)), liver.position.clone().add(V3(0, -0.25, 0.3)), '#F2C14E', { bend: 0.4 }), flowArrow(G3, liver.position.clone().add(V3(0.3, 0.3, 0.3)), BODY.head.clone().add(V3(0, -0.3, 0.2)), '#FF8AB0', { bend: -0.25 }), flowArrow(G3, liver.position.clone().add(V3(0.4, 0.2, 0.3)), HEART.clone().add(V3(0, -0.15, 0.15)), '#FF8AB0', { bend: 0.3 }), flowArrow(G3, liver.position.clone().add(V3(0.2, -0.3, 0.3)), V3(-0.48, -0.75, 0.3), '#FF8AB0', { bend: 0.3 })];
   const ketM = ['acetoacetate', 'bhb', 'acetone'].map((id, k) => { const m = molMesh(MOL(id), { scale: 0.13, hideH: true }); m.position.set(1.7, 2.6 - k * 0.9, 0.3); G3.add(m); return m; });
   const breath = []; for (let k = 0; k < 4; k++) { const m = molMesh(MOL('acetone'), { scale: 0.09, hideH: true }); m.visible = false; G3.add(m); breath.push({ m, age: 9 }); }
   /* ---------- 4. синтез ---------- */
   const G4 = new THREE.Group(); G4.position.set(120, 0, 0); scene.add(G4);
   const fas2 = new THREE.Group(); fas2.position.set(0.6, 0.6, 0); G4.add(fas2);
   [-1, 1].forEach((s) => { const m = new THREE.Mesh(blobGeo(1.5, 0.9, 0.8, s + 30, 0.1, 4), protMat(s > 0 ? '#7FD6FF' : '#9FB4FF', 0.22)); m.position.set(0, s * 0.55, 0); m.rotation.z = s * 0.15; fas2.add(m); });
-  const chain2 = acyl(16, 0.32); chain2.position.set(-0.3, 0.6, 0.95); G4.add(chain2);
+  const chain2 = acyl(16, 0.32); chain2.position.set(-0.3, 0.6, 1.25); G4.add(chain2);
   const mal = molMesh(MOL('malonyl'), { scale: 0.13, hideH: true }); G4.add(mal);
   const accb = new THREE.Mesh(blobGeo(0.5, 0.42, 0.45, 77, 0.1, 3), protMat('#F2C14E', 0.35)); accb.position.set(-3.6, 1.8, 0); G4.add(accb);
   const cit = molMesh(MOL('citrate'), { scale: 0.13, hideH: true }); cit.position.set(-5.6, 1.6, 0); G4.add(cit);
-  const palm = molMesh(MOL('palmitic'), { scale: 0.14, hideH: true }); palm.visible = false; G4.add(palm);
+  const palm = molMesh(MOL('palmitic'), { scale: 0.11, hideH: true }); palm.visible = false; G4.add(palm);
+  const synF = [flowArrow(G4, cit.position.clone().add(V3(0.45, 0.05, 0)), accb.position.clone().add(V3(-0.55, 0, 0)), '#7FD6FF', { bend: 0.15 }), flowArrow(G4, accb.position.clone().add(V3(0.5, -0.2, 0)), V3(-0.8, 0.95, 0.9), '#F2C14E', { bend: -0.2 })];
   /* ---------- состояние ---------- */
   const st = { t: 0, mode: 'lipo', labels: true, rot: false, fly: null, cyc: 0, ins: false, msg: null, turn: 0, cnt: { fad: 0, nad: 0, ac: 0 }, days: 0, dka: false, sn: 2 };
   function setMode(m) { st.mode = m; refs.modeSeg && refs.modeSeg.sync(); [G1, G2, G3, G4].forEach((g, k) => { g.visible = ['lipo', 'beta', 'keto', 'syn'][k] === m; }); st.fly = VIEW[m]; st.cyc = 0; st.msg = null; refs.rebuild && refs.rebuild(); refs.setInfo && refs.setInfo(); }
@@ -86,15 +98,16 @@ function makeBetaox() {
       // 0–3 с: вход через карнитиновый челнок; далее 7 оборотов по 2 с
       const c = st.cyc % 20; const turnsDone = Math.max(0, Math.min(7, Math.floor((c - 3) / 2)));
       const n = 16 - 2 * turnsDone; chain.userData.set(n);
-      if (c < 3) { const u = ease(c / 3); chain.position.copy(V3(-6.6, 1.6, 0.4).lerp(V3(-2.5, 0.9, 0.4), u)); carn.visible = c > 0.8 && c < 2.6; carn.position.copy(chain.position).add(V3(0.6, 0.3, 0)); chain.rotation.z = 0; }
-      else { carn.visible = false; const u = (c - 3) / 14; const a = u * Math.PI * 2 * 3.5; chain.position.set(spiralC.x + Math.cos(a) * 1.5, spiralC.y + 1.4 - u * 2.6, spiralC.z + Math.sin(a) * 0.6); chain.rotation.z = Math.sin(a) * 0.2; }
+      if (c < 3) { const u = ease(c / 3); chain.position.copy(V3(-6.2, SHY, SHZ).lerp(SPP(0), u)); carn.visible = c > 0.8 && c < 2.6; carn.position.copy(chain.position).add(V3(0.5, 0.3, 0)); chain.rotation.z = 0; }
+      else { carn.visible = false; const u = Math.min(1, (c - 3) / 14); chain.position.copy(SPP(u)); chain.rotation.z = Math.sin(SPA(u)) * 0.2; }
       if (c > 3 && c < 17) { const k = Math.floor((c - 3) / 2), sub = (c - 3) % 2;
         if (k !== st.turn) { st.turn = k; if (k > 0) { st.cnt.fad++; st.cnt.nad++; st.cnt.ac++; token('#FFE45A', chain.position.clone().add(G2.position), V3(rand(-0.5, 0.5), -1, 0.4)); token('#FFD070', chain.position.clone().add(G2.position), V3(rand(-0.5, 0.5), -1.2, 0.6)); const am = acs[(k - 1) % 8]; am.visible = true; am.position.copy(chain.position).add(V3(0.6, 0, 0)); am.userData.v = V3(rand(0.4, 0.9), rand(-0.6, -0.2), 0.3); } }
-        st.betaStep = ['окисление ФАД', 'гидратация', 'окисление НАД⁺', 'тиолиз'][Math.floor(sub * 2)] ; }
+        st.betaStep = ['окисление ФАД', 'гидратация', 'окисление НАД⁺', 'тиолиз'][Math.floor(sub * 2)]; st.benz = Math.floor(sub * 2); } else st.benz = -1;
+      BENZ.forEach((m, k) => { m.material.emissiveIntensity = st.benz === k ? 0.35 : 0.03; });
       if (c >= 17 && !st.last) { st.last = true; st.cnt.ac++; const am = acs[7]; am.visible = true; am.position.copy(chain.position); am.userData.v = V3(0.6, -0.5, 0.3); }
       if (c < 0.1) { st.last = false; st.cnt = { fad: 0, nad: 0, ac: 0 }; st.turn = 0; acs.forEach((a) => { a.visible = false; }); }
       acs.forEach((a) => { if (a.visible && a.userData.v) { a.position.addScaledVector(a.userData.v, dt * 0.6); a.rotation.y += dt; if (a.position.x > 5) a.visible = false; } });
-      cpt.forEach((m, k) => { m.material.emissiveIntensity = c < 3 && Math.abs(c - 0.8 - k * 0.8) < 0.5 ? 0.3 : 0.03; });
+      cpt.forEach((m, k) => { m.material.emissiveIntensity = c < 3 && Math.abs(chain.position.x - m.position.x) < 0.45 ? 0.35 : 0.03; });
       st.carbons = n;
     }
     if (st.mode === 'keto') {
@@ -111,7 +124,7 @@ function makeBetaox() {
       cit.rotation.y += dt; palm.visible = c > 15; if (palm.visible) { palm.position.set(2.6 + (c - 15) * 0.8, -0.6, 0.6); palm.rotation.y += dt; }
       chain2.visible = c <= 15;
       if (sub > 0.95 && sub < 1 && rnd() < 0.5) { token('#7FE0A0', V3(120.8, 1.2, 0.8), V3(0, 1.2, 0.3)); token('#7FE0A0', V3(121.1, 1.2, 0.8), V3(0.2, 1.2, 0.3)); }
-      fas2.rotation.y = Math.sin(t * 0.4) * 0.2;
+      fas2.rotation.y = Math.sin(t * 0.4) * 0.2; synF.forEach((f) => { f.mat.uniforms.uTime.value = t; f.mat.uniforms.uOn.value = 1; });
     }
     for (let i = toks.length - 1; i >= 0; i--) { const q = toks[i]; q.age += dt; q.m.position.addScaledVector(q.v, dt); q.m.material.opacity = 1 - q.age / 2; if (q.age > 2) { scene.remove(q.m); toks.splice(i, 1); } }
     fx.update(dt);
@@ -144,21 +157,27 @@ function makeBetaox() {
   const labels = [
     { text: 'липидная капля (ТАГ)', pos: V3(-1.4, 0.6, 2.4), color: '#F2C14E', show: () => st.labels && st.mode === 'lipo' },
     { text: 'адреналин', pos: V3(3.6, 3.5, 0), color: '#FF8A5C', show: () => st.labels && st.mode === 'lipo' && !st.ins },
-    { text: 'ТАГ-липаза', pos: V3(1.9, 2.4, 0.5), color: '#7FD6FF', show: () => st.labels && st.mode === 'lipo' },
+    { text: 'ТАГ-липаза', pos: V3(0.75, 2.75, 0.5), color: '#7FD6FF', show: () => st.labels && st.mode === 'lipo' },
+    { text: 'β-адренорецептор', pos: V3(2.45, 1.95, 0.4), color: '#FF8A5C', show: () => st.labels && st.mode === 'lipo' },
     { text: 'жирные кислоты → кровь', pos: V3(2.6, -1.4, 0.4), color: '#F2E6C8', show: () => st.labels && st.mode === 'lipo' && !st.ins },
-    { text: 'ядро', pos: V3(2.0, -0.8, 0.9), color: '#9F7BFF', show: () => st.labels && st.mode === 'lipo' },
-    { text: 'карнитиновый челнок', pos: V3(40 - 4.8, 2.4, 0.4), color: '#C77DFF', show: () => st.labels && st.mode === 'beta' },
-    { text: 'ацил-КоА', pos: V3(40 - 6.6, 2.1, 0.4), color: '#F2E6C8', show: () => st.labels && st.mode === 'beta' && st.cyc % 20 < 2 },
-    { text: 'спираль β-окисления (матрикс)', pos: V3(40 + 0.4, 1.9, 0.3), color: '#FFB070', show: () => st.labels && st.mode === 'beta' },
+    { text: 'ядро', pos: V3(1.85, -0.6, 0.5), color: '#9F7BFF', show: () => st.labels && st.mode === 'lipo' },
+    { text: 'карнитиновый челнок', pos: V3(40 - 5.0, 1.65, 0.3), color: '#C77DFF', show: () => st.labels && st.mode === 'beta' },
+    { text: 'ацил-КоА', pos: V3(40 - 7.2, 1.45, 0.3), color: '#F2E6C8', show: () => st.labels && st.mode === 'beta' && st.cyc % 20 < 2 },
+    { text: 'спираль β-окисления (матрикс)', pos: V3(40 + 0.4, 1.45, 0.3), color: '#FFB070', show: () => st.labels && st.mode === 'beta' },
+    { text: 'наружная мембрана', pos: V3(40 - 1.0, 2.55, 0.3), color: '#FFB070', show: () => st.labels && st.mode === 'beta' },
+    { text: 'кристы', pos: V3(40 + 4.6, 1.6, 0.4), color: '#FF8A5C', show: () => st.labels && st.mode === 'beta' },
+    ...['ФАД', 'H₂O', 'НАД⁺', 'КоА'].map((n, k) => ({ text: n, pos: BEP(k).add(V3(40.28, 0, 0)), color: ['#FFE45A', '#7FD6FF', '#FFD070', '#7FE0A0'][k], show: () => st.labels && st.mode === 'beta' })),
     { text: 'ацетил-КоА → цикл Кребса', pos: V3(40 + 3.0, -1.6, 0.3), color: '#7FD6FF', show: () => st.labels && st.mode === 'beta' },
     { text: 'печень', pos: V3(80 - 1.3, 1.6, 0.3), color: '#E07A5A', show: () => st.labels && st.mode === 'keto' },
     { text: 'мозг', pos: V3(80.4, 4.5, 0), color: '#E0A0B8', show: () => st.labels && st.mode === 'keto' },
     { text: 'жир → жирные кислоты', pos: V3(80 - 1.8, 0.2, 0.4), color: '#F2D08A', show: () => st.labels && st.mode === 'keto' },
+    { text: 'сердце', pos: V3(80 + 0.45, 2.3, 0.3), color: '#E07A80', show: () => st.labels && st.mode === 'keto' },
+    { text: 'мышцы', pos: V3(80 - 1.25, -1.2, 0.3), color: '#E07A70', show: () => st.labels && st.mode === 'keto' },
     ...['ацетоацетат', 'β-гидроксибутират', 'ацетон'].map((n, k) => ({ text: n, pos: V3(80 + 2.2, 2.6 - k * 0.9, 0.3), color: '#FF8AB0', show: () => st.labels && st.mode === 'keto' })),
     { text: 'цитрат из митохондрии', pos: V3(120 - 6.4, 2.3, 0), color: '#7FD6FF', show: () => st.labels && st.mode === 'syn' },
     { text: 'ацетил-КоА-карбоксилаза', pos: V3(120 - 4.4, 2.6, 0), color: '#F2C14E', show: () => st.labels && st.mode === 'syn' },
     { text: 'синтаза жирных кислот', pos: V3(120 + 0.2, 2.2, 0), color: '#7FD6FF', show: () => st.labels && st.mode === 'syn' },
-    { text: 'НАДФН', pos: V3(121.4, 2.0, 0.8), color: '#7FE0A0', show: () => st.labels && st.mode === 'syn' },
+    { text: 'НАДФН', pos: V3(121.5, 2.6, 0.8), color: '#7FE0A0', show: () => st.labels && st.mode === 'syn' },
   ];
   const refs = {};
   function ui(el) {

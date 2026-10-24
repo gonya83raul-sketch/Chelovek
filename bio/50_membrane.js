@@ -28,18 +28,25 @@ function makeMembrane() {
   const fx = new Sparks(1400, 0.08); scene.add(fx.obj);
   /* ---------- 1. бислой ---------- */
   const G1 = new THREE.Group(); G1.position.set(0, 0.7, 0); G1.scale.setScalar(0.72); scene.add(G1);
-  const bil = realBilayer({ scale: 0.1, nx: 1, nz: 1 }); G1.add(bil);
-  const chol = []; [[-1.6, 1], [1.4, -1], [-0.3, 1], [2.0, 1], [-2.2, -1]].forEach(([x, s], k) => { const m = molMesh(MOL('cholesterol'), { scale: 0.1, hideH: true, tint: '#F2C14E' }); const ax = pcaAxis(Array.from({ length: MOL('cholesterol').n }, (_, i) => V3(MOL('cholesterol').xyz[i * 3], MOL('cholesterol').xyz[i * 3 + 1], MOL('cholesterol').xyz[i * 3 + 2]))); m.quaternion.setFromUnitVectors(ax.v, V3(0, s, 0)); m.position.set(x, s * 0.85, 3.45 + (k % 2) * 0.15); G1.add(m); chol.push(m); });
+  // вставки: родопсин у переднего среза и холестерин (space-fill) — липиды под ними вырезаются целиком
+  const RHP = V3(1.4, 0, 3.2), RHR = 1.75;
+  const CHP = [[-1.6, 1, 4.05], [-0.4, -1, 4.1], [-2.6, -1, 3.2], [3.3, 1, 3.4], [-2.4, 1, 1.6]];
+  const bil = realBilayer({ scale: 0.1, nx: 1, nz: 1, skip: (x, y, z) => Math.hypot(x - RHP.x, z - RHP.z) < RHR || CHP.some(([cx, s, cz]) => y * s > -0.1 && Math.hypot(x - cx, z - cz) < 0.62) }); G1.add(bil);
+  const CM = MOL('cholesterol'), CX = (i) => V3(CM.xyz[i * 3], CM.xyz[i * 3 + 1], CM.xyz[i * 3 + 2]);
+  const cax = pcaAxis(Array.from({ length: CM.n }, (_, i) => CX(i))); if (CX(CM.el.indexOf('O')).sub(cax.c).dot(cax.v) < 0) cax.v.negate(); // OH — к головам
+  const chol = CHP.map(([x, s, z]) => { const m = molMesh(CM, { scale: 0.1, hideH: true, style: 'space', tint: '#F2C14E' }); m.quaternion.setFromUnitVectors(cax.v, V3(0, s, 0)); m.position.set(x, s * 1.0, z); G1.add(m); return m; });
   const RH = PDB('rho'); const rh = new THREE.Group(); const rc = cartoon(RH.chains[0], { scale: 0.1, k: 0.6, color: (i, n) => new THREE.Color().setHSL(0.55 + 0.3 * i / n, 0.6, 0.6).getStyle() }); rh.add(rc); { const ax = pcaAxis(caPoints('rho', 0.1)); rh.quaternion.setFromUnitVectors(ax.v, V3(0, 1, 0)); rh.position.copy(ax.c.clone().applyQuaternion(rh.quaternion).negate()); }
-  const rhG = new THREE.Group(); rhG.add(rh); rhG.position.set(1.4, 0, 4.9); G1.add(rhG);
+  const rhG = new THREE.Group(); rhG.add(rh); rhG.position.copy(RHP); G1.add(rhG);
   const waterTop = new THREE.Mesh(new THREE.BoxGeometry(6.6, 1.3, 6.6), new THREE.MeshPhysicalMaterial({ color: 0x3a6a9a, transparent: true, opacity: 0.08, depthWrite: false, roughness: 0.2 })); waterTop.position.y = 2.6; G1.add(waterTop);
   const waterBot = waterTop.clone(); waterBot.position.y = -2.6; G1.add(waterBot);
   /* ---------- 2. жирные кислоты ---------- */
   const G2 = new THREE.Group(); G2.position.set(40, 0, 0); scene.add(G2);
-  const FA = MB_FA.map((f, k) => { const m = molMesh(MOL(f.id), { scale: 0.19, hideH: false }); const ax = pcaAxis(Array.from({ length: MOL(f.id).n }, (_, i) => V3(MOL(f.id).xyz[i * 3], MOL(f.id).xyz[i * 3 + 1], MOL(f.id).xyz[i * 3 + 2]))); m.quaternion.setFromUnitVectors(ax.v, V3(0, 1, 0)); const g = new THREE.Group(); g.add(m); g.position.set((k - 3) * 1.55, 0.4, 0); G2.add(g); const pk = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 3.2, 8), new THREE.MeshBasicMaterial({ visible: false })); pk.userData.pick = f.id; g.add(pk); return { f, g, m, pk }; });
+  const FA = MB_FA.map((f, k) => { const m = molMesh(MOL(f.id), { scale: 0.17, hideH: false }); const M = MOL(f.id), XP = (i) => V3(M.xyz[i * 3], M.xyz[i * 3 + 1], M.xyz[i * 3 + 2]); const ax = pcaAxis(Array.from({ length: M.n }, (_, i) => XP(i))); const iO = M.el.indexOf('O'); if (XP(iO).sub(ax.c).dot(ax.v) < 0) ax.v.negate(); m.quaternion.setFromUnitVectors(ax.v, V3(0, 1, 0)); m.position.copy(ax.c.clone().multiplyScalar(-0.17).applyQuaternion(m.quaternion)); /* карбоксил вверху */ const g = new THREE.Group(); g.add(m); g.position.set((k - 3) * 1.55, 0.4, 0); G2.add(g); const pk = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 3.6, 8), new THREE.MeshBasicMaterial({ visible: false })); pk.userData.pick = f.id; g.add(pk); return { f, g, m, pk }; });
   /* ---------- 3. классы ---------- */
   const G3 = new THREE.Group(); G3.position.set(80, 0, 0); scene.add(G3);
-  const CL = MB_CL.map((c, k) => { const mol = c.id === 'popc' ? lipidMol(3) : MOL(c.id); const m = molMesh(mol, { scale: c.id === 'tag' ? 0.13 : 0.18, hideH: true }); const g = new THREE.Group(); g.add(m); g.position.set((k - 2) * 2.7, 0.4, 0); G3.add(g); const pk = new THREE.Mesh(new THREE.SphereGeometry(1.2, 8, 6), new THREE.MeshBasicMaterial({ visible: false })); pk.userData.pick = c.id; g.add(pk); return { c, g, m, pk }; });
+  const CL = MB_CL.map((c, k) => { const mol = c.id === 'popc' ? lipidMol(68) : MOL(c.id); const lip = c.id === 'popc' || c.id === 'tag'; const m = molMesh(mol, { scale: lip ? 0.125 : 0.18, hideH: true });
+    if (lip) { const X = (i) => V3(mol.xyz[i * 3], mol.xyz[i * 3 + 1], mol.xyz[i * 3 + 2]).multiplyScalar(0.125); const ax = pcaAxis(Array.from({ length: mol.n }, (_, i) => X(i))); const hd = mol.el.indexOf(c.id === 'tag' ? 'O' : 'P'); if (X(hd).sub(ax.c).dot(ax.v) < 0) ax.v.negate(); m.quaternion.setFromUnitVectors(ax.v, V3(0, 1, 0)); m.position.copy(ax.c.clone().applyQuaternion(m.quaternion).negate()); } /* голова вверху, хвосты вниз */
+    const g = new THREE.Group(); g.add(m); g.position.set((k - 2) * 2.7, 0.4, 0); G3.add(g); const pk = new THREE.Mesh(new THREE.SphereGeometry(1.2, 8, 6), new THREE.MeshBasicMaterial({ visible: false })); pk.userData.pick = c.id; g.add(pk); return { c, g, m, pk }; });
   /* ---------- 4. переваривание ---------- */
   const G4 = new THREE.Group(); G4.position.set(120, 0, 0); scene.add(G4);
   const oilMat = new THREE.MeshPhysicalMaterial({ color: 0xc89a30, roughness: 0.1, clearcoat: 1, transmission: 0, transparent: true, opacity: 0.85, emissive: 0x6a4a10, emissiveIntensity: 0.15 });
@@ -49,6 +56,7 @@ function makeMembrane() {
   const lipases = []; for (let k = 0; k < 5; k++) { const m = new THREE.Mesh(blobGeo(0.22, 0.18, 0.2, k + 40, 0.12, 3), protMat('#FF8AB0', 0.45)); G4.add(m); lipases.push(m); }
   const villi = new THREE.Group(); villi.position.set(0, -2.3, 0); G4.add(villi);
   for (let k = 0; k < 9; k++) { const v = new THREE.Mesh(new THREE.CapsuleGeometry(0.28, 0.6, 6, 14), organMat('#E8A0A0', 0.4)); v.position.set(-4 + k, 0, 0); villi.add(v); }
+  { const wall = new THREE.Mesh(new THREE.CapsuleGeometry(0.3, 9.0, 8, 24), organMat('#E8A0A0', 0.4)); wall.rotation.z = Math.PI / 2; wall.scale.set(1, 1, 2.0); wall.position.set(0, -0.55, 0); villi.add(wall); } // стенка кишки под ворсинками
   const chylo = []; for (let k = 0; k < 6; k++) { const m = new THREE.Mesh(new THREE.SphereGeometry(0.1, 14, 10), new THREE.MeshPhysicalMaterial({ color: 0xf2e6c8, emissive: 0xf2e6c8, emissiveIntensity: 0.2 })); m.visible = false; G4.add(m); chylo.push({ m, age: 9 }); }
   /* ---------- состояние ---------- */
   const st = { t: 0, mode: 'bilayer', labels: true, rot: false, fly: null, sel: null, msg: null, cyc: 0 };
@@ -80,11 +88,11 @@ function makeMembrane() {
   const labels = [
     { text: 'полярные головы', pos: V3(-2.5, 2.3, 2.4), color: '#FF9A30', show: () => st.labels && st.mode === 'bilayer' },
     { text: 'гидрофобные хвосты', pos: V3(-2.6, 0.75, 2.4), color: '#C9B98A', show: () => st.labels && st.mode === 'bilayer' },
-    { text: 'холестерин', pos: V3(-1.2, 1.5, 1.8), color: '#F2C14E', show: () => st.labels && st.mode === 'bilayer' },
-    { text: 'белок родопсин', pos: V3(1.2, 3.4, 2.2), color: '#9FD0FF', show: () => st.labels && st.mode === 'bilayer' },
+    { text: 'холестерин', pos: V3(-1.0, 1.45, 3.1), color: '#F2C14E', show: () => st.labels && st.mode === 'bilayer' },
+    { text: 'белок родопсин', pos: V3(1.2, 3.4, 2.4), color: '#9FD0FF', show: () => st.labels && st.mode === 'bilayer' },
     { text: 'вода', pos: V3(2.0, 2.8, 0), color: '#7FB8E0', show: () => st.labels && st.mode === 'bilayer' },
-    ...MB_FA.map((f, k) => ({ text: f.n, pos: V3(40 + (k - 3) * 1.55 - 0.4, -1.7, 0), color: f.id === 'elaidic' ? '#FF8A5C' : /ω/.test(f.n) ? '#7FE0A0' : '#F2E6C8', show: () => st.labels && st.mode === 'fa' })),
-    ...MB_CL.map((c, k) => ({ text: c.name, pos: V3(80 + (k - 2) * 2.7 - 0.6, -1.5, 0), color: '#F2C14E', show: () => st.labels && st.mode === 'classes' })),
+    ...MB_FA.map((f, k) => ({ text: f.n, pos: V3(40 + (k - 3) * 1.55, -1.75, 0), color: f.id === 'elaidic' ? '#FF8A5C' : /ω/.test(f.n) ? '#7FE0A0' : '#F2E6C8', show: () => st.labels && st.mode === 'fa' })),
+    ...MB_CL.map((c, k) => ({ text: c.name, pos: V3(80 + (k - 2) * 2.7 - 0.6, -1.65, 0), color: '#F2C14E', show: () => st.labels && st.mode === 'classes' })),
     { text: 'капли, покрытые желчными кислотами', pos: V3(120 - 1.5, 3.0, 0), color: '#7FE0A0', show: () => st.labels && st.mode === 'digest' && st.cyc % 14 > 4 },
     { text: 'липаза', pos: V3(120 + 2.6, 2.6, 0), color: '#FF8AB0', show: () => st.labels && st.mode === 'digest' && st.cyc % 14 > 4.5 && st.cyc % 14 < 11 },
     { text: 'ворсинки кишки', pos: V3(120 - 4.6, -2.9, 0.3), color: '#E8A0A0', show: () => st.labels && st.mode === 'digest' },

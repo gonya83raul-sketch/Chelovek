@@ -10,7 +10,7 @@ const bin64 = (s) => { const b = atob(s); const u = new Uint8Array(b.length); fo
 const dI16 = (s, q) => { const a = new Int16Array(bin64(s)); const f = new Float32Array(a.length); for (let i = 0; i < a.length; i++) f[i] = a[i] / q; return f; };
 const dI8 = (s) => { const a = new Int8Array(bin64(s)); const f = new Float32Array(a.length); for (let i = 0; i < a.length; i++) f[i] = a[i] / 100; return f; };
 const dU16 = (s) => new Uint16Array(bin64(s));
-const CPK = { H: '#C9C9D2', C: '#6C6C78', N: '#4F74FF', O: '#F04848', P: '#FF9A30', S: '#F2CC3A', Fe: '#E0773A', Co: '#F08AC0', Mg: '#8CE04A', I: '#A35BD6', Cl: '#3FD45A', F: '#9BE07A', Br: '#B0503A', Cu: '#D9905A', Zn: '#8C93C8', Ca: '#C8C8C8', Na: '#9F7BFF', K: '#8F40D4', Se: '#E0A040' };
+const CPK = { H: '#C9C9D2', C: '#9A9AA6', N: '#4F74FF', O: '#F04848', P: '#FF9A30', S: '#F2CC3A', Fe: '#E0773A', Co: '#F08AC0', Mg: '#8CE04A', I: '#A35BD6', Cl: '#3FD45A', F: '#9BE07A', Br: '#B0503A', Cu: '#D9905A', Zn: '#8C93C8', Ca: '#C8C8C8', Na: '#9F7BFF', K: '#8F40D4', Se: '#E0A040' };
 const RBALL = { H: 0.2, C: 0.32, N: 0.31, O: 0.3, P: 0.42, S: 0.42, Fe: 0.52, Co: 0.52, Mg: 0.5, I: 0.5, Cl: 0.4, F: 0.28, Br: 0.45, Cu: 0.5, Zn: 0.5, Ca: 0.55 };
 const RVDW = { H: 1.1, C: 1.7, N: 1.55, O: 1.52, P: 1.8, S: 1.8, Fe: 1.4, Co: 1.4, Mg: 1.5, I: 1.98, Cl: 1.75, F: 1.47, Br: 1.85 };
 const MOLC = {};
@@ -186,16 +186,19 @@ const protMat = (color, k = 0.4, o = {}) => new THREE.MeshPhysicalMaterial({ col
 
 /* ---------- мембраны ---------- */
 /* реальный бислой POPC (молекулярная динамика), повторённый плиткой nx×nz */
-function realBilayer({ scale = 0.1, nx = 1, nz = 1, hideH = true, tint = null, tail = '#C9B98A', style = 'space' } = {}) {
+/* skip(x, y, z) — вырез под вставки (белок, холестерин): липид убирается целиком, если хоть один его атом попал в вырез */
+function realBilayer({ scale = 0.1, nx = 1, nz = 1, hideH = true, tint = null, tail = '#C9B98A', style = 'space', skip = null } = {}) {
   const d = BIO_PDB.popc; const el = d.el.split(' '), xyz = dI16(d.xyz, 20), L = el.length, N = d.n;
   const box = new THREE.Box3(); for (let i = 0; i < xyz.length; i += 3) box.expandByPoint(V3(xyz[i], xyz[i + 1], xyz[i + 2]));
   const size = box.getSize(V3(0, 0, 0));
   const g = new THREE.Group(); const dm = new THREE.Object3D();
   const byEl = {}; const names = d.names.split(' ');
   const headIdx = new Set(names.map((nm, i) => (/^(N|C1[1-5]|P|O1[1-4]|C1|C2|C3|O2[12]|O3[12]|C21|C31)$/.test(nm) ? i : -1)).filter((i) => i >= 0));
-  for (let tx = 0; tx < nx; tx++) for (let tz = 0; tz < nz; tz++) for (let l = 0; l < N; l++) for (let i = 0; i < L; i++) {
-    const e = el[i]; const k = (l * L + i) * 3; const key = headIdx.has(i) ? e : 'T';
-    (byEl[key] = byEl[key] || []).push([xyz[k] + (tx - (nx - 1) / 2) * (size.x - 2), xyz[k + 2], xyz[k + 1] + (tz - (nz - 1) / 2) * (size.y - 2), e]);
+  for (let tx = 0; tx < nx; tx++) for (let tz = 0; tz < nz; tz++) for (let l = 0; l < N; l++) {
+    const A = []; let cut = false;
+    for (let i = 0; i < L; i++) { const k = (l * L + i) * 3; const a = [xyz[k] + (tx - (nx - 1) / 2) * (size.x - 2), xyz[k + 2], xyz[k + 1] + (tz - (nz - 1) / 2) * (size.y - 2), el[i], i]; if (skip && skip(a[0] * scale, a[1] * scale, a[2] * scale)) { cut = true; break; } A.push(a); }
+    if (cut) continue;
+    A.forEach((a) => { const key = headIdx.has(a[4]) ? a[3] : 'T'; (byEl[key] = byEl[key] || []).push(a); });
   }
   for (const [key, list] of Object.entries(byEl)) {
     const mat = key === 'T' ? new THREE.MeshPhysicalMaterial({ color: new THREE.Color(tail).multiplyScalar(0.5), roughness: 0.6, sheen: 0.4, sheenColor: new THREE.Color(tail), envMapIntensity: 0.4 }) : atomMat(key);

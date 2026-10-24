@@ -11,6 +11,10 @@ function makeLipogen() {
   const controls = makeControls(camera, VIEW.tag[0]); controls.minDistance = 3; controls.maxDistance = 40;
   const fx = new Sparks(1800, 0.08); scene.add(fx.obj);
   const fit = (id, R, o = {}) => { const m = MOL(id); return molMesh(m, { scale: molFit(m, R), hideH: true, ...o }); };
+  // липид вертикально: голова (глицерин, фосфат) вверху, ацильные хвосты вниз; группа-обёртка, чтобы вращать вокруг вертикали
+  const fitV = (id, R, o = {}) => { const m = typeof id === 'string' ? MOL(id) : id; const sc = o.scale || molFit(m, R); const g = molMesh(m, { scale: sc, hideH: true, ...o }); const X = (i) => V3(m.xyz[i * 3], m.xyz[i * 3 + 1], m.xyz[i * 3 + 2]).multiplyScalar(sc);
+    const ax = pcaAxis(Array.from({ length: m.n }, (_, i) => X(i))); const hd = m.el.indexOf('P') >= 0 ? m.el.indexOf('P') : m.el.indexOf('O'); if (X(hd).sub(ax.c).dot(ax.v) < 0) ax.v.negate();
+    g.quaternion.setFromUnitVectors(ax.v, V3(0, 1, 0)); g.position.copy(ax.c.clone().applyQuaternion(g.quaternion).negate()); const w = new THREE.Group(); w.add(g); return w; };
   const COL = { acyl: '#E8C060', g3p: '#FF9A30', pa: '#FF8A5C', dag: '#F2C14E', tag: '#E8D27A', pc: '#7FD6FF', pe: '#9FE870', pi: '#C77DFF', ch: '#FF8AB0' };
 
   /* ---------- 1. сборка ТАГ ---------- */
@@ -20,7 +24,7 @@ function makeLipogen() {
     { id: 'dag', x: 1.4, R: 0.95, name: 'диацилглицерол' }, { id: 'tag', x: 3.8, R: 1.05, name: 'триацилглицерол (жир)' },
   ];
   const Y1 = 1.0;
-  ST.forEach((s, i) => { s.g = fit(s.id, s.R); s.g.position.set(s.x, Y1, 0); G1.add(s.g); s.glow = glowNucleus(G1, V3(s.x, Y1, -0.3), COL[s.id], 0.1, 14); s.glow.core.visible = false; s.glow.spr.material.opacity = 0.08; });
+  ST.forEach((s, i) => { s.g = s.id === 'g3p' ? fit(s.id, s.R) : fitV(s.id, s.R); s.g.position.set(s.x, Y1, 0); G1.add(s.g); s.glow = glowNucleus(G1, V3(s.x, Y1, -0.3), COL[s.id], 0.1, 14); s.glow.core.visible = false; s.glow.spr.material.opacity = 0.08; });
   const ARR1 = [0, 1, 2].map((i) => flowArrow(G1, V3(ST[i].x + ST[i].R * 0.75, Y1 - 0.15, 0), V3(ST[i + 1].x - ST[i + 1].R * 0.75, Y1 - 0.15, 0), '#E8C060', { bend: 0.12 }));
   const ENZ1 = ['ацилтрансферазы (+2 ацил-КоА)', 'фосфатаза (−Pi)', 'ацилтрансфераза (+ацил-КоА)'];
   // ацил-КоА: «хвосты» пальмитата, прилетающие сверху
@@ -38,8 +42,8 @@ function makeLipogen() {
 
   /* ---------- 2. фосфолипиды и печень ---------- */
   const OX2 = 41.3; const G2 = new THREE.Group(); G2.position.set(OX2, 0, 0); scene.add(G2);
-  const P2 = { pa: V3(-4.0, 1.9, 0), dag: V3(-1.9, 1.9, 0), pc: V3(0.4, 2.6, 0), pe: V3(0.4, 0.9, 0), cdpdag: V3(-4.0, -0.2, 0), pi: V3(-1.9, -0.2, 0) };
-  const n2 = { pa: fit('pa', 0.8), dag: fit('dag', 0.8), pc: molMesh(lipidMol(2), { scale: 0.065, hideH: true }), pe: molMesh(lipidMol(5), { scale: 0.065, hideH: true, tint: COL.pe }), cdpdag: fit('pa', 0.7, { tint: '#C8A0FF' }), pi: fit('pa', 0.7, { tint: COL.pi }) };
+  const P2 = { pa: V3(-4.0, 1.9, 0), dag: V3(-1.9, 1.9, 0), pc: V3(0.4, 2.8, 0), pe: V3(0.4, 0.6, 0), cdpdag: V3(-4.0, -0.7, 0), pi: V3(-1.9, -0.7, 0) };
+  const n2 = { pa: fitV('pa', 0, { scale: 0.055 }), dag: fitV('dag', 0, { scale: 0.055 }), pc: fitV(lipidMol(68), 0, { scale: 0.055 }), pe: fitV('pe', 0, { scale: 0.055 }), cdpdag: fitV('cdpdag', 0, { scale: 0.055 }), pi: fitV('ptdins', 0, { scale: 0.055 }) }; // ФЭ, ЦДФ-ДАГ и ФИ — свои молекулы (этаноламин, цитидин, инозитол)
   Object.entries(n2).forEach(([k, g]) => { g.position.copy(P2[k]); G2.add(g); });
   const cho = fit('choline', 0.35); cho.position.set(-1.2, 3.05, 0.2); G2.add(cho);
   const A2 = {
@@ -47,7 +51,7 @@ function makeLipogen() {
     pc: flowArrow(G2, P2.dag.clone().add(V3(0.6, 0.3, 0)), P2.pc.clone().add(V3(-0.75, -0.1, 0)), COL.pc, { bend: 0.15 }),
     pe: flowArrow(G2, P2.dag.clone().add(V3(0.6, -0.3, 0)), P2.pe.clone().add(V3(-0.75, 0.1, 0)), COL.pe, { bend: -0.15 }),
     meth: flowArrow(G2, P2.pe.clone().add(V3(0.55, 0.45, 0)), P2.pc.clone().add(V3(0.55, -0.5, 0)), '#FF8AB0', { bend: -0.35 }),
-    cdp: flowArrow(G2, P2.pa.clone().add(V3(0, -0.6, 0)), P2.cdpdag.clone().add(V3(0, 0.6, 0)), '#C8A0FF', { bend: 0.15 }),
+    cdp: flowArrow(G2, P2.pa.clone().add(V3(0, -0.85, 0)), P2.cdpdag.clone().add(V3(0, 0.95, 0)), '#C8A0FF', { bend: 0.15 }),
     pi: flowArrow(G2, P2.cdpdag.clone().add(V3(0.7, 0, 0)), P2.pi.clone().add(V3(-0.7, 0, 0)), COL.pi, { bend: 0.15 }),
     cho: flowArrow(G2, V3(-1.0, 2.8, 0.2), P2.pc.clone().add(V3(-0.6, 0.35, 0)), COL.ch, { bend: 0.25, r: 0.018 }),
   };
@@ -64,11 +68,11 @@ function makeLipogen() {
   const G3 = new THREE.Group(); G3.position.set(80.7, 0, 0); scene.add(G3);
   const ADI = [];
   const adiMat = new THREE.MeshPhysicalMaterial({ color: new THREE.Color(COL.tag).multiplyScalar(0.26), roughness: 0.3, clearcoat: 0.6, clearcoatRoughness: 0.3, emissive: new THREE.Color(COL.tag), emissiveIntensity: 0.012, envMapIntensity: 0.35 });
-  const cytMat = glassMat(0xffd8a0, { rim: 0.22, base: 0.006, pow: 2.4 });
+  const cytMat = glassMat(0xffd8a0, { rim: 0.6, base: 0.015, pow: 2.4, keep: true });
   function addAdipocyte(p, born = 0) { const g = new THREE.Group(); g.position.copy(p); const d = new THREE.Mesh(new THREE.SphereGeometry(1, 32, 24), adiMat); const sh = new THREE.Mesh(new THREE.SphereGeometry(1.06, 32, 24), cytMat); const nu = new THREE.Mesh(ell3(0.18, 0.1, 0.14), protMat('#9F7BFF', 0.4)); g.add(d, sh, nu); G3.add(g); const a = { g, d, sh, nu, born, dir: randUnit() }; ADI.push(a); return a; }
   [[-1.6, 0.6], [0.2, 1.0], [1.9, 0.4], [-0.8, -0.9], [1.0, -0.9], [-2.6, -0.6], [2.8, -0.8]].forEach(([x, y]) => addAdipocyte(V3(x, y, rand(-0.3, 0.3))));
   const SPARE = [[-3.4, 1.0], [3.4, 1.2], [0.0, -2.1], [-1.9, -2.0], [2.2, -2.0], [-0.6, 2.3]];
-  const CAP3 = new THREE.CatmullRomCurve3([V3(-3.2, 2.1, -1.0), V3(-1, 1.8, -1.3), V3(1.5, 2.0, -1.1), V3(4.4, 1.6, -0.8)]);
+  const CAP3 = new THREE.CatmullRomCurve3([V3(-3.6, 0.2, 0.75), V3(-1.2, -0.05, 0.95), V3(1.3, 0.0, 0.9), V3(4.2, 0.25, 0.75)]); // капилляр в щели между клетками
   G3.add(new THREE.Mesh(taperTube(CAP3, () => 0.16, 60, 12), organMat('#C0404A', 0.45, { transparent: true, opacity: 0.7 })));
   const MAC = []; for (let i = 0; i < 6; i++) { const m = new THREE.Mesh(blobGeo(0.3, 0.26, 0.26, 80 + i, 0.25, 3), protMat('#C77DFF', 0.45)); m.geometry.computeVertexNormals(); m.visible = false; G3.add(m); MAC.push(m); }
 
@@ -86,7 +90,7 @@ function makeLipogen() {
       ST.forEach((s, i) => { s.g.rotation.y += dt * 0.35; const on = i === step; s.glow.spr.material.opacity = on ? 0.28 : 0.06; s.glow.spr.scale.setScalar((on ? 1.8 : 1.2) * (1 + 0.05 * Math.sin(t * 4))); });
       ARR1.forEach((a, i) => { a.mat.uniforms.uTime.value = t; a.mat.uniforms.uOn.value = i === step - 1 || (i === step && c % 2 > 1.3) ? 1.1 : 0.25; });
       SRC.forEach((s) => { s.a.mat.uniforms.uTime.value = t; s.a.mat.uniforms.uOn.value = s.id === 'glycerol' && st.tissue === 'adipose' ? 0.03 : step === 0 ? 0.9 : 0.25; s.g.rotation.y += dt * 0.4; });
-      SRC[1].g.visible = st.tissue === 'liver';
+      SRC[1].g.visible = SRC[1].a.mesh.visible = SRC[1].a.cone.visible = st.tissue === 'liver';
       // ацил-КоА прилетают на шагах 1 (два) и 3 (один)
       const fire = (k, at, x) => { const q = ACYL[k]; if (c >= at && c < at + dt * 1.5) { q.age = 0; q.m.visible = true; q.a.set(x - 0.6, Y1 + 2.4, 0.4); q.b.set(x - 0.2, Y1 + 0.2, 0.2); } };
       fire(0, 1.0, ST[1].x); fire(1, 1.4, ST[1].x); fire(2, 4.4, ST[3].x);
@@ -113,7 +117,7 @@ function makeLipogen() {
       // объём жировой клетки растёт с массой жира; при большом объёме появляются новые клетки
       const need = st.fatKg > 32 ? Math.min(SPARE.length, Math.floor((st.fatKg - 32) / 6) + 1) : 0;
       while (ADI.length - 7 < need) { const p = SPARE[ADI.length - 7]; addAdipocyte(V3(p[0], p[1], 0), t); }
-      const R = clamp(0.55 * Math.cbrt(st.fatKg / 15) / Math.cbrt(ADI.length / 7), 0.35, 1.25);
+      const R = clamp(0.84 * Math.cbrt(st.fatKg / 15) / Math.cbrt(ADI.length / 7), 0.35, 1.25);
       ADI.forEach((a, i) => { const grow = smooth(0, 2, t - a.born); const r = R * (a.born ? grow : 1) * (1 + 0.03 * Math.sin(t + i)); a.d.scale.setScalar(Math.max(0.01, r)); a.sh.scale.setScalar(Math.max(0.01, r)); a.nu.position.copy(a.dir).multiplyScalar(r * 1.0); a.d.material.emissiveIntensity = H === 'ins' ? 0.05 : 0.012; });
       const b = bmi(); const inflam = clamp((b - 30) / 8, 0, 1);
       MAC.forEach((m, i) => { m.visible = i < Math.round(inflam * MAC.length); if (m.visible) { const a = ADI[i % ADI.length]; m.position.copy(a.g.position).add(V3(Math.cos(i * 2.1 + t * 0.2), Math.sin(i * 1.3), 0.6).multiplyScalar(R * 1.1)); } });
@@ -139,7 +143,7 @@ function makeLipogen() {
     fat: '<b>Жировая ткань</b> — главное хранилище энергии: в 1 кг жира около 7700 ккал. После еды <b>инсулин</b> включает липопротеинлипазу капилляров (жирные кислоты из ЛПОНП и хиломикронов уходят в клетки) и синтез жира; при голоде и нагрузке <b>адреналин</b> и глюкагон запускают липолиз. Если долго есть больше, чем тратить, адипоциты растут (гипертрофия), а затем появляются новые (гиперплазия). Перегруженные клетки воспаляются: в ткань приходят макрофаги (фиолетовые), выделяются воспалительные цитокины, развивается <b>инсулинорезистентность</b>. Двигайте баланс калорий.',
   };
   const labels = [
-    ...ST.map((s) => ({ text: s.name, pos: V3(s.x + 0.6, Y1 + s.R + 0.15, 0), color: COL[s.id], show: () => st.labels && st.mode === 'tag' })),
+    ...ST.map((s) => ({ text: s.name, pos: V3(s.x + 0.6 - Math.min(1.0, s.name.length * 0.05), Y1 + s.R + 0.2, 0), color: COL[s.id], show: () => st.labels && st.mode === 'tag' })),
     ...ENZ1.map((n, i) => ({ text: n, pos: V3((ST[i].x + ST[i + 1].x) / 2 + (i === 0 ? 0.1 : 0.6), Y1 - (i === 1 ? 1.15 : 0.7), 0.3), color: '#C8C8D0', show: () => st.labels && st.mode === 'tag' })),
     { text: 'ацил-КоА', pos: V3(-0.9 + 0.6, Y1 + 2.0, 0.4), color: COL.acyl, show: () => st.labels && st.mode === 'tag' && st.cyc > 0.8 && st.cyc < 2.4 },
     { text: 'глюкоза → ДГАФ', pos: V3(-4.4 + 0.6, -1.85, 0.2), color: COL.g3p, show: () => st.labels && st.mode === 'tag' },
@@ -157,7 +161,7 @@ function makeLipogen() {
     { text: 'гепатоцит', pos: HEP.clone().add(V3(OX2 + 0.2, 1.75, 0)), color: '#E08060', show: () => st.labels && st.mode === 'pl' },
     { text: 'ЛПОНП → кровь', pos: HEP.clone().add(V3(OX2 + 1.8, -0.15, 0.4)), color: '#7FD6FF', show: () => st.labels && st.mode === 'pl' },
     { text: 'адипоциты', pos: V3(80 + 0.6, 2.6, 0.5), color: COL.tag, show: () => st.labels && st.mode === 'fat' },
-    { text: 'капилляр', pos: V3(80.7 + 3.6, 2.2, -0.6), color: '#E06A6A', show: () => st.labels && st.mode === 'fat' },
+    { text: 'капилляр', pos: V3(80.7 + 3.3, 0.55, 0.9), color: '#E06A6A', show: () => st.labels && st.mode === 'fat' },
     { text: 'макрофаги', pos: V3(80 + 3.4, -1.9, 0.8), color: '#C77DFF', show: () => st.labels && st.mode === 'fat' && bmi() > 31 },
   ];
   const refs = {};

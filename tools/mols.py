@@ -55,7 +55,7 @@ LIB = {
     'acetaldehyde': ('Ацетальдегид', 'CC=O'),
     'acetate': ('Ацетат', 'CC(=O)O'),
     'ribose5p': ('Рибозо-5-фосфат', 'O[C@H]1O[C@H](COP(=O)(O)O)[C@@H](O)[C@H]1O'),
-    'fructose': ('Фруктоза', 'OC[C@@]1(O)OC[C@@H](O)[C@@H]1O'),
+    'fructose': ('Фруктоза', 'OC[C@]1(O)O[C@H](CO)[C@@H](O)[C@@H]1O'),  # β-D-фруктофураноза, C6H12O6
     'sucrose': ('Сахароза', 'OC[C@H]1O[C@@](CO)(O[C@H]2O[C@H](CO)[C@@H](O)[C@H](O)[C@H]2O)[C@@H](O)[C@@H]1O'),
     'co2': ('CO₂', 'O=C=O'), 'h2o': ('Вода', 'O'), 'o2': ('Кислород', 'O=O'), 'nh3': ('Аммиак', 'N'), 'urea': ('Мочевина', 'NC(N)=O'),
     'co': ('Угарный газ', '[C-]#[O+]'), 'cn': ('Цианид', '[C-]#N'),
@@ -151,11 +151,14 @@ LIB = {
     'maltose': ('Мальтоза', 'OC[C@H]1O[C@H](O[C@H]2[C@H](O)[C@@H](O)[C@H](O)O[C@@H]2CO)[C@H](O)[C@@H](O)[C@@H]1O'),
     'gal1p': ('Галактозо-1-фосфат', 'OC[C@H]1O[C@H](OP(=O)(O)O)[C@H](O)[C@@H](O)[C@H]1O'),
     'galactitol': ('Галактитол', 'OC[C@@H](O)[C@H](O)[C@H](O)[C@@H](O)CO'),
-    'f1p': ('Фруктозо-1-фосфат', 'O[C@@]1(COP(=O)(O)O)OC[C@@H](O)[C@@H](O)[C@@H]1O'),
+    'f1p': ('Фруктозо-1-фосфат', 'O[C@]1(COP(=O)(O)O)O[C@H](CO)[C@@H](O)[C@@H]1O'),  # фуранозная форма, как фруктоза и Ф-1,6-БФ
     'g3p': ('Глицерол-3-фосфат', 'OC[C@@H](O)COP(=O)(O)O'),
     'pa': ('Фосфатидная кислота', 'CCCCCCCCCCCCCCCC(=O)OC[C@H](COP(=O)(O)O)OC(=O)CCCCCCC/C=C\\CCCCCCCC'),
     'dag': ('Диацилглицерол', 'CCCCCCCCCCCCCCCC(=O)OC[C@H](CO)OC(=O)CCCCCCC/C=C\\CCCCCCCC'),
     'choline': ('Холин', 'C[N+](C)(C)CCO'),
+    'pe': ('Фосфатидилэтаноламин', 'CCCCCCCCCCCCCCCC(=O)OC[C@H](COP(=O)(O)OCCN)OC(=O)CCCCCCC/C=C\\CCCCCCCC'),
+    'ptdins': ('Фосфатидилинозитол', 'CCCCCCCCCCCCCCCC(=O)OC[C@H](COP(=O)(O)O[C@H]1[C@H](O)[C@@H](O)[C@H](O)[C@@H](O)[C@H]1O)OC(=O)CCCCCCC/C=C\\CCCCCCCC'),
+    'cdpdag': ('ЦДФ-диацилглицерол', 'CCCCCCCCCCCCCCCC(=O)OC[C@H](COP(=O)(O)OP(=O)(O)OC[C@H]1O[C@@H](n2ccc(N)nc2=O)[C@H](O)[C@@H]1O)OC(=O)CCCCCCC/C=C\\CCCCCCCC'),
     'dopa': ('ДОФА', 'N[C@@H](Cc1ccc(O)c(O)c1)C(=O)O'),
     'htp': ('5-Гидрокситриптофан', 'N[C@@H](Cc1c[nH]c2ccc(O)cc12)C(=O)O'),
     'melatonin': ('Мелатонин', 'CC(=O)NCCc1c[nH]c2ccc(OC)cc12'),
@@ -185,17 +188,23 @@ LIB = {
     'pcr': ('Креатинфосфат', 'CN(CC(=O)O)C(=N)NP(=O)(O)O'),
 }
 
+# жирные кислоты и ацилглицерины — вытянутые конформеры через RDKit (tools/molrd.py)
+EXT = {'palmitic', 'stearic', 'oleic', 'elaidic', 'linoleic', 'linolenic', 'arachidonic', 'tag', 'pa', 'dag', 'pe', 'ptdins', 'cdpdag'}
 Q = 100.0
 def one(item):
     k, (name, smi) = item
     try:
-        r = molgen.embed(smi, seed=7, tries=int(os.environ.get('TRIES', '4')))
+        if k in EXT:
+            import molrd
+            r = molrd.build(smi)
+        else:
+            r = molgen.embed(smi, seed=7, tries=int(os.environ.get('TRIES', '4')))
     except Exception as e:
         return k, None, str(e)
     el = r['el']; P = r['xyz']; B = r['bonds']
     d = {'name': name, 'el': ' '.join(el), 'xyz': base64.b64encode(np.round(P * Q).astype('<i2').tobytes()).decode(),
          'b': base64.b64encode(np.array([[a, b] for a, b, o in B], dtype='<u2').tobytes()).decode(), 'o': ''.join(str(o) for a, b, o in B)}
-    return k, d, f"n={len(el)} E={r['E']:.2f} close={molgen.check(r)}"
+    return k, d, f"n={len(el)} E={r['E']:.2f}" + ('' if k in EXT else f" close={molgen.check(r)}")
 
 if __name__ == '__main__':
     out_path = sys.argv[1]; only = sys.argv[2:]
