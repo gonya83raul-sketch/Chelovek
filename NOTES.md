@@ -1,0 +1,26 @@
+# «Кто мы? — от молекулы до мысли» — заметки для продолжения работы
+
+Сайт: https://gonya83raul-sketch.github.io/Chelovek/ (ветка `main` репозитория gonya83raul-sketch/Chelovek — только собранный сайт).
+Исходники: ветка `source` того же репозитория (эта папка). Артефакт Claude: https://claude.ai/artifact/LkivyA8NtFe5eabhraSy5R (последняя публикация — app3; сайт уже app4+).
+
+## Как собирать и выкладывать
+- `python3 tools/mols.py data/mols.json <ids>` — новые молекулы (SMILES в LIB), потом `python3 tools/mkdata.py`.
+- `python3 tools/pdbprep.py pdbsrc data/pdb.json && python3 tools/fix_adk.py && python3 tools/mkdata.py` — белки (нужны файлы в pdbsrc/, их нет в ветке source: брать из репозиториев 3dmol, MDAnalysis, ngl, biotite и т.д. через `git checkout HEAD -- путь`).
+- `python3 tools/build.py` → out/page.html (артефакт), out/index.html (офлайн), out/site/ (сайт-PWA), lt/ (локальный тест). Константа `APP` в build.py — имя папки версии (app4, app5…), менять при каждой публикации.
+- Тесты: `python3 tools/sweep.py <ids…>` (все сцены без ошибок), `python3 tools/lt.py <id> key:2 "window.__adv(5)" shot:x` (скриншоты), `tools/mob.py` (телефон), `tools/navtest.py`, `tools/pwatest.py`.
+- Публикация на GitHub: клон в /home/claude/chelovek (ветка main): удалить старую appN, скопировать out/site/., commit, push.
+- Модели 3D (models/*.txt — base64 от gzip) не менять без нужды.
+
+## Сделано в этой серии
+- Деление на вкладки (каждая тема — свой файл), сжатые модели, выгрузка старых сцен, PWA (иконки, офлайн, «Сохранить для офлайна»), мобильная раскладка, выпадающий список тем на телефоне, «Назад» на Android.
+- Убраны ссылки на лекции/пособия; подпись авторов 3D-моделей (CC BY) оставлена в подвале. Раздел «Условности» пользователь попросил НЕ удалять.
+- Новое название «Кто мы? — от молекулы до мысли», крупный логотип, кнопка «♥ Поддержать» (USDT TRC-20: TU5THz3NcJ2DKGvhtYVDCV1PCrDn7x41Ap).
+- Исправлен общий баг: повторный перелёт камеры в режим (flyStep).
+- Новые сцены биохимии: 33_radicals, 42_carbdig, 53_lipogen, 62_amines.
+
+## Осталось (порядок по договорённости с пользователем: сначала темы, потом перевод)
+1. Новые сцены: 73_antibiotics (рибосома 70S 1VY4 уже в data/pdb.json как `ribo70` с центрами мест связывания `sites`), 82_thyroid, 83_adrenal (β2-АР+Gs `gpcr`, рецептор прогестерона `pr` 1A28), 84_calcium, 54_eicosanoids, 94_nitrogen. Молекулы для них уже сгенерированы (tetracycline, streptomycin, erythromycin, mit, dit, trh, ptu, pregnenolone, dhea, calcidiol, pgh2, txa2, pgi2, ltb4, ibuprofen, pcr, …).
+2. После каждой сцены — проверка агентом-рецензентом (скриншоты всех режимов, компьютер и телефон), исправления.
+3. Пример поста для Instagram (карусель 1080×1350, тема «лактоза») и короткое вертикальное видео (шортс) для рекламы сайта.
+4. Переключатель языка + английский: сначала интерфейс и названия тем, затем тексты сцен.
+5. Переопубликовать артефакт Claude новой версией.

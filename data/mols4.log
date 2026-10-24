@@ -1,0 +1,5 @@
+trh n=48 E=0.06 close=3
+tetracycline n=56 E=0.64 close=1
+pcr n=23 E=1.57 close=1
+txa2 n=57 E=0.14 close=2
+done 193
