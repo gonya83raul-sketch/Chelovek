@@ -12,7 +12,8 @@ const [, , mode, inFile, a3, a4] = process.argv;
 const code = fs.readFileSync(inFile, 'utf8');
 const ast = acorn.parse(code, { ecmaVersion: 'latest', sourceType: 'module' });
 const CYR = /[А-Яа-яЁё]/;
-const isKey = (t) => t.trim().length <= 1; // буквы русской раскладки в обработчиках клавиш — не переводятся
+const NO_TR = new Set(['Русский']); // название языка на кнопке переключателя
+const isKey = (t) => t.trim().length <= 1 || NO_TR.has(t); // буквы русской раскладки в обработчиках клавиш — не переводятся
 const unitOf = (pos) => {
   const s = ast.body.find((b) => b.start <= pos && pos < b.end);
   if (!s) return '?';

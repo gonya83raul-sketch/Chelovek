@@ -43,11 +43,31 @@ shutil.rmtree(os.path.join(OUT, APP), ignore_errors=True)
 r = subprocess.run(['node', os.path.join(ROOT, 'tools', 'split.mjs'), os.path.join(OUT, '_merged.mjs'), os.path.join(OUT, APP), os.path.join(OUT, '_bio.json')], capture_output=True, text=True)
 print(r.stdout[-4000:]);
 if r.returncode: print(r.stderr[:3000]); sys.exit(1)
+# английская сборка: русские строки → словарь data/i18n/en.json (собирается из data/i18n/en/*.json)
+EN = {}
+for f in sorted(glob.glob(os.path.join(ROOT, 'data', 'i18n', 'en', '*.json'))): EN.update(json.load(open(f, encoding='utf8')))
+if EN:
+    json.dump(EN, open(os.path.join(OUT, '_en.json'), 'w', encoding='utf8'), ensure_ascii=False)
+    r = subprocess.run(['node', os.path.join(ROOT, 'tools', 'i18n.mjs'), 'apply', os.path.join(OUT, '_merged.mjs'), os.path.join(OUT, '_en.json'), os.path.join(OUT, '_merged_en.mjs')], capture_output=True, text=True)
+    if r.returncode: print(r.stderr[:3000]); sys.exit(1)
+    nmiss = len(json.load(open(os.path.join(OUT, '_merged_en.mjs.missing.json'), encoding='utf8')))
+    men = open(os.path.join(OUT, '_merged_en.mjs'), encoding='utf8').read()
+    assert men.count("const LANG = 'ru';") == 1
+    open(os.path.join(OUT, '_merged_en.mjs'), 'w', encoding='utf8').write(men.replace("const LANG = 'ru';", "const LANG = 'en';"))
+    r = subprocess.run(['node', os.path.join(ROOT, 'tools', 'split.mjs'), os.path.join(OUT, '_merged_en.mjs'), os.path.join(OUT, APP, 'en'), os.path.join(OUT, '_bio.json')], capture_output=True, text=True)
+    if r.returncode: print(r.stderr[:3000]); sys.exit(1)
+    print('EN: строк без перевода', nmiss, '(out/_merged_en.mjs.missing.json)')
 for f in glob.glob(os.path.join(OUT, APP, '**', '*.js'), recursive=True):
     r = subprocess.run(['node', '--check', f], capture_output=True, text=True)
     if r.returncode: print(f, r.stderr[:2000]); sys.exit(1)
-page = page[:i0] + f'<script type="module" src="{APP}/core.js"></script>' + page[i1 + len('</script>'):]
-open(os.path.join(OUT, 'page.html'), 'w', encoding='utf8').write(page)
+page_ru = page[:i0] + f'<script type="module" src="{APP}/core.js"></script>' + page[i1 + len('</script>'):]
+open(os.path.join(OUT, 'page.html'), 'w', encoding='utf8').write(page_ru)
+# сайт: язык из ?lang=, памяти или языка браузера
+LOADER = ('<script type="module">\nlet L = new URLSearchParams(location.search).get(\'lang\');\n'
+  'try { if (L) localStorage.setItem(\'lang\', L); else L = localStorage.getItem(\'lang\'); } catch (e) { /* без памяти */ }\n'
+  'if (L !== \'en\' && L !== \'ru\') L = (navigator.languages || [navigator.language || \'\']).some((l) => /^(ru|uk|be|kk)/i.test(l)) ? \'ru\' : \'en\';\n'
+  f'document.documentElement.lang = L;\nimport(L === \'en\' ? \'./{APP}/en/core.js\' : \'./{APP}/core.js\');\n</script>')
+page = page[:i0] + (LOADER if EN else f'<script type="module" src="{APP}/core.js"></script>') + page[i1 + len('</script>'):]
 head = '<!doctype html>\n<html lang="ru">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">\n</head>\n<body>\n'
 full = head + page + '</body>\n</html>\n'
 open(os.path.join(OUT, 'index.html'), 'w', encoding='utf8').write(full)
@@ -59,21 +79,24 @@ open(os.path.join(SITE, 'index.html'), 'w', encoding='utf8').write(site_html)
 shutil.copytree(os.path.join(OUT, APP), os.path.join(SITE, APP)); shutil.copytree(os.path.join(OUT, 'models'), os.path.join(SITE, 'models'))
 shutil.copytree(os.path.join(ROOT, 'pwa', 'icons'), os.path.join(SITE, 'icons'))
 shutil.copy(os.path.join(ROOT, 'pwa', 'manifest.webmanifest'), SITE)
-open(os.path.join(SITE, 'sw.js'), 'w', encoding='utf8').write(open(os.path.join(ROOT, 'pwa', 'sw.tpl.js'), encoding='utf8').read().replace('__APP__', APP))
+sw = open(os.path.join(ROOT, 'pwa', 'sw.tpl.js'), encoding='utf8').read()
+if not EN: sw = sw.replace("'./__APP__/en/core.js', ", '')
+open(os.path.join(SITE, 'sw.js'), 'w', encoding='utf8').write(sw.replace('__APP__', APP))
 open(os.path.join(SITE, '.nojekyll'), 'w').write('')
 # локальный тест (с PWA)
 LT = os.path.join(ROOT, 'lt')
 full = site_html
 for f in ('sw.js', 'manifest.webmanifest'): shutil.copy(os.path.join(SITE, f), LT)
 shutil.rmtree(os.path.join(LT, 'icons'), ignore_errors=True); shutil.copytree(os.path.join(SITE, 'icons'), os.path.join(LT, 'icons'))
-lt = full.replace('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js', './three/build/three.module.js').replace('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/', './three/examples/jsm/')
+lt = full.replace("? 'ru' : 'en';", "? 'ru' : 'ru'; // тесты: по умолчанию русский").replace('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js', './three/build/three.module.js').replace('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/', './three/examples/jsm/')
 open(os.path.join(LT, 'index.html'), 'w', encoding='utf8').write(lt)
 shutil.rmtree(os.path.join(LT, APP), ignore_errors=True); shutil.copytree(os.path.join(OUT, APP), os.path.join(LT, APP))
-core = open(os.path.join(LT, APP, 'core.js'), encoding='utf8').read()
-hook = "show(BUILDERS[start] ? start : 'skeleton');"
-assert core.count(hook) == 1
-core = core.replace(hook, hook + " window.__adv = (s) => { for (let i = 0; i < s * 20; i++) cur.update(0.05); }; window.__show = show; window.__built = () => Object.keys(built); window.__glass = () => GLASS.length; window.__cur = () => cur; window.__mem = () => renderer.info.memory;")
-open(os.path.join(LT, APP, 'core.js'), 'w', encoding='utf8').write(core)
+for cf in [os.path.join(LT, APP, 'core.js')] + ([os.path.join(LT, APP, 'en', 'core.js')] if EN else []):
+    core = open(cf, encoding='utf8').read()
+    hook = "show(BUILDERS[start] ? start : 'skeleton');"
+    assert core.count(hook) == 1
+    core = core.replace(hook, hook + " window.__adv = (s) => { for (let i = 0; i < s * 20; i++) cur.update(0.05); }; window.__show = show; window.__built = () => Object.keys(built); window.__glass = () => GLASS.length; window.__cur = () => cur; window.__mem = () => renderer.info.memory;")
+    open(cf, 'w', encoding='utf8').write(core)
 os.makedirs(os.path.join(LT, 'models'), exist_ok=True)
 for f in glob.glob(os.path.join(OUT, 'models', '*.txt')): shutil.copy(f, os.path.join(LT, 'models'))
 print('OK page', len(page.encode('utf8')), 'bytes;', len(scenes), 'bio scenes')

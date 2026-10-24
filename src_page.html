@@ -55,6 +55,7 @@ button,select{font-family:inherit}
 .pill.ghost:hover{color:var(--fg)}
 .pill:disabled{opacity:.7;cursor:default}
 .pill svg{width:16px;height:16px;flex:none}
+.lang{font-weight:600;letter-spacing:.04em;min-width:44px;justify-content:center}
 .heart svg{color:#FF7A9A}
 .heart:hover{border-color:#B65A74}
 .cfg,.subsel{display:none}
@@ -168,6 +169,8 @@ dialog.donate p{color:var(--text);margin:0 0 14px}
   .heart{order:1;margin-left:auto;width:44px;min-height:44px;padding:0;justify-content:center}
   .heart .dtxt{display:none}
   .inst{order:1}
+  .lang{order:1;margin-left:auto;min-height:44px}
+  .lang + .heart{margin-left:0}
   .cfg{order:2;display:inline-flex;align-items:center;font:500 13px var(--f-body);color:var(--mute);background:transparent;border:1px solid var(--line-2);border-radius:999px;padding:0 14px;min-height:44px;cursor:pointer}
   .cfg[aria-expanded="true"]{color:var(--fg);border-color:var(--accent)}
   .tabs{order:3}
@@ -205,6 +208,7 @@ dialog.donate p{color:var(--text);margin:0 0 14px}
     <div class="acts">
       <div class="knobs" id="knobs"></div>
       <button class="pill inst" id="inst" type="button" hidden>Установить</button>
+      <button class="pill lang" id="lang" type="button" lang="en" title="English">EN</button>
       <button class="pill heart" id="donate" type="button" aria-haspopup="dialog" aria-label="Поддержать проект"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.5 8.2 3.3 4.5 7 4.5c2.1 0 3.6 1.2 5 3 1.4-1.8 2.9-3 5-3 3.7 0 5.5 3.7 4.3 6.8-1.8 4.6-9.3 9.2-9.3 9.2z"/></svg><span class="dtxt">Поддержать</span></button>
       <button class="cfg" id="cfg" hidden type="button" aria-expanded="false" aria-controls="knobs">Настройки</button>
     </div>
@@ -267,6 +271,8 @@ function fetchModel(name) {
     .then((blob) => { if (typeof DecompressionStream === 'undefined') throw new Error('браузер слишком старый для распаковки модели'); return new Response(blob.stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer(); });
 }
 const $ = (s) => document.querySelector(s);
+/* язык сборки: английская сборка (tools/i18n.mjs) меняет 'ru' на 'en' и все русские строки — по словарю data/i18n/en.json */
+const LANG = 'ru';
 function h(tag, attrs = {}, ...kids) {
   const el = document.createElement(tag);
   for (const [k, v] of Object.entries(attrs)) {
@@ -8903,6 +8909,25 @@ function placeConsole() {
   placeScope();
 }
 mqMob.addEventListener('change', placeConsole); placeConsole();
+/* тексты разметки страницы: в английской сборке эти строки переводятся словарём */
+if (LANG !== 'ru') {
+  document.documentElement.lang = LANG;
+  const T = (sel, txt, attr) => { const e = $(sel); if (!e) return; if (attr) e.setAttribute(attr, txt); else e.innerHTML = txt; };
+  document.title = 'Кто мы? — от молекулы до мысли';
+  T('.brand .bt', 'Кто мы?'); T('.brand .bs', 'от молекулы до мысли');
+  T('#sections', 'Разделы атласа по масштабу', 'aria-label'); T('#subtabs', 'Темы раздела', 'aria-label'); T('#stage', 'Трёхмерная сцена', 'aria-label');
+  T('#inst', 'Установить'); T('#donate', 'Поддержать проект', 'aria-label'); T('#donate .dtxt', 'Поддержать'); T('#cfg', 'Настройки');
+  T('.dclose button', 'Закрыть', 'aria-label'); T('#donateTitle', 'Поддержать проект');
+  T('#donatebox > p', '«Кто мы?» бесплатный и без рекламы. Новые темы, 3D-модели и приложение делаются на энтузиазме — если атлас вам полезен, вы можете помочь его развитию.');
+  T('.dnet', 'USDT в сети TRON (TRC-20)'); T('#dcopy', 'Копировать');
+  T('.dwarn', 'Отправляйте только <b>USDT в сети TRON (TRC-20)</b>. Перевод другой монеты или в другой сети потеряется.');
+  T('.foot', '3D-модели: зрительная система — Sergey Burov, мышцы — Diego Luján García, органы малого таза и пищеварения — Education Resource Fund (Sketchfab, лицензия CC BY 4.0).');
+}
+/* переключатель языка: запоминается, ссылка ?lang=en|ru */
+{ const lb = $('#lang'), other = LANG === 'ru' ? 'en' : 'ru';
+  lb.textContent = other.toUpperCase(); lb.lang = other; lb.title = other === 'en' ? 'English' : 'Русский';
+  lb.addEventListener('click', () => { try { localStorage.setItem('lang', other); } catch (e) { /* без памяти — через ссылку */ } location.href = location.pathname + '?lang=' + other + location.hash; });
+}
 { const dlg = $('#donatebox'), btn = $('#donate'), cp = $('#dcopy');
   btn.addEventListener('click', () => { if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', ''); });
   dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
