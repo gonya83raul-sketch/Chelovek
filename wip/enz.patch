@@ -1,7 +1,7 @@
 From 979201816a815a370c255a30c8593e871fc67c51 Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Sat, 24 Oct 2026 22:41:00 +0000
-Subject: [PATCH 1/3] =?UTF-8?q?etc:=20=D1=81=D1=80=D0=B5=D0=B7=20=D0=BC?=
+Subject: [PATCH 1/4] =?UTF-8?q?etc:=20=D1=81=D1=80=D0=B5=D0=B7=20=D0=BC?=
  =?UTF-8?q?=D0=B5=D0=BC=D0=B1=D1=80=D0=B0=D0=BD=D1=8B,=20=D0=90=D0=A2?=
  =?UTF-8?q?=D0=A4-=D1=81=D0=B8=D0=BD=D1=82=D0=B0=D0=B7=D0=B0=20c8=20=D1=81?=
  =?UTF-8?q?=20=CE=B5=20=D0=B8=20=C2=AB=D0=B4=D1=8B=D1=85=D0=B0=D0=BD=D0=B8?=
@@ -260,7 +260,7 @@ index 0000000..57224b8
 From 6c4947f3666c0b6c8a5b7522895e72c209e13bad Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Sat, 24 Oct 2026 22:52:10 +0000
-Subject: [PATCH 2/3] =?UTF-8?q?WIP=20enz=20(=D1=81=D0=BE=D1=85=D1=80=D0=B0?=
+Subject: [PATCH 2/4] =?UTF-8?q?WIP=20enz=20(=D1=81=D0=BE=D1=85=D1=80=D0=B0?=
  =?UTF-8?q?=D0=BD=D0=B5=D0=BD=D0=BE=20=D0=BF=D0=B5=D1=80=D0=B5=D0=B4=20?=
  =?UTF-8?q?=D0=BF=D0=B5=D1=80=D0=B5=D0=BA=D0=BB=D1=8E=D1=87=D0=B5=D0=BD?=
  =?UTF-8?q?=D0=B8=D0=B5=D0=BC=20=D1=81=D0=B5=D1=81=D1=81=D0=B8=D0=B8)?=
@@ -934,7 +934,7 @@ index 0000000..d48f57b
 From 0718cb53402fc23adcc3b67014a0acf862a7ee46 Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Sat, 24 Oct 2026 23:02:40 +0000
-Subject: [PATCH 3/3] WIP enz
+Subject: [PATCH 3/4] WIP enz
 
 ---
  bio/12_enzmed.js | 10 +++++++---
@@ -968,6 +968,41 @@ index 93d1686..fd43267 100644
    const triad = [iH, iD, iS].map((i, k) => glowNucleus(G3i, caF(i), ['#7FD6FF', '#FF6A6A', '#F2C14E'][k], 0.11, 7));
    const nTerm = caF(0);
    // «пропептид» — отрезаемый участок цепи
+-- 
+2.43.0
+
+
+From 37119523b64ab2d8943dcd8e56f5fd56e9b586ad Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Sat, 24 Oct 2026 23:10:06 +0000
+Subject: [PATCH 4/4] WIP enz
+
+---
+ bio/10_enzyme.js | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/bio/10_enzyme.js b/bio/10_enzyme.js
+index 70b937f..510d57d 100644
+--- a/bio/10_enzyme.js
++++ b/bio/10_enzyme.js
+@@ -14,7 +14,7 @@ const EZ_CLASSES = [
+ function makeEnzyme() {
+   rnd = mulberry(501);
+   const scene = bioStage({ rim: 0x7fd6ff });
+-  const VIEW = { site: flyTarget(V3(0.3, -1.0, 0), V3(1.4, 0.2, 9.8)), fit: flyTarget(V3(40, -1.0, 0), V3(41.8, 0.6, 13.5)), classes: flyTarget(V3(80, -3.4, 0), V3(80, 15.5, 20)) };
++  const VIEW = { site: flyTarget(V3(0.3, -1.0, 0), V3(1.4, 0.2, 9.8)), fit: flyTarget(V3(40, -1.0, 0), V3(41.8, 0.6, 13.5)), classes: flyTarget(V3(80, -3.2, 0), V3(80, 14, 24)) };
+   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.site.pos);
+   const controls = makeControls(camera, VIEW.site.target); controls.minDistance = 2; controls.maxDistance = 40;
+   const fx = new Sparks(1600, 0.08); scene.add(fx.obj);
+@@ -60,7 +60,7 @@ function makeEnzyme() {
+   /* ---------- 3. классы ферментов ---------- */
+   const G3 = new THREE.Group(); G3.position.set(80, 0, 0); scene.add(G3);
+   const ST = EZ_CLASSES.map((c, k) => {
+-    const a = -Math.PI / 2 + (k / 6) * Math.PI * 2, p = V3(Math.cos(a) * 6.8, 0, Math.sin(a) * 6.8);
++    const a = -Math.PI / 2 + (k / 6) * Math.PI * 2, p = V3(Math.cos(a) * 6.4, 0, Math.sin(a) * 6.4);
+     const g = new THREE.Group(); g.position.copy(p); G3.add(g);
+     let prot;
+     if (c.pdb) {
 -- 
 2.43.0
 
