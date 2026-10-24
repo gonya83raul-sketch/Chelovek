@@ -2099,8 +2099,8 @@ function makeTypes() {
   const BG = 0x07060a, GOLGI_BG = 0x8a5420;
   const scene = new THREE.Scene(); scene.background = new THREE.Color(BG); scene.fog = new THREE.FogExp2(BG, 0.011); scene.environment = envTex;
   addLights(scene);
-  const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 400); camera.position.set(0, 2, 64);
-  const controls = makeControls(camera, V3(0, 0, 0)); controls.minDistance = 3; controls.maxDistance = 90;
+  const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 400); camera.position.set(0, 1.5, 44);
+  const controls = makeControls(camera, V3(0, -0.5, 0)); controls.minDistance = 3; controls.maxDistance = 90;
 
   const baseMat = new THREE.MeshPhysicalMaterial({ color: 0xcdb0c4, roughness: 0.46, clearcoat: 0.55, clearcoatRoughness: 0.35, sheen: 1, sheenColor: new THREE.Color(0x8f6dff), sheenRoughness: 0.5, emissive: 0x12081a, envMapIntensity: 0.6 });
   const myelinMat = new THREE.MeshPhysicalMaterial({ color: 0xf1e7d6, roughness: 0.28, clearcoat: 1, clearcoatRoughness: 0.18, envMapIntensity: 0.9 });
@@ -2131,18 +2131,19 @@ function makeTypes() {
     }
   }
   function tree(c, start, dir, len, r, depth, o = {}) {
-    const { spread = 0.75, wob = 0.28, planar = false, kids = 2, shrink = 0.72, nodes = 3, axon = false, spines = 0 } = o;
+    const { spread = 0.75, wob = 0.28, planar = false, kids = 2, shrink = 0.72, nodes = 3, axon = false, spines = 0, spineDepth = 99 } = o;
     const pts = [start.clone()]; let p = start.clone(); const d = dir.clone().normalize();
     for (let k = 1; k <= nodes; k++) { const w = randUnit().multiplyScalar(wob); if (planar) w.z *= 0.06; d.add(w).normalize(); p = p.clone().addScaledVector(d, len / nodes); pts.push(p); }
     const r1 = depth > 0 ? r * 0.64 : r * 0.5;
     const curve = addTube(c, pts, r, r1, axon, 6 + nodes * 4);
-    if (spines) spinesOn(c, curve, r, r1, spines);
+    if (spines && depth <= spineDepth) spinesOn(c, curve, r, r1, spines);
     if (o.leaf && depth === 0) o.leaf(p);
     if (depth > 0) for (let j = 0; j < kids; j++) { const nd = d.clone().add(randUnit().multiplyScalar(spread)); if (planar) nd.z *= 0.06; nd.normalize(); tree(c, p, nd, len * shrink, r1, depth - 1, o); }
     return curve;
   }
   function blob(r, sx = 1, sy = 1, sz = 1, seed = 0) {
-    return displaceGeo(new THREE.IcosahedronGeometry(r, 5), (v) => { const n = v.clone().normalize(); const s = 1 + 0.12 * noise3(n.x * 1.8 + seed, n.y * 1.8, n.z * 1.8); v.copy(n.multiplyScalar(r * s)); v.x *= sx; v.y *= sy; v.z *= sz; });
+    const g = new THREE.IcosahedronGeometry(r, 14); g.deleteAttribute('normal'); g.deleteAttribute('uv'); // индексированная сетка: гладкие нормали
+    return displaceGeo(mergeVertices(g), (v) => { const n = v.clone().normalize(); const s = 1 + 0.12 * noise3(n.x * 1.8 + seed, n.y * 1.8, n.z * 1.8); v.copy(n.multiplyScalar(r * s)); v.x *= sx; v.y *= sy; v.z *= sz; });
   }
   function soma(c, geo, pos = V3(0, 0, 0)) { const m = new THREE.Mesh(geo, c.somaMat); m.position.copy(pos); c.g.add(m); c.somaMesh = m; c.somaPos = pos.clone(); return m; }
   function myelinate(c, curve, u0, u1, n, rad) {
@@ -2176,8 +2177,9 @@ function makeTypes() {
   function S(segs, v, col, end) { return { segs, dur: Math.max(...segs.map((s) => s.c.getLength())) / v, col, end }; }
 
   /* ---------- галерея ---------- */
-  const SP = 8;
-  const org = (i) => V3((i - 3) * SP, 0, 0);
+  // два ряда: 4 клетки сверху, 3 снизу
+  const SP = 9;
+  const org = (i) => (i < 4 ? V3((i - 1.5) * SP, 6.3, 0) : V3((i - 5) * SP, -6.6, 0));
   // 1 мультиполярный (мотонейрон)
   { const c = newCell(NTYPES[0], org(0)); soma(c, blob(0.85, 1, 1, 0.9, 1));
     [V3(-1, 0.45, 0.2), V3(-0.6, 1, -0.4), V3(0.05, 1, 0.35), V3(0.7, 1, -0.2), V3(1, 0.3, 0.4), V3(-0.9, -0.45, -0.5), V3(0.95, -0.5, -0.3)]
@@ -2219,7 +2221,11 @@ function makeTypes() {
   }
   // 4 пирамидный
   { const c = newCell(NTYPES[3], org(3));
-    soma(c, displaceGeo(new THREE.ConeGeometry(0.75, 1.6, 28, 8), (v) => { const n = v.clone().normalize(); v.addScaledVector(n, 0.06 * noise3(v.x * 2, v.y * 2, v.z * 2)); }));
+    // тело — скруглённая «капля»-пирамида, вершина плавно переходит в апикальный дендрит
+    soma(c, displaceGeo(new THREE.SphereGeometry(1, 48, 32), (v) => {
+      const t = (v.y + 1) / 2, r = 0.78 * Math.pow(1 - t, 0.85) + 0.1; v.x *= r; v.z *= r; v.y *= 0.8;
+      const n = v.clone().normalize(); v.addScaledVector(n, 0.04 * noise3(v.x * 2, v.y * 2, v.z * 2));
+    }));
     const sp = 14;
     const apical = addTube(c, [V3(0, 0.7, 0), V3(0.05, 1.8, 0), V3(-0.1, 3.0, 0.1), V3(0.08, 4.2, 0), V3(0, 5.0, 0)], 0.2, 0.08, false, 44); c.prim.push(apical); spinesOn(c, apical, 0.2, 0.08, sp);
     for (let k = 0; k < 6; k++) { const p = apical.getPointAt(0.18 + 0.12 * k), s = k % 2 ? 1 : -1; tree(c, p, V3(s, 0.55, rand(-0.4, 0.4)), 1.0 - k * 0.06, 0.07, 1, { spread: 0.5, spines: sp }); }
@@ -2236,13 +2242,16 @@ function makeTypes() {
   }
   // 5 клетка Пуркинье
   { const c = newCell(NTYPES[4], org(4)); soma(c, blob(0.8, 0.95, 1.15, 0.9, 5));
-    [V3(-0.55, 1, 0), V3(0.05, 1, 0), V3(0.6, 1, 0)].forEach((d) => c.prim.push(tree(c, V3(d.x * 0.4, 0.85, 0), d, 1.15, 0.2, 5, { planar: true, spread: 0.85, shrink: 0.8, wob: 0.22 })));
+    // один толстый первичный дендрит, от него плоское дерево с шипиковыми веточками
+    const trunk = addTube(c, [V3(0, 0.7, 0), V3(0.03, 1.25, 0), V3(0, 1.8, 0)], 0.3, 0.2, false, 12);
+    const trees = [V3(-0.75, 1, 0), V3(0.05, 1, 0), V3(0.8, 1, 0)].map((d) => tree(c, V3(0, 1.8, 0), d, 1.05, 0.17, 4, { planar: true, spread: 0.85, shrink: 0.8, wob: 0.22, spines: 9, spineDepth: 1 }));
+    c.prim.push(trunk, ...trees);
     const a1 = addTube(c, [V3(0, -0.9, 0), V3(0, -1.6, 0), V3(0, -2.2, 0)], 0.26, 0.1, true, 14);
     const a2 = addTube(c, [V3(0, -2.2, 0), V3(0.1, -3.5, 0.05), V3(0, -5.2, 0)], 0.1, 0.1, true, 24);
     const col = addTube(c, [V3(0, -2.2, 0), V3(0.9, -2.25, 0), V3(1.3, -1.5, 0)], 0.06, 0.05, true, 12);
     myelinate(c, a2, 0.08, 0.95, 3, 0.22);
     finish(c, 0.8, V3(0.95, 1.15, 0.9));
-    c.route = () => [S(c.prim.map((cv) => sg(c, cv, true)), 3, INP, () => { c.flash = st.t; }), S([sg(c, a1)], 5, AP), S([sg(c, a2), sg(c, col)], 8, AP)];
+    c.route = () => [S(trees.map((cv) => sg(c, cv, true)), 3, INP), S([sg(c, trunk, true)], 3, INP, () => { c.flash = st.t; }), S([sg(c, a1)], 5, AP), S([sg(c, a2), sg(c, col)], 8, AP)];
     c.lbl = [['дендритное дерево в одной плоскости', V3(1.4, 4.4, 0)], ['тело 60–70 мкм', V3(0.95, 0.2, 0.4)], ['аксон к ядрам мозжечка', V3(0.4, -4.4, 0)], ['возвратная коллатераль', V3(1.4, -1.4, 0)]];
   }
   // 6 звездчатый
@@ -2268,7 +2277,7 @@ function makeTypes() {
   }
 
   /* ---------- сеть из пяти нейронов ---------- */
-  const NET = V3(0, -26, 0), NC = V3(4.2, 0, 0);
+  const NET = V3(0, -48, 0), NC = V3(4.2, 0, 0);
   const at = (x, y, z = 0) => V3(x, y, z);
   // оболочки: кожа, ганглий, серое вещество спинного мозга
   const skin = new THREE.Mesh(new THREE.BoxGeometry(5.5, 0.6, 3.2), new THREE.MeshPhysicalMaterial({ color: 0xe7a98f, roughness: 0.7, transparent: true, opacity: 0.55, depthWrite: false, sheen: 1, sheenColor: new THREE.Color(0xffd0c0) }));
@@ -2375,7 +2384,7 @@ function makeTypes() {
   }
 
   /* ---------- камера ---------- */
-  const views = { all: { tgt: V3(0, -3.2, 0), pos: V3(0, 2, 64) }, net: { tgt: NET.clone().add(NC).add(V3(0, -3, 0)), pos: NET.clone().add(NC).add(V3(0, 1, 40)) } };
+  const views = { all: { tgt: V3(0, -0.5, 0), pos: V3(0, 1.5, 44) }, net: { tgt: NET.clone().add(NC).add(V3(0, -3, 0)), pos: NET.clone().add(NC).add(V3(0, 1, 40)) } };
   cells.slice(0, 7).forEach((c) => { views[c.def.id] = { tgt: c.origin.clone().add(V3(0, -2.6, 0)), pos: c.origin.clone().add(V3(4.5, 0.5, 24)) }; });
   views.purk.pos = byId.purk.origin.clone().add(V3(13, 1.5, 20));
   const st = { view: 'all', stain: 'live', auto: true, labels: true, t: 0, next: 0.8, fly: 1, twitch: 0, twitchT: -9, touchT: -9 };
@@ -2413,7 +2422,7 @@ function makeTypes() {
 
   const labels = [];
   cells.slice(0, 7).forEach((c) => {
-    labels.push({ text: c.def.name, pos: c.origin.clone().add(V3(-0.6, -6.6, 0)), show: () => st.labels && st.view === 'all' });
+    labels.push({ text: c.def.name, pos: c.somaPos.clone().add(c.origin).add(V3(0.9, 0.9, 0.3)), show: () => st.labels && st.view === 'all' });
     c.lbl.forEach(([t, p]) => labels.push({ text: t, pos: c.origin.clone().add(p), show: () => st.labels && st.view === c.def.id }));
   });
   [['кожа', at(-11.2, -4.3)], ['сенсорный нейрон', at(-4.0, 4.5)], ['спинномозговой ганглий', at(-3.6, 2.2)], ['вставочный 1', at(2.4, -0.8)], ['вставочный 2', at(6.3, 3.9, 0.3)],
