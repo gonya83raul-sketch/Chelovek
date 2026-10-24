@@ -468,13 +468,15 @@ function makeNeuron() {
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x07060a); scene.fog = new THREE.FogExp2(0x07060a, 0.03); scene.environment = envTex;
   addLights(scene);
-  const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 300); camera.position.set(4.5, 5, 17);
-  const controls = makeControls(camera, V3(7, 0, 0)); controls.minDistance = 4; controls.maxDistance = 45;
+  const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 300); camera.position.set(7.5, 6.5, 31.5);
+  const controls = makeControls(camera, V3(7.5, 0, 0)); controls.minDistance = 4; controls.maxDistance = 50;
 
   const memMat = new THREE.MeshPhysicalMaterial({ color: 0xcdb0c4, roughness: 0.46, metalness: 0, clearcoat: 0.55, clearcoatRoughness: 0.35, sheen: 1, sheenColor: new THREE.Color(0x8f6dff), sheenRoughness: 0.5, emissive: 0x12081a, envMapIntensity: 0.6 });
   const somaMat = memMat.clone(); somaMat.emissive = new THREE.Color(0xff8a3c); somaMat.emissiveIntensity = 0;
 
-  const soma = new THREE.Mesh(displaceGeo(new THREE.IcosahedronGeometry(1.15, 7), (v) => {
+  // сома: индексированная сфера (mergeVertices) — гладкие нормали без граней
+  const somaG = new THREE.IcosahedronGeometry(1.15, 40); somaG.deleteAttribute('normal'); somaG.deleteAttribute('uv');
+  const soma = new THREE.Mesh(displaceGeo(mergeVertices(somaG), (v) => {
     const n = v.clone().normalize(); let s = 1 + 0.15 * noise3(n.x * 1.6, n.y * 1.6, n.z * 1.6) + 0.04 * noise3(n.x * 5, n.y * 5, n.z * 5);
     if (n.x > 0) s += 0.45 * Math.pow(n.x, 6); if (n.y > 0.4) s += 0.35 * Math.pow(n.y, 5);
     v.copy(n.multiplyScalar(1.15 * s));
@@ -485,35 +487,36 @@ function makeNeuron() {
   const primaries = [];
   function branch(start, dir, len, r, depth, primary) {
     const pts = [start.clone()]; let p = start.clone(); const d = dir.clone();
-    for (let k = 1; k <= 4; k++) { d.add(randUnit().multiplyScalar(0.32)).normalize(); p = p.clone().addScaledVector(d, len / 4); pts.push(p); }
+    for (let k = 1; k <= 4; k++) { d.add(randUnit().multiplyScalar(0.32)).normalize(); if (d.dot(dir) < 0.5) d.lerp(dir, 0.5).normalize(); p = p.clone().addScaledVector(d, len / 4); pts.push(p); }
     const curve = new THREE.CatmullRomCurve3(pts);
-    scene.add(new THREE.Mesh(taperTube(curve, (u) => r * (1 - 0.45 * u), 28, 10), memMat));
+    scene.add(new THREE.Mesh(taperTube(curve, primary ? (u) => r * (1 - 0.45 * u) + 0.06 * Math.max(0, 1 - u / 0.15) : (u) => r * (1 - 0.45 * u), 28, 10), memMat));
     const cap = new THREE.Mesh(new THREE.SphereGeometry(r * 0.55, 12, 8), memMat); cap.position.copy(p); scene.add(cap);
     if (primary) primaries.push(curve);
     if (depth > 0) for (let j = 0; j < 2; j++) branch(p, d.clone().add(randUnit().multiplyScalar(0.85)).normalize(), len * 0.72, r * 0.55, depth - 1, false);
   }
   const dirs = [];
   while (dirs.length < 7) { const d = randUnit(); if (d.x < 0.15 && dirs.every((o) => o.angleTo(d) > 0.7)) dirs.push(d); }
-  dirs.forEach((d) => branch(d.clone().multiplyScalar(0.95), d, rand(2.8, 3.6), 0.22, 2, true));
+  dirs.forEach((d) => branch(d.clone().multiplyScalar(0.6), d, rand(3.1, 3.9), 0.22, 2, true)); // начало внутри сомы: торец трубки не выходит наружу
 
   const axon = new THREE.CatmullRomCurve3([V3(0.9, 0, 0), V3(2.6, 0.15, 0.1), V3(5.5, -0.3, -0.25), V3(8.6, 0.25, 0.2), V3(11.8, -0.2, -0.2), V3(15, 0.18, 0.08), V3(17.6, 0, 0)]);
   scene.add(new THREE.Mesh(taperTube(axon, (u) => (u < 0.05 ? 0.46 - 0.3 * (u / 0.05) : 0.16), 220, 14), memMat));
 
   const myelinMat = new THREE.MeshPhysicalMaterial({ color: 0xf1e7d6, roughness: 0.28, clearcoat: 1, clearcoatRoughness: 0.18, sheen: 0.6, sheenColor: new THREE.Color(0xffffff), transparent: true, opacity: 0.94, envMapIntensity: 0.9 });
-  const nodeU = []; for (let u = 0.09; u <= 0.95; u += 0.082) nodeU.push(u);
+  const nodeU = []; for (let u = 0.09; u <= 0.97; u += 0.11) nodeU.push(u);
   const nodes = nodeU.map((u) => axon.getPointAt(u));
   const myelin = new THREE.Group(); scene.add(myelin);
   for (let i = 0; i < nodes.length - 1; i++) {
     const a = nodes[i], b = nodes[i + 1], dir = b.clone().sub(a), dist = dir.length(); dir.normalize();
-    const inner = Math.max(0.05, dist - 0.24 - 0.68);
-    const m = new THREE.Mesh(new THREE.CapsuleGeometry(0.34, inner, 10, 24), myelinMat);
+    const inner = Math.max(0.05, dist - 0.24 - 0.52);
+    const m = new THREE.Mesh(new THREE.CapsuleGeometry(0.26, inner, 10, 24), myelinMat);
     m.position.copy(a).add(b).multiplyScalar(0.5); m.quaternion.setFromUnitVectors(V3(0, 1, 0), dir); myelin.add(m);
   }
   const ringMats = nodes.map(() => new THREE.MeshBasicMaterial({ color: 0x3a2a30 }));
   nodes.forEach((p, i) => {
     const t = axon.getTangentAt(nodeU[i]);
-    const ring = new THREE.Mesh(new THREE.TorusGeometry(0.2, 0.04, 8, 28), ringMats[i]);
-    ring.position.copy(p); ring.quaternion.setFromUnitVectors(V3(0, 0, 1), t); scene.add(ring);
+    // перехват: короткий поясок на голом аксоне (здесь сидят Na⁺-каналы), вспыхивает при импульсе
+    const ring = new THREE.Mesh(new THREE.CylinderGeometry(0.175, 0.175, 0.12, 24, 1, true), ringMats[i]);
+    ring.position.copy(p); ring.quaternion.setFromUnitVectors(V3(0, 1, 0), t); scene.add(ring);
   });
 
   const end = axon.getPointAt(1), bMats = [];
@@ -528,7 +531,7 @@ function makeNeuron() {
   // electrode
   const probeI = 2, probeP = nodes[probeI];
   const needle = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.05, 4, 10), new THREE.MeshPhysicalMaterial({ color: 0xbfd6ff, roughness: 0.1, transmission: 0.0, metalness: 0.6 }));
-  needle.position.copy(probeP).add(V3(0, 2.25, 0.4)); needle.rotation.x = -0.1; scene.add(needle);
+  needle.position.copy(probeP).add(V3(0, 2.16, -0.2)); needle.rotation.x = -0.1; scene.add(needle); // кончик на поверхности перехвата
 
   // drug cloud
   const lidoU = [0.5, 0.63];
@@ -544,7 +547,7 @@ function makeNeuron() {
   const st = { auto: true, myelin: true, lido: false, speed: 1, fires: [], nextAuto: 0.6, t: 0, ringFlash: nodes.map(() => -9), boutonFlash: -9, somaFlash: -9, delivered: 0, sent: 0, pend: [], trace: [] };
 
   function fire() { st.fires.push({ t0: st.t, last: -1, lastU: 0.09, dead: false, done: false, inputs: primaries.slice().sort(() => rnd() - 0.5).slice(0, 3) }); st.sent++; }
-  const HILL = 0.42, STEP = 0.085, VEL = 0.2;
+  const HILL = 0.42, STEP = 0.11, VEL = 0.2;
 
   function ionBurst(p, n, inward) {
     for (let k = 0; k < n; k++) {
@@ -733,10 +736,11 @@ function makeSynapse() {
   const camera = new THREE.PerspectiveCamera(40, 1, 0.05, 200); camera.position.set(6.8, 2.6, 7.6);
   const controls = makeControls(camera, V3(0, 0.4, 0)); controls.minDistance = 2.5; controls.maxDistance = 24;
 
-  const PRE_B = 0.62, POST_T = -0.28, CY = 3.0;
+  // активная зона: пре- и постсинаптическая мембраны идут параллельно на диаметре ≈4, щель узкая
+  const PRE_B = 0.62, POST_T = -0.03, CY = 3.0, CLEFT_Y = (PRE_B + POST_T) / 2;
   const preGeo = displaceGeo(new THREE.SphereGeometry(1, 120, 90), (v) => {
     v.set(v.x * 3.4, v.y * 2.9 + CY, v.z * 3.4);
-    if (v.y < 0.7) v.y = 0.7 - (0.7 - v.y) * 0.15;
+    if (v.y < 0.645) v.y = 0.645 - (0.645 - v.y) * 0.04;
     const n = noise3(v.x * 0.6, v.y * 0.6, v.z * 0.6); v.x *= 1 + 0.04 * n; v.z *= 1 + 0.04 * n;
   });
   const preSolid = new THREE.Mesh(preGeo, new THREE.MeshPhysicalMaterial({ color: 0xd9a9b8, roughness: 0.4, clearcoat: 0.6, transparent: true, opacity: 0.13, depthWrite: false, side: THREE.DoubleSide, envMapIntensity: 0.6 }));
@@ -746,34 +750,63 @@ function makeSynapse() {
   axonStub.position.set(0, 6.9, 0); scene.add(axonStub);
 
   const postGeo = displaceGeo(new THREE.SphereGeometry(1, 120, 90), (v) => {
-    v.set(v.x * 5.4, v.y * 4.1 - 3.95, v.z * 5.4);
-    if (v.y > -0.4) v.y = -0.4 + (v.y + 0.4) * 0.25;
+    v.set(v.x * 5.4, v.y * 4.1 - 3.7, v.z * 5.4);
+    if (v.y > -0.0674) v.y = -0.0674 + (v.y + 0.0674) * 0.08;
   });
   const postSolid = new THREE.Mesh(postGeo, new THREE.MeshPhysicalMaterial({ color: 0x9fb0d9, roughness: 0.45, clearcoat: 0.5, transparent: true, opacity: 0.16, depthWrite: false, side: THREE.DoubleSide, envMapIntensity: 0.6 }));
   const postGlass = new THREE.Mesh(postGeo, glassMat(0x9cb6ff, { rim: 0.75, base: 0.02, pow: 2.2 }));
   scene.add(postSolid, postGlass);
+  // постсинаптическое уплотнение (PSD) под рецепторами
+  const psd = new THREE.Mesh(new THREE.CylinderGeometry(1.88, 1.95, 0.12, 64), new THREE.MeshStandardMaterial({ color: 0x3a2a40, roughness: 0.85, transparent: true, opacity: 0.85 }));
+  psd.position.y = POST_T - 0.08; scene.add(psd);
 
-  const astro = new THREE.Mesh(new THREE.TorusGeometry(3.85, 0.85, 32, 120), glassMat(0x7fe0a6, { rim: 0.8, base: 0.03 }));
-  astro.rotation.x = Math.PI / 2; astro.scale.set(1, 1, 0.55); astro.position.y = 0.17; scene.add(astro);
+  // отросток астроцита манжетой охватывает синапс; переносчики сидят в его внутренней стенке
+  const astroGeo = new THREE.TorusGeometry(3.6, 0.7, 32, 120);
+  const astro = new THREE.Group();
+  astro.add(new THREE.Mesh(astroGeo, new THREE.MeshPhysicalMaterial({ color: 0x5fc49a, roughness: 0.45, clearcoat: 0.4, envMapIntensity: 0.4, transparent: true, opacity: 0.35, depthWrite: false, side: THREE.DoubleSide })));
+  astro.add(new THREE.Mesh(astroGeo, glassMat(0x7fe0a6, { rim: 0.8, base: 0.03 })));
+  astro.rotation.x = Math.PI / 2; astro.scale.set(1, 1, 0.45); astro.position.y = CLEFT_Y; scene.add(astro);
 
   // Ca channels
   const caMat = new THREE.MeshStandardMaterial({ color: 0xcfc6cf, emissive: 0xffffff, emissiveIntensity: 0, roughness: 0.4 });
   const caPos = []; for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI * 2 + 0.3; caPos.push(V3(Math.cos(a) * 1.05, PRE_B + 0.04, Math.sin(a) * 1.05)); }
   caPos.forEach((p) => { const m = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.24, 12), caMat); m.position.copy(p); scene.add(m); });
+  // плотные выступы активной зоны — между ними причаливают пузырьки
+  const dpMat = new THREE.MeshStandardMaterial({ color: 0x4a3046, roughness: 0.8 });
+  [V3(0.36, 0, 0.15), V3(-0.3, 0, 0.22), V3(0.05, 0, -0.38), V3(0.95, 0, -0.25), V3(-0.95, 0, -0.05), V3(0.45, 0, 0.78), V3(-0.25, 0, 0.95), V3(-0.6, 0, -0.85), V3(0.62, 0, -0.85)].forEach((q) => {
+    const m = new THREE.Mesh(new THREE.ConeGeometry(0.075, 0.2, 10), dpMat); m.position.set(q.x, PRE_B + 0.1, q.z); scene.add(m);
+  });
+  // митохондрии бутона
+  const moMat = new THREE.MeshPhysicalMaterial({ color: 0xd9663a, roughness: 0.3, clearcoat: 1, transparent: true, opacity: 0.6, depthWrite: false });
+  const crMat = new THREE.MeshStandardMaterial({ color: 0xffb07a, roughness: 0.45, emissive: 0x2a0e00 });
+  const MITO = [[V3(-1.4, 3.6, 0.6), V3(0.6, 0.2, 0.8)], [V3(1.2, 4.4, -0.8), V3(-0.7, 0.5, 0.3)]];
+  MITO.forEach(([p, d]) => {
+    const g = new THREE.Group(); g.position.copy(p); g.quaternion.setFromUnitVectors(V3(0, 1, 0), d.clone().normalize()); const len = 0.7;
+    g.add(new THREE.Mesh(new THREE.CapsuleGeometry(0.22, len, 8, 16), moMat));
+    for (let k = 0; k < 7; k++) { const c = new THREE.Mesh(new THREE.SphereGeometry(1, 12, 6), crMat); c.scale.set(0.17, 0.016, 0.15); c.position.y = -len / 2 + (k + 0.5) * len / 7; c.rotation.z = k % 2 ? 0.3 : -0.3; g.add(c); }
+    scene.add(g);
+  });
 
   // vesicles
   const vesGeo = new THREE.SphereGeometry(0.36, 32, 20);
   const dotGeo = new THREE.BufferGeometry(); { const a = []; for (let i = 0; i < 14; i++) { const d = randUnit().multiplyScalar(rand(0, 0.24)); a.push(d.x, d.y, d.z); } dotGeo.setAttribute('position', new THREE.Float32BufferAttribute(a, 3)); }
   const dotMat = new THREE.PointsMaterial({ size: 0.13, map: GLOW, color: 0xffffff, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending });
   const docks = [V3(0, 1.0, 0), V3(0.72, 1.0, 0.3), V3(-0.62, 1.0, 0.45), V3(0.2, 1.0, -0.72), V3(-0.5, 1.0, -0.52)];
-  function interior() { for (;;) { const p = V3(rand(-2.5, 2.5), rand(1.6, 5.2), rand(-2.5, 2.5)); if ((p.x / 2.6) ** 2 + ((p.y - 3.3) / 2.1) ** 2 + (p.z / 2.6) ** 2 < 1) return p; } }
   const vesicles = [];
+  // место для пузырька: внутри окончания, не в митохондрии и не внутри соседних пузырьков
+  function interior(self) {
+    for (let n = 0; ; n++) {
+      const p = V3(rand(-2.5, 2.5), rand(1.6, 5.2), rand(-2.5, 2.5));
+      if ((p.x / 2.6) ** 2 + ((p.y - 3.3) / 2.1) ** 2 + (p.z / 2.6) ** 2 >= 1 || MITO.some(([m]) => m.distanceTo(p) < 1.0)) continue;
+      if (n > 400 || vesicles.every((v) => v === self || !v.g.visible || v.g.position.distanceTo(p) > 0.95)) return p;
+    }
+  }
   for (let i = 0; i < 26; i++) {
     const g = new THREE.Group();
     const mat = new THREE.MeshPhysicalMaterial({ color: 0xf2e6ee, roughness: 0.15, clearcoat: 1, transparent: true, opacity: 0.32, depthWrite: false, envMapIntensity: 1 });
     g.add(new THREE.Mesh(vesGeo, mat)); const dots = new THREE.Points(dotGeo, dotMat); g.add(dots);
-    const v = { g, mat, state: 'free', home: interior(), phase: rand(0, 6.28), dock: -1, t: 0 };
-    if (i < docks.length) { v.state = 'docked'; v.dock = i; g.position.copy(docks[i]); } else g.position.copy(v.home);
+    const v = { g, mat, state: 'free', home: null, phase: rand(0, 6.28), dock: -1, t: 0 };
+    if (i < docks.length) { v.state = 'docked'; v.dock = i; g.position.copy(docks[i]); } else { v.home = interior(v); g.position.copy(v.home); }
     scene.add(g); vesicles.push(v);
   }
   const dockFree = docks.map((_, i) => i >= vesicles.length);
@@ -790,13 +823,15 @@ function makeSynapse() {
   const recPos = [V3(0, POST_T, 0)]; for (let i = 0; i < 6; i++) { const a = i / 6 * 6.283; recPos.push(V3(Math.cos(a) * 0.8, POST_T, Math.sin(a) * 0.8)); } for (let i = 0; i < 9; i++) { const a = i / 9 * 6.283 + 0.35; recPos.push(V3(Math.cos(a) * 1.6, POST_T, Math.sin(a) * 1.6)); }
   const NR = recPos.length;
   const recMat = new THREE.MeshPhysicalMaterial({ color: 0xffffff, roughness: 0.35, clearcoat: 0.6, envMapIntensity: 0.8 });
-  const ionoMesh = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.07, 0.075, 0.5, 12), recMat, NR * 5);
+  const ionoMesh = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.07, 0.075, 0.5, 12), recMat, NR * 5); // пентамеры: nAChR, ГАМК-А
+  const ionoMesh4 = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.082, 0.087, 0.5, 12), recMat, NR * 4); // тетрамеры: AMPA, NMDA
   const metaMesh = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.042, 0.042, 0.52, 8), recMat, NR * 7);
   recPos.forEach((p, r) => {
     for (let k = 0; k < 5; k++) { const a = k / 5 * 6.283; dummy.position.set(p.x + Math.cos(a) * 0.12, p.y + 0.02, p.z + Math.sin(a) * 0.12); dummy.rotation.set(0, 0, 0); dummy.scale.setScalar(1); dummy.updateMatrix(); ionoMesh.setMatrixAt(r * 5 + k, dummy.matrix); }
+    for (let k = 0; k < 4; k++) { const a = (k + 0.5) / 4 * 6.283; dummy.position.set(p.x + Math.cos(a) * 0.12, p.y + 0.02, p.z + Math.sin(a) * 0.12); dummy.updateMatrix(); ionoMesh4.setMatrixAt(r * 4 + k, dummy.matrix); }
     for (let k = 0; k < 7; k++) { const a = k / 7 * 6.283; dummy.position.set(p.x + Math.cos(a) * 0.13, p.y, p.z + Math.sin(a) * 0.13); dummy.rotation.set((k % 2 ? 0.25 : -0.25) * Math.sin(a), 0, (k % 2 ? 0.25 : -0.25) * Math.cos(a)); dummy.updateMatrix(); metaMesh.setMatrixAt(r * 7 + k, dummy.matrix); }
   });
-  scene.add(ionoMesh, metaMesh);
+  scene.add(ionoMesh, ionoMesh4, metaMesh);
   const capMesh = new THREE.InstancedMesh(new THREE.SphereGeometry(0.17, 16, 12), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.85, blending: THREE.AdditiveBlending, depthWrite: false }), NR); capMesh.frustumCulled = false; scene.add(capMesh);
   const gMesh = new THREE.InstancedMesh(new THREE.SphereGeometry(0.13, 16, 12), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, depthWrite: false }), NR); gMesh.frustumCulled = false; scene.add(gMesh);
   const drugMesh = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(0.11, 1), new THREE.MeshPhysicalMaterial({ color: 0xffffff, roughness: 0.3, clearcoat: 1 }), NR); drugMesh.frustumCulled = false; scene.add(drugMesh);
@@ -814,7 +849,7 @@ function makeSynapse() {
     transGroup.clear(); trans.length = 0;
     const n = astroMode ? 10 : 8;
     for (let i = 0; i < n; i++) {
-      const a = i / n * 6.283 + 0.2, r = astroMode ? 3.1 : 1.95, y = astroMode ? 0.17 : PRE_B + 0.06;
+      const a = i / n * 6.283 + 0.2, r = astroMode ? 3.1 : 1.95, y = astroMode ? CLEFT_Y : PRE_B + 0.06;
       const p = V3(Math.cos(a) * r, y, Math.sin(a) * r);
       const m = new THREE.Mesh(transGeo, transMat); m.position.copy(p); if (astroMode) { m.rotation.z = Math.PI / 2; m.rotation.y = -a; }
       const b = new THREE.Mesh(new THREE.SphereGeometry(0.12, 12, 10), blockMat); b.position.copy(p).add(astroMode ? V3(-Math.cos(a) * 0.18, 0, -Math.sin(a) * 0.18) : V3(0, -0.2, 0)); b.visible = false;
@@ -853,9 +888,9 @@ function makeSynapse() {
     M = MEDIATORS[st.med]; st.drugs.clear(); E = eff();
     molColor.set(M.color).multiplyScalar(1.7); dotMat.color.set(M.color).multiplyScalar(1.5);
     recColor.set(M.color).lerp(new THREE.Color(0xffffff), 0.45);
-    for (let i = 0; i < NR * 5; i++) ionoMesh.setColorAt(i, recColor); for (let i = 0; i < NR * 7; i++) metaMesh.setColorAt(i, recColor);
-    ionoMesh.instanceColor.needsUpdate = true; metaMesh.instanceColor.needsUpdate = true;
-    ionoMesh.visible = M.rec === 'iono'; metaMesh.visible = M.rec === 'metabo'; gMesh.visible = M.rec === 'metabo';
+    for (let i = 0; i < NR * 5; i++) ionoMesh.setColorAt(i, recColor); for (let i = 0; i < NR * 4; i++) ionoMesh4.setColorAt(i, recColor); for (let i = 0; i < NR * 7; i++) metaMesh.setColorAt(i, recColor);
+    ionoMesh.instanceColor.needsUpdate = true; ionoMesh4.instanceColor.needsUpdate = true; metaMesh.instanceColor.needsUpdate = true;
+    ionoMesh.visible = M.rec === 'iono' && st.med !== 'glu'; ionoMesh4.visible = M.rec === 'iono' && st.med === 'glu'; metaMesh.visible = M.rec === 'metabo'; gMesh.visible = M.rec === 'metabo';
     for (let i = 0; i < NR; i++) { capMesh.setColorAt(i, new THREE.Color(M.rec === 'iono' ? (M.ion === 'cl' ? 0x8fd16a : 0xffa060) : M.color)); gMesh.setColorAt(i, new THREE.Color(M.color)); }
     capMesh.instanceColor.needsUpdate = true; gMesh.instanceColor.needsUpdate = true;
     astro.visible = M.inact === 'astro'; enzGroup.visible = M.inact === 'enzyme';
@@ -894,7 +929,7 @@ function makeSynapse() {
     // vesicles
     vesicles.forEach((v) => {
       v.t += dt;
-      if (v.state === 'free') { v.g.position.set(v.home.x + 0.12 * Math.sin(st.t * 0.7 + v.phase), v.home.y + 0.1 * Math.sin(st.t * 0.9 + v.phase * 2), v.home.z + 0.12 * Math.cos(st.t * 0.6 + v.phase)); }
+      if (v.state === 'free') { v.g.position.set(v.home.x + 0.07 * Math.sin(st.t * 0.7 + v.phase), v.home.y + 0.06 * Math.sin(st.t * 0.9 + v.phase * 2), v.home.z + 0.07 * Math.cos(st.t * 0.6 + v.phase)); }
       else if (v.state === 'moving') { const k = smooth(0, 1, v.t / 0.9); v.g.position.lerpVectors(v.from, docks[v.dock], k); if (v.t >= 0.9) v.state = 'docked'; }
       else if (v.state === 'docked') { v.g.position.copy(docks[v.dock]); v.g.position.y += 0.02 * Math.sin(st.t * 3 + v.phase); }
       else if (v.state === 'fusing') {
@@ -904,7 +939,7 @@ function makeSynapse() {
           for (let i = 0; i < n; i++) addMol(V3(p.x + rand(-0.15, 0.15), PRE_B - 0.08, p.z + rand(-0.15, 0.15)), V3(rand(-1.4, 1.4), -rand(1.5, 3.2), rand(-1.4, 1.4)));
           v.state = 'gone'; v.t = 0; v.g.visible = false;
         }
-      } else if (v.state === 'gone' && v.t > 1.2) { v.home = interior(); v.g.position.copy(v.home); v.g.scale.setScalar(1); v.mat.opacity = 0.32; v.g.visible = true; v.state = 'free'; }
+      } else if (v.state === 'gone' && v.t > 1.2) { v.home = interior(v); v.g.position.copy(v.home); v.g.scale.setScalar(1); v.mat.opacity = 0.32; v.g.visible = true; v.state = 'free'; }
     });
     dockFree.forEach((free, i) => {
       if (!free) return; const cand = vesicles.find((v) => v.state === 'free');
@@ -990,12 +1025,12 @@ function makeSynapse() {
   const labels = [
     { text: 'пресинаптическое окончание', pos: V3(-2.4, 5.4, 1.2) },
     { text: 'пузырьки с медиатором', pos: V3(1.9, 2.6, 1.6) },
-    { text: 'щель ≈ 20 нм', pos: V3(3.1, 0.18, 1.4) },
+    { text: 'щель ≈ 20 нм', pos: V3(2.6, CLEFT_Y, 1.4) },
     { text: 'рецепторы', pos: V3(0.6, POST_T - 0.15, 2.0) },
-    { text: 'Ca²⁺-каналы', pos: V3(-1.3, PRE_B + 0.2, -1.0) },
+    { text: 'Ca²⁺-каналы', pos: caPos[3].clone().add(V3(-0.15, -0.12, 0.1)) },
     { text: 'переносчики', pos: V3(-1.95, PRE_B + 0.4, 0.5), show: () => M.inact === 'uptake' },
     { text: 'фермент АХЭ', pos: V3(1.6, 0.6, -1.6), show: () => M.inact === 'enzyme' },
-    { text: 'астроцит', pos: V3(-3.4, 0.9, 2.2), show: () => M.inact === 'astro' },
+    { text: 'астроцит', pos: V3(-2.55, CLEFT_Y + 0.3, 2.55), show: () => M.inact === 'astro' },
     { text: 'постсинаптическая клетка', pos: V3(-2.6, -2.4, 2.6) },
   ];
 
