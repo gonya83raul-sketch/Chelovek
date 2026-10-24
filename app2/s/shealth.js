@@ -1,0 +1,149 @@
+import { Sparks, THREE, V3, __set_rnd, bodyShell, displaceGeo, ell3, envTex, flowTubeMat, flyStep, flyTarget, glowNucleus, group, infoBox, labLights, makeControls, mulberry, organMat, pickOn, randUnit, rnd, scopeShow, seg, toggle } from '../core.js';
+
+
+/* =========================================================
+   ТЕЛО · ПОЛОВОЕ ВЛЕЧЕНИЕ И СЕКСУАЛЬНОЕ ЗДОРОВЬЕ
+   ========================================================= */
+const SH_BRAIN = [
+  { id: 'poa', name: 'Гипоталамус', color: '#C77DFF', p: V3(0.0, 4.07, 0.1), text: '<b>Гипоталамус</b> (медиальная преоптическая область и другие ядра) — главный «центр» полового поведения. Он чувствителен к половым гормонам и через гипофиз (ЛГ, ФСГ) управляет работой половых желёз.' },
+  { id: 'vta', name: 'Система вознаграждения', color: '#F2C14E', p: V3(-0.02, 4.0, -0.05), text: '<b>Дофаминовая система вознаграждения</b>: вентральная покрышка среднего мозга → прилежащее ядро → префронтальная кора. Дофамин создаёт мотивацию, «хочу», предвкушение. Та же система работает при еде и других приятных событиях.' },
+  { id: 'amy', name: 'Миндалина', color: '#FF6A9A', p: V3(0.12, 4.12, 0.08), text: '<b>Миндалина</b> оценивает эмоциональную значимость: привлекательность, безопасность или угрозу. Страх и тревога подавляют влечение.' },
+  { id: 'pfc', name: 'Префронтальная кора', color: '#7FD6FF', p: V3(0.0, 4.35, 0.3), text: '<b>Префронтальная кора</b> отвечает за контроль, оценку последствий, социальные нормы и решения. Она может как усиливать, так и тормозить влечение — поэтому поведение человека определяется не только гормонами.' },
+  { id: 'gon', name: 'Половые железы', color: '#FF8AB0', p: V3(0.0, -0.05, 0.08), text: '<b>Половые железы</b> выделяют тестостерон и эстрогены. <b>Тестостерон</b> поддерживает либидо у мужчин и у женщин (у женщин его вырабатывают яичники и надпочечники в меньшем количестве). Эстрогены и прогестерон влияют на влечение в разные фазы цикла.' },
+];
+const SH_STATES = {
+  base: { name: 'Обычное состояние', lev: { t: 0.5, da: 0.45, ne: 0.35, se: 0.55, ox: 0.35, co: 0.3 }, text: '' },
+  love: { name: 'Влюблённость', lev: { t: 0.6, da: 0.95, ne: 0.8, se: 0.25, ox: 0.5, co: 0.45 }, text: '<b>Влюблённость (влечение к конкретному человеку).</b> По модели антрополога Хелен Фишер это отдельная система: много дофамина и норадреналина (эйфория, энергия, бессонница, мысли «только о нём/о ней»), а серотонин снижен — отсюда навязчивость мыслей. Обычно длится от нескольких месяцев до 2–3 лет.' },
+  attach: { name: 'Привязанность', lev: { t: 0.45, da: 0.5, ne: 0.3, se: 0.6, ox: 0.9, co: 0.25 }, text: '<b>Привязанность.</b> В долгих отношениях на первый план выходят окситоцин и вазопрессин — гормоны доверия, спокойствия и близости. Они выделяются при объятиях и прикосновениях.' },
+  stress: { name: 'Стресс и усталость', lev: { t: 0.3, da: 0.25, ne: 0.6, se: 0.4, ox: 0.15, co: 0.95 }, text: '<b>Стресс, усталость, недосып.</b> Кортизол и тревога подавляют половые гормоны и систему вознаграждения — влечение снижается. Его также уменьшают депрессия, некоторые лекарства (антидепрессанты, гормональные), болезни щитовидной железы, алкоголь, высокий пролактин.' },
+};
+const SH_LEV = [['t', 'Половые гормоны', '#FF8AB0'], ['da', 'Дофамин', '#F2C14E'], ['ne', 'Норадреналин', '#FF6A5A'], ['se', 'Серотонин', '#7FE0A0'], ['ox', 'Окситоцин', '#C77DFF'], ['co', 'Кортизол', '#9FA8B8']];
+const SH_STI = [
+  { id: 'hiv', name: 'ВИЧ', color: '#FF6A5A', kind: 'virus', text: '<b>ВИЧ</b> (вирус иммунодефицита человека) поражает CD4-лимфоциты. Передаётся при сексе без презерватива, через кровь (общие иглы) и от матери ребёнку. Годами может не давать симптомов; без лечения ведёт к СПИДу. Современная антиретровирусная терапия позволяет жить полноценно, а при неопределяемой вирусной нагрузке человек не передаёт вирус партнёру. Есть доконтактная профилактика (ДКП).' },
+  { id: 'hpv', name: 'ВПЧ', color: '#F2C14E', kind: 'capsid', text: '<b>Вирус папилломы человека</b> — самая частая ИППП. Чаще всего проходит сам, но некоторые типы вызывают остроконечные кондиломы, а онкогенные (16, 18) — рак шейки матки, горла и других органов. Есть эффективная <b>вакцина</b>, лучше всего — до начала половой жизни; женщинам рекомендован регулярный скрининг (цитология, ВПЧ-тест).' },
+  { id: 'hsv', name: 'Герпес', color: '#C77DFF', kind: 'env', text: '<b>Вирус простого герпеса</b> (ВПГ-2 и ВПГ-1) вызывает болезненные пузырьки. После заражения остаётся в нервных ганглиях навсегда и периодически обостряется. Лекарства сокращают обострения и снижают риск передачи.' },
+  { id: 'chl', name: 'Хламидии', color: '#7FE0A0', kind: 'cocci', text: '<b>Хламидиоз</b> — бактериальная инфекция, часто без симптомов (особенно у женщин). Без лечения может привести к воспалению органов малого таза и бесплодию. Лечится антибиотиками; важно лечить обоих партнёров.' },
+  { id: 'gon', name: 'Гонококк', color: '#9FD0FF', kind: 'diplo', text: '<b>Гонорея</b> — бактерия-диплококк. Вызывает выделения и боль при мочеиспускании, но тоже может протекать скрыто. Лечится антибиотиками; растёт устойчивость к ним, поэтому нельзя лечиться самостоятельно.' },
+  { id: 'syph', name: 'Бледная трепонема', color: '#FFB070', kind: 'spiro', text: '<b>Сифилис</b> вызывает спиралевидная бактерия. Сначала — безболезненная язва, затем сыпь, потом скрытая стадия; без лечения поражает сердце, сосуды и нервную систему. Хорошо лечится пенициллином. Обследование — анализ крови.' },
+  { id: 'hbv', name: 'Гепатит B', color: '#E8D8A0', kind: 'small', text: '<b>Гепатит B</b> поражает печень, передаётся через кровь и половым путём, может стать хроническим и привести к циррозу и раку печени. Есть <b>вакцина</b> — её делают в национальном календаре прививок.' },
+];
+const SH_CONTRA = [
+  { name: 'Без защиты', typ: 85, perfect: 85, sti: false, color: '#9FA8B8' },
+  { name: 'Прерванный акт', typ: 20, perfect: 4, sti: false, color: '#B8A890' },
+  { name: 'Календарный', typ: 15, perfect: 3, sti: false, color: '#C8B070' },
+  { name: 'Презерватив', typ: 13, perfect: 2, sti: true, color: '#5CC48A' },
+  { name: 'Таблетки (КОК)', typ: 7, perfect: 0.3, sti: false, color: '#F2C14E' },
+  { name: 'Инъекция', typ: 4, perfect: 0.2, sti: false, color: '#FF8A5C' },
+  { name: 'Медная спираль', typ: 0.8, perfect: 0.6, sti: false, color: '#E0A060' },
+  { name: 'Гормональная спираль', typ: 0.2, perfect: 0.2, sti: false, color: '#FF8AB0' },
+  { name: 'Имплант', typ: 0.1, perfect: 0.1, sti: false, color: '#C77DFF' },
+];
+function makeShealth() {
+  __set_rnd(mulberry(2525));
+  const scene = new THREE.Scene(); scene.background = new THREE.Color(0x08060a); scene.environment = envTex;
+  labLights(scene, 0xc77dff);
+  const VIEW = { drive: flyTarget(V3(0, 1.2, 0), V3(2.8, 2.4, 12.2)), sti: flyTarget(V3(30, -0.6, 0), V3(30, 0.8, 8.4)), protect: flyTarget(V3(60, -0.9, 0), V3(60.4, 1.6, 12.4)) };
+  const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 140); camera.position.copy(VIEW.drive.pos);
+  const controls = makeControls(camera, VIEW.drive.target); controls.minDistance = 1.5; controls.maxDistance = 22;
+  /* ---------- влечение ---------- */
+  const dr = new THREE.Group(); scene.add(dr);
+  bodyShell(dr, { rim: 0.18 });
+  dr.add(new THREE.Mesh(ell3(0.34, 0.28, 0.4, V3(0, 4.25, 0)), new THREE.MeshPhysicalMaterial({ color: 0xe0b8c8, roughness: 0.6, transparent: true, opacity: 0.12, depthWrite: false })));
+  const BN = Object.fromEntries(SH_BRAIN.map((b) => [b.id, { ...b, g: glowNucleus(dr, b.p, b.color, b.id === 'gon' ? 0.07 : 0.04, 7) }]));
+  const pickBrain = SH_BRAIN.map((b) => { const m = new THREE.Mesh(new THREE.SphereGeometry(b.id === 'gon' ? 0.15 : 0.07, 12, 10), new THREE.MeshBasicMaterial({ visible: false })); m.position.copy(b.p); m.userData.pick = b.id; dr.add(m); return m; });
+  const PIT = V3(0, 3.98, 0.1);
+  const flows = [];
+  const mkF = (pts, col) => { const c = new THREE.CatmullRomCurve3(pts); const f = flowTubeMat(col, 0.5, 2); f.uniforms.uOn.value = 0.4; dr.add(new THREE.Mesh(new THREE.TubeGeometry(c, 40, 0.012, 6), f)); flows.push(f); return { c, f }; };
+  const fDA = mkF([BN.vta.p, V3(0.02, 4.1, 0.1), V3(0.03, 4.25, 0.25), BN.pfc.p], '#F2C14E');
+  const fLH = mkF([PIT, V3(0.1, 3.5, 0.1), V3(0.12, 2.0, 0.0), V3(0.08, 0.6, 0.05), BN.gon.p], '#C77DFF');
+  const fT = mkF([BN.gon.p, V3(-0.08, 0.6, 0.0), V3(-0.12, 2.0, -0.05), V3(-0.1, 3.5, 0.05), BN.poa.p], '#FF8AB0');
+  /* ---------- возбудители ИППП ---------- */
+  const sti = new THREE.Group(); sti.position.set(30, 0, 0); scene.add(sti); sti.visible = false;
+  const STM = [];
+  SH_STI.forEach((p, i) => {
+    const a = (i / SH_STI.length) * Math.PI * 2, pos = V3(Math.cos(a) * 2.3, Math.sin(a) * 1.25 - 0.2, Math.sin(a) * 0.6);
+    const g = new THREE.Group(); g.position.copy(pos); sti.add(g);
+    const mat = organMat(p.color, 0.5, { emissiveIntensity: 0.12, clearcoat: 0.6 });
+    const add = (geo) => { const m = new THREE.Mesh(geo, mat); m.userData.pick = p.id; g.add(m); return m; };
+    if (p.kind === 'virus') { add(new THREE.SphereGeometry(0.35, 32, 24)); for (let k = 0; k < 40; k++) { const d = randUnit(); const s2 = add(new THREE.SphereGeometry(0.05, 8, 6)); s2.position.copy(d.multiplyScalar(0.4)); } const core = new THREE.Mesh(new THREE.ConeGeometry(0.12, 0.3, 12), new THREE.MeshBasicMaterial({ color: 0xffd0a0, transparent: true, opacity: 0.5 })); g.add(core); }
+    if (p.kind === 'capsid') add(new THREE.IcosahedronGeometry(0.35, 1));
+    if (p.kind === 'env') { add(new THREE.IcosahedronGeometry(0.22, 0)); const env = new THREE.Mesh(new THREE.SphereGeometry(0.38, 32, 24), new THREE.MeshPhysicalMaterial({ color: new THREE.Color(p.color).multiplyScalar(0.4), transparent: true, opacity: 0.3, depthWrite: false })); env.userData.pick = p.id; g.add(env); for (let k = 0; k < 24; k++) { const s2 = add(new THREE.CylinderGeometry(0.01, 0.025, 0.08, 6)); const d = randUnit(); s2.position.copy(d.clone().multiplyScalar(0.41)); s2.quaternion.setFromUnitVectors(V3(0, 1, 0), d); } }
+    if (p.kind === 'cocci') for (let k = 0; k < 9; k++) { const s2 = add(new THREE.SphereGeometry(0.11, 16, 12)); s2.position.copy(randUnit().multiplyScalar(0.18 + rnd() * 0.08)); }
+    if (p.kind === 'diplo') [[-0.12, 0], [0.12, 0], [-0.1, 0.3], [0.14, 0.3]].forEach(([x, y]) => { const s2 = add(displaceGeo(new THREE.SphereGeometry(0.13, 16, 12), (v) => { v.x *= 0.75; })); s2.position.set(x, y - 0.15, 0); });
+    if (p.kind === 'spiro') add(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(Array.from({ length: 60 }, (_, k) => V3(-0.6 + k / 59 * 1.2, Math.sin(k * 0.8) * 0.08, Math.cos(k * 0.8) * 0.08))), 200, 0.025, 6));
+    if (p.kind === 'small') { add(new THREE.SphereGeometry(0.22, 24, 18)); for (let k = 0; k < 20; k++) { const s2 = add(new THREE.SphereGeometry(0.035, 6, 4)); s2.position.copy(randUnit().multiplyScalar(0.24)); } }
+    STM.push({ p, g, mat, home: pos });
+  });
+  /* ---------- контрацепция: столбцы ---------- */
+  const pr = new THREE.Group(); pr.position.set(60, 0, 0); scene.add(pr); pr.visible = false;
+  const BARS = SH_CONTRA.map((c, i) => { const x = -3.2 + i * 0.8, hgt = Math.max(0.04, Math.log10(1 + c.typ) / Math.log10(86) * 3.2); const m = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.22, 1, 32), organMat(c.color, 0.5, { emissiveIntensity: 0.15, clearcoat: 0.6 })); m.scale.y = hgt; m.position.set(x, -1.2 + hgt / 2, 0); pr.add(m);
+    if (c.sti) { const ring = new THREE.Mesh(new THREE.TorusGeometry(0.32, 0.03, 8, 32), new THREE.MeshBasicMaterial({ color: 0x7fe0a0 })); ring.rotation.x = Math.PI / 2; ring.position.set(x, -1.2, 0); pr.add(ring); }
+    return { c, m, x, hgt }; });
+  const floor = new THREE.Mesh(new THREE.BoxGeometry(7.6, 0.04, 1.2), new THREE.MeshPhysicalMaterial({ color: 0x302838, roughness: 0.6 })); floor.position.y = -1.22; pr.add(floor);
+  const fx = new Sparks(1600, 0.05); scene.add(fx.obj);
+  /* ---------- состояние ---------- */
+  const st = { t: 0, mode: 'drive', sel: null, labels: true, rot: true, fly: null, state: 'base', lev: { ...SH_STATES.base.lev }, msg: null };
+  function setMode(m) { st.mode = m; refs.modeSeg && refs.modeSeg.sync(); st.sel = null; st.msg = null; dr.visible = m === 'drive'; sti.visible = m === 'sti'; pr.visible = m === 'protect'; st.fly = VIEW[m]; STM.forEach((s) => { s.mat.opacity = 1; s.mat.transparent = false; }); refs.setInfo && refs.setInfo(); }
+  function setState(k) { st.state = k; if (st.mode !== 'drive') setMode('drive'); st.msg = SH_STATES[k].text || null; refs.stSeg && refs.stSeg.sync(); refs.setInfo(); }
+  function select(id) { st.sel = id; if (st.mode === 'sti') STM.forEach((s) => { const on = s.p.id === id; s.mat.transparent = !on; s.mat.opacity = on ? 1 : 0.25; s.mat.emissiveIntensity = on ? 0.5 : 0.12; s.mat.needsUpdate = true; }); st.msg = null; refs.setInfo(); }
+  pickOn(() => self, camera, () => [...pickBrain, ...STM.flatMap((s) => s.g.children)], (id) => select(id));
+  function update(dt) {
+    st.t += dt; const t = st.t; controls.autoRotate = st.rot && !st.fly && st.mode !== 'drive'; controls.autoRotateSpeed = 0.5;
+    flyStep(st, camera, controls, dt);
+    const L = SH_STATES[st.state].lev; Object.keys(st.lev).forEach((k) => { st.lev[k] += (L[k] - st.lev[k]) * Math.min(1, dt * 1.5); });
+    flows.forEach((f) => { f.uniforms.uTime.value = t; });
+    fDA.f.uniforms.uOn.value = 0.15 + 0.85 * st.lev.da; fT.f.uniforms.uOn.value = 0.15 + 0.85 * st.lev.t; fLH.f.uniforms.uOn.value = 0.15 + 0.7 * st.lev.t;
+    BN.vta.g.spr.material.opacity = 0.2 + 0.8 * st.lev.da; BN.poa.g.spr.material.opacity = 0.2 + 0.8 * st.lev.t; BN.gon.g.spr.material.opacity = 0.2 + 0.8 * st.lev.t; BN.amy.g.spr.material.opacity = 0.2 + 0.6 * st.lev.co; BN.pfc.g.spr.material.opacity = 0.3 + 0.4 * st.lev.se;
+    if (st.mode === 'drive') { if (rnd() < st.lev.ox * 0.4) fx.spawn(PIT.clone(), randUnit().multiplyScalar(0.25), new THREE.Color(0xc77dff), 1.2, 0.5, 1.1); if (rnd() < st.lev.co * 0.3) fx.spawn(V3(0.42 * (rnd() < 0.5 ? 1 : -1), 1.38, -0.33), randUnit().multiplyScalar(0.25), new THREE.Color(0x9fa8b8), 1.2, 0.5, 1.1); }
+    STM.forEach((s, i) => { s.g.rotation.y += dt * 0.4; s.g.rotation.x = Math.sin(t * 0.3 + i) * 0.3; s.g.position.y = s.home.y + Math.sin(t * 0.8 + i) * 0.05; });
+    fx.update(dt);
+  }
+  function drawScope(ctx, w, hgt) {
+    ctx.clearRect(0, 0, w, hgt); const on = st.mode === 'drive'; scopeShow(on); if (!on) return;
+    const bw = (w - 20) / SH_LEV.length; ctx.font = '500 9px JetBrains Mono, monospace';
+    SH_LEV.forEach(([k, n, c], i) => { const v = st.lev[k], bh = v * (hgt - 34); ctx.fillStyle = c; ctx.globalAlpha = 0.85; ctx.fillRect(12 + i * bw, hgt - 16 - bh, bw * 0.62, bh); ctx.globalAlpha = 1; ctx.fillStyle = 'rgba(255,255,255,.6)'; ctx.save(); ctx.translate(12 + i * bw + bw * 0.3, hgt - 4); ctx.fillText(n.slice(0, 7), -16, 0); ctx.restore(); });
+    ctx.fillStyle = '#ffd0e0'; ctx.font = '500 10px JetBrains Mono, monospace'; ctx.fillText('нейромедиаторы и гормоны', 10, 12);
+  }
+  const TXT = {
+    drive: '<b>Половое влечение (либидо)</b> рождается во взаимодействии мозга и гормонов. Гипоталамус и гипофиз управляют половыми железами, их гормоны (тестостерон, эстрогены) возвращаются в мозг и повышают чувствительность к сигналам; дофаминовая система создаёт мотивацию, а префронтальная кора оценивает ситуацию и принимает решения. Сила влечения очень индивидуальна и меняется с возрастом, здоровьем, настроением и отношениями; отсутствие влечения (асексуальность) — тоже вариант нормы, если не мешает самому человеку. Выберите состояние.',
+    sti: '<b>Инфекции, передающиеся половым путём (ИППП).</b> Многие из них долго протекают <b>без симптомов</b>, поэтому человек может не знать о заражении и передать инфекцию. Защищают: презерватив, вакцины (ВПЧ, гепатит B), регулярное обследование и лечение обоих партнёров, доконтактная профилактика ВИЧ. Нажмите на возбудителя.',
+    protect: '<b>Контрацепция</b> — способы предотвратить нежелательную беременность. Высота столбца — сколько женщин из 100 забеременеют за год при обычном (не идеальном) использовании метода. Зелёное кольцо — метод защищает и от ИППП: из всех способов это делает только <b>презерватив</b>. Выбор метода лучше обсудить с гинекологом.<br><br><b>Согласие.</b> Любой сексуальный контакт возможен только по добровольному, осознанному согласию обоих, которое можно отозвать в любой момент. Человек имеет право сказать «нет». Закон защищает несовершеннолетних: в России возраст согласия — 16 лет.',
+  };
+  const labels = [
+    ...SH_BRAIN.map((b) => ({ text: b.name, pos: b.p.clone().add(V3(0.2, b.id === 'vta' ? -0.08 : 0.04, 0.15)), color: b.color, show: () => st.labels && st.mode === 'drive' })),
+    ...SH_STI.map((p, i) => ({ text: p.name, pos: V3(0, 0, 0), color: p.color, show: () => st.labels && st.mode === 'sti', _i: i })),
+    ...SH_CONTRA.map((c, i) => ({ text: c.name + ' · ' + c.typ + '%', pos: V3(60 - 3.2 + i * 0.8, -1.05 + Math.max(0.04, Math.log10(1 + c.typ) / Math.log10(86) * 3.2), 0.1), color: c.color, show: () => st.labels && st.mode === 'protect' })),
+  ];
+  labels.forEach((l) => { if (l._i !== undefined) l.pos.copy(STM[l._i].home).add(V3(30, -0.55, 0.3)); });
+  const refs = {};
+  function ui(el) {
+    const ib = infoBox('1 1 400px');
+    refs.setInfo = () => { const b = SH_BRAIN.find((x) => x.id === st.sel), s2 = SH_STI.find((x) => x.id === st.sel); ib.info.innerHTML = st.msg || (st.mode === 'drive' && b ? b.text : st.mode === 'sti' && s2 ? s2.text : TXT[st.mode]); };
+    refs.modeSeg = seg([{ id: 'drive', label: 'Половое влечение' }, { id: 'sti', label: 'Инфекции (ИППП)' }, { id: 'protect', label: 'Защита и согласие' }], () => st.mode, (v) => setMode(v));
+    refs.stSeg = seg(Object.entries(SH_STATES).map(([k, s]) => ({ id: k, label: s.name })), () => st.state, (v) => setState(v));
+    refs.rot = toggle('Вращение', () => st.rot, (v) => { st.rot = v; });
+    const lab = toggle('Подписи', () => st.labels, (v) => { st.labels = v; });
+    Object.assign(refs, { lab });
+    el.append(group('Режим', '1–3', refs.modeSeg), group('Состояние', '', refs.stSeg), group('Вид', 'R · N', refs.rot, lab), ib.el);
+    refs.setInfo();
+  }
+  function onKey(e) {
+    const k = e.key.toLowerCase(), n = parseInt(e.key, 10);
+    if (n >= 1 && n <= 3) { setMode(['drive', 'sti', 'protect'][n - 1]); return true; }
+    if (k === 'r' || k === 'к') { refs.rot.click(); return true; } if (k === 'n' || k === 'т') { refs.lab.click(); return true; }
+    return false;
+  }
+  function stats() { return st.mode === 'drive' ? [['Состояние', SH_STATES[st.state].name, '']] : st.mode === 'sti' ? [['Новых случаев ИППП в мире', '>1', 'млн/день']] : [['Защищает от ИППП', 'презерватив', '']]; }
+  const self = {
+    scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#C77DFF',
+    kicker: 'Тело · сексуальное здоровье', title: 'Влечение и сексуальное здоровье',
+    lede: 'Откуда берётся половое влечение, какие системы мозга и гормоны им управляют, и как сделать сексуальные контакты безопасными: инфекции, контрацепция и согласие.',
+    notes: `
+      <div><h2>Три системы по Хелен Фишер</h2><ul><li><b>Влечение</b> (половые гормоны) — общее стремление к близости.</li><li><b>Притяжение/влюблённость</b> (дофамин, норадреналин) — фокус на одном человеке.</li><li><b>Привязанность</b> (окситоцин, вазопрессин) — долгая связь и доверие.</li></ul>
+        <h3>Когда идти к врачу</h3><p>Выделения, язвы, сыпь, зуд, боль при мочеиспускании, контакт с новым партнёром без защиты — повод сдать анализы на ИППП (это можно сделать анонимно). Стойкое снижение или исчезновение влечения, которое беспокоит человека, — повод обратиться к эндокринологу, гинекологу, урологу или сексологу.</p></div>
+      <div><h2>Условности</h2><ul><li>Возбудители показаны схематично и в разном масштабе (вирусы в сотни раз мельче бактерий).</li><li>Высота столбцов — в логарифмическом масштабе; цифры — данные ВОЗ и CDC для типичного использования.</li></ul></div>
+      <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>3</code> режим</li><li>клик: структура или возбудитель</li><li><code>R</code> · <code>N</code></li></ul></div>`,
+  };
+  return self;
+}
+export { makeShealth };
