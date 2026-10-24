@@ -85,13 +85,11 @@ function glowTexture() {
 const GLOW = glowTexture();
 
 /* яркость: оболочки и свечение, запоминаются в браузере */
-const LOOK = { shell: 0.45, bloom: 0.55 };
-try { const s = JSON.parse(localStorage.getItem('look') || 'null'); if (s && typeof s.shell === 'number' && typeof s.bloom === 'number') Object.assign(LOOK, s); } catch (e) { /* без сохранения */ }
+const LOOK = { shell: 0, bloom: 0 }; // оболочки и свечение выключены (пользователь убрал эти настройки)
 const GLASS = [];
 function applyLook() {
   GLASS.forEach((m) => { m.uniforms.uRim.value = m.userData.rim0 * LOOK.shell; m.uniforms.uBase.value = m.userData.base0 * LOOK.shell; m.uniforms.uGain.value = 0.35 + 0.65 * LOOK.shell; });
-  bloom.strength = 1.1 * LOOK.bloom;
-  try { localStorage.setItem('look', JSON.stringify(LOOK)); } catch (e) { /* без сохранения */ }
+  bloom.strength = 1.1 * LOOK.bloom; bloom.enabled = LOOK.bloom > 0;
 }
 
 function glassMat(color, { rim = 1.0, base = 0.05, pow = 2.4, additive = true } = {}) {
@@ -309,9 +307,10 @@ function glowNucleus(parent, p, color, size = 0.05, halo = 9) {
 /* общий «перелёт» камеры: st.fly = {target,pos,t} */
 function flyStep(st, camera, controls, dt, rate = 2.6, dur = 2.4) {
   if (!st.fly) return;
+  if (st._fly !== st.fly) { st._fly = st.fly; st.fly.t = 0; }   // повторный перелёт в тот же режим — заново
   st.fly.t += dt; const k = 1 - Math.exp(-dt * rate);
   controls.target.lerp(st.fly.target, k); camera.position.lerp(st.fly.pos, k);
-  if (st.fly.t > dur) st.fly = null;
+  if (st.fly.t > dur || (st.fly.t > 0.5 && camera.position.distanceTo(st.fly.pos) < 0.01)) { st.fly = null; st._fly = null; }
 }
 const flyTarget = (target, pos) => ({ target: target.clone(), pos: pos.clone(), t: 0 });
 /* «Что видно» + кнопки: стандартная панель сцены */
@@ -387,7 +386,7 @@ function pathRunner(segs) { const total = segs.reduce((a, s) => a + s.d, 0); ret
 function dimOthers(parts, sel, base = 1) { parts.forEach((p) => p.mats.forEach((m) => { const on = !sel || sel === p.id; m.transparent = !on || base < 1; m.opacity = on ? base : 0.14; m.depthWrite = on; m.emissiveIntensity = sel === p.id ? 0.35 : 0.04; m.needsUpdate = true; })); }
 
 /* ---------- app shell ---------- */
-const BUILDERS = { cell: ['cell', 'makeCell'], skeleton: ['skeleton', 'makeSkeleton'], neuron: ['neuron', 'makeNeuron'], synapse: ['synapse', 'makeSynapse'], brain: ['brain', 'makeBrain'], types: ['types', 'makeTypes'], glia: ['glia', 'makeGlia'], develop: ['develop', 'makeDevelop'], vision: ['vision', 'makeVision'], soma: ['soma', 'makeSoma'], ventricles: ['ventricles', 'makeVentricles'], spinal: ['spinal', 'makeSpinal'], cranial: ['cranial', 'makeCranial'], stem: ['stem', 'makeStem'], dien: ['dien', 'makeDien'], hemis: ['hemis', 'makeHemis'], cortex: ['cortex', 'makeCortex'], hippo: ['hippo', 'makeHippo'], cereb: ['cereb', 'makeCereb'], heart: ['heart', 'makeHeart'], lungs: ['lungs', 'makeLungs'], digest: ['digest', 'makeDigest'], kidney: ['kidney', 'makeKidney'], endo: ['endo', 'makeEndo'], immune: ['immune', 'makeImmune'], ear: ['ear', 'makeEar'], skin: ['skin', 'makeSkin'], blood: ['blood', 'makeBlood'], repro: ['repro', 'makeRepro'], chemo: ['chemo', 'makeChemo'], chest: ['chest', 'makeChest'], sresp: ['sresp', 'makeSresp'], menses: ['repro', 'makeMenses'], shealth: ['shealth', 'makeShealth'], enzyme: ['enzyme', 'makeEnzyme'], kinetics: ['kinetics', 'makeKinetics'], enzmed: ['enzmed', 'makeEnzmed'], vitamins: ['vitamins', 'makeVitamins'], atp: ['atp', 'makeAtp'], krebs: ['krebs', 'makeKrebs'], etc: ['etc', 'makeEtc'], radicals: ['radicals', 'makeRadicals'], glycolysis: ['glycolysis', 'makeGlycolysis'], glycogen: ['glycogen', 'makeGlycogen'], membrane: ['membrane', 'makeMembrane'], betaox: ['betaox', 'makeBetaox'], lipoprot: ['lipoprot', 'makeLipoprot'], protein: ['protein', 'makeProtein'], aminoacid: ['aminoacid', 'makeAminoacid'], dna: ['dna', 'makeDna'], express: ['express', 'makeExpress'], purine: ['purine', 'makePurine'], hormsig: ['hormsig', 'makeHormsig'], fedfast: ['fedfast', 'makeFedfast'], hemoglobin: ['hemoglobin', 'makeHemoglobin'], heme: ['heme', 'makeHeme'], bloodchem: ['bloodchem', 'makeBloodchem'], liver: ['liver', 'makeLiver'] };
+const BUILDERS = { cell: ['cell', 'makeCell'], skeleton: ['skeleton', 'makeSkeleton'], neuron: ['neuron', 'makeNeuron'], synapse: ['synapse', 'makeSynapse'], brain: ['brain', 'makeBrain'], types: ['types', 'makeTypes'], glia: ['glia', 'makeGlia'], develop: ['develop', 'makeDevelop'], vision: ['vision', 'makeVision'], soma: ['soma', 'makeSoma'], ventricles: ['ventricles', 'makeVentricles'], spinal: ['spinal', 'makeSpinal'], cranial: ['cranial', 'makeCranial'], stem: ['stem', 'makeStem'], dien: ['dien', 'makeDien'], hemis: ['hemis', 'makeHemis'], cortex: ['cortex', 'makeCortex'], hippo: ['hippo', 'makeHippo'], cereb: ['cereb', 'makeCereb'], heart: ['heart', 'makeHeart'], lungs: ['lungs', 'makeLungs'], digest: ['digest', 'makeDigest'], kidney: ['kidney', 'makeKidney'], endo: ['endo', 'makeEndo'], immune: ['immune', 'makeImmune'], ear: ['ear', 'makeEar'], skin: ['skin', 'makeSkin'], blood: ['blood', 'makeBlood'], repro: ['repro', 'makeRepro'], chemo: ['chemo', 'makeChemo'], chest: ['chest', 'makeChest'], sresp: ['sresp', 'makeSresp'], menses: ['repro', 'makeMenses'], shealth: ['shealth', 'makeShealth'], enzyme: ['enzyme', 'makeEnzyme'], kinetics: ['kinetics', 'makeKinetics'], enzmed: ['enzmed', 'makeEnzmed'], vitamins: ['vitamins', 'makeVitamins'], atp: ['atp', 'makeAtp'], krebs: ['krebs', 'makeKrebs'], etc: ['etc', 'makeEtc'], radicals: ['radicals', 'makeRadicals'], glycolysis: ['glycolysis', 'makeGlycolysis'], glycogen: ['glycogen', 'makeGlycogen'], carbdig: ['carbdig', 'makeCarbdig'], membrane: ['membrane', 'makeMembrane'], betaox: ['betaox', 'makeBetaox'], lipoprot: ['lipoprot', 'makeLipoprot'], lipogen: ['lipogen', 'makeLipogen'], protein: ['protein', 'makeProtein'], aminoacid: ['aminoacid', 'makeAminoacid'], amines: ['amines', 'makeAmines'], dna: ['dna', 'makeDna'], express: ['express', 'makeExpress'], purine: ['purine', 'makePurine'], hormsig: ['hormsig', 'makeHormsig'], fedfast: ['fedfast', 'makeFedfast'], hemoglobin: ['hemoglobin', 'makeHemoglobin'], heme: ['heme', 'makeHeme'], bloodchem: ['bloodchem', 'makeBloodchem'], liver: ['liver', 'makeLiver'] };
 const built = {};
 let cur = null, curId = null;
 const statsEl = $('#stats'), consoleEl = $('#console'), labelsEl = $('#labels'), scopeEl = $('#scope'), notesEl = $('#notes');
@@ -430,7 +429,7 @@ new ResizeObserver(placeScope).observe(consoleEl);
 const SECTIONS = [
   { id: 'body', name: 'Тело', scenes: [['#', 'Опора и движение'], ['skeleton', 'Скелет, мышцы и сосуды'], ['#', 'Системы органов'], ['heart', 'Сердце и кровообращение'], ['lungs', 'Дыхание'], ['digest', 'Пищеварение'], ['kidney', 'Почки'], ['blood', 'Кровь'], ['endo', 'Эндокринная система'], ['immune', 'Лимфа и иммунитет'], ['repro', 'Размножение и развитие'], ['menses', 'Менструальный цикл'], ['shealth', 'Влечение и сексуальное здоровье'], ['sresp', 'Цикл полового ответа'], ['chest', 'Грудная клетка и грудь']] },
   { id: 'cell', name: 'Клетка', scenes: [['cell', 'Живая клетка']] },
-  { id: 'bio', name: 'Биохимия', scenes: [['#', 'Ферменты'], ['enzyme', 'Как работает фермент'], ['kinetics', 'Скорость реакции и ингибиторы'], ['enzmed', 'Регуляция и ферменты в медицине'], ['#', 'Витамины'], ['vitamins', 'Витамины и коферменты'], ['#', 'Энергия'], ['atp', 'АТФ и стадии катаболизма'], ['krebs', 'Пируватдегидрогеназа и цикл Кребса'], ['etc', 'Дыхательная цепь и АТФ-синтаза'], ['radicals', 'Свободные радикалы и антиоксиданты'], ['#', 'Углеводы'], ['glycolysis', 'Гликолиз, глюконеогенез, ПФП'], ['glycogen', 'Гликоген и сахар крови'], ['#', 'Липиды'], ['membrane', 'Липиды и мембраны'], ['betaox', 'Окисление жиров и кетоновые тела'], ['lipoprot', 'Холестерин и липопротеины'], ['#', 'Белки и аминокислоты'], ['protein', 'Белки: аминокислоты и укладка'], ['aminoacid', 'Обмен аминокислот и мочевина'], ['#', 'Нуклеотиды и гены'], ['dna', 'ДНК: строение, репликация, репарация'], ['express', 'Транскрипция и трансляция'], ['purine', 'Нуклеотиды и подагра'], ['#', 'Гормоны'], ['hormsig', 'Как гормоны действуют на клетку'], ['fedfast', 'Обмен веществ: сытость и голод'], ['#', 'Кровь и печень'], ['hemoglobin', 'Гемоглобин и перенос кислорода'], ['heme', 'Обмен гема и желтухи'], ['bloodchem', 'Кровь: pH, белки плазмы, свёртывание'], ['liver', 'Печень: обезвреживание, алкоголь, парацетамол']] },
+  { id: 'bio', name: 'Биохимия', scenes: [['#', 'Ферменты'], ['enzyme', 'Как работает фермент'], ['kinetics', 'Скорость реакции и ингибиторы'], ['enzmed', 'Регуляция и ферменты в медицине'], ['#', 'Витамины'], ['vitamins', 'Витамины и коферменты'], ['#', 'Энергия'], ['atp', 'АТФ и стадии катаболизма'], ['krebs', 'Пируватдегидрогеназа и цикл Кребса'], ['etc', 'Дыхательная цепь и АТФ-синтаза'], ['radicals', 'Свободные радикалы и антиоксиданты'], ['#', 'Углеводы'], ['glycolysis', 'Гликолиз, глюконеогенез, ПФП'], ['glycogen', 'Гликоген и сахар крови'], ['carbdig', 'Переваривание сахаров, лактоза, фруктоза'], ['#', 'Липиды'], ['membrane', 'Липиды и мембраны'], ['betaox', 'Окисление жиров и кетоновые тела'], ['lipoprot', 'Холестерин и липопротеины'], ['lipogen', 'Синтез жиров, фосфолипиды, ожирение'], ['#', 'Белки и аминокислоты'], ['protein', 'Белки: аминокислоты и укладка'], ['aminoacid', 'Обмен аминокислот и мочевина'], ['amines', 'Биогенные амины, глицин и серин'], ['#', 'Нуклеотиды и гены'], ['dna', 'ДНК: строение, репликация, репарация'], ['express', 'Транскрипция и трансляция'], ['purine', 'Нуклеотиды и подагра'], ['#', 'Гормоны'], ['hormsig', 'Как гормоны действуют на клетку'], ['fedfast', 'Обмен веществ: сытость и голод'], ['#', 'Кровь и печень'], ['hemoglobin', 'Гемоглобин и перенос кислорода'], ['heme', 'Обмен гема и желтухи'], ['bloodchem', 'Кровь: pH, белки плазмы, свёртывание'], ['liver', 'Печень: обезвреживание, алкоголь, парацетамол']] },
   { id: 'brain', name: 'Мозг', scenes: [
     ['#', 'Нейроны'], ['soma', 'Строение нейрона'], ['types', 'Типы нейронов'], ['neuron', 'Нейрон и импульс'], ['synapse', 'Синапс и медиаторы'], ['glia', 'Нейроглия'],
     ['#', 'Устройство'], ['develop', 'Развитие мозга'], ['ventricles', 'Желудочки и оболочки'], ['spinal', 'Спинной мозг'], ['cranial', 'Черепные нервы'], ['stem', 'Ствол мозга'], ['dien', 'Таламус и гипоталамус'],
@@ -554,11 +553,6 @@ function frame(now) {
   if (cur.drawScope) cur.drawScope(sctx, scopeEl.clientWidth, scopeEl.clientHeight);
   updateStats(now);
 }
-const pct = (v) => `${Math.round(v * 100)}%`;
-$('#knobs').append(
-  h('label', { class: 'knob' }, 'Оболочки', range('shell', 0, 1.5, 0.05, () => LOOK.shell, (v) => { LOOK.shell = v; applyLook(); }, pct)),
-  h('label', { class: 'knob' }, 'Свечение', range('bloom', 0, 1.5, 0.05, () => LOOK.bloom, (v) => { LOOK.bloom = v; applyLook(); }, pct)),
-);
 applyLook();
 /* приложение для телефона (PWA): работает только на собственном сайте, где подключён manifest */
 {
@@ -582,7 +576,7 @@ applyLook();
         for (const m of models) { try { const r = await fetch('models/' + m + '.' + MODEL_EXT); if (!r.ok) throw 0; await r.blob(); } catch (e) { bad++; } step(); }
         btn.textContent = bad ? 'Сохранено не всё — повторите' : 'Сохранено ✓'; btn.disabled = !bad;
       });
-      $('#knobs').append(btn);
+      $('#knobs').append(btn); $('#cfg').hidden = false;
     }).catch(() => { /* без офлайна */ });
   }
 }
