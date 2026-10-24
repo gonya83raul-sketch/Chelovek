@@ -7,22 +7,41 @@
 function makeHemoglobin() {
   rnd = mulberry(2401);
   const scene = bioStage({ bg: 0x0a0608, rim: 0xff5a5a });
-  const VIEW = { o2: flyTarget(V3(-0.4, -1.7, 0), V3(1.0, 0.2, 20.5)), heme: flyTarget(V3(39.0, -1.6, 0), V3(40, 5.2, 12.2)), sick: flyTarget(V3(79.8, -1.9, 0), V3(80.4, -0.2, 17)) };
+  const VIEW = { o2: flyTarget(V3(-0.4, -1.7, 0), V3(1.0, 0.2, 20.5)), heme: flyTarget(V3(39.0, -1.6, 0), V3(40, 5.2, 12.2)), sick: flyTarget(V3(79.8, -1.7, 0), V3(80.4, 0.0, 18.5)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.o2.pos);
   const controls = makeControls(camera, VIEW.o2.target); controls.minDistance = 2; controls.maxDistance = 40;
   const fx = new Sparks(1400, 0.08); scene.add(fx.obj);
   const HB = PDB('hb'); const SC = 0.075;
   /* ---------- 1. гемоглобин и O₂ ---------- */
   const G1 = new THREE.Group(); G1.position.set(0.8, 0.9, 0); scene.add(G1);
-  const dimer1 = new THREE.Group(), dimer2 = new THREE.Group(); G1.add(dimer1, dimer2);
+  // центр тетрамера и ось поворота димеров (T→R): ось через центр, перпендикулярна оси 2-го порядка
+  const caCen = (ids) => { const p = caPoints('hb', SC, ids); return p.reduce((v, q) => v.add(q), V3(0, 0, 0)).multiplyScalar(1 / p.length); };
+  const hC = caCen(['A', 'B', 'C', 'D']), dC1 = caCen(['A', 'B']), dC2 = caCen(['C', 'D']);
+  const dyad = caCen(['A']).sub(caCen(['C'])).cross(caCen(['B']).sub(caCen(['D']))).normalize();
+  const twAx = dC2.clone().sub(dC1); twAx.addScaledVector(dyad, -twAx.dot(dyad)).normalize(); // линия между димерами ⟂ оси 2-го порядка
+  const piv1 = new THREE.Group(), piv2 = new THREE.Group(); piv1.position.copy(hC); piv2.position.copy(hC); G1.add(piv1, piv2);
+  const dimer1 = new THREE.Group(), dimer2 = new THREE.Group(); dimer1.position.copy(hC).negate(); dimer2.position.copy(hC).negate(); piv1.add(dimer1); piv2.add(dimer2);
   HB.chains.forEach((c, k) => { const m = cartoon(c, { scale: SC, color: k % 2 ? '#FF8AB0' : '#7FD6FF', k: 0.55 }); (k < 2 ? dimer1 : dimer2).add(m); });
   const hemeM = HB.ligm.map((l) => { const m = molMesh(l, { scale: SC }); (l.chain === 'A' || l.chain === 'B' ? dimer1 : dimer2).add(m); return m; });
   const feP = HB.ligm.map((l) => { const i = l.el.indexOf('Fe'); return V3(l.xyz[i * 3], l.xyz[i * 3 + 1], l.xyz[i * 3 + 2]).multiplyScalar(SC); });
   const feGlow = feP.map((p, k) => glowNucleus(HB.ligm[k].chain === 'A' || HB.ligm[k].chain === 'B' ? dimer1 : dimer2, p, '#FF4A4A', 0.05, 8));
-  const o2m = feP.map((p, k) => { const m = molMesh(MOL('o2'), { scale: 0.3 }); G1.add(m); return m; });
-  const surf = surfaceMesh(caPoints('hb', SC), { radius: 0.5, res: 56, mat: glassMat(0xff7a7a, { rim: 0.13, base: 0.004, pow: 2.8 }) }); G1.add(surf);
-  const cenOf = (id) => { const c = V3(0, 0, 0), a = HB.chains.find((q) => q.id === id).ca; for (let i = 0; i < a.length; i += 3) c.add(V3(a[i], a[i + 1], a[i + 2])); return c.multiplyScalar(SC * 3 / a.length).multiplyScalar(1.35); };
-  const cenA = cenOf('A'), cenB = cenOf('B');
+  // O₂: связанный — над плоскостью гема с дистальной стороны (против проксимального His F8), Fe–O–O под углом ~120°.
+  // Молекула O₂ и расстояние Fe–O увеличены в 1,6 раза, чтобы были заметны; остальное — в масштабе белка.
+  const O2K = 1.6, O2M = { id: 'o2b', name: 'O₂', el: ['O', 'O'], xyz: new Float32Array([0, 0, 0, 1.048, 0.605, 0]), b: [0, 1], o: [2], n: 2 };
+  const hemeN = HB.ligm.map((l) => {
+    const at = (i) => V3(l.xyz[i * 3], l.xyz[i * 3 + 1], l.xyz[i * 3 + 2]);
+    const fe = at(l.el.indexOf('Fe')); const ns = []; l.el.forEach((e, i) => { if (e === 'N') ns.push(at(i)); });
+    let n = ns[1].clone().sub(ns[0]).cross(ns[2].clone().sub(ns[0])).normalize();
+    const his = HB.resm.find((r) => r.chain === l.chain && (r.name === 'HIS87' || r.name === 'HIS92'));
+    if (his) { let best = null, bd = 1e9; his.el.forEach((e, i) => { if (e !== 'N') return; const q = V3(his.xyz[i * 3], his.xyz[i * 3 + 1], his.xyz[i * 3 + 2]); const d = q.distanceTo(fe); if (d < bd) { bd = d; best = q; } }); if (best && n.dot(best.clone().sub(fe)) > 0) n.negate(); }
+    return n;
+  });
+  const qO2 = hemeN.map((n) => new THREE.Quaternion().setFromUnitVectors(V3(0, 1, 0), n));
+  const o2m = feP.map((p, k) => { const m = molMesh(O2M, { scale: SC * O2K, bondR: 0.16 }); molGlow(m, 0.35); G1.add(m); return m; });
+  const surf = surfaceMesh(caPoints('hb', SC), { radius: 0.5, res: 56, mat: glassMat(0xff7a7a, { rim: 0.12, base: 0.003, pow: 3.0, keep: true }) }); G1.add(surf);
+  const cenA = caCen(['A']), cenB = caCen(['B']);
+  // подпись: от центра тетрамера наружу в плоскости экрана
+  const scrOut = (pW, k) => { const c = G1.localToWorld(hC.clone()), v = camera.getWorldDirection(V3(0, 0, 0)); const d = pW.clone().sub(c); d.addScaledVector(v, -d.dot(v)); if (d.length() < 0.2) d.set(0, 1, 0); return pW.add(d.normalize().multiplyScalar(k)); };
   const o2out = feP.map((p, k) => V3(Math.cos(k * 1.6) * 5, 2.2 + Math.sin(k) * 1.0, 1.5));
   /* ---------- 2. гем ---------- */
   const G2 = new THREE.Group(); G2.position.set(40, 0.2, 0); scene.add(G2);
@@ -41,6 +60,22 @@ function makeHemoglobin() {
   const coB = molMesh(coM, { scale: HS }); coB.position.copy(dist).multiplyScalar((1.8 + 0.56) * HS); coB.quaternion.setFromUnitVectors(coAx, dist); hG.add(coB);
   const feBig = glowNucleus(hG, V3(0, 0, 0), '#FF6A3A', 0.06, 5); feBig.core.visible = false;
   { const q = new THREE.Quaternion().setFromUnitVectors(dist, V3(0, 1, 0)); hG.quaternion.copy(q); }
+  // координационные связи Fe–N(ε2) His F8 и Fe–O₂ (molFromSet связывает атомы только внутри набора) + водородная связь O₂···His E7
+  const atP = (m, i) => V3(m.xyz[i * 3], m.xyz[i * 3 + 1], m.xyz[i * 3 + 2]).sub(hc).multiplyScalar(HS); // в системе hG (Fe — в нуле)
+  const nearest = (m, el, p) => { let bi = -1, bd = 1e9; m.el.forEach((e, i) => { if (e !== el) return; const d = atP(m, i).distanceTo(p); if (d < bd) { bd = d; bi = i; } }); return atP(m, bi); };
+  const ne2F8 = nearest(his, 'N', V3(0, 0, 0)), o1 = nearest(oxy, 'O', V3(0, 0, 0));
+  const o2far = (() => { const a = atP(oxy, 0), b = atP(oxy, 1); return a.length() > b.length() ? a : b; })();
+  const ne2E7 = nearest(his2, 'N', o2far);
+  const ringC = (m, p0) => { const c = V3(0, 0, 0); let n = 0; m.el.forEach((e, i) => { const q = atP(m, i); if (q.distanceTo(p0) < 2.4 * HS) { c.add(q); n++; } }); return c.multiplyScalar(1 / n); };
+  const hisF8C = ringC(his, ne2F8), hisE7C = ringC(his2, ne2E7);
+  const bondMat = new THREE.MeshPhysicalMaterial({ color: 0xc8906a, roughness: 0.35, clearcoat: 0.5, emissive: 0xff7a3a, emissiveIntensity: 0.15 });
+  const stick = (a, b, r = 0.045, mat = bondMat) => { const m = new THREE.Mesh(CYL, mat); const d = b.clone().sub(a); m.position.copy(a).addScaledVector(d, 0.5); m.scale.set(r, d.length(), r); m.quaternion.setFromUnitVectors(V3(0, 1, 0), d.normalize()); hG.add(m); return m; };
+  stick(V3(0, 0, 0), ne2F8);
+  const feO = stick(V3(0, 0, 0), o1);
+  const feC = stick(V3(0, 0, 0), dist.clone().multiplyScalar(1.8 * HS));
+  const hbDash = new THREE.Group(); hG.add(hbDash); { const dm = new THREE.MeshBasicMaterial({ color: 0x9fd8ff, transparent: true, opacity: 0.85 }); for (let k = 0; k < 4; k++) hbDash.add(stick(o2far.clone().lerp(ne2E7, (k * 2 + 0.5) / 8), o2far.clone().lerp(ne2E7, (k * 2 + 1.5) / 8), 0.018, dm)); }
+  // точка подписи кольца: край порфирина со стороны пиррольного азота
+  const ringEdge = (() => { const ns = []; hm.el.forEach((e, i) => { if (e === 'N') ns.push(atP(hm, i)); }); return ns[0].clone().multiplyScalar(2.9); })();
   /* ---------- 3. серповидноклеточная анемия ---------- */
   const G3 = new THREE.Group(); G3.position.set(80, 0, 0); scene.add(G3);
   const surfGeo = surfaceMesh(caPoints('hb', 0.02), { radius: 0.13, res: 28 }).geometry;
@@ -49,7 +84,14 @@ function makeHemoglobin() {
   const fibFree = Array.from({ length: NF }, () => V3(rand(-0.4, 6.2), rand(-1.4, 1.8), rand(-1.6, 1.6)));
   const rbcGeo = (sickle) => displaceGeo(new THREE.SphereGeometry(1, 64, 48), (v) => { const r2 = v.x * v.x + v.z * v.z; const y = v.y * (0.22 + 0.6 * r2); if (!sickle) { v.y = y; return; } const x = v.x; v.x = x * 1.9; v.z = v.z * 0.42 * (1 - 0.55 * x * x) + 0.95 * x * x - 0.4; v.y = y * 0.85; });
   const rbcN = rbcGeo(false), rbcS = rbcGeo(true);
-  const rbc = new THREE.Mesh(rbcN.clone(), organMat('#C83A3A', 0.5, { emissiveIntensity: 0.06 })); rbc.position.set(-2.6, -0.75, 0); rbc.scale.setScalar(1.15); G3.add(rbc);
+  const rbc = new THREE.Mesh(rbcN.clone(), organMat('#C83A3A', 0.5, { emissiveIntensity: 0.06 })); rbc.position.set(-3.0, -0.6, 0); rbc.scale.setScalar(1.6); G3.add(rbc);
+  // волокно — «врезка под лупой»: масштабы клетки (8 мкм) и молекул (6 нм) разные, это показано кругом и линиями-выносками
+  const lupa = new THREE.Group(); G3.add(lupa);
+  { const lm = new THREE.MeshBasicMaterial({ color: 0xffb0b0, transparent: true, opacity: 0.45 }); const LC = V3(3.2, 0.15, 0), LR = 3.0, sc = V3(-2.75, -0.35, 0.5), sr = 0.16;
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(LR, 0.02, 8, 120), lm); ring.position.copy(LC); lupa.add(ring);
+    const sRing = new THREE.Mesh(new THREE.TorusGeometry(sr, 0.015, 8, 40), lm); sRing.position.copy(sc); lupa.add(sRing);
+    const lineM = new THREE.LineBasicMaterial({ color: 0xffb0b0, transparent: true, opacity: 0.4 });
+    [1, -1].forEach((k) => { const g = new THREE.BufferGeometry().setFromPoints([sc.clone().add(V3(0, k * sr, 0)), LC.clone().add(V3(-Math.sqrt(1 - 0.36) * LR, k * 0.6 * LR, 0))]); lupa.add(new THREE.Line(g, lineM)); }); }
   const pRN = rbcN.attributes.position.array, pRS = rbcS.attributes.position.array;
   /* ---------- состояние ---------- */
   const st = { t: 0, mode: 'o2', labels: true, rot: true, fly: null, cyc: 0, msg: null, pO2: 100, ph: 7.4, bpg: false, co: false, fetal: false, mb: false, lig: 'o2', sick: 'deoxy', surf: true };
@@ -63,13 +105,20 @@ function makeHemoglobin() {
     if (st.mode === 'o2') {
       if (st.rot) G1.rotation.y += dt * 0.15; surf.visible = st.surf;
       const S = satHb(st.pO2); st.S = S; const nb = Math.round(S * 4);
-      o2m.forEach((m, k) => { const bound = k < nb; const home = feP[k].clone().applyMatrix4((HB.ligm[k].chain === 'A' || HB.ligm[k].chain === 'B' ? dimer1 : dimer2).matrix); const target = bound ? home.clone().add(home.clone().normalize().multiplyScalar(0.25)) : o2out[k]; m.position.lerp(target, 1 - Math.exp(-dt * 2.5)); m.rotation.y += dt; m.visible = !(st.co && k >= 2); feGlow[k].spr.material.opacity = bound ? 0.9 : 0.25; feGlow[k].spr.material.color.set(bound ? '#FF3A3A' : '#8A3A7A'); });
+      const qG = G1.getWorldQuaternion(new THREE.Quaternion()).invert();
+      o2m.forEach((m, k) => {
+        const bound = k < nb; const dm1 = HB.ligm[k].chain === 'A' || HB.ligm[k].chain === 'B' ? dimer1 : dimer2;
+        const home = G1.worldToLocal(dm1.localToWorld(feP[k].clone().addScaledVector(hemeN[k], 1.8 * SC * O2K)));
+        const target = bound ? home : o2out[k];
+        const qT = bound ? qG.clone().multiply(dm1.getWorldQuaternion(new THREE.Quaternion())).multiply(qO2[k]) : new THREE.Quaternion().setFromEuler(new THREE.Euler(t * 0.7 + k, t * 0.5 + k * 2, 0));
+        m.position.lerp(target, 1 - Math.exp(-dt * 2.5)); m.quaternion.slerp(qT, 1 - Math.exp(-dt * 3)); m.visible = !(st.co && k >= 2); feGlow[k].spr.material.opacity = bound ? 0.9 : 0.25; feGlow[k].spr.material.color.set(bound ? '#FF3A3A' : '#8A3A7A'); });
       // R-состояние: димеры поворачиваются друг относительно друга на ~15°
-      const R = smooth(0.25, 0.75, S); dimer2.rotation.y += ((R * 0.26) - dimer2.rotation.y) * Math.min(1, dt * 2);
+      const R = smooth(0.25, 0.75, S); st.tw = (st.tw || 0) + ((R * 0.18) - (st.tw || 0)) * Math.min(1, dt * 2);
+      piv1.quaternion.setFromAxisAngle(twAx, -st.tw / 2); piv2.quaternion.setFromAxisAngle(twAx, st.tw / 2);
     }
     if (st.mode === 'heme') {
       G2.rotation.y += st.rot ? dt * 0.3 : 0;
-      o2b.visible = st.lig === 'o2'; coB.visible = st.lig === 'co';
+      o2b.visible = feO.visible = hbDash.visible = st.lig === 'o2'; coB.visible = feC.visible = st.lig === 'co';
       feBig.spr.material.color.set(st.lig === 'met' ? '#7A5A3A' : st.lig === 'co' ? '#FF6A9A' : st.lig === 'none' ? '#8A3A7A' : '#FF4A2A');
     }
     if (st.mode === 'sick') {
@@ -97,18 +146,20 @@ function makeHemoglobin() {
     sick: '<b>Серповидноклеточная анемия</b> — классическая «молекулярная болезнь» (Л. Полинг, 1949). Одна замена в гене β-цепи: глутаминовая кислота → валин в 6-й позиции (HbS). Гидрофобный валин на поверхности молекулы в дезокси-форме прилипает к соседнему гемоглобину — молекулы <b>полимеризуются</b> в длинные жёсткие волокна (14-нитчатые тяжи), и эритроцит деформируется в «серп». Такие клетки закупоривают капилляры (боли, инфаркты органов) и быстро разрушаются (анемия). Носители одного гена HbS устойчивее к тропической малярии — поэтому ген частый в Африке.',
   };
   const labels = [
-    { text: 'α-цепь', get pos() { return cenA.clone().applyMatrix4(dimer1.matrixWorld); }, color: '#7FD6FF', show: () => st.labels && st.mode === 'o2' },
-    { text: 'β-цепь', get pos() { return cenB.clone().applyMatrix4(dimer1.matrixWorld); }, color: '#FF8AB0', show: () => st.labels && st.mode === 'o2' },
-    { text: 'гем · Fe²⁺', get pos() { return feP[0].clone().applyMatrix4(dimer1.matrixWorld); }, color: '#FF5A5A', show: () => st.labels && st.mode === 'o2' },
+    { text: 'α-цепь', get pos() { return scrOut(cenA.clone().applyMatrix4(dimer1.matrixWorld), 1.9); }, color: '#7FD6FF', show: () => st.labels && st.mode === 'o2' },
+    { text: 'β-цепь', get pos() { return scrOut(cenB.clone().applyMatrix4(dimer1.matrixWorld), 1.9); }, color: '#FF8AB0', show: () => st.labels && st.mode === 'o2' },
+    { text: 'гем · Fe²⁺', get pos() { return scrOut(feP[2].clone().applyMatrix4(dimer2.matrixWorld), 0.7); }, color: '#FF5A5A', show: () => st.labels && st.mode === 'o2' },
     { text: 'O₂', get pos() { return o2m[3].getWorldPosition(V3(0, 0, 0)); }, color: '#F04848', show: () => st.labels && st.mode === 'o2' && st.S < 0.9 },
-    { text: 'порфириновое кольцо', pos: V3(40 - 2.6, 1.8, 0), color: '#9FB4FF', show: () => st.labels && st.mode === 'heme' },
+    { text: 'порфириновое кольцо', get pos() { return hG.localToWorld(ringEdge.clone()); }, color: '#9FB4FF', show: () => st.labels && st.mode === 'heme' },
     { text: 'Fe²⁺', get pos() { return hG.localToWorld(V3(0, 0, 0)).add(V3(0.45, -0.3, 0.3)); }, color: '#FF6A3A', show: () => st.labels && st.mode === 'heme' && st.lig !== 'met' },
     { text: 'Fe³⁺', get pos() { return hG.localToWorld(V3(0, 0, 0)).add(V3(0.45, -0.3, 0.3)); }, color: '#C08A5A', show: () => st.labels && st.mode === 'heme' && st.lig === 'met' },
-    { text: 'проксимальный гистидин', pos: V3(40 + 0.6, -1.4, 0), color: '#7FA8FF', show: () => st.labels && st.mode === 'heme' },
+    { text: 'проксимальный гистидин F8', get pos() { return hG.localToWorld(hisF8C.clone()).add(V3(0.45, -0.1, 0)); }, color: '#7FA8FF', show: () => st.labels && st.mode === 'heme' },
+    { text: 'дистальный гистидин E7', get pos() { return hG.localToWorld(hisE7C.clone()).add(V3(0.45, 0.1, 0)); }, color: '#7FA8FF', show: () => st.labels && st.mode === 'heme' },
     { text: 'O₂', get pos() { return hG.localToWorld(dist.clone().multiplyScalar(1.1)).add(V3(0.4, 0.1, 0)); }, color: '#F04848', show: () => st.labels && st.mode === 'heme' && st.lig === 'o2' },
     { text: 'CO', get pos() { return hG.localToWorld(dist.clone().multiplyScalar(1.1)).add(V3(0.4, 0.1, 0)); }, color: '#FF6A9A', show: () => st.labels && st.mode === 'heme' && st.lig === 'co' },
-    { text: 'волокно HbS', pos: V3(80 + 3.2, 1.5, 0), color: '#C85A5A', show: () => st.labels && st.mode === 'sick' && st.poly > 0.6 },
-    { text: 'эритроцит', pos: V3(80 - 2.6, 0.35, 0), color: '#FF6A6A', show: () => st.labels && st.mode === 'sick' },
+    { text: 'волокно HbS', pos: V3(80 + 3.4, 1.7, 0.6), color: '#E07A7A', show: () => st.labels && st.mode === 'sick' && st.poly > 0.6 },
+    { text: 'молекулы Hb · увеличено ≈ в 500 раз', pos: V3(80 - 1.9, 2.75, 0), color: '#FFB0B0', show: () => st.labels && st.mode === 'sick' },
+    { text: 'эритроцит (8 мкм)', pos: V3(80 - 4.2, 1.15, 0), color: '#FF6A6A', show: () => st.labels && st.mode === 'sick' },
   ];
   const refs = {};
   function ui(el) {
@@ -152,7 +203,7 @@ function makeHemoglobin() {
         <p>Хромопротеин: белок глобин + 4 гема. Норма: 130–160 г/л у мужчин, 120–140 г/л у женщин. Формы: HbA (α₂β₂, 97%), HbA₂ (α₂δ₂), фетальный HbF (α₂γ₂). Производные: оксигемоглобин, дезоксигемоглобин, карбгемоглобин (CO₂ на аминогруппах), карбоксигемоглобин (CO), метгемоглобин (Fe³⁺), гликозилированный HbA1c (отражает средний сахар за 2–3 месяца при диабете).</p>
         <h3>Перенос CO₂</h3><p>Около 10% CO₂ кровь везёт в виде карбгемоглобина, остальное — в виде бикарбоната: карбоангидраза эритроцитов превращает CO₂ + H₂O в H₂CO₃ → H⁺ + HCO₃⁻; H⁺ захватывает гемоглобин (буфер).</p>
         <h3>Гемоглобинопатии</h3><p>Качественные (HbS и сотни других мутантных гемоглобинов) и количественные — <b>талассемии</b> (снижен синтез α- или β-цепей).</p></div>
-      <div><h2>Модели</h2><ul><li>Гемоглобин — PDB 4HHB (дезоксигемоглобин); гем с O₂ и гистидины крупным планом — 1GZX (оксигемоглобин). Поворот димеров при оксигенации показан условно.</li><li>Кривая насыщения — уравнение Хилла (n ≈ 2,8; P50 ≈ 27 мм рт. ст.).</li><li>Волокно HbS и эритроцит — схематично; молекулы в волокне — поверхность реального гемоглобина.</li></ul></div>
+      <div><h2>Модели</h2><ul><li>Гемоглобин — PDB 4HHB (дезоксигемоглобин); гем с O₂ и гистидины крупным планом — 1GZX (оксигемоглобин). Поворот димеров при оксигенации показан условно.</li><li>Кривая насыщения — уравнение Хилла (n ≈ 2,8; P50 ≈ 27 мм рт. ст.).</li><li>Волокно HbS и эритроцит — схематично; молекулы в волокне — поверхность реального гемоглобина, показаны «под лупой» (увеличены примерно в 500 раз относительно клетки). Молекула O₂ в первом режиме увеличена в 1,6 раза.</li></ul></div>
       <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>3</code> режим</li><li><code>R</code> · <code>N</code></li></ul></div>`,
   };
   setMode('o2'); st.fly = null;
