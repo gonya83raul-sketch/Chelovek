@@ -8,7 +8,9 @@ function makeDna() {
   rnd = mulberry(1901);
   const scene = bioStage({ rim: 0x7fd6ff });
   const VIEW = { struct: flyTarget(V3(-1.3, -0.7, 0), V3(-0.1, 0.9, 13.5)), rep: flyTarget(V3(40, -1.0, 0), V3(40.6, 0.8, 18.5)), repair: flyTarget(V3(80, -1.4, 0), V3(81.2, 0.2, 13)) };
-  const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.struct.pos);
+  // цель камеры — в центре модели, место под нижнюю панель — сдвигом кадра: вращение и приближение идут вокруг модели
+  const VOFF = 0.16; Object.values(VIEW).forEach((v) => { const d = VOFF * 2 * Math.tan(17 * Math.PI / 180) * v.pos.distanceTo(v.target); v.target.y += d; v.pos.y += d; });
+  const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.struct.pos); camera.setViewOffset(1, 1, 0, VOFF, 1, 1);
   const controls = makeControls(camera, VIEW.struct.target); controls.minDistance = 2; controls.maxDistance = 40;
   const fx = new Sparks(1400, 0.08); scene.add(fx.obj);
   const S = PDB('bna'); const SC = 0.16;
