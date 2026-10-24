@@ -1,7 +1,7 @@
 From c4265c5ad89452a5fc384a3e4d3d812285bb0a69 Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Sat, 24 Oct 2026 22:19:27 +0000
-Subject: [PATCH 1/2] =?UTF-8?q?=D0=A3=D0=B3=D0=BB=D0=B5=D0=B2=D0=BE=D0=B4?=
+Subject: [PATCH 1/3] =?UTF-8?q?=D0=A3=D0=B3=D0=BB=D0=B5=D0=B2=D0=BE=D0=B4?=
  =?UTF-8?q?=D1=8B=20=D0=B8=20=D0=BB=D0=B8=D0=BF=D0=B8=D0=B4=D1=8B:=20?=
  =?UTF-8?q?=D0=B2=D1=8B=D1=82=D1=8F=D0=BD=D1=83=D1=82=D1=8B=D0=B5=20=D0=BA?=
  =?UTF-8?q?=D0=BE=D0=BD=D1=84=D0=BE=D1=80=D0=BC=D0=B5=D1=80=D1=8B=20=D0=B6?=
@@ -939,7 +939,7 @@ index 25a7a17..6d316d8 100644
 From 8a6fb7eb6306204f791ec9a2be729d1891d134b0 Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Sat, 24 Oct 2026 22:52:08 +0000
-Subject: [PATCH 2/2] =?UTF-8?q?WIP=20carblip=20(=D1=81=D0=BE=D1=85=D1=80?=
+Subject: [PATCH 2/3] =?UTF-8?q?WIP=20carblip=20(=D1=81=D0=BE=D1=85=D1=80?=
  =?UTF-8?q?=D0=B0=D0=BD=D0=B5=D0=BD=D0=BE=20=D0=BF=D0=B5=D1=80=D0=B5=D0=B4?=
  =?UTF-8?q?=20=D0=BF=D0=B5=D1=80=D0=B5=D0=BA=D0=BB=D1=8E=D1=87=D0=B5=D0=BD?=
  =?UTF-8?q?=D0=B8=D0=B5=D0=BC=20=D1=81=D0=B5=D1=81=D1=81=D0=B8=D0=B8)?=
@@ -1121,6 +1121,32 @@ index 0000000..d48f57b
 @@ -0,0 +1 @@
 +/home/user/Chelovek/node_modules
 \ No newline at end of file
+-- 
+2.43.0
+
+
+From c7d3c1309a879e67837d78ee913974b4323c232e Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Sat, 24 Oct 2026 23:02:39 +0000
+Subject: [PATCH 3/3] WIP carblip
+
+---
+ bio/51_betaox.js | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/bio/51_betaox.js b/bio/51_betaox.js
+index a09ea6b..0275af3 100644
+--- a/bio/51_betaox.js
++++ b/bio/51_betaox.js
+@@ -30,7 +30,7 @@ function makeBetaox() {
+   /* ---------- 1. липолиз в адипоците ---------- */
+   const G1 = new THREE.Group(); scene.add(G1);
+   const cell = new THREE.Mesh(new THREE.SphereGeometry(3.0, 48, 32), glassMat(0xffd080, { rim: 0.6, base: 0.02, keep: true })); cell.position.set(-0.5, 0.7, 0); G1.add(cell);
+-  const drop = new THREE.Mesh(new THREE.SphereGeometry(2.25, 48, 32), new THREE.MeshPhysicalMaterial({ color: 0x6a4a14, roughness: 0.3, clearcoat: 0.5, clearcoatRoughness: 0.35, emissive: 0x3a2404, emissiveIntensity: 0.12, envMapIntensity: 0.4 })); drop.position.copy(cell.position); G1.add(drop);
++  const drop = new THREE.Mesh(new THREE.SphereGeometry(2.25, 48, 32), new THREE.MeshPhysicalMaterial({ color: 0x6a4a14, roughness: 0.5, clearcoat: 0.4, clearcoatRoughness: 0.5, emissive: 0x3a2404, emissiveIntensity: 0.12, envMapIntensity: 0.4 })); drop.position.copy(cell.position); G1.add(drop);
+   const nuc = new THREE.Mesh(ell3(0.5, 0.17, 0.4), organMat('#9F7BFF', 0.4)); nuc.position.set(-0.5 + 2.62 * Math.cos(-0.5), 0.7 + 2.62 * Math.sin(-0.5), 0); nuc.rotation.z = -0.5 + Math.PI / 2; G1.add(nuc); // ядро сплющено каплей к краю клетки
+   const rec = new THREE.Mesh(blobGeo(0.28, 0.4, 0.28, 3, 0.1, 3), protMat('#FF8A5C', 0.4)); rec.position.set(-0.5 + 2.95 * Math.cos(0.5), 0.7 + 2.95 * Math.sin(0.5), 0); G1.add(rec);
+   const horm = molMesh(MOL('adrenaline'), { scale: 0.12, hideH: true }); G1.add(horm);
 -- 
 2.43.0
 

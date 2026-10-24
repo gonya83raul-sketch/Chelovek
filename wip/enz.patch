@@ -1,7 +1,7 @@
 From 979201816a815a370c255a30c8593e871fc67c51 Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Sat, 24 Oct 2026 22:41:00 +0000
-Subject: [PATCH 1/2] =?UTF-8?q?etc:=20=D1=81=D1=80=D0=B5=D0=B7=20=D0=BC?=
+Subject: [PATCH 1/3] =?UTF-8?q?etc:=20=D1=81=D1=80=D0=B5=D0=B7=20=D0=BC?=
  =?UTF-8?q?=D0=B5=D0=BC=D0=B1=D1=80=D0=B0=D0=BD=D1=8B,=20=D0=90=D0=A2?=
  =?UTF-8?q?=D0=A4-=D1=81=D0=B8=D0=BD=D1=82=D0=B0=D0=B7=D0=B0=20c8=20=D1=81?=
  =?UTF-8?q?=20=CE=B5=20=D0=B8=20=C2=AB=D0=B4=D1=8B=D1=85=D0=B0=D0=BD=D0=B8?=
@@ -260,7 +260,7 @@ index 0000000..57224b8
 From 6c4947f3666c0b6c8a5b7522895e72c209e13bad Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Sat, 24 Oct 2026 22:52:10 +0000
-Subject: [PATCH 2/2] =?UTF-8?q?WIP=20enz=20(=D1=81=D0=BE=D1=85=D1=80=D0=B0?=
+Subject: [PATCH 2/3] =?UTF-8?q?WIP=20enz=20(=D1=81=D0=BE=D1=85=D1=80=D0=B0?=
  =?UTF-8?q?=D0=BD=D0=B5=D0=BD=D0=BE=20=D0=BF=D0=B5=D1=80=D0=B5=D0=B4=20?=
  =?UTF-8?q?=D0=BF=D0=B5=D1=80=D0=B5=D0=BA=D0=BB=D1=8E=D1=87=D0=B5=D0=BD?=
  =?UTF-8?q?=D0=B8=D0=B5=D0=BC=20=D1=81=D0=B5=D1=81=D1=81=D0=B8=D0=B8)?=
@@ -927,6 +927,47 @@ index 0000000..d48f57b
 @@ -0,0 +1 @@
 +/home/user/Chelovek/node_modules
 \ No newline at end of file
+-- 
+2.43.0
+
+
+From 0718cb53402fc23adcc3b67014a0acf862a7ee46 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Sat, 24 Oct 2026 23:02:40 +0000
+Subject: [PATCH 3/3] WIP enz
+
+---
+ bio/12_enzmed.js | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
+
+diff --git a/bio/12_enzmed.js b/bio/12_enzmed.js
+index 93d1686..fd43267 100644
+--- a/bio/12_enzmed.js
++++ b/bio/12_enzmed.js
+@@ -13,7 +13,7 @@ const EM_LDH = { norm: [0.27, 0.36, 0.22, 0.09, 0.06], mi: [0.42, 0.32, 0.15, 0.
+ function makeEnzmed() {
+   rnd = mulberry(733);
+   const scene = bioStage({ rim: 0xc77dff });
+-  const VIEW = { allo: flyTarget(V3(0, -1.5, 0), V3(1.5, 0.2, 14.5)), phos: flyTarget(V3(40, -1, 0), V3(41, 1.0, 14)), prot: flyTarget(V3(80, -1, 0), V3(81, 1.2, 11)), ldh: flyTarget(V3(120, -0.6, 0), V3(120, 2.4, 13.5)), drug: flyTarget(V3(160, -1.2, 0), V3(160, 3.4, 19.5)) };
++  const VIEW = { allo: flyTarget(V3(0, -1.5, 0), V3(1.5, 0.2, 14.5)), phos: flyTarget(V3(40, -1, 0), V3(41, 1.0, 14)), prot: flyTarget(V3(80, -1, 0), V3(81, 1.2, 11)), ldh: flyTarget(V3(120, -0.6, 0), V3(120, 2.4, 13.5)), drug: flyTarget(V3(160, -1.2, 0), V3(160, 3.2, 18)) };
+   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 500); camera.position.copy(VIEW.allo.pos);
+   const controls = makeControls(camera, VIEW.allo.target); controls.minDistance = 2; controls.maxDistance = 40;
+   const fx = new Sparks(1500, 0.08); scene.add(fx.obj);
+@@ -57,8 +57,12 @@ function makeEnzmed() {
+   const motif = (re, off) => { const m = fxA.seq.search(re); return m >= 0 ? m + off : 0; };
+   const iH = motif(/AAHC/, 2), iD = motif(/DIA/, 0), iS = motif(/GDSGGP/, 2);
+   const caF = (i) => V3(fxA.ca[i * 3], fxA.ca[i * 3 + 1], fxA.ca[i * 3 + 2]).multiplyScalar(0.1);
+-  { const pc = caPoints('fxa', 0.1); const c0 = pc.reduce((q, v) => q.add(v), V3(0, 0, 0)).multiplyScalar(1 / pc.length); const tc = caF(iH).add(caF(iD)).add(caF(iS)).multiplyScalar(1 / 3).sub(c0).normalize(); G3i.quaternion.setFromUnitVectors(tc, V3(0.25, 0.3, 1).normalize()); }
+-  const rotF = (v) => v.clone().applyQuaternion(G3i.quaternion);
++  { const pc = caPoints('fxa', 0.1); const c0 = pc.reduce((q, v) => q.add(v), V3(0, 0, 0)).multiplyScalar(1 / pc.length); const tc = caF(iH).add(caF(iD)).add(caF(iS)).multiplyScalar(1 / 3).sub(c0).normalize(); const cam = V3(0.25, 0.3, 1).normalize();
++    // триада к зрителю; вокруг этой оси — так, чтобы пропептид (N-конец) смотрел вверх; центр белка на месте
++    const q1 = new THREE.Quaternion().setFromUnitVectors(tc, cam); const pr = (v) => v.clone().sub(cam.clone().multiplyScalar(v.dot(cam))).normalize();
++    const nt = pr(caF(0).sub(c0).applyQuaternion(q1)), up = pr(V3(0, 1, 0)); const q2 = new THREE.Quaternion().setFromUnitVectors(nt, up);
++    G3i.quaternion.copy(q2).multiply(q1); G3i.position.copy(c0).sub(c0.clone().applyQuaternion(G3i.quaternion)); }
++  const rotF = (v) => v.clone().applyQuaternion(G3i.quaternion).add(G3i.position);
+   const triad = [iH, iD, iS].map((i, k) => glowNucleus(G3i, caF(i), ['#7FD6FF', '#FF6A6A', '#F2C14E'][k], 0.11, 7));
+   const nTerm = caF(0);
+   // «пропептид» — отрезаемый участок цепи
 -- 
 2.43.0
 
