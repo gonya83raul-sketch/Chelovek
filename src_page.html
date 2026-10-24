@@ -6229,11 +6229,11 @@ function makeCereb() {
   const RX = 0.72, RY = 0.62, RZ = 1.6, CUT = -0.04;
   const zoneOf = (x, y, z) => { const az = Math.abs(z); if (x > 0.25 && y < -0.15 && (az < 0.28 || az > 1.0)) return 0; if (az < 0.55) return 1; return 2; };
   const cbG = displaceGeo(new THREE.SphereGeometry(1, 260, 180), (v) => {
-    const a = Math.atan2(v.y, v.x), az = Math.abs(v.z), pole = smooth(0.93, 0.6, az);   // у латеральных полюсов листки гаснут
+    const a = Math.atan2(v.y, v.x), az = Math.abs(v.z), pole = smooth(0.98, 0.75, az);   // у латеральных полюсов листки гаснут
     let r = 1 + 0.02 * pole * Math.sin(a * (34 + 4 * noise3(v.z * 2, 0, 0)) + 0.6 * v.z + 0.8 * noise3(v.x * 2, v.y * 2, v.z * 2)) + 0.014 * noise3(v.x * 6, v.y * 6, v.z * 6);
-    r -= 0.07 * pole * Math.exp(-(((a - 1.1) / 0.05) ** 2));                    // первичная щель
-    r -= 0.05 * pole * Math.exp(-(((a + 2.3) / 0.05) ** 2));                    // горизонтальная щель
-    let x = v.x * RX * r, y = v.y * RY * r, z = v.z * RZ * r;
+    r -= 0.07 * Math.exp(-(((a - 1.1) / 0.05) ** 2));                           // первичная щель
+    r -= 0.05 * Math.exp(-(((a + 2.3) / 0.05) ** 2));                           // горизонтальная щель
+    let x = v.x * RX * r, y = v.y * RY * r, z = v.z * RZ * r * (1 - 0.15 * smooth(0.85, 1, az));
     if (az < 0.5) { y -= 0.06 * Math.exp(-(((az - 0.24) / 0.05) ** 2)) * smooth(0, 0.6, Math.abs(v.y) + 0.3); } // околочервная борозда
     if (x > 0.1) { x -= 0.35 * smooth(0.1, 0.9, v.x) * Math.exp(-((v.z / 0.35) ** 2)); }                        // вырезка спереди (IV желудочек)
     if (y < 0) y -= 0.1 * Math.exp(-(((az - 0.35) / 0.25) ** 2)) * smooth(0, -0.9, v.y);                       // нижняя поверхность: миндалины
@@ -6367,8 +6367,8 @@ function makeCereb() {
     anat.visible = m !== 'micro'; mic.visible = m === 'micro'; cap.visible = m === 'nuc';
     Object.values(PED).flat().forEach((p) => { p.mesh.visible = m !== 'nuc'; }); pedFlow.forEach((x) => { x.visible = m !== 'nuc'; }); stem.visible = m !== 'nuc'; olive.forEach((o) => { o.visible = m !== 'nuc'; });
     [cbMat, ...flocc.map((f) => f.material)].forEach((mm) => { mm.clippingPlanes = m === 'nuc' ? [CUTP] : []; mm.needsUpdate = true; });
-    // на срезе ядра — плоские контуры в плоскости среза, а не фигурки над ней
-    Object.values(NUC).flat().forEach((n) => { n.scale.y = m === 'nuc' ? 0.05 : 1; n.position.y = m === 'nuc' ? CUT + 0.01 : 0; });
+    // ядра на срезе тоже рассечены плоскостью, а не стоят над ней
+    Object.values(NUC).flat().forEach((n) => { n.material.clippingPlanes = m === 'nuc' ? [CUTP] : []; n.material.side = m === 'nuc' ? THREE.DoubleSide : THREE.FrontSide; n.material.needsUpdate = true; });
     cbMat.opacity = m === 'nuc' ? 1 : 1; st.fly = VIEW[m]; applySel(); refs.setInfo && refs.setInfo();
   }
   function applySel() {
