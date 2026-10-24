@@ -1,6 +1,6 @@
 // Перевод модуля страницы по словарю: все строки с кириллицей (литералы, части шаблонов, регулярные выражения).
 // node tools/i18n.mjs extract <merged.mjs> <out.json>          — список строк: [{t, u}] (u — имя верхнего объявления: сцена/функция)
-// node tools/i18n.mjs apply <merged.mjs> <dict.json> <out.mjs> — замена по словарю {рус: англ}; без перевода — остаётся как есть, список в stderr
+// node tools/i18n.mjs apply <merged.mjs> <dict.json> <out.mjs> — замена по словарю {рус: англ} (+ уточнения «unit::рус»); без перевода — остаётся как есть, список в stderr
 import { createRequire } from 'module';
 import fs from 'fs';
 import path from 'path';
@@ -43,7 +43,8 @@ if (mode === 'extract') {
   const miss = new Set();
   let out = '', last = 0;
   for (const p of pieces) {
-    const tr = p.quotes ? p.text.replace(/«/g, '“').replace(/»/g, '”') : dict[p.text];
+    // уточнение по месту: ключ «<имя функции/переменной>::<строка>» важнее общего (одно русское слово — разные переводы)
+    const tr = p.quotes ? p.text.replace(/«/g, '“').replace(/»/g, '”') : (dict[unitOf(p.start) + '::' + p.text] ?? dict[p.text]);
     if (tr == null || tr === '') { miss.add(p.text); continue; }
     let rep;
     if (p.kind === 'str') rep = p.q === "'" ? "'" + tr.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\n/g, '\\n') + "'" : JSON.stringify(tr);
