@@ -241,7 +241,7 @@ function makeVentricles() {
   function stats() { return [['Ликвора', '≈150', 'мл'], ['Давление', Math.round(st.press), 'мм рт. ст.'], ['Желудочков', 4, '']]; }
   const self = {
     scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#6FC3FF',
-    kicker: 'Лекция 2 · вспомогательные структуры', title: 'Желудочки и оболочки',
+    kicker: 'Мозг · вспомогательные структуры', title: 'Желудочки и оболочки',
     lede: 'Внутри мозга — система полостей с ликвором, снаружи — три оболочки. Они питают, защищают и служат удобными ориентирами в анатомии.',
     notes: `
       <div><h2>Желудочки мозга</h2>

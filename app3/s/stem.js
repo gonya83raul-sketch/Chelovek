@@ -236,7 +236,7 @@ function makeStem() {
   setMode('floors');
   const self = {
     scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#9FE0C0',
-    kicker: 'Лекция 3 · стволовые структуры', title: 'Ствол мозга',
+    kicker: 'Мозг · стволовые структуры', title: 'Ствол мозга',
     lede: 'Продолговатый мозг, мост и средний мозг — древние отделы, общие для всех позвоночных. Здесь центры дыхания и сердца, сна и бодрствования, и все пути между мозгом и телом.',
     notes: `
       <div><h2>Из чего состоит ствол</h2>

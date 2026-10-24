@@ -214,7 +214,7 @@ function makeNeuron() {
   }
   return {
     scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#FFB070',
-    kicker: 'Лекции 1–3 · нервный импульс', title: 'Нейрон и импульс',
+    kicker: 'Мозг · нервный импульс', title: 'Нейрон и импульс',
     lede: 'Дендриты собирают сигналы, у аксонного холмика рождается потенциал действия, и импульс скачками бежит по миелину к окончаниям.',
     notes: `
       <div><h2>Как это работает</h2>

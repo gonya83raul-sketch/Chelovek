@@ -389,7 +389,7 @@ function makeTypes() {
   applyStain();
   return {
     scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#F5C26B',
-    kicker: 'Лекция 1 · нейроцитология', title: 'Типы нейронов',
+    kicker: 'Мозг · нейроны', title: 'Типы нейронов',
     lede: 'Семь форм нервных клеток и маленькая нейросеть. Можно покрасить их так, как это делали Гольджи и Ниссль, или раскрасить методом Brainbow.',
     notes: `
       <div><h2>Как устроен нейрон</h2>

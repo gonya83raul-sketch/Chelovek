@@ -332,7 +332,7 @@ function makeSynapse() {
   applyMediator();
   return {
     scene, camera, controls, update, ui, onKey, stats, labels, drawScope, get accent() { return M.color; },
-    kicker: 'Лекции 2–10 · синапс и медиаторы', title: 'Синапс и медиаторы',
+    kicker: 'Мозг · синапс и медиаторы', title: 'Синапс и медиаторы',
     lede: 'Импульс открывает кальциевые каналы, пузырьки выплёскивают медиатор, молекулы находят рецепторы, и сигнал выключают ферменты или переносчики.',
     notes: `
       <div><h2>Как это работает</h2>

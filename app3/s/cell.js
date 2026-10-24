@@ -300,7 +300,7 @@ function makeCell() {
   function stats() { return st.sel ? [['Размер', ORG[st.sel].size, '']] : [['Клетка', '≈ 20', 'мкм'], ['Органоидов', ORGANELLES.length, '']]; }
   const self = {
     scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, get accent() { return st.sel ? ORG[st.sel].color : '#9CC8FF'; },
-    kicker: 'Лекция 1 · строение клетки', title: 'Живая клетка',
+    kicker: 'Клетка · строение', title: 'Живая клетка',
     lede: 'Ядро, ЭПС, Гольджи, митохондрии и цитоскелет в разрезе. Пузырьки везут белки к мембране, по микротрубочкам едут грузы, митохондрии выдают АТФ.',
     notes: `
       <div><h2>Как устроена клетка</h2>

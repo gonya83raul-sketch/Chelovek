@@ -199,7 +199,7 @@ function makeDien() {
   setMode('thal');
   const self = {
     scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#B9A4FF',
-    kicker: 'Лекция 3 · промежуточный мозг', title: 'Таламус и гипоталамус',
+    kicker: 'Мозг · промежуточный мозг', title: 'Таламус и гипоталамус',
     lede: 'Таламус решает, какая информация попадёт в кору. Гипоталамус следит за потребностями тела и через гипофиз управляет гормонами.',
     notes: `
       <div><h2>Промежуточный мозг</h2>

@@ -342,7 +342,7 @@ function makeGlia() {
   function stats() { return [['ГЭБ', st.bbb ? 'закрыт' : 'открыт', ''], ['Глутамат в мозге', st.glu, ''], ['Синапсов', syn.filter((s) => s.alive).length, '']]; }
   return {
     scene, camera, controls, update: update2, ui, onKey, stats, labels, drawScope: null, accent: '#7FD6C8',
-    kicker: 'Лекция 1 · вспомогательные клетки', title: 'Нейроглия',
+    kicker: 'Мозг · вспомогательные клетки', title: 'Нейроглия',
     lede: 'Glia по-гречески «клей». Глия упаковывает нейроны, изолирует их, охраняет вход из крови и убирает мусор.',
     notes: `
       <div><h2>Зачем нейронам глия</h2>

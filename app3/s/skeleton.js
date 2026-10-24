@@ -494,8 +494,7 @@ function makeSkeleton() {
         <h3>Кость — живая ткань</h3>
         <p>В костях около 99% кальция тела. Когда Ca²⁺ в крови не хватает, его берут из костей, а без кальция не работает ни один синапс. В красном костном мозге образуются клетки крови.</p></div>
       <div><h2>Что здесь настоящее</h2><ul>
-        <li>Форма каждой кости: модель — 3D-скан анатомического скелета, упрощённый с 2,7 млн до 400 тыс. треугольников.</li><li>Пропорции: рост 172 см.</li>
-        <li>Мышцы: 3D-модель «Male Full Body Ecorche», автор <a href="https://sketchfab.com/diegoluga" target="_blank" rel="noopener">Diego Luján García</a>, <a href="https://sketchfab.com/3d-models/male-full-body-ecorche-ab11ebff89224f03bd75efede1164cf6" target="_blank" rel="noopener">Sketchfab</a>, лицензия <a href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>. Цвет мышц перенесён с текстур модели на вершины.</li></ul>
+        <li>Форма каждой кости: модель — 3D-скан анатомического скелета, упрощённый с 2,7 млн до 400 тыс. треугольников.</li><li>Пропорции: рост 172 см.</li></ul>
         <h2 style="margin-top:22px">Условности</h2><ul><li>Крепёж учебного скелета на макушке убран.</li><li>Мышцы — отдельная модель другого человека, поэтому в режиме мышц скелет и сосуды скрыты. Светлые участки на ней — открытые кости и сухожилия.</li></ul></div>
       <div class="keys"><h2>Клавиши</h2><ul><li>клик по кости: выбрать</li><li><code>U</code> мышцы</li><li><code>V</code> сосуды</li><li><code>B</code> подписи сосудов</li><li><code>H</code> или клик по сердцу: строение сердца</li><li><code>X</code> рентген</li><li><code>R</code> вращение</li><li><code>N</code> подписи костей</li><li><code>Esc</code> весь скелет</li></ul></div>`,
   };
