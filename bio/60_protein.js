@@ -18,18 +18,28 @@ const PR_LV = [
 function makeProtein() {
   rnd = mulberry(1701);
   const scene = bioStage({ rim: 0x7fd6ff });
-  const VIEW = { aa: flyTarget(V3(0, -2.0, 0), V3(0, 0.4, 19)), lv: flyTarget(V3(40, -1.2, 0), V3(40.8, 0.8, 14.5)), fold: flyTarget(V3(80, -1.4, 0), V3(81.4, 1.6, 19)) };
+  const VIEW = { aa: flyTarget(V3(0, -1.8, 0), V3(0, 0.6, 21.5)), lv: flyTarget(V3(40, -1.2, 0), V3(40.8, 0.8, 14.5)), fold: flyTarget(V3(80.6, -2.1, 0), V3(81.6, 0.6, 22)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.aa.pos);
   const controls = makeControls(camera, VIEW.aa.target); controls.minDistance = 2; controls.maxDistance = 45;
   const fx = new Sparks(1200, 0.08); scene.add(fx.obj);
   /* ---------- 1. аминокислоты ---------- */
   const G1 = new THREE.Group(); scene.add(G1);
-  const AAM = PR_AA.map(([id, l, gr, ess], k) => { const col = k % 10, row = Math.floor(k / 10); const m = molMesh(MOL(id), { scale: 0.17, hideH: true }); const g = new THREE.Group(); g.add(m); g.position.set(-7.6 + col * 1.74, -0.15 - row * 1.85, 0); G1.add(g); const ring = new THREE.Mesh(new THREE.TorusGeometry(0.75, 0.02, 8, 48), new THREE.MeshBasicMaterial({ color: new THREE.Color(PR_GR[gr][1]).multiplyScalar(0.7), transparent: true, opacity: 0.25 })); ring.position.y = -0.1; g.add(ring); const pk = new THREE.Mesh(new THREE.SphereGeometry(0.8, 8, 6), new THREE.MeshBasicMaterial({ visible: false })); pk.userData.pick = id; g.add(pk); return { id, l, gr, ess, g, m, ring }; });
+  const AAM = PR_AA.map(([id, l, gr, ess], k) => { const col = k % 10, row = Math.floor(k / 10); const m = molMesh(MOL(id), { scale: 0.2, hideH: true }); const g = new THREE.Group(); g.add(m); g.position.set(-8.78 + col * 1.95, -0.15 - row * 2.15, 0); G1.add(g); const ring = new THREE.Mesh(new THREE.TorusGeometry(0.75, 0.02, 8, 48), new THREE.MeshBasicMaterial({ color: new THREE.Color(PR_GR[gr][1]).multiplyScalar(0.7), transparent: true, opacity: 0.25 })); ring.position.y = -0.1; g.add(ring); const pk = new THREE.Mesh(new THREE.SphereGeometry(0.8, 8, 6), new THREE.MeshBasicMaterial({ visible: false })); pk.userData.pick = id; g.add(pk); return { id, l, gr, ess, g, m, ring }; });
   /* ---------- 2. уровни структуры ---------- */
   const G2 = new THREE.Group(); G2.position.set(40, 0.4, 0); scene.add(G2);
   const HB = PDB('hb'); const hsc = 0.075;
   const rainbow = (i, n) => new THREE.Color().setHSL(0.66 * (1 - i / n), 0.75, 0.58).getStyle();
   const chainM = HB.chains.map((c, k) => { const m = cartoon(c, { scale: hsc, color: k === 1 ? rainbow : k % 2 ? '#FF8AB0' : '#7FD6FF', k: 0.6 }); G2.add(m); return m; });
+  // β-цепь B: радуга (N→C) на уровнях 2–3, розовая — в четвертичной структуре
+  const chainBpink = cartoon(HB.chains[1], { scale: hsc, color: '#FF8AB0', k: 0.6 }); G2.add(chainBpink);
+  // центры цепей и железо гема — для подписей, вращающихся вместе с G2
+  const caCen = (c) => { const v = V3(0, 0, 0); for (let i = 0; i < c.ca.length; i += 3) v.add(V3(c.ca[i], c.ca[i + 1], c.ca[i + 2])); return v.multiplyScalar(hsc * 3 / c.ca.length); };
+  const hbC = HB.chains.reduce((v, c) => v.add(caCen(c)), V3(0, 0, 0)).multiplyScalar(1 / HB.chains.length);
+  const cA = caCen(HB.chains[0]), cB2 = caCen(HB.chains[1]);
+  const feOf = (ch) => { const l = HB.ligm.find((q) => q.chain === ch) || HB.ligm[0]; const i = l.el.indexOf('Fe'); return V3(l.xyz[i * 3], l.xyz[i * 3 + 1], l.xyz[i * 3 + 2]).multiplyScalar(hsc); };
+  const feB = feOf('B'), feC = feOf('C');
+  // точка подписи: от центра тетрамера наружу в плоскости экрана (G2 вращается)
+  const scrOut = (p, k) => { const w = G2.localToWorld(p.clone()), c = G2.localToWorld(hbC.clone()), v = camera.getWorldDirection(V3(0, 0, 0)); const d = w.clone().sub(c); d.addScaledVector(v, -d.dot(v)); if (d.length() < 0.2) d.set(0, 1, 0); return w.add(d.normalize().multiplyScalar(k)); };
   const hemes = HB.ligm.map((l) => { const m = molMesh(l, { scale: hsc }); G2.add(m); return m; });
   // «нить» первичной структуры: трубка через CA β-цепи
   const cB = HB.chains[1]; const caB = []; for (let i = 0; i < cB.ca.length; i += 3) caB.push(V3(cB.ca[i], cB.ca[i + 1], cB.ca[i + 2]).multiplyScalar(hsc));
@@ -37,20 +47,32 @@ function makeProtein() {
   const beadsGeo = new THREE.SphereGeometry(0.06, 10, 8); const beads = new THREE.InstancedMesh(beadsGeo, new THREE.MeshPhysicalMaterial({ roughness: 0.35, clearcoat: 0.6 }), caB.length); G2.add(beads);
   for (let i = 0; i < caB.length; i++) beads.setColorAt(i, new THREE.Color(rainbow(i, caB.length)).multiplyScalar(0.7));
   const hbonds = new THREE.Group(); G2.add(hbonds);
-  { const c = HB.chains[1]; for (let i = 0; i + 4 < c.seq.length; i++) if (c.ss[i] === 'H' && c.ss[i + 4] === 'H') { const a = caB[i], b = caB[i + 4]; const m = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 1, 5), new THREE.MeshBasicMaterial({ color: 0xff8ab0, transparent: true, opacity: 0.7 })); m.position.copy(a).lerp(b, 0.5); const d = b.clone().sub(a); m.scale.y = d.length(); m.quaternion.setFromUnitVectors(V3(0, 1, 0), d.normalize()); hbonds.add(m); } }
+  // H-связь C=O(i)···H–N(i+4): концы — между CA i/i+1 и CA i+3/i+4 (почти вдоль оси спирали), вынесены к краю ленты, иначе лента их закрывает
+  const axAt = (i) => { const v = V3(0, 0, 0); let n = 0; for (let j = Math.max(0, i - 2); j <= Math.min(caB.length - 1, i + 2); j++) { v.add(caB[j]); n++; } return v.multiplyScalar(1 / n); };
+  const outP = (i, j, f) => { const p = caB[i].clone().lerp(caB[j], f); const d = p.clone().sub(axAt(i)); return p.add(d.lengthSq() > 1e-6 ? d.normalize().multiplyScalar(0.09) : d); };
+  { const c = HB.chains[1]; for (let i = 0; i + 4 < c.seq.length; i++) if (c.ss[i] === 'H' && c.ss[i + 4] === 'H') { const a = outP(i, i + 1, 0.45), b = outP(i + 4, i + 3, 0.45); const m = new THREE.Mesh(new THREE.CylinderGeometry(0.016, 0.016, 1, 5), new THREE.MeshBasicMaterial({ color: 0xffb0cc, transparent: true, opacity: 0.85 })); m.position.copy(a).lerp(b, 0.5); const d = b.clone().sub(a); m.scale.y = d.length(); m.quaternion.setFromUnitVectors(V3(0, 1, 0), d.normalize()); hbonds.add(m); } }
   const pep = new THREE.Group(); pep.position.set(-3.6, 2.2, 0); G2.add(pep);
   const aa1 = molMesh(MOL('ala'), { scale: 0.18, hideH: true }), aa2 = molMesh(MOL('gly'), { scale: 0.18, hideH: true }); pep.add(aa1, aa2); const wat = molMesh(MOL('h2o'), { scale: 0.22 }); pep.add(wat);
   /* ---------- 3. укладка и шаперон ---------- */
   const G3 = new THREE.Group(); G3.position.set(80, 0, 0); scene.add(G3);
-  const GR = new THREE.Group(); GR.position.set(2.4, 0.3, 0); G3.add(GR);
-  const gro = proteinMesh('groel', { scale: 0.021, colorBy: (c) => (c.id >= 'O' ? '#F2C14E' : c.id >= 'H' ? '#7FD6FF' : '#9FB4FF') });
-  { const ax = pcaAxis(caPoints('groel', 0.021)); gro.quaternion.setFromUnitVectors(ax.v, V3(0, 1, 0)); }
+  // GroEL и лизоцим — в одном масштабе (0,03 ед./Å): белок помещается в полость под крышкой GroES
+  const FSC = 0.03;
+  const GR = new THREE.Group(); GR.position.set(2.4, 0.0, 0); G3.add(GR);
+  const gro = proteinMesh('groel', { scale: FSC, colorBy: (c) => (c.id >= 'O' ? '#F2C14E' : c.id >= 'H' ? '#7FD6FF' : '#9FB4FF'), cart: { hw: 2.4, th: 0.6, cr: 0.5 } });
+  // ось 7-го порядка в 1AON — z; цис-кольцо A–G под крышкой GroES (O–U) — наверх
+  gro.quaternion.setFromUnitVectors(V3(0, 0, -1), V3(0, 1, 0));
   GR.add(gro);
+  const cenOfCh = (ids) => { const p = caPoints('groel', FSC, ids); return p.reduce((v, q) => v.add(q), V3(0, 0, 0)).multiplyScalar(1 / p.length).applyQuaternion(gro.quaternion); };
+  const cisC = cenOfCh([...'ABCDEFG']), esC = cenOfCh([...'OPQRSTU']);
+  const cavity = cisC.clone().lerp(esC, 0.35); cavity.x = cavity.z = 0; // центр цис-полости на оси
+  // разрез: на время укладки передняя половина шаперонина срезается плоскостью, обращённой к камере
+  const cutP = new THREE.Plane(V3(0, 0, -1), 100);
+  const groMats = []; gro.traverse((o) => { if (o.material) { o.material.clippingPlanes = [cutP]; o.material.side = THREE.DoubleSide; groMats.push(o.material); } });
   // сворачивающийся белок — лизоцим: натив ↔ клубок
   const L = PDB('lyz').chains[0]; const N = L.seq.length;
   const coil = { ...L, ss: 'C'.repeat(N), ca: new Float32Array(N * 3), od: L.od };
-  { let p = V3(0, 0, 0); for (let i = 0; i < N; i++) { const d = randUnit(); d.y = Math.abs(d.y) * 0.3; p = p.add(d.multiplyScalar(3.8)); if (p.length() > 26) p.multiplyScalar(0.8); coil.ca[i * 3] = p.x; coil.ca[i * 3 + 1] = p.y * 0.6; coil.ca[i * 3 + 2] = p.z; } }
-  const nat = cartoon(L, { scale: 0.045, color: rainbow }).geometry, unf = cartoon(coil, { scale: 0.045, color: rainbow }).geometry;
+  { let p = V3(0, 0, 0); for (let i = 0; i < N; i++) { const d = randUnit(); d.y = Math.abs(d.y) * 0.3; p = p.add(d.multiplyScalar(3.8)); if (p.length() > 24) p.multiplyScalar(0.8); coil.ca[i * 3] = p.x; coil.ca[i * 3 + 1] = p.y * 0.6; coil.ca[i * 3 + 2] = p.z; } }
+  const nat = cartoon(L, { scale: FSC, color: rainbow, hw: 2.0, th: 0.55, cr: 0.45 }).geometry, unf = cartoon(coil, { scale: FSC, color: rainbow, hw: 2.0, th: 0.55, cr: 0.45 }).geometry;
   const fold = new THREE.Mesh(nat.clone(), new THREE.MeshPhysicalMaterial({ vertexColors: true, roughness: 0.4, clearcoat: 0.5, envMapIntensity: 0.45, side: THREE.DoubleSide })); G3.add(fold);
   const pN = nat.attributes.position.array, pU = unf.attributes.position.array;
   const heat = new THREE.PointLight(0xff6a3a, 0, 8, 1.6); heat.position.set(-3, 1, 2); G3.add(heat);
@@ -62,23 +84,32 @@ function makeProtein() {
   const ease = (x) => { const u = clamp(x, 0, 1); return u * u * (3 - 2 * u); };
   function update(dt) {
     st.t += dt; const t = st.t; controls.autoRotate = false; flyStep(st, camera, controls, dt); st.cyc += dt;
-    if (st.mode === 'aa') AAM.forEach((a) => { a.m.rotation.y += dt * (st.sel === a.id ? 1 : 0.35); const s = st.sel === a.id ? 1.25 : 1; a.g.scale.lerp(V3(s, s, s), 1 - Math.exp(-dt * 6)); a.ring.material.opacity = st.sel === a.id ? 0.8 : 0.22; });
+    if (st.mode === 'aa') AAM.forEach((a, i) => { if (st.sel === a.id) a.m.rotation.y += dt; else a.m.rotation.y = 0.6 * Math.sin(t * 0.5 + i * 0.7); /* покачивание: плоские кольца не встают ребром */ const s = st.sel === a.id ? 1.25 : 1; a.g.scale.lerp(V3(s, s, s), 1 - Math.exp(-dt * 6)); a.ring.material.opacity = st.sel === a.id ? 0.8 : 0.22; });
     if (st.mode === 'lv') {
       const lv = st.lv;
-      chainM.forEach((m, k) => { m.visible = lv === 4 || (lv >= 2 && k === 1); }); hemes.forEach((m, k) => { m.visible = lv === 4 || (lv === 3 && k === 1); });
+      chainM.forEach((m, k) => { m.visible = k === 1 ? lv === 2 || lv === 3 : lv === 4; }); chainBpink.visible = lv === 4; hemes.forEach((m, k) => { m.visible = lv === 4 || (lv === 3 && k === 1); });
       beads.visible = lv === 1; hbonds.visible = lv === 2; pep.visible = lv === 1;
       if (lv === 1) { const u = ease(Math.min(1, st.cyc / 3)); const dm = new THREE.Object3D(); caB.forEach((p, i) => { dm.position.copy(strandPts[i]).lerp(p.clone().add(V3(0, 0, 0)), 0); dm.scale.setScalar(1); dm.updateMatrix(); beads.setMatrixAt(i, dm.matrix); }); beads.instanceMatrix.needsUpdate = true; const c = st.cyc % 5; aa1.position.set(-0.9 + Math.min(1, c / 2) * 0.45, 0, 0); aa2.position.set(0.9 - Math.min(1, c / 2) * 0.45, 0, 0); wat.visible = c > 2 && c < 4.5; wat.position.set(0, 0.4 + (c - 2) * 0.6, 0.3); aa1.rotation.y = aa2.rotation.y = 0.3; }
       if (st.rot && lv > 1) G2.rotation.y += dt * 0.2; else if (lv === 1) G2.rotation.y = 0;
     }
     if (st.mode === 'fold') {
       if (st.rot) GR.rotation.y += dt * 0.1;
-      let u = 0, pos = V3(-2.4, 0.4, 0);
+      let u = 0, pos = V3(-2.4, 0.4, 0), cut = 0;
       if (st.fmode === 'chap') {
-        const c = st.cyc % 14; // клубок подходит (0–3), внутри бочки (3–9, сворачивается), выход (9–12)
-        const inside = GR.position.clone().add(V3(0, -0.6, 0));
-        if (c < 3) { u = 1; pos = V3(-2.6, 0.6, 0).lerp(inside, ease(c / 3)); } else if (c < 9) { u = 1 - ease((c - 3.5) / 5); pos = inside; } else { u = 0; pos = inside.clone().lerp(V3(-2.6, -0.8, 0), ease((c - 9) / 3)); }
+        const c = st.cyc % 14; // клубок подходит (0–3), внутри полости под GroES (3–9, сворачивается), выход (9–12)
+        const inside = GR.position.clone().add(cavity);
+        const out0 = V3(-2.6, 0.9, 0), out1 = V3(-2.6, -0.6, 0);
+        if (c < 3) { u = 1; pos = out0.clone().lerp(inside, ease(c / 3)); } else if (c < 9) { u = 1 - ease((c - 3.5) / 5); pos = inside; } else { u = 0; pos = inside.clone().lerp(out1, ease((c - 9) / 3)); }
+        cut = ease((c - 1.5) / 1.2) * (1 - ease((c - 11) / 1.5)); // разрез открыт, пока белок внутри
+        st.inside = c > 2.6 && c < 9.6;
         st.fphase = c < 3 ? 'развёрнутая цепь' : c < 9 ? 'укладка внутри шаперонина' : 'готовый белок';
-      } else { const c = st.cyc % 12; u = c < 1 ? 0 : c < 4 ? ease((c - 1) / 3) : c < 8 ? 1 : st.fmode === 'heat' ? 1 - ease((c - 8) / 3) : 1; heat.intensity = c > 1 && c < 8 ? 12 : 0; st.fphase = c < 1 ? 'нативный белок' : c < 4 ? 'нагрев: денатурация' : c < 8 ? 'клубок' : 'ренатурация'; pos = V3(-2.4, 0.4, 0); }
+        fold.scale.setScalar(1);
+      } else { const c = st.cyc % 12; u = c < 1 ? 0 : c < 4 ? ease((c - 1) / 3) : c < 8 ? 1 : st.fmode === 'heat' ? 1 - ease((c - 8) / 3) : 1; heat.intensity = c > 1 && c < 8 ? 12 : 0; st.fphase = c < 1 ? 'нативный белок' : c < 4 ? 'нагрев: денатурация' : c < 8 ? 'клубок' : 'ренатурация'; pos = V3(0.6, 0.6, 0); fold.scale.setScalar(1.6); }
+      // плоскость разреза: перпендикулярна взгляду, через ось шаперонина; закрыта — уходит далеко вперёд
+      const n = camera.position.clone().sub(controls.target); n.y = 0; n.normalize();
+      const c0 = GR.getWorldPosition(V3(0, 0, 0));
+      cutP.normal.copy(n).negate(); cutP.constant = n.dot(c0) + 0.15 + (1 - cut) * 20;
+      groMats.forEach((m) => m.color.setScalar(1 - 0.4 * cut)); // в разрезе стенка темнее — белок в полости заметнее
       const P = fold.geometry.attributes.position.array; for (let i = 0; i < P.length; i++) P[i] = pN[i] + (pU[i] - pN[i]) * u; fold.geometry.attributes.position.needsUpdate = true; if (((t * 30) | 0) % 2 === 0) fold.geometry.computeVertexNormals();
       fold.position.copy(pos); fold.rotation.y += dt * 0.4;
       GR.visible = st.fmode === 'chap';
@@ -90,16 +121,16 @@ function makeProtein() {
     fold: '<b>Укладка и денатурация.</b> Форму белка задаёт его последовательность, но в тесной клетке длинной цепи помогают <b>шапероны</b>. Справа — реальная структура шаперонина <b>GroEL/GroES</b> (PDB 1AON): два кольца по 7 субъединиц (голубые) и «крышка» GroES (жёлтая) — бочка, внутри которой белок спокойно сворачивается, используя энергию АТФ. Слева — белок (лизоцим): режим «Нагрев» показывает <b>денатурацию</b> — разрушение вторичной и третичной структуры без разрыва пептидных связей; при мягком воздействии она обратима (ренатурация), при сильном — нет (сваренный белок яйца). Денатурируют нагрев, кислоты и щёлочи, соли тяжёлых металлов, спирт, мочевина.',
   };
   const labels = [
-    ...AAM.map((a) => ({ text: `${MOL(a.id).name} · ${a.l}${a.ess === 1 ? ' ★' : a.ess === 2 ? ' ☆' : ''}`, pos: a.g.position.clone().add(V3(-0.7, -0.92, 0)), color: PR_GR[a.gr][1], show: () => st.labels && st.mode === 'aa' })),
+    ...AAM.map((a) => ({ text: `${MOL(a.id).name} · ${a.l}${a.ess === 1 ? ' ★' : a.ess === 2 ? ' ☆' : ''}`, pos: a.g.position.clone().add(V3(-0.55, AAM.indexOf(a) % 2 ? 0.95 : -1.02, 0)), color: PR_GR[a.gr][1], show: () => st.labels && st.mode === 'aa' })),
     { text: 'N-конец', pos: V3(40 - 6.2, -0.4, 0), color: '#5B8CFF', show: () => st.labels && st.mode === 'lv' && st.lv === 1 },
     { text: 'C-конец', pos: V3(40 + 6.2, -0.4, 0), color: '#FF6A6A', show: () => st.labels && st.mode === 'lv' && st.lv === 1 },
     { text: 'пептидная связь + H₂O', pos: V3(40 - 3.8, 3.0, 0), color: '#F2E6C8', show: () => st.labels && st.mode === 'lv' && st.lv === 1 },
     { text: 'водородные связи α-спирали', pos: V3(41.3, 2.6, 0), color: '#FF8AB0', show: () => st.labels && st.mode === 'lv' && st.lv === 2 },
-    { text: 'гем', pos: V3(41.5, 0.8, 1.2), color: '#E0773A', show: () => st.labels && st.mode === 'lv' && st.lv >= 3 },
-    { text: 'α-цепи', pos: V3(38.2, 2.9, 0), color: '#7FD6FF', show: () => st.labels && st.mode === 'lv' && st.lv === 4 },
-    { text: 'β-цепи', pos: V3(42.2, -1.6, 0), color: '#FF8AB0', show: () => st.labels && st.mode === 'lv' && st.lv === 4 },
-    { text: 'шаперонин GroEL/GroES', pos: V3(80 + 4.2, 2.6, 0), color: '#7FD6FF', show: () => st.labels && st.mode === 'fold' && st.fmode === 'chap' },
-    { text: 'белок (лизоцим)', pos: V3(80 - 3.6, 2.0, 0), color: '#F2C14E', show: () => st.labels && st.mode === 'fold' },
+    { text: 'гем', get pos() { return scrOut(st.lv === 4 ? feC : feB, 1.0); }, color: '#E0773A', show: () => st.labels && st.mode === 'lv' && st.lv >= 3 },
+    { text: 'α-цепи', get pos() { return scrOut(cA, 1.8); }, color: '#7FD6FF', show: () => st.labels && st.mode === 'lv' && st.lv === 4 },
+    { text: 'β-цепи', get pos() { return scrOut(cB2, 1.8); }, color: '#FF8AB0', show: () => st.labels && st.mode === 'lv' && st.lv === 4 },
+    { text: 'шаперонин GroEL/GroES', pos: V3(80 + 4.6, 3.3, 0), color: '#7FD6FF', show: () => st.labels && st.mode === 'fold' && st.fmode === 'chap' },
+    { text: 'белок (лизоцим)', get pos() { return fold.getWorldPosition(V3(0, 0, 0)).add(st.fmode !== 'chap' ? V3(-1.4, 1.6, 0) : st.inside ? V3(-3.3, 0.2, 0) : V3(-0.9, 0.9, 0)); }, color: '#F2C14E', show: () => st.labels && st.mode === 'fold' },
   ];
   const refs = {};
   function ui(el) {
@@ -140,7 +171,7 @@ function makeProtein() {
         <p>Белки — полимеры из L-α-аминокислот, связанных пептидными связями. Функции: ферменты, транспорт (гемоглобин, альбумин), защита (антитела), движение (актин, миозин), структура (коллаген, кератин), регуляция (гормоны-белки), рецепторы.</p>
         <h3>Свойства</h3><p>Белки — амфотерные полиэлектролиты; в изоэлектрической точке заряд равен нулю и растворимость минимальна. Их осаждают высаливанием (обратимо) и солями тяжёлых металлов (необратимо); разделяют электрофорезом и хроматографией.</p>
         <h3>Болезни укладки</h3><p>Неправильно свёрнутые белки слипаются в амилоид: болезни Альцгеймера, Паркинсона, прионные болезни (Крейтцфельдта — Якоба).</p></div>
-      <div><h2>Модели</h2><ul><li>Гемоглобин — PDB 4HHB, шаперонин — 1AON, лизоцим — 1AKI.</li><li>Развёрнутая цепь — случайный клубок с теми же остатками; переход между клубком и нативной формой — плавная интерполяция, а не реальный путь укладки.</li><li>Аминокислоты — по формулам, без атомов водорода.</li></ul></div>
+      <div><h2>Модели</h2><ul><li>Гемоглобин — PDB 4HHB, шаперонин — 1AON, лизоцим — 1AKI. Шаперонин и лизоцим — в одном масштабе; пока белок внутри, передняя половина шаперонина срезана, чтобы была видна полость под крышкой GroES.</li><li>Развёрнутая цепь — случайный клубок с теми же остатками; переход между клубком и нативной формой — плавная интерполяция, а не реальный путь укладки.</li><li>Аминокислоты — по формулам, без атомов водорода.</li></ul></div>
       <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>3</code> режим</li><li><code>←</code> <code>→</code> уровень структуры</li><li><code>R</code> · <code>N</code></li></ul></div>`,
   };
   setMode('aa'); st.fly = null;
