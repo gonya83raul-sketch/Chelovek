@@ -9,5 +9,7 @@ for m in skeleton muscles vision digest repro; do git show origin/main:models/$m
 [ -d /opt/node-tools/node_modules/acorn ] || npm i --no-save acorn acorn-walk eslint-scope three@0.160.0
 [ -d node_modules/three ] || npm i --no-save three@0.160.0
 rm -rf lt/three && mkdir -p lt/three && cp -r node_modules/three/build node_modules/three/examples lt/three/
-pip install --quiet pillow playwright 2>/dev/null || pip install --quiet --break-system-packages pillow playwright || true
+# python-playwright той же версии, что и предустановленный node-playwright, иначе он не найдёт браузер
+PWV=$(node -e "console.log(require('playwright/package.json').version)" 2>/dev/null || true)
+pip install --quiet pillow "playwright${PWV:+==$PWV}" 2>/dev/null || pip install --quiet --break-system-packages pillow "playwright${PWV:+==$PWV}" || true
 echo "готово: python3 tools/build.py"

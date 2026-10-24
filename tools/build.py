@@ -31,7 +31,7 @@ for i, fn, name, grp in scenes:
 if scenes:
     page = page.replace(c0, c0 + "  { id: 'bio', name: 'Биохимия', scenes: [" + ', '.join(items) + '] },\n')
 import json, shutil
-APP = 'app5'   # меняется при каждой публикации со старой структурой кэша
+APP = 'app6'   # меняется при каждой публикации со старой структурой кэша
 OUT = os.path.join(ROOT, 'out'); os.makedirs(OUT, exist_ok=True)
 i0 = page.index('<script type="module">') ; i1 = page.index('</script>', i0)
 mod = page[i0 + len('<script type="module">'):i1]
