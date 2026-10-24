@@ -7,7 +7,7 @@
 function makeHeme() {
   rnd = mulberry(2501);
   const scene = bioStage({ bg: 0x09080a, rim: 0xf2c14e });
-  const VIEW = { synth: flyTarget(V3(-0.2, -2.6, 0), V3(0.6, -0.8, 20.5)), chem: flyTarget(V3(41.0, -2.3, 0), V3(41.4, -0.9, 16)), body: flyTarget(V3(80.3, -0.75, 0), V3(80.9, 0.5, 11.2)) };
+  const VIEW = { synth: flyTarget(V3(0.2, -2.3, 0), V3(1.0, -0.5, 20.5)), chem: flyTarget(V3(41.2, -2.2, 0), V3(41.6, -0.6, 19)), body: flyTarget(V3(80.3, -0.75, 0), V3(80.9, 0.5, 11.2)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.synth.pos);
   const controls = makeControls(camera, VIEW.synth.target); controls.minDistance = 3; controls.maxDistance = 40;
   const fx = new Sparks(1600, 0.08); scene.add(fx.obj);
@@ -24,7 +24,7 @@ function makeHeme() {
 
   /* ---------- 1. синтез гема ---------- */
   const G1 = new THREE.Group(); G1.position.set(1.7, -0.2, 0); scene.add(G1);
-  const mito = new THREE.Mesh(blobGeo(2.35, 1.55, 1.15, 7, 0.05, 4), glassMat(0xff9a5c, { rim: 0.6, base: 0.03, pow: 2.2, keep: true })); mito.position.set(-3.1, 0, -0.4); G1.add(mito);
+  const mito = new THREE.Mesh(blobGeo(2.35, 1.55, 1.15, 7, 0.05, 4), glassMat(0xff9a5c, { rim: 0.55, base: 0.018, pow: 2.2, keep: true })); mito.position.set(-3.1, 0, -0.4); G1.add(mito);
   // кристы — позади молекул
   const crMat = organMat('#B0603A', 0.3, { transparent: true, opacity: 0.25, depthWrite: false });
   for (let i = 0; i < 5; i++) { const c = new THREE.Mesh(ell3(0.07, 0.6 - Math.abs(i - 2) * 0.11, 0.6), crMat); c.position.set(-4.7 + i * 0.8, (i % 2 ? 0.25 : -0.25), -1.05); G1.add(c); }
@@ -35,8 +35,8 @@ function makeHeme() {
     { id: 'hmb', name: 'гидроксиметилбилан', pos: V3(2.7, -1.25, 0.3) },
     { id: 'uro', name: 'уропорфириноген III', pos: V3(3.8, 0.45, 0.2) },
     { id: 'copro', name: 'копропорфириноген III', pos: V3(1.6, 1.55, 0.2) },
-    { id: 'proto', name: 'протопорфирин IX', pos: V3(-2.2, 0.75, 0.2) },
-    { id: 'heme', name: 'гем', pos: V3(-4.2, 0.75, 0.2) },
+    { id: 'proto', name: 'протопорфирин IX', pos: V3(-1.9, 0.8, 0.2) },
+    { id: 'heme', name: 'гем', pos: V3(-4.5, 0.8, 0.2) },
   ];
   const ENZ = ['АЛК-синтаза · B₆', 'АЛК-дегидратаза · Zn²⁺', 'ПБГ-дезаминаза', 'уро-III-косинтаза', 'уро-декарбоксилаза', 'оксидазы', 'феррохелатаза · Fe²⁺'];
   const NM = [];
@@ -47,8 +47,8 @@ function makeHeme() {
   // порфириногены — неароматическое изогнутое кольцо с CH₂-мостиками (8 и 4 карбоксила)
   NM.push(molAt(G1, MOL('urogen3'), NODES[4].pos, 0.85, { tint: '#9A6AFF' }));
   NM.push(molAt(G1, MOL('coprogen3'), NODES[5].pos, 0.8, { tint: '#FF6AC0' }));
-  NM.push(hemAt(G1, NODES[6].pos, 0.85, { idx: noFe, tint: '#E04A6A' }));
-  NM.push(hemAt(G1, NODES[7].pos, 0.85));
+  NM.push(hemAt(G1, NODES[6].pos, 0.72, { idx: noFe, tint: '#E04A6A' }));
+  NM.push(hemAt(G1, NODES[7].pos, 0.72));
   const hemeGlow = glowNucleus(G1, NODES[7].pos, '#FF5A3A', 0.05, 7);
   const EDGE = [];
   for (let i = 0; i < 7; i++) { const a = NODES[i].pos.clone(), b = NODES[i + 1].pos.clone(); const d = b.clone().sub(a).normalize(); const fa = flowArrow(G1, a.clone().addScaledVector(d, 0.6), b.clone().addScaledVector(d, -0.65), '#F2C14E', { bend: i === 5 ? -0.18 : 0.12, r: 0.022 }); EDGE.push(fa); }
@@ -60,7 +60,7 @@ function makeHeme() {
 
   /* ---------- 2. химия распада ---------- */
   const G2 = new THREE.Group(); G2.position.set(40, 0, 0); scene.add(G2);
-  const CH = [V3(-3.5, -1.2, 0), V3(-0.4, -0.2, 0), V3(2.9, -0.2, 0), V3(5.6, -0.2, 0)];
+  const CH = [V3(-3.5, -0.85, 0), V3(-0.4, -0.2, 0), V3(2.9, -0.2, 0), V3(5.6, -0.2, 0)];
   const cm = [hemAt(G2, CH[0], 1.05), molAt(G2, MOL('biliverdin'), CH[1], 1.4), molAt(G2, MOL('bilirubin'), CH[2], 1.4)];
   // конъюгат: две глюкуроновые кислоты пришиты сложноэфирной связью к карбоксилам пропионатов билирубина (C1 глюкуроновой — к O пропионата)
   const GLU = [];
@@ -75,8 +75,8 @@ function makeHeme() {
       const bd = new THREE.Mesh(CYL, atomMat('O')); const d = tgt.clone().sub(pO); bd.position.copy(pO).addScaledVector(d, 0.5); bd.scale.set(0.13 * bs, d.length(), 0.13 * bs); bd.quaternion.setFromUnitVectors(V3(0, 1, 0), d.normalize()); g.add(bd); });
     cm.push(g); }
   const CHA = []; for (let i = 0; i < 3; i++) CHA.push(flowArrow(G2, CH[i].clone().add(V3(1.2, 0.0, 0)), CH[i + 1].clone().add(V3(-1.25, 0.0, 0)), '#F2C14E', { bend: 0.15, r: 0.03 }));
-  const side = [['co', V3(-1.55, 0.95, 0.3)], ['o2', V3(-1.7, -2.0, 0.3)]].map(([id, p]) => molAt(G2, MOL(id), p, 0.28));
-  const feOut = glowNucleus(G2, V3(-0.85, 1.0, 0.3), '#E0773A', 0.07, 6);
+  const side = [['co', V3(-1.55, 0.75, 0.3)], ['o2', V3(-1.7, -1.7, 0.3)]].map(([id, p]) => molAt(G2, MOL(id), p, 0.28));
+  const feOut = glowNucleus(G2, V3(-0.85, 0.8, 0.3), '#E0773A', 0.07, 6);
   const light = new THREE.Mesh(new THREE.ConeGeometry(2.2, 4.4, 40, 1, true), new THREE.MeshBasicMaterial({ color: 0x4a7aff, transparent: true, opacity: 0.09, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false })); light.position.set(2.9, 2.3, 0); G2.add(light);
   const lamp = glowNucleus(G2, V3(2.9, 4.5, 0), '#5A8AFF', 0.1, 10);
 
@@ -153,7 +153,7 @@ function makeHeme() {
       const k = Math.floor(st.cs);
       cm.forEach((g, i) => { g.rotation.y = Math.sin(t * 0.35 + i) * 0.4 + (i === 0 ? 0 : 0); g.scale.setScalar(i === k ? 1.08 : 0.94); });
       CHA.forEach((A, i) => { A.mat.uniforms.uTime.value = t; A.mat.uniforms.uOn.value = i === k ? 0.6 : 0.15; });
-      side.forEach((g, i) => { g.position.y = (i ? -2.0 : 0.95) + Math.sin(t + i) * 0.08; });
+      side.forEach((g, i) => { g.position.y = (i ? -1.7 : 0.75) + Math.sin(t + i) * 0.08; });
       light.visible = lamp.spr.visible = st.photo; lamp.core.visible = st.photo; if (st.photo) light.material.opacity = 0.07 + 0.03 * Math.sin(t * 5);
     }
     if (st.mode === 'body') {
@@ -198,15 +198,15 @@ function makeHeme() {
     '<b>Механическая (подпечёночная) желтуха</b>: желчь не выходит в кишку (камень в протоке, опухоль головки поджелудочной). Конъюгированный билирубин возвращается в кровь — резко растёт <b>прямой</b>, моча тёмная, кал обесцвечен, уробилина в моче нет; кожный зуд от желчных кислот.',
     '<b>Физиологическая желтуха новорождённых</b> (2–5-й дни): после рождения разрушается фетальный гемоглобин, а УДФ-глюкуронилтрансфераза печени ещё незрелая — растёт <b>непрямой</b> билирубин. Опасность — ядерная желтуха (непрямой билирубин проникает в мозг). Лечение — <b>фототерапия</b>: синий свет (~460 нм) превращает билирубин в водорастворимые изомеры, которые выводятся без конъюгации.'];
   const labels = [
-    ...NODES.map((n, i) => ({ text: n.name, pos: n.pos.clone().add(G1.position).add(V3(0, i <= 1 ? -0.95 : i >= 6 ? 0.85 : i >= 4 ? 0.95 : -0.85, 0.2)), color: i === 7 ? '#FF6A3A' : i >= 4 ? '#D08AFF' : '#F2C14E', show: () => st.labels && st.mode === 'synth' })),
-    ...ENZ.map((e, i) => ({ text: e, get pos() { return EDGE[i].curve.getPoint(0.5).add(G1.position).add(V3(0, [0.32, 0.3, -0.3, -0.25, 0.25, 0.3, 0.28][i], 0.4)); }, color: BLOCK[st.block] && BLOCK[st.block].includes(i) ? '#FF4A5A' : 'rgba(239,234,230,.62)', show: () => st.labels && st.mode === 'synth' })),
-    { text: 'митохондрия', pos: V3(-3.1 + 1.7, -1.95, 0.4), color: '#FF9A5C', show: () => st.labels && st.mode === 'synth' },
+    ...NODES.map((n, i) => ({ text: n.name, pos: n.pos.clone().add(G1.position).add(V3([-0.5, 0.3, 0, 0, 0, 0, 0, -0.3][i], i <= 1 ? -0.95 : i >= 6 ? 0.85 : i === 4 ? 1.05 : i === 5 ? 0.95 : -0.85, 0.2)), color: i === 7 ? '#FF6A3A' : i >= 4 ? '#D08AFF' : '#F2C14E', show: () => st.labels && st.mode === 'synth' })),
+    ...ENZ.map((e, i) => ({ text: e, get pos() { return EDGE[i].curve.getPoint(0.5).add(G1.position).add(V3([0, 0, 0, 0, -0.3, 0, -0.85][i], [0.32, 0.3, -0.3, -0.25, 1.0, 0.3, 0.85][i], 0.4)); }, color: BLOCK[st.block] && BLOCK[st.block].includes(i) ? '#FF4A5A' : 'rgba(239,234,230,.62)', show: () => st.labels && st.mode === 'synth' })),
+    { text: 'митохондрия', pos: V3(-5.0, -1.25, 0.4), color: '#FF9A5C', show: () => st.labels && st.mode === 'synth' },
     { text: 'цитоплазма', pos: V3(4.6 + 1.7, -1.6, 0.4), color: '#9FB4FF', show: () => st.labels && st.mode === 'synth' },
     { text: 'гем подавляет АЛК-синтазу', pos: V3(-3.3 + 1.7, 1.6, 0.4), color: '#FF4A6A', show: () => st.labels && st.mode === 'synth' && st.fb },
-    ...[['гем', 0, '#FF6A3A'], ['биливердин', 1, '#5CC48A'], ['билирубин (непрямой)', 2, '#FF9A3A'], ['билирубин-диглюкуронид (прямой)', 3, '#F2E05A']].map(([n, i, c]) => ({ text: n, pos: CH[i].clone().add(V3(40, i ? -2.0 : -1.45, 0.3)).add(V3(i === 0 ? -0.35 : i === 3 ? -0.9 : 0, i === 3 ? -0.55 : 0, 0)), color: c, show: () => st.labels && st.mode === 'chem' })),
+    ...[['гем', 0, '#FF6A3A'], ['биливердин', 1, '#5CC48A'], ['билирубин (непрямой)', 2, '#FF9A3A'], ['билирубин-диглюкуронид (прямой)', 3, '#F2E05A']].map(([n, i, c]) => ({ text: n, pos: CH[i].clone().add(V3(40, i ? -1.8 : -1.45, 0.3)).add(V3(i === 0 ? -0.35 : i === 3 ? -0.4 : 0, 0, 0)), color: c, show: () => st.labels && st.mode === 'chem' })),
     ...[['гемоксигеназа · O₂, НАДФН', 0], ['биливердинредуктаза · НАДФН', 1], ['УДФ-глюкуронилтрансфераза', 2]].map(([n, i]) => ({ text: n, pos: CH[i].clone().lerp(CH[i + 1], 0.5).add(V3(40, 0.75, 0.3)), color: 'rgba(239,234,230,.62)', show: () => st.labels && st.mode === 'chem' })),
-    { text: 'CO', pos: V3(40 - 1.75, 1.45, 0.3), color: '#F2CC3A', show: () => st.labels && st.mode === 'chem' }, { text: 'Fe²⁺', pos: V3(40 - 0.75, 1.45, 0.3), color: '#E0773A', show: () => st.labels && st.mode === 'chem' },
-    { text: 'глюкуроновая кислота', get pos() { return (GLU[0] ? GLU[0].getWorldPosition(V3(0, 0, 0)) : V3(45.6, -1.6, 0)).add(V3(0.2, -0.25, 0.3)); }, color: '#7FE0A0', show: () => st.labels && st.mode === 'chem' && GLU.length > 0 },
+    { text: 'CO', pos: V3(40 - 1.75, 1.25, 0.3), color: '#F2CC3A', show: () => st.labels && st.mode === 'chem' }, { text: 'Fe²⁺', pos: V3(40 - 0.75, 1.25, 0.3), color: '#E0773A', show: () => st.labels && st.mode === 'chem' },
+    { text: 'глюкуроновая кислота', get pos() { return (GLU[1] || GLU[0] ? (GLU[1] || GLU[0]).getWorldPosition(V3(0, 0, 0)) : V3(45.6, -1.6, 0)).add(V3(0.5, -0.1, 0.3)); }, color: '#7FE0A0', show: () => st.labels && st.mode === 'chem' && GLU.length > 0 },
     { text: 'O₂', get pos() { return side[1].getWorldPosition(V3(0, 0, 0)).add(V3(0.3, -0.05, 0)); }, color: '#F04848', show: () => st.labels && st.mode === 'chem' },
     { text: 'синий свет 460 нм', pos: V3(40 + 2.9, 4.3, 0), color: '#7FA8FF', show: () => st.labels && st.mode === 'chem' && st.photo },
     ...[['селезёнка', 'spleen', V3(1.25, 1.9, 0)], ['печень', 'liver', V3(-1.25, 1.75, 0.3)], ['желчный пузырь', 'gb', V3(-1.0, 1.05, 0.6)], ['кишечник', 'gut', V3(0.75, 0.35, 0.5)], ['почки', 'kid', V3(1.1, 1.05, 0)], ['моча', 'bladder', V3(0.5, -0.5, 0.4)], ['кал', 'out', V3(-0.45, -1.0, 0.2)]].map(([n, id, p]) => ({ text: n, pos: p.clone().add(V3(80, 0, 0)), color: '#EFEAE6', show: () => st.labels && st.mode === 'body' })),
