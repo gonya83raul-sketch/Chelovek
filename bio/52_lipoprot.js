@@ -57,13 +57,13 @@ function makeLipoprot() {
     { id: 'ldl', c: '#FF9A50', pts: [V3(0.45, -1.0, 0.2), V3(0.5, -1.6, 0.18), V3(0.2, 0.0, 0.3), V3(-0.2, 1.4, 0.35)], s0: 0.4, s1: 0.4 },
     { id: 'hdl', c: '#7FD6FF', pts: [V3(-0.45, 1.3, 0.35), V3(0.55, -1.4, 0.22), V3(-0.5, -1.3, 0.12), V3(-0.3, 1.5, 0.35)], s0: 0.22, s1: 0.32 },
   ];
-  PATHS.forEach((p) => { p.curve = new THREE.CatmullRomCurve3(p.pts); const f = flowTubeMat(p.c, 0.3, 2); f.uniforms.uOn.value = 0.5; G2.add(new THREE.Mesh(new THREE.TubeGeometry(p.curve, 80, 0.03, 6), f)); p.mat = f; p.balls = [0, 1, 2].map((k) => { const m = new THREE.Mesh(new THREE.SphereGeometry(0.11, 16, 12), new THREE.MeshPhysicalMaterial({ color: new THREE.Color(p.c).multiplyScalar(0.6), emissive: new THREE.Color(p.c), emissiveIntensity: 0.3, roughness: 0.3, clearcoat: 0.6 })); G2.add(m); return { m, u: k / 3 }; }); });
+  PATHS.forEach((p) => { p.lab = V3(0, 0, 0); p.curve = new THREE.CatmullRomCurve3(p.pts); const f = flowTubeMat(p.c, 0.3, 2); f.uniforms.uOn.value = 0.5; G2.add(new THREE.Mesh(new THREE.TubeGeometry(p.curve, 80, 0.03, 6), f)); p.mat = f; p.balls = [0, 1, 2].map((k) => { const m = new THREE.Mesh(new THREE.SphereGeometry(0.11, 16, 12), new THREE.MeshPhysicalMaterial({ color: new THREE.Color(p.c).multiplyScalar(0.6), emissive: new THREE.Color(p.c), emissiveIntensity: 0.3, roughness: 0.3, clearcoat: 0.6 })); G2.add(m); return { m, u: k / 3 }; }); });
   /* ---------- 3. атеросклероз ---------- */
   const G3 = new THREE.Group(); G3.position.set(80, 0, 0); scene.add(G3);
   const wallG = new THREE.Group(); wallG.position.set(0, 0.4, 0); G3.add(wallG);
   const half = (r, color, op = 1) => { const g = new THREE.CylinderGeometry(r, r, 9, 64, 1, true, 0, Math.PI); g.rotateZ(Math.PI / 2); const m = new THREE.Mesh(g, new THREE.MeshPhysicalMaterial({ color: new THREE.Color(color).multiplyScalar(0.22), roughness: 0.6, side: THREE.DoubleSide, transparent: op < 1, opacity: op, envMapIntensity: 0.25 })); m.rotation.x = -Math.PI / 2 - 0.35; wallG.add(m); return m; };
   half(2.3, '#C05050'); half(2.0, '#E08080'); half(1.75, '#F0B0B0');
-  const plaque = new THREE.Mesh(new THREE.SphereGeometry(1, 48, 32, 0, Math.PI * 2, 0, Math.PI / 2), new THREE.MeshPhysicalMaterial({ color: 0x8a6a20, roughness: 0.4, clearcoat: 0.5, emissive: 0x5a3a08, emissiveIntensity: 0.15 })); const PN = V3(0, 0.97, 0.25).normalize(), PX = V3(1, 0, 0), PT = PX.clone().cross(PN), PB = wallG.position.clone().addScaledVector(PN, -1.72).add(V3(0.3, 0, 0)); // бляшка на интиме дна жёлоба, купол — по нормали к оси
+  const plaque = new THREE.Mesh(new THREE.SphereGeometry(1, 48, 32, 0, Math.PI * 2, 0, Math.PI / 2), new THREE.MeshPhysicalMaterial({ color: 0x8a6a20, roughness: 0.4, clearcoat: 0.5, emissive: 0x5a3a08, emissiveIntensity: 0.15 })); const PN = V3(0, 0.8, 0.6).normalize(), PX = V3(1, 0, 0), PT = PX.clone().cross(PN), PB = wallG.position.clone().addScaledVector(PN, -1.72).add(V3(0.3, 0, 0)); // бляшка на интиме дна жёлоба, купол — по нормали к оси
   plaque.material.transparent = true; plaque.material.opacity = 0.7; plaque.material.depthWrite = false; plaque.position.copy(PB); plaque.quaternion.setFromUnitVectors(V3(0, 1, 0), PN); G3.add(plaque);
   const cap = new THREE.Mesh(new THREE.SphereGeometry(1.04, 48, 32, 0, Math.PI * 2, 0, Math.PI / 2), new THREE.MeshPhysicalMaterial({ color: 0xd8c8c0, roughness: 0.4, transparent: true, opacity: 0.45, depthWrite: false })); cap.position.copy(plaque.position); cap.quaternion.copy(plaque.quaternion); G3.add(cap);
   const foam = []; for (let k = 0; k < 7; k++) { const g = new THREE.Group(); const b = new THREE.Mesh(blobGeo(0.2, 0.16, 0.18, k + 60, 0.12, 3), protMat('#E0C8A0', 0.4)); g.add(b); for (let q = 0; q < 5; q++) { const s = new THREE.Mesh(new THREE.SphereGeometry(0.045, 10, 8), new THREE.MeshPhysicalMaterial({ color: 0xc8a030, emissive: 0xc8a030, emissiveIntensity: 0.25 })); s.position.copy(randUnit().multiplyScalar(0.1)); g.add(s); } g.userData.l = V3(rand(-0.6, 0.6), rand(0.15, 0.5), rand(-0.5, 0.5)); G3.add(g); foam.push(g); }
@@ -80,7 +80,7 @@ function makeLipoprot() {
   function update(dt) {
     st.t += dt; const t = st.t; controls.autoRotate = false; flyStep(st, camera, controls, dt);
     if (st.mode === 'part') { if (st.rot) { PP.forEach((p) => { p.g.rotation.y += dt * 0.25; }); disc.rotation.z += dt * 0.2; } PP.forEach((p) => { const s = st.sel === p.d.id ? 1.12 : 1; p.g.scale.lerp(V3(s, s, s), 1 - Math.exp(-dt * 6)); }); }
-    if (st.mode === 'trans') PATHS.forEach((p) => { p.mat.uniforms.uTime.value = t; p.balls.forEach((b) => { b.u = (b.u + dt * 0.08) % 1; b.m.position.copy(p.curve.getPointAt(b.u)); b.m.scale.setScalar(p.s0 + (p.s1 - p.s0) * b.u); }); });
+    if (st.mode === 'trans') PATHS.forEach((p) => { p.mat.uniforms.uTime.value = t; p.balls.forEach((b) => { b.u = (b.u + dt * 0.08) % 1; b.m.position.copy(p.curve.getPointAt(b.u)); b.m.scale.setScalar(p.s0 + (p.s1 - p.s0) * b.u); }); p.lab.copy(p.balls[0].m.position).add(G2.position).add(V3(0.08, 0.06, 0)); /* бегущая подпись потока */ });
     if (st.mode === 'athero') {
       const ldl = st.stat ? st.ldl * 0.55 : st.ldl;
       st.years = Math.min(60, st.years + dt * 2.5);
@@ -113,14 +113,14 @@ function makeLipoprot() {
     { text: 'ЛПВП крупным планом (реальная модель)', pos: V3(3.8, -1.2, 0), color: '#7FD6FF', show: () => st.labels && st.mode === 'part' },
     { text: 'апоA-I', pos: V3(6.6, 1.4, 0.5), color: '#9FE0FF', show: () => st.labels && st.mode === 'part' },
     { text: 'ядро: ТАГ и эфиры холестерина', pos: V3(-6.2, 1.45, 1.5), color: '#E8C060', show: () => st.labels && st.mode === 'part' },
-    ...PATHS.map((p) => ({ text: { cm: 'хиломикрон', vldl: 'ЛПОНП', ldl: 'ЛПНП', hdl: 'ЛПВП' }[p.id], pos: p.balls[0].m.position, color: p.c, show: () => st.labels && st.mode === 'trans' })),
+    ...PATHS.map((p) => ({ text: { cm: 'хиломикрон', vldl: 'ЛПОНП', ldl: 'ЛПНП', hdl: 'ЛПВП' }[p.id], pos: p.lab, color: p.c, show: () => st.labels && st.mode === 'trans' })),
     { text: 'кишка', pos: V3(40.6, 0.75, 0.4), color: '#E8A0A0', show: () => st.labels && st.mode === 'trans' },
     { text: 'печень', pos: V3(40 - 1.3, 1.6, 0.3), color: '#E07A5A', show: () => st.labels && st.mode === 'trans' },
     { text: 'жировая ткань', pos: V3(41.4, 0.3, 0.3), color: '#F2D08A', show: () => st.labels && st.mode === 'trans' },
     { text: 'мышцы', pos: V3(40 - 1.3, -1.3, 0.2), color: '#C0504A', show: () => st.labels && st.mode === 'trans' },
     { text: 'артерия', pos: V3(40.8, -1.8, 0.2), color: '#FF6A6A', show: () => st.labels && st.mode === 'trans' },
     { text: 'просвет артерии', pos: V3(80 - 3.6, 0.8, 0.5), color: '#F0B0B0', show: () => st.labels && st.mode === 'athero' },
-    { text: 'бляшка, пенистые клетки', pos: V3(80 + 1.3, -0.65, 0.1), color: '#C8A030', show: () => st.labels && st.mode === 'athero' },
+    { text: 'бляшка, пенистые клетки', pos: V3(80 + 1.3, -0.5, -0.5), color: '#C8A030', show: () => st.labels && st.mode === 'athero' },
     ...['ацетил-КоА', 'ГМГ-КоА', 'мевалонат', 'холестерин'].map((n, k) => ({ text: n, pos: V3(80 - 3.6 + k * 1.75 - 0.4, 2.0, 0.3), color: '#D9D2D8', show: () => st.labels && st.mode === 'athero' })),
     { text: 'ГМГ-КоА-редуктаза', pos: V3(80 - 1.6, 3.1, 0.3), color: '#FF8A8A', show: () => st.labels && st.mode === 'athero' },
   ];

@@ -47,7 +47,7 @@ function makeGlycogen() {
   const panc = new THREE.Mesh(blobGeo(0.5, 0.12, 0.14, 6, 0.1, 4), organMat('#E8B070', 0.55)); panc.position.set(0.25, 1.2, -0.05); panc.rotation.z = 0.2; G2.add(panc);
   const brain = new THREE.Mesh(ell3(0.3, 0.25, 0.35, BODY.head), organMat('#E0A0B8', 0.45)); G2.add(brain);
   const musL = [1, -1].map((s) => { const m = new THREE.Mesh(tube([V3(0.47 * s, -0.3, 0.05), V3(0.5 * s, -1.2, 0.08), V3(0.48 * s, -2.0, 0.06)], 0.24), organMat('#C0504A', 0.4)); G2.add(m); return m; });
-  [1, -1].forEach((s) => { const k = new THREE.Mesh(blobGeo(0.16, 0.24, 0.12, 8 + s, 0.08, 3), organMat('#A04040', 0.5)); k.position.set(0.4 * s, 0.9, -0.3); G2.add(k); }); // почки
+  [1, -1].forEach((s) => { const k = new THREE.Mesh(blobGeo(0.16, 0.24, 0.12, 8 + s, 0.08, 3), organMat('#A04040', 0.5)); k.position.set(0.62 * s, 0.98, -0.2); G2.add(k); }); // почки
   const fat = new THREE.Mesh(ell3(0.8, 0.35, 0.3, V3(0, 0.6, 0.35)), organMat('#F2D08A', 0.35, { transparent: true, opacity: 0.6 })); G2.add(fat);
   const HEART = BODY.heart.clone();
   const fGlu = [flowArrow(G2, liver.position.clone().add(V3(0.3, 0.2, 0.2)), HEART.clone().add(V3(0, -0.1, 0.1)), '#F2C14E', { bend: 0.3 }), flowArrow(G2, HEART.clone().add(V3(0.1, 0.2, 0)), BODY.head.clone().add(V3(0.1, -0.35, 0)), '#F2C14E', { bend: -0.2 }), flowArrow(G2, HEART.clone().add(V3(0.2, -0.3, 0)), V3(0.5, -0.5, 0.1), '#F2C14E', { bend: -0.25 })];
@@ -97,7 +97,7 @@ function makeGlycogen() {
       fIns.mat.uniforms.uOn.value = clamp(st.ins, 0.05, 1); fGlg.mat.uniforms.uOn.value = clamp(st.glg, 0.05, 1);
       fGlu.forEach((f) => { f.mat.uniforms.uOn.value = clamp(st.glu / 8, 0.2, 1.2); });
       liver.material.emissiveIntensity = 0.04 + 0.3 * st.glycL; panc.material.emissiveIntensity = 0.04 + 0.4 * st.ins;
-      if (renal > 0 && rnd() < 0.3) fx.spawn(V3(40 + 0.4 * (rnd() < 0.5 ? 1 : -1), 0.9, -0.3), randUnit().multiplyScalar(0.2), new THREE.Color(0xf2c14e), 0.6, 1, 1.2);
+      if (renal > 0 && rnd() < 0.3) fx.spawn(V3(40 + 0.62 * (rnd() < 0.5 ? 1 : -1), 0.98, -0.2), randUnit().multiplyScalar(0.2), new THREE.Color(0xf2c14e), 0.6, 1, 1.2);
     }
     fx.update(dt);
   }
@@ -125,7 +125,7 @@ function makeGlycogen() {
     { text: 'мозг', pos: V3(40.4, 4.4, 0), color: '#E0A0B8', show: () => st.labels && st.mode === 'blood' },
     { text: 'мышцы', pos: V3(40.8, -1.2, 0.2), color: '#C0504A', show: () => st.labels && st.mode === 'blood' },
     { text: 'жировая ткань', pos: V3(40 - 1.0, 0.5, 0.4), color: '#F2D08A', show: () => st.labels && st.mode === 'blood' },
-    { text: 'почки (глюкозурия)', pos: V3(40 + 0.6, 0.75, 0.2), color: '#E07070', show: () => st.labels && st.mode === 'blood' },
+    { text: 'почки (глюкозурия)', pos: V3(40 + 0.82, 0.85, 0.2), color: '#E07070', show: () => st.labels && st.mode === 'blood' },
   ];
   const refs = {};
   function ui(el) {

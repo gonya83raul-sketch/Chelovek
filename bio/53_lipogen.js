@@ -20,12 +20,12 @@ function makeLipogen() {
   /* ---------- 1. сборка ТАГ ---------- */
   const G1 = new THREE.Group(); G1.position.set(0.6, 0, 0); scene.add(G1);
   const ST = [
-    { id: 'g3p', x: -3.4, R: 0.55, name: 'глицерол-3-фосфат' }, { id: 'pa', x: -1.0, R: 0.95, name: 'фосфатидная кислота' },
-    { id: 'dag', x: 1.4, R: 0.95, name: 'диацилглицерол' }, { id: 'tag', x: 3.8, R: 1.05, name: 'триацилглицерол (жир)' },
+    { id: 'g3p', x: -3.4, R: 0.55, name: 'глицерол-3-фосфат' }, { id: 'pa', x: -1.0, R: 1.25, name: 'фосфатидная кислота' },
+    { id: 'dag', x: 1.4, R: 1.2, name: 'диацилглицерол' }, { id: 'tag', x: 3.8, R: 1.25, name: 'триацилглицерол (жир)' },
   ];
-  const Y1 = 1.0;
+  const Y1 = 1.3;
   ST.forEach((s, i) => { s.g = s.id === 'g3p' ? fit(s.id, s.R) : fitV(s.id, s.R); s.g.position.set(s.x, Y1, 0); G1.add(s.g); s.glow = glowNucleus(G1, V3(s.x, Y1, -0.3), COL[s.id], 0.1, 14); s.glow.core.visible = false; s.glow.spr.material.opacity = 0.08; });
-  const ARR1 = [0, 1, 2].map((i) => flowArrow(G1, V3(ST[i].x + ST[i].R * 0.75, Y1 - 0.15, 0), V3(ST[i + 1].x - ST[i + 1].R * 0.75, Y1 - 0.15, 0), '#E8C060', { bend: 0.12 }));
+  const ARR1 = [0, 1, 2].map((i) => flowArrow(G1, V3(ST[i].x + (i ? 0.45 : ST[i].R * 0.75), Y1 - 0.15, 0), V3(ST[i + 1].x - 0.45, Y1 - 0.15, 0), '#E8C060', { bend: 0.12 }));
   const ENZ1 = ['ацилтрансферазы (+2 ацил-КоА)', 'фосфатаза (−Pi)', 'ацилтрансфераза (+ацил-КоА)'];
   // ацил-КоА: «хвосты» пальмитата, прилетающие сверху
   const ACYL = []; for (let i = 0; i < 4; i++) { const m = fit('palmitic', 0.75); m.visible = false; G1.add(m); ACYL.push({ m, age: 9, a: V3(0, 0, 0), b: V3(0, 0, 0) }); }
@@ -34,16 +34,16 @@ function makeLipogen() {
   const SRC = [{ id: 'glucose', x: -4.4, y: -1.2, name: 'глюкоза → ДГАФ' }, { id: 'glycerol', x: -2.3, y: -1.2, name: 'глицерол (только печень)' }];
   SRC.forEach((s) => { s.g = fit(s.id, 0.5); s.g.position.set(s.x, s.y, 0); G1.add(s.g); s.a = flowArrow(G1, V3(s.x, s.y + 0.5, 0), V3(ST[0].x + (s.x < ST[0].x ? -0.25 : 0.25), Y1 - 0.55, 0), COL.g3p, { bend: s.x < ST[0].x ? -0.2 : 0.2 }); });
   // куда идёт жир: ЛПОНП (печень) или капля (жировая ткань)
-  const vldl = new THREE.Group(); vldl.position.set(3.8, -1.15, 0); G1.add(vldl);
+  const vldl = new THREE.Group(); vldl.position.set(3.8, -1.5, 0); G1.add(vldl);
   vldl.add(new THREE.Mesh(new THREE.SphereGeometry(0.62, 32, 24), protMat(COL.tag, 0.35)));
   { const shell = new THREE.Mesh(new THREE.SphereGeometry(0.72, 32, 24), glassMat(0x7fd6ff, { rim: 0.6, base: 0.02, pow: 2 })); vldl.add(shell); const apo = new THREE.Mesh(new THREE.TorusGeometry(0.72, 0.05, 8, 48), protMat('#FF8AB0', 0.6)); apo.rotation.x = 1.1; vldl.add(apo); }
-  const drop = new THREE.Mesh(new THREE.SphereGeometry(0.75, 32, 24), new THREE.MeshPhysicalMaterial({ color: new THREE.Color(COL.tag).multiplyScalar(0.28), roughness: 0.3, clearcoat: 0.6, emissive: new THREE.Color(COL.tag), emissiveIntensity: 0.015, envMapIntensity: 0.4 })); drop.position.set(3.8, -1.15, 0); G1.add(drop);
-  const aOut = flowArrow(G1, V3(3.8, Y1 - 1.0, 0), V3(3.8, -0.3, 0), COL.tag, { bend: 0 });
+  const drop = new THREE.Mesh(new THREE.SphereGeometry(0.75, 32, 24), new THREE.MeshPhysicalMaterial({ color: new THREE.Color(COL.tag).multiplyScalar(0.28), roughness: 0.4, clearcoat: 0.5, clearcoatRoughness: 0.4, emissive: new THREE.Color(COL.tag), emissiveIntensity: 0.015, envMapIntensity: 0.4 })); drop.position.set(3.8, -1.5, 0); G1.add(drop);
+  const aOut = flowArrow(G1, V3(3.8, Y1 - 1.35, 0), V3(3.8, -0.7, 0), COL.tag, { bend: 0 });
 
   /* ---------- 2. фосфолипиды и печень ---------- */
   const OX2 = 41.3; const G2 = new THREE.Group(); G2.position.set(OX2, 0, 0); scene.add(G2);
   const P2 = { pa: V3(-4.0, 1.9, 0), dag: V3(-1.9, 1.9, 0), pc: V3(0.4, 2.8, 0), pe: V3(0.4, 0.6, 0), cdpdag: V3(-4.0, -0.7, 0), pi: V3(-1.9, -0.7, 0) };
-  const n2 = { pa: fitV('pa', 0, { scale: 0.055 }), dag: fitV('dag', 0, { scale: 0.055 }), pc: fitV(lipidMol(68), 0, { scale: 0.055 }), pe: fitV('pe', 0, { scale: 0.055 }), cdpdag: fitV('cdpdag', 0, { scale: 0.055 }), pi: fitV('ptdins', 0, { scale: 0.055 }) }; // ФЭ, ЦДФ-ДАГ и ФИ — свои молекулы (этаноламин, цитидин, инозитол)
+  const n2 = { pa: fitV('pa', 0, { scale: 0.058, bondR: 0.2 }), dag: fitV('dag', 0, { scale: 0.058, bondR: 0.2 }), pc: fitV(lipidMol(68), 0, { scale: 0.058, bondR: 0.2 }), pe: fitV('pe', 0, { scale: 0.058, bondR: 0.2 }), cdpdag: fitV('cdpdag', 0, { scale: 0.058, bondR: 0.2 }), pi: fitV('ptdins', 0, { scale: 0.058, bondR: 0.2 }) }; // ФЭ, ЦДФ-ДАГ и ФИ — свои молекулы (этаноламин, цитидин, инозитол)
   Object.entries(n2).forEach(([k, g]) => { g.position.copy(P2[k]); G2.add(g); });
   const cho = fit('choline', 0.35); cho.position.set(-1.2, 3.05, 0.2); G2.add(cho);
   const A2 = {
@@ -67,7 +67,7 @@ function makeLipogen() {
   /* ---------- 3. жировая ткань и ожирение ---------- */
   const G3 = new THREE.Group(); G3.position.set(80.7, 0, 0); scene.add(G3);
   const ADI = [];
-  const adiMat = new THREE.MeshPhysicalMaterial({ color: new THREE.Color(COL.tag).multiplyScalar(0.26), roughness: 0.3, clearcoat: 0.6, clearcoatRoughness: 0.3, emissive: new THREE.Color(COL.tag), emissiveIntensity: 0.012, envMapIntensity: 0.35 });
+  const adiMat = new THREE.MeshPhysicalMaterial({ color: new THREE.Color(COL.tag).multiplyScalar(0.26), roughness: 0.45, clearcoat: 0.5, clearcoatRoughness: 0.45, emissive: new THREE.Color(COL.tag), emissiveIntensity: 0.012, envMapIntensity: 0.35 });
   const cytMat = glassMat(0xffd8a0, { rim: 0.6, base: 0.015, pow: 2.4, keep: true });
   function addAdipocyte(p, born = 0) { const g = new THREE.Group(); g.position.copy(p); const d = new THREE.Mesh(new THREE.SphereGeometry(1, 32, 24), adiMat); const sh = new THREE.Mesh(new THREE.SphereGeometry(1.06, 32, 24), cytMat); const nu = new THREE.Mesh(ell3(0.18, 0.1, 0.14), protMat('#9F7BFF', 0.4)); g.add(d, sh, nu); G3.add(g); const a = { g, d, sh, nu, born, dir: randUnit() }; ADI.push(a); return a; }
   [[-1.6, 0.6], [0.2, 1.0], [1.9, 0.4], [-0.8, -0.9], [1.0, -0.9], [-2.6, -0.6], [2.8, -0.8]].forEach(([x, y]) => addAdipocyte(V3(x, y, rand(-0.3, 0.3))));
@@ -144,12 +144,12 @@ function makeLipogen() {
   };
   const labels = [
     ...ST.map((s) => ({ text: s.name, pos: V3(s.x + 0.6 - Math.min(1.0, s.name.length * 0.05), Y1 + s.R + 0.2, 0), color: COL[s.id], show: () => st.labels && st.mode === 'tag' })),
-    ...ENZ1.map((n, i) => ({ text: n, pos: V3((ST[i].x + ST[i + 1].x) / 2 + (i === 0 ? 0.1 : 0.6), Y1 - (i === 1 ? 1.15 : 0.7), 0.3), color: '#C8C8D0', show: () => st.labels && st.mode === 'tag' })),
+    ...ENZ1.map((n, i) => ({ text: n, pos: [V3(-2.35, Y1 - 1.55, 0.3), V3(0.85, Y1 - 1.95, 0.3), V3(4.8, Y1 - 0.6, 0.3)][i], color: '#C8C8D0', show: () => st.labels && st.mode === 'tag' })),
     { text: 'ацил-КоА', pos: V3(-0.9 + 0.6, Y1 + 2.0, 0.4), color: COL.acyl, show: () => st.labels && st.mode === 'tag' && st.cyc > 0.8 && st.cyc < 2.4 },
     { text: 'глюкоза → ДГАФ', pos: V3(-4.4 + 0.6, -1.85, 0.2), color: COL.g3p, show: () => st.labels && st.mode === 'tag' },
     { text: 'глицерол (печень)', pos: V3(-2.3 + 0.6, -1.85, 0.2), color: COL.g3p, show: () => st.labels && st.mode === 'tag' && st.tissue === 'liver' },
-    { text: 'ЛПОНП → кровь', pos: V3(3.8 + 1.4, -0.85, 0.2), color: '#7FD6FF', show: () => st.labels && st.mode === 'tag' && st.tissue === 'liver' },
-    { text: 'жировая капля', pos: V3(3.8 + 1.5, -0.85, 0.2), color: COL.tag, show: () => st.labels && st.mode === 'tag' && st.tissue === 'adipose' },
+    { text: 'ЛПОНП → кровь', pos: V3(3.8 + 1.4, -1.2, 0.2), color: '#7FD6FF', show: () => st.labels && st.mode === 'tag' && st.tissue === 'liver' },
+    { text: 'жировая капля', pos: V3(3.8 + 1.5, -1.2, 0.2), color: COL.tag, show: () => st.labels && st.mode === 'tag' && st.tissue === 'adipose' },
     { text: 'фосфатидная кислота', pos: P2.pa.clone().add(V3(OX2 - 0.5, 0.75, 0)), color: COL.pa, show: () => st.labels && st.mode === 'pl' },
     { text: 'ДАГ', pos: P2.dag.clone().add(V3(OX2 - 0.1, 0.75, 0)), color: COL.dag, show: () => st.labels && st.mode === 'pl' },
     { text: 'фосфатидилхолин', pos: P2.pc.clone().add(V3(OX2 + 0.2, 0.75, 0)), color: COL.pc, show: () => st.labels && st.mode === 'pl' },
