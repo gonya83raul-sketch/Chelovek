@@ -1,6 +1,7 @@
 """Кадры сцен без интерфейса: from capture import Cap; c = Cap(w, h, dsf); c.scene(id, keys, adv); c.shot(path)"""
 import time, math
 from playwright.sync_api import sync_playwright
+import os as _os; PORT = _os.environ.get('LT_PORT', '8765')  # свой порт для параллельных копий репозитория
 CLEAN = """
 .top,.subtabs,.console,.notes,.foot,#scope,.hud,.loading{display:none!important}
 .wrap{padding:0!important;max-width:none!important}
@@ -15,7 +16,7 @@ class Cap:
         self.labels = labels
     def scene(self, sid, keys=(), adv=2, js=None):
         pg = self.pg
-        pg.goto('http://127.0.0.1:8765/index.html#' + sid, wait_until='domcontentloaded')
+        pg.goto(f'http://127.0.0.1:{PORT}/index.html#' + sid, wait_until='domcontentloaded')
         pg.wait_for_function('window.__ready === %r' % sid, timeout=120000)
         pg.add_style_tag(content=CLEAN + ('' if self.labels else '.labels{display:none!important}'))
         time.sleep(1.0)

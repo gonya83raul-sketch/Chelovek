@@ -1,5 +1,6 @@
 import sys, time
 from playwright.sync_api import sync_playwright
+import os as _os; PORT = _os.environ.get('LT_PORT', '8765')  # свой порт для параллельных копий репозитория
 ids = sys.argv[1:]
 with sync_playwright() as p:
     b = p.chromium.launch(args=['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'])
@@ -8,7 +9,7 @@ with sync_playwright() as p:
     for sid in ids:
         pg = ctx.new_page(); pg.on('pageerror', lambda e: errs.append(str(e)[:200]))
         name = sid.split(':')[0]
-        pg.goto('http://127.0.0.1:8765/index.html#' + name, wait_until='domcontentloaded')
+        pg.goto(f'http://127.0.0.1:{PORT}/index.html#' + name, wait_until='domcontentloaded')
         pg.wait_for_function('window.__ready === %r' % name, timeout=90000); time.sleep(2.5)
         if ':' in sid:
             for k in sid.split(':')[1]: pg.keyboard.press(k); time.sleep(0.5)

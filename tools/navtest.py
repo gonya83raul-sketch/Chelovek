@@ -1,5 +1,6 @@
 import time
 from playwright.sync_api import sync_playwright
+import os as _os; PORT = _os.environ.get('LT_PORT', '8765')  # свой порт для параллельных копий репозитория
 errs = []
 with sync_playwright() as p:
     b = p.chromium.launch(args=['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'])
@@ -7,8 +8,8 @@ with sync_playwright() as p:
     pg.on('pageerror', lambda e: errs.append('PAGEERROR ' + str(e)[:300]))
     pg.on('console', lambda m: errs.append('CONSOLE ' + m.text[:200]) if m.type in ('error',) else None)
     net = []
-    pg.on('response', lambda r: net.append((r.url.split('8765/')[-1], r.status)))
-    pg.goto('http://127.0.0.1:8765/index.html#skeleton', wait_until='domcontentloaded')
+    pg.on('response', lambda r: net.append((r.url.split(PORT + '/')[-1], r.status)))
+    pg.goto(f'http://127.0.0.1:{PORT}/index.html#skeleton', wait_until='domcontentloaded')
     pg.wait_for_function("window.__ready === 'skeleton'", timeout=90000)
     t0 = time.time()
     pg.wait_for_function("!/Загруж/.test(document.querySelector('.console').innerText)", timeout=90000)

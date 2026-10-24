@@ -3,11 +3,12 @@
 Печатает ошибки страницы и консоли, результаты js (EVAL i ...). Последний снимок: lt/<sceneId>.png"""
 import os, subprocess, sys, time, urllib.request
 from playwright.sync_api import sync_playwright
+import os as _os; PORT = _os.environ.get('LT_PORT', '8765')  # свой порт для параллельных копий репозитория
 root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 try:
-    urllib.request.urlopen('http://127.0.0.1:8765/index.html', timeout=3)
+    urllib.request.urlopen(f'http://127.0.0.1:{PORT}/index.html', timeout=3)
 except Exception:
-    subprocess.Popen(['python3', '-m', 'http.server', '8765'], cwd=root + '/lt', stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
+    subprocess.Popen(['python3', '-m', 'http.server', PORT], cwd=root + '/lt', stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
     time.sleep(1.5)
 sid, steps = sys.argv[1], sys.argv[2:]
 errs = []
@@ -16,7 +17,7 @@ with sync_playwright() as p:
     pg = b.new_page(viewport={'width': 1440, 'height': 1000})
     pg.on('pageerror', lambda e: errs.append('PAGEERROR ' + str(e)[:400]))
     pg.on('console', lambda m: errs.append('CONSOLE ' + m.type + ' ' + m.text[:300]) if m.type in ('error', 'warning') else None)
-    pg.goto('http://127.0.0.1:8765/index.html#' + sid, wait_until='domcontentloaded')
+    pg.goto(f'http://127.0.0.1:{PORT}/index.html#' + sid, wait_until='domcontentloaded')
     try: pg.wait_for_function('window.__ready === %r' % sid, timeout=90000)
     except Exception as e: errs.append('NOTREADY ' + str(e)[:100])
     time.sleep(1.5)
