@@ -86,6 +86,7 @@ LIB = {
     'bhb': ('β-Гидроксибутират', 'C[C@@H](O)CC(=O)O'),
     'acetone': ('Ацетон', 'CC(C)=O'),
     'malonyl': ('Малонил-КоА', 'OC(=O)CC(=O)SC'),
+    'malonate': ('Малонат', 'OC(=O)CC(=O)O'),
     'hmgcoa': ('ГМГ-КоА', 'OC(=O)C[C@](C)(O)CC(=O)SC'),
     'mevalonate': ('Мевалонат', 'OC(=O)C[C@](C)(O)CCO'),
     'simvastatin': ('Симвастатин', 'CCC(C)(C)C(=O)O[C@H]1C[C@@H](C)C=C2C=C[C@H](C)[C@H](CC[C@@H]3C[C@@H](O)CC(=O)O3)[C@@H]12'),

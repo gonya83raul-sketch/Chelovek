@@ -13,44 +13,50 @@ const ETC_POIS = [
 function makeEtc() {
   rnd = mulberry(1101);
   const scene = bioStage({ bg: 0x08060a, rim: 0xffb070 });
-  const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 200); camera.position.set(0.4, 0.6, 20.5);
+  const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 200); camera.position.set(0.4, 2.6, 20.5);
   const controls = makeControls(camera, V3(0, -2.9, 0)); controls.minDistance = 4; controls.maxDistance = 40;
   const fx = new Sparks(2600, 0.08); scene.add(fx.obj);
   const MEMY = 0, TH = 0.95;
-  const mem = schemBilayer({ w: 17, d: 5.0, thick: TH, step: 0.27, head: '#C8A070', tail: '#8A6A4A', seed: 4 }); scene.add(mem);
+  const mem = schemBilayer({ w: 17, d: 5.0, thick: TH, step: 0.27, head: '#C8A070', tail: '#8A6A4A', seed: 4 }); mem.position.z = -2.65; scene.add(mem); // «срез»: передний край бислоя чуть позади комплексов — видны трансмембранные части
   // подписи сторон
   const P = (x, y, z = 0) => V3(x, y, z);
   // комплексы
   const C1 = P(-6.2, 0), C2 = P(-3.5, -0.85), C3 = P(-0.9, 0), C4 = P(2.1, 0), AS = P(5.7, 0);
   const cx = [];
   const addBlob = (pos, r, color, seed, pick) => { const m = new THREE.Mesh(blobGeo(r[0], r[1], r[2], seed, 0.1, 4), protMat(color, 0.32)); m.position.copy(pos); m.userData.pick = pick; scene.add(m); cx.push(m); return m; };
-  addBlob(P(-6.0, 0.05), [1.7, 0.42, 0.62], '#FF8A5C', 1, 'I');
+  addBlob(P(-6.0, 0.05), [1.7, 0.6, 0.62], '#FF8A5C', 1, 'I');
   addBlob(P(-7.1, -1.55), [0.62, 1.35, 0.6], '#FF8A5C', 2, 'I');
   addBlob(C2, [0.62, 0.9, 0.58], '#7FE0A0', 3, 'II');
   addBlob(P(-1.3, 0.05), [0.62, 1.25, 0.62], '#F2C14E', 4, 'III'); addBlob(P(-0.5, 0.05), [0.62, 1.25, 0.62], '#F2C14E', 5, 'III');
   addBlob(C4, [0.78, 1.15, 0.7], '#FF6A6A', 6, 'IV');
   // Fe-S кластеры (реальные координаты 4Fe-4S из ферредоксина 1BLU) по «руке» комплекса I
-  const sf4 = PDB('fdx').ligm[0]; const fesPts = []; for (let k = 0; k < 6; k++) { const p = P(-7.15 + 0.06 * k, -2.55 + k * 0.42, 0.62); fesPts.push(p); const m = molMesh(sf4, { scale: 0.11 }); m.position.copy(p); scene.add(m); }
+  const sf4 = PDB('fdx').ligm[0]; const fesPts = []; for (let k = 0; k < 6; k++) { const p = P(-7.15 + 0.06 * k, -2.55 + k * 0.42, 0.45); fesPts.push(p); const m = molMesh(sf4, { scale: 0.075 }); m.position.copy(p); scene.add(m); }
   // цитохром c и убихинон
   const cytc = new THREE.Mesh(blobGeo(0.3, 0.3, 0.3, 7, 0.12, 4), protMat('#FF5A7A', 0.4)); scene.add(cytc);
   const Q = [0, 1, 2].map(() => { const m = new THREE.Mesh(new THREE.SphereGeometry(0.13, 16, 12), new THREE.MeshPhysicalMaterial({ color: 0xc8a020, emissive: 0xffd040, emissiveIntensity: 0.3, roughness: 0.3 })); scene.add(m); return { m, busy: false, p: P(-4, 0, 0.5) }; });
   // АТФ-синтаза
   const rotor = new THREE.Group(); rotor.position.copy(AS); scene.add(rotor);
-  for (let k = 0; k < 10; k++) { const a = k / 10 * Math.PI * 2; const c = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, TH * 1.15, 12), protMat(k % 2 ? '#9F7BFF' : '#B79BFF', 0.38)); c.position.set(Math.cos(a) * 0.55, 0, Math.sin(a) * 0.55); rotor.add(c); }
-  const stalk = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.11, 1.9, 12), protMat('#C79BD8', 0.42)); stalk.position.set(0, -1.35, 0); rotor.add(stalk);
+  // ротор F₀: кольцо c₈ (у человека и быка 8 субъединиц) + ось γ и ε
+  for (let k = 0; k < 8; k++) { const a = k / 8 * Math.PI * 2; const c = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.17, TH * 1.15, 14), protMat(k % 2 ? '#9F7BFF' : '#B79BFF', 0.42)); c.position.set(Math.cos(a) * 0.5, 0, Math.sin(a) * 0.5); rotor.add(c); }
+  const stalk = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.11, 2.6, 12), protMat('#C79BD8', 0.42)); stalk.position.set(0, -1.75, 0); rotor.add(stalk);
+  // ε — эксцентрическая «лапка» на роторе (видно вращение) и изгиб γ внутри головки
+  const eps = new THREE.Mesh(blobGeo(0.22, 0.16, 0.2, 33, 0.08, 4), protMat('#E0A0FF', 0.45)); eps.position.set(0.22, -0.72, 0); rotor.add(eps);
+  const gKnob = new THREE.Mesh(blobGeo(0.13, 0.32, 0.1, 34, 0.06, 4), protMat('#C79BD8', 0.5)); gKnob.position.set(0.12, -2.55, 0); rotor.add(gKnob);
   const aSub = new THREE.Mesh(blobGeo(0.4, 0.62, 0.42, 9, 0.1, 4), protMat('#7FD6FF', 0.32)); aSub.position.copy(AS).add(P(0.95, 0)); aSub.userData.pick = 'ATP'; scene.add(aSub); cx.push(aSub);
-  const pstalk = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 2.8, 8), protMat('#7FD6FF', 0.35)); pstalk.position.copy(AS).add(P(1.0, -1.7)); scene.add(pstalk);
+  // периферический стебель b (статор): от субъединицы a вдоль головки к δ на её дальнем конце
+  const pstalk = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 3.3, 8), protMat('#7FD6FF', 0.35)); pstalk.position.copy(AS).add(P(0.95, -1.75)); scene.add(pstalk);
+  const pbridge = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.8, 8), protMat('#7FD6FF', 0.35)); pbridge.rotation.z = Math.PI / 2; pbridge.position.set(AS.x + 0.55, -3.4, 0); scene.add(pbridge);
   const F1 = new THREE.Group(); F1.position.copy(AS).add(P(0, -2.75)); scene.add(F1);
   const betas = [];
-  for (let k = 0; k < 6; k++) { const a = k / 6 * Math.PI * 2; const isB = k % 2 === 1; const m = new THREE.Mesh(blobGeo(0.36, 0.55, 0.36, 20 + k, 0.08, 4), protMat(isB ? '#F2C14E' : '#7FE0A0', 0.36)); m.position.set(Math.cos(a) * 0.5, 0, Math.sin(a) * 0.5); m.userData.pick = 'ATP'; F1.add(m); cx.push(m); if (isB) betas.push(m); }
+  for (let k = 0; k < 6; k++) { const a = k / 6 * Math.PI * 2; const isB = k % 2 === 1; const m = new THREE.Mesh(blobGeo(0.36, 0.55, 0.36, 20 + k, 0.08, 4), protMat(isB ? '#F2C14E' : '#7FE0A0', 0.36)); m.position.set(Math.cos(a) * 0.5, 0, Math.sin(a) * 0.5); m.userData.pick = 'ATP'; F1.add(m); cx.push(m); if (isB) { m.userData.ang = a; betas.push(m); } }
   const delta = new THREE.Mesh(blobGeo(0.32, 0.22, 0.32, 31, 0.08, 4), protMat('#7FD6FF', 0.35)); delta.position.set(0, -0.72, 0); F1.add(delta);
-  const atps = []; for (let k = 0; k < 8; k++) { const m = molMesh(MOL('atp'), { scale: 0.05, hideH: true }); m.visible = false; scene.add(m); atps.push({ m, age: 9, v: V3(0, 0, 0) }); }
+  const atps = []; for (let k = 0; k < 8; k++) { const m = molMesh(MOL('atp'), { scale: 0.08, hideH: true }); m.visible = false; scene.add(m); atps.push({ m, age: 9, v: V3(0, 0, 0) }); }
   const waters = []; for (let k = 0; k < 6; k++) { const m = molMesh(MOL('h2o'), { scale: 0.16 }); m.visible = false; scene.add(m); waters.push({ m, age: 9 }); }
   const o2s = []; for (let k = 0; k < 4; k++) { const m = molMesh(MOL('o2'), { scale: 0.16 }); m.visible = false; scene.add(m); o2s.push({ m, age: 9 }); }
   const nadhTok = new THREE.Mesh(new THREE.SphereGeometry(0.15, 16, 12), new THREE.MeshBasicMaterial({ color: 0xffd070 })); scene.add(nadhTok);
   // протоны
   const NH = 260; const HP = []; for (let i = 0; i < NH; i++) HP.push({ s: 'off', p: V3(0, 0, 0), v: V3(0, 0, 0), t: 0, a: V3(0, 0, 0), b: V3(0, 0, 0), ang: 0 });
-  const HM = new THREE.InstancedMesh(new THREE.SphereGeometry(0.075, 10, 8), new THREE.MeshBasicMaterial({ color: 0xff7a9a }), NH); HM.frustumCulled = false; scene.add(HM);
+  const HM = new THREE.InstancedMesh(new THREE.SphereGeometry(0.1, 10, 8), new THREE.MeshBasicMaterial({ color: 0xff7a9a }), NH); HM.frustumCulled = false; scene.add(HM);
   const EL = []; // электроны
   const ELM = new THREE.InstancedMesh(new THREE.SphereGeometry(0.09, 12, 8), new THREE.MeshBasicMaterial({ color: 0x9fd8ff }), 40); ELM.frustumCulled = false; scene.add(ELM);
   const dm = new THREE.Object3D();
@@ -115,8 +121,8 @@ function makeEtc() {
     HP.forEach((h) => {
       if (h.s === 'off') return;
       if (h.s === 'pump') { h.t += dt / h.dur; h.p.copy(h.a).lerp(h.b, smooth(0, 1, h.t)); if (h.t >= 1) { h.s = 'ims'; h.v.set(rand(-0.4, 0.4), rand(0, 0.3), rand(-0.3, 0.3)); } }
-      else if (h.s === 'ims') { h.v.x += gauss() * 1.2 * dt; h.v.y += gauss() * 1.2 * dt; h.v.z += gauss() * 1.2 * dt; h.v.multiplyScalar(Math.exp(-0.8 * dt)); h.p.addScaledVector(h.v, dt); if (h.p.y < 0.62) { h.p.y = 0.62; h.v.y = Math.abs(h.v.y); } if (h.p.y > 2.4) { h.p.y = 2.4; h.v.y = -Math.abs(h.v.y); } if (Math.abs(h.p.x) > 8.2) h.v.x = -Math.sign(h.p.x) * Math.abs(h.v.x); if (Math.abs(h.p.z) > 2.6) h.v.z = -Math.sign(h.p.z) * Math.abs(h.v.z); }
-      else if (h.s === 'syn') { h.t += dt * 1.6; if (h.t < 1) h.p.copy(h.a).lerp(h.b, smooth(0, 1, h.t)); else { const u = h.t - 1; const ang = st.rang + 0.5; h.p.set(AS.x + Math.cos(ang) * 0.55, 0.5 - u * 1.4, Math.sin(ang) * 0.55); if (u > 1) { h.s = 'off'; st.hIn++; if (st.hIn % 4 === 0) { st.atpCnt++; const a = atps.find((x) => x.age > 2.5); if (a) { const bb = betas[st.atpCnt % 3]; a.age = 0; a.m.visible = true; a.m.position.copy(bb.getWorldPosition(V3(0, 0, 0))); a.v.set(rand(-0.6, 0.6), -0.7, rand(-0.3, 0.6)); } } } } }
+      else if (h.s === 'ims') { h.v.x += gauss() * 1.2 * dt; h.v.y += gauss() * 1.2 * dt; h.v.z += gauss() * 1.2 * dt; h.v.multiplyScalar(Math.exp(-0.8 * dt)); h.p.addScaledVector(h.v, dt); if (h.p.y < 0.62) { h.p.y = 0.62; h.v.y = Math.abs(h.v.y); } if (h.p.y > 2.4) { h.p.y = 2.4; h.v.y = -Math.abs(h.v.y); } if (Math.abs(h.p.x) > 8.2) h.v.x = -Math.sign(h.p.x) * Math.abs(h.v.x); if (h.p.z > 0.8) h.v.z = -Math.abs(h.v.z); if (h.p.z < -5) h.v.z = Math.abs(h.v.z); }
+      else if (h.s === 'syn') { h.t += dt * 1.6; if (h.t < 1) h.p.copy(h.a).lerp(h.b, smooth(0, 1, h.t)); else { const u = h.t - 1; const ang = st.rang + 0.5; h.p.set(AS.x + Math.cos(ang) * 0.55, 0.5 - u * 1.4, Math.sin(ang) * 0.55); if (u > 1) { h.s = 'off'; st.hIn++; if (st.hIn % 4 === 0) { st.atpCnt++; const a = atps.find((x) => x.age > 2.5); if (a) { const bb = betas.reduce((x, y) => (Math.cos(st.rang + y.userData.ang) > Math.cos(st.rang + x.userData.ang) ? y : x)); /* АТФ отпускает «открытая» β */ a.age = 0; a.m.visible = true; a.m.position.copy(bb.getWorldPosition(V3(0, 0, 0))); a.v.set(rand(-0.6, 0.6), -0.7, rand(-0.3, 0.6)); for (let q = 0; q < 8; q++) fx.spawn(a.m.position.clone(), randUnit().multiplyScalar(0.5), new THREE.Color(0xffd070), 0.8, 1, 1.3); } } } } }
       else if (h.s === 'leak') { h.t += dt * 1.2; h.p.copy(h.a).lerp(h.b, h.t); if (h.t >= 1) { h.s = 'off'; st.heat += 1; for (let q = 0; q < 3; q++) fx.spawn(h.p.clone(), randUnit().multiplyScalar(0.4), new THREE.Color(0xff8a3a), 0.7, 1, 1.4); } }
       if (h.s === 'off') return;
       dm.position.copy(h.p); dm.scale.setScalar(1); dm.updateMatrix(); HM.setMatrixAt(k++, dm.matrix);
@@ -125,6 +131,8 @@ function makeEtc() {
     k = 0; EL.forEach((e) => { dm.position.copy(e.p); dm.scale.setScalar(e.wait ? 1.3 + 0.3 * Math.sin(t * 10) : 1); dm.updateMatrix(); ELM.setMatrixAt(k++, dm.matrix); if (rnd() < 0.4) fx.spawn(e.p.clone(), V3(0, 0, 0), new THREE.Color(0x9fd8ff), 0.35, 0, 1.0); }); ELM.count = k; ELM.instanceMatrix.needsUpdate = true;
     // ротор крутится от потока протонов
     const flow = synOpen ? synRate : 0; st.rspd = (st.rspd || 0) + (flow * 0.9 - (st.rspd || 0)) * Math.min(1, dt * 2); st.rang = (st.rang || 0) + st.rspd * dt; rotor.rotation.y = st.rang;
+    // «дыхание» β: открытое → рыхлое → плотное (L/T/O) по фазе поворота γ
+    betas.forEach((b, i) => { const c = Math.cos(st.rang + b.userData.ang); b.scale.set(1 + 0.12 * c, 1 - 0.1 * c, 1 + 0.12 * c); b.material.emissiveIntensity = 0.02 + 0.2 * Math.max(0, -c); });
     F1.rotation.y = 0;
     atps.forEach((a) => { if (a.age < 2.5) { a.age += dt; a.m.position.addScaledVector(a.v, dt); a.m.rotation.y += dt * 2; } else a.m.visible = false; });
     waters.forEach((w) => { if (w.age < 3) { w.age += dt; w.m.position.y -= dt * 0.4; w.m.rotation.y += dt; } else w.m.visible = false; });
@@ -153,14 +161,14 @@ function makeEtc() {
   const TXT = '<b>Тканевое дыхание.</b> Водород, снятый с топлива в виде НАДН и ФАДН₂, передаётся по цепи переносчиков, встроенных во внутреннюю мембрану митохондрии, от более «отрицательного» окислительно-восстановительного потенциала к более «положительному» — к кислороду. Энергия электронов (голубые) тратится на перекачку <b>протонов</b> (розовые) из матрикса наружу. Получается «плотина» — протонный градиент (хемиосмотическая теория П. Митчелла, Нобелевская премия 1978). Протоны возвращаются через АТФ-синтазу и крутят её ротор — так синтезируется АТФ. Нажмите на комплекс или включите яд.';
   const labels = [
     { text: 'межмембранное пространство', pos: P(-8.2, 2.3, -1), color: '#FF9AB0', show: () => st.labels },
-    { text: 'матрикс', pos: P(-8.2, -2.8, -1), color: '#9FD8FF', show: () => st.labels },
-    { text: 'I', pos: P(-6.0, 0.95, 0.5), color: '#FF8A5C', show: () => st.labels },
+    { text: 'матрикс', pos: P(3.8, -3.6, -1), color: '#9FD8FF', show: () => st.labels },
+    { text: 'I', pos: P(-6.0, 0.55, 0.8), color: '#FF8A5C', show: () => st.labels },
     { text: 'II', pos: P(-3.5, -2.0, 0.6), color: '#7FE0A0', show: () => st.labels },
     { text: 'III', pos: P(-0.9, 1.55, 0.5), color: '#F2C14E', show: () => st.labels },
     { text: 'IV', pos: P(2.1, 1.4, 0.6), color: '#FF6A6A', show: () => st.labels },
     { text: 'цит. c', pos: P(0.4, 1.6, 0.4), color: '#FF5A7A', show: () => st.labels },
     { text: 'убихинон Q', pos: P(-3.5, 0.55, 1.4), color: '#F2C14E', show: () => st.labels },
-    { text: 'НАДН', pos: P(-7.8, -3.6, 0.6), color: '#FFD070', show: () => st.labels && st.sub === 'nadh' },
+    { text: 'НАДН', pos: P(-8.1, -3.9, 0.6), color: '#FFD070', show: () => st.labels && st.sub === 'nadh' },
     { text: 'сукцинат', pos: P(-4.4, -2.2, 0.6), color: '#7FE0A0', show: () => st.labels && st.sub === 'succ' },
     { text: 'O₂ → H₂O', pos: P(2.8, -1.8, 0.6), color: '#9FD8FF', show: () => st.labels },
     { text: 'АТФ-синтаза', pos: P(6.9, 0.9, 0.4), color: '#C79BFF', show: () => st.labels },
