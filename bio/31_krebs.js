@@ -17,12 +17,12 @@ const KR_TOK = { nadh: ['НАДН', '#FFD070'], fadh2: ['ФАДН₂', '#FFE45A'
 function makeKrebs() {
   rnd = mulberry(1001);
   const scene = bioStage({ rim: 0x7fd6ff });
-  const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 200); camera.position.set(0.4, 0.2, 19.5);
+  const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 200); camera.position.set(0.4, 0.3, 22);
   const controls = makeControls(camera, V3(0.4, -2.3, 0)); controls.minDistance = 4; controls.maxDistance = 35;
   const fx = new Sparks(1800, 0.09); scene.add(fx.obj);
   // митохондрия на фоне: оболочка и кристы
-  const mito = new THREE.Mesh(new THREE.CapsuleGeometry(4.2, 9.5, 12, 48), glassMat(0xffb070, { rim: 0.07, base: 0.002, pow: 2.4 })); mito.rotation.z = Math.PI / 2; mito.scale.set(0.95, 0.85, 0.4); mito.position.set(0.5, -0.2, -5.5); scene.add(mito);
-  for (let k = 0; k < 7; k++) { const g = new THREE.Mesh(new THREE.BoxGeometry(0.06, 4.4 - Math.abs(k - 3) * 0.5, 2.0), new THREE.MeshPhysicalMaterial({ color: 0x3a2018, roughness: 0.7, transparent: true, opacity: 0.35, depthWrite: false })); g.position.set(-7 + k * 2.4, -0.3 + (k % 2 ? 0.9 : -0.9), -6.5); scene.add(g); }
+  const mito = new THREE.Mesh(new THREE.CapsuleGeometry(4.2, 9.5, 12, 48), glassMat(0xffb070, { rim: 0.2, base: 0.002, pow: 2.4, keep: true })); mito.rotation.z = Math.PI / 2; mito.scale.set(0.95, 0.85, 0.4); mito.position.set(0.5, -0.2, -5.5); scene.add(mito);
+  for (let k = 0; k < 7; k++) { const g = new THREE.Mesh(new THREE.BoxGeometry(0.06, 3.2 - Math.abs(k - 3) * 0.4, 1.1), new THREE.MeshPhysicalMaterial({ color: 0x6a4030, roughness: 0.7, transparent: true, opacity: 0.18, depthWrite: false })); g.position.set(-6.7 + k * 2.2, -0.3 + (k % 2 ? 0.8 : -0.8), -5.5); scene.add(g); }
   const C = V3(1.0, 0.1, 0), R = 3.0;
   const ang = (k) => Math.PI / 2 - 0.42 - k * (Math.PI * 2 / 8);
   const pos = (k, r = R) => V3(C.x + Math.cos(ang(k)) * r, C.y + Math.sin(ang(k)) * r, 0);
@@ -31,7 +31,7 @@ function makeKrebs() {
   const arcs = KR.map((d, k) => { const a0 = ang(k) - 0.2, a1 = ang(k + 1) + 0.2; const pts = []; for (let i = 0; i <= 24; i++) { const a = a0 + (a1 - a0) * i / 24; pts.push(V3(C.x + Math.cos(a) * R, C.y + Math.sin(a) * R, 0)); } const c = new THREE.CatmullRomCurve3(pts); const f = flowTubeMat('#7FD6FF', 0.5, 1.2); scene.add(new THREE.Mesh(new THREE.TubeGeometry(c, 40, 0.045, 6), f)); return { c, f }; });
   // ПДГ-комплекс
   const PDH = new THREE.Group(); PDH.position.set(-5.3, -0.7, 0); scene.add(PDH);
-  PDH.add(new THREE.Mesh(blobGeo(1.25, 1.25, 1.25, 51, 0.06, 4), glassMat(0xf2c14e, { rim: 0.35, base: 0.008 })));
+  PDH.add(new THREE.Mesh(blobGeo(1.25, 1.25, 1.25, 51, 0.06, 4), glassMat(0xf2c14e, { rim: 0.35, base: 0.008, keep: true })));
   for (let k = 0; k < 20; k++) { const d = randUnit(); const b = new THREE.Mesh(blobGeo(0.2, 0.2, 0.2, k, 0.12, 3), protMat(k % 3 === 0 ? '#FF8A5C' : k % 3 === 1 ? '#7FE0A0' : '#7FD6FF', 0.3)); b.position.copy(d.multiplyScalar(0.85)); PDH.add(b); }
   const pdhPick = new THREE.Mesh(new THREE.SphereGeometry(1.3, 12, 8), new THREE.MeshBasicMaterial({ visible: false })); pdhPick.userData.pick = 'pdh'; PDH.add(pdhPick);
   const pyr = molMesh(MOL('pyruvate'), { scale: 0.2, hideH: true }); scene.add(pyr);
@@ -39,12 +39,12 @@ function makeKrebs() {
   const pdhA = flowArrow(scene, V3(-4.0, -0.4, 0), pos(0, R + 0.2).add(V3(-0.9, 0.5, 0)), '#F2C14E', { bend: -0.25, r: 0.03 });
   // жетоны продуктов
   const tokMat = {}; Object.entries(KR_TOK).forEach(([k, [, c]]) => { tokMat[k] = new THREE.MeshBasicMaterial({ color: new THREE.Color(c), transparent: true }); });
-  const toks = [];
+  const toks = []; const tokPos = { nadh: V3(), fadh2: V3(), gtp: V3() }; // подписи следуют за последним жетоном
   function token(kind, p0, dir) { const m = kind === 'co2' ? molMesh(MOL('co2'), { scale: 0.2 }) : kind === 'h2o' ? molMesh(MOL('h2o'), { scale: 0.22 }) : new THREE.Mesh(new THREE.SphereGeometry(0.13, 16, 12), tokMat[kind]); m.position.copy(p0); scene.add(m); toks.push({ m, kind, v: dir, age: 0 }); return m; }
-  const ETC = V3(8.2, -1.0, 0);
+  const ETC = V3(7.4, -1.0, 0);
   const etcBar = new THREE.Mesh(new THREE.BoxGeometry(0.35, 3.2, 1.4), new THREE.MeshPhysicalMaterial({ color: 0x5a3a2a, emissive: 0xffb070, emissiveIntensity: 0.1, roughness: 0.5 })); etcBar.position.copy(ETC); scene.add(etcBar);
   const piles = []; for (let k = 0; k < 6; k++) { const m = molMesh(MOL('succinate'), { scale: 0.11, hideH: true }); m.visible = false; scene.add(m); piles.push(m); }
-  const malon = molMesh(MOL('malonyl'), { scale: 0.13, hideH: true, tint: '#FF6A6A' }); malon.visible = false; scene.add(malon);
+  const malon = molMesh(MOL('malonate'), { scale: 0.16, hideH: true, tint: '#FF6A6A' }); malon.visible = false; scene.add(malon);
   const pick = NODES.map((n) => { const s = new THREE.Mesh(new THREE.SphereGeometry(0.7, 10, 8), new THREE.MeshBasicMaterial({ visible: false })); s.position.copy(n.m.position); s.userData.pick = n.d.id; scene.add(s); return s; }).concat([pdhPick]);
   const st = { t: 0, ph: 0, speed: 1, reg: 'norm', malonate: false, labels: true, rot: false, sel: null, msg: null, nadh: 0, fadh2: 0, gtp: 0, co2: 0, turns: 0, step: -1 };
   pickOn(() => self, camera, () => pick, (id) => { st.sel = id; refs.setInfo(); refs.stepSeg && refs.stepSeg.sync(); });
@@ -72,13 +72,13 @@ function makeKrebs() {
     pdhA.mat.uniforms.uTime.value = t;
     // пируват → ПДГ → ацетил-КоА (перед шагом 0)
     const pu = (st.ph + 1.5) % 8 / 1.5;
-    if (pu < 1) { pyr.visible = true; acetyl.visible = false; pyr.position.copy(V3(-8.8, -2.6, 0).lerp(V3(-5.3, -0.7, 0), smooth(0, 1, pu))); }
+    if (pu < 1) { pyr.visible = true; acetyl.visible = false; pyr.position.copy(V3(-7.8, -2.6, 0).lerp(V3(-5.3, -0.7, 0), smooth(0, 1, pu))); }
     else if (pu < 2) { pyr.visible = false; acetyl.visible = true; acetyl.position.copy(pdhA.curve.getPoint(smooth(0, 1, pu - 1))); if (pu < 1.05 && rnd() < 0.5) { token('co2', V3(-5.3, 0.6, 0), V3(-0.2, 1.2, 0.3)); token('nadh', V3(-4.6, -1.6, 0), ETC.clone().sub(V3(-4.6, -1.6, 0)).normalize().multiplyScalar(3.2)); } }
     else { pyr.visible = acetyl.visible = false; }
     [pyr, acetyl].forEach((m) => { m.rotation.y += dt; });
     PDH.rotation.y += dt * 0.15;
     // жетоны
-    for (let i = toks.length - 1; i >= 0; i--) { const q = toks[i]; q.age += dt; q.m.position.addScaledVector(q.v, dt); if (q.kind === 'co2' || q.kind === 'h2o') q.m.rotation.y += dt * 2; if (q.kind !== 'co2' && q.kind !== 'h2o' && q.m.position.distanceTo(ETC) < 0.5) { for (let k = 0; k < 10; k++) fx.spawn(q.m.position.clone(), randUnit().multiplyScalar(0.5), new THREE.Color(KR_TOK[q.kind][1]), 0.6, 2, 1.3); q.age = 99; } if (q.age > 3.2) { scene.remove(q.m); toks.splice(i, 1); } }
+    for (let i = toks.length - 1; i >= 0; i--) { const q = toks[i]; q.age += dt; q.m.position.addScaledVector(q.v, dt); if (tokPos[q.kind]) tokPos[q.kind].copy(q.m.position).add(V3(0.18, 0.2, 0)); if (q.kind === 'co2' || q.kind === 'h2o') q.m.rotation.y += dt * 2; if (q.kind !== 'co2' && q.kind !== 'h2o' && q.m.position.distanceTo(ETC) < 0.5) { for (let k = 0; k < 10; k++) fx.spawn(q.m.position.clone(), randUnit().multiplyScalar(0.5), new THREE.Color(KR_TOK[q.kind][1]), 0.6, 2, 1.3); q.age = 99; } if (q.age > 3.2) { scene.remove(q.m); toks.splice(i, 1); } }
     // малонат: копится сукцинат
     malon.visible = blocked; if (blocked) { malon.position.copy(pos(4, R - 1.0)); malon.rotation.y += dt; }
     piles.forEach((m, k) => { m.visible = blocked; if (blocked) { const a = ang(4) + (k - 2.5) * 0.12; m.position.set(C.x + Math.cos(a) * (R + 0.9 + (k % 2) * 0.4), C.y + Math.sin(a) * (R + 0.9 + (k % 2) * 0.4), 0.2); m.rotation.y += dt * 0.5; } });
@@ -101,8 +101,9 @@ function makeKrebs() {
     ...NODES.map((n) => ({ text: `${n.d.name} · C${n.d.c}`, pos: n.m.position.clone().add(pos(n.k, R + 1.0).sub(n.m.position).multiplyScalar(0.9)).add(V3(-0.4, 0, 0)), color: '#EFEAE6', show: () => st.labels })),
     ...KR.map((d, k) => ({ text: KR[(k + 1) % 8].enz, pos: V3(C.x + Math.cos(ang(k) - 0.39) * (R - 1.15), C.y + Math.sin(ang(k) - 0.39) * (R - 1.15), 0.3).add(V3(-0.55, 0, 0)), color: '#7FD6FF', show: () => st.labels && st.step === k })),
     { text: 'пируватдегидрогеназа', pos: V3(-6.6, -2.2, 0), color: '#F2C14E', show: () => st.labels },
-    { text: 'пируват', pos: V3(-9.0, -3.1, 0), color: '#FF8A5C', show: () => st.labels },
+    { text: 'пируват', pos: V3(-8.2, -3.2, 0), color: '#FF8A5C', show: () => st.labels },
     { text: 'в дыхательную цепь', pos: ETC.clone().add(V3(-0.9, 1.95, 0)), color: '#FFB070', show: () => st.labels },
+    ...['nadh', 'fadh2', 'gtp'].map((kind) => ({ text: KR_TOK[kind][0], pos: tokPos[kind], color: KR_TOK[kind][1], show: () => st.labels && toks.some((q) => q.kind === kind && q.age < 3) })),
     { text: 'малонат блокирует', pos: pos(4, R - 1.0).add(V3(0.3, -0.4, 0)), color: '#FF6A6A', show: () => st.labels && st.malonate },
   ];
   const refs = {};

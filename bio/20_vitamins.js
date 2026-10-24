@@ -31,23 +31,27 @@ function makeVitamins() {
   const cache = {};
   const big = (id) => { if (!cache[id]) { const m = MOL(id); cache[id] = molMesh(m, { scale: molFit(m, 2.35), style: 'ball' }); } return cache[id]; };
   const ring = new THREE.Group(); G1.add(ring);
-  const RING = VT.map((v, k) => { const m = MOL(v.mol); const g = molMesh(m, { scale: molFit(m, 0.5), hideH: true }); g.traverse((o) => { if (o.isMesh) o.userData.pick = v.id; }); ring.add(g); const pk = new THREE.Mesh(new THREE.SphereGeometry(0.55, 10, 8), new THREE.MeshBasicMaterial({ visible: false })); pk.userData.pick = v.id; g.add(pk); return { v, g, pk }; });
+  const RING = VT.map((v, k) => { const m = MOL(v.mol); const g = molMesh(m, { scale: molFit(m, 0.72), hideH: true }); g.traverse((o) => { if (o.isMesh) o.userData.pick = v.id; }); ring.add(g); const pk = new THREE.Mesh(new THREE.SphereGeometry(0.55, 10, 8), new THREE.MeshBasicMaterial({ visible: false })); pk.userData.pick = v.id; g.add(pk); return { v, g, pk }; });
   const halo = new THREE.Mesh(new THREE.TorusGeometry(3.1, 0.012, 8, 160), new THREE.MeshBasicMaterial({ color: 0xf2c14e, transparent: true, opacity: 0.16 })); halo.rotation.x = Math.PI / 2; halo.position.y = -1.35; G1.add(halo);
   /* ---------- 3. НАД⁺ в работе ---------- */
   const G2 = new THREE.Group(); G2.position.set(40, 0, 0); scene.add(G2);
   const nadFull = molMesh(MOL('nad'), { scale: molFit(MOL('nad'), 2.0) }); nadFull.position.set(-2.7, 0.2, -0.5); G2.add(nadFull);
   const nicOx = molMesh(MOL('nicox'), { scale: 0.32 }), nicRed = molMesh(MOL('nicred'), { scale: 0.32 }); [nicOx, nicRed].forEach((m) => { m.position.set(1.4, 0.3, 0); G2.add(m); });
   const lac = molMesh(MOL('lactate'), { scale: 0.3 }), pyr = molMesh(MOL('pyruvate'), { scale: 0.3 }); [lac, pyr].forEach((m) => { m.position.set(4.0, 0.3, 0.3); G2.add(m); });
-  const hyd = glowNucleus(G2, V3(0, 0, 0), '#FFE08A', 0.09, 9); const hp = glowNucleus(G2, V3(0, 0, 0), '#9FD8FF', 0.06, 7);
-  const ldhBlob = new THREE.Mesh(blobGeo(2.6, 1.9, 1.7, 41, 0.12), glassMat(0xffb070, { rim: 0.28, base: 0.006, pow: 2.6 })); ldhBlob.position.set(2.7, 0.3, 0); G2.add(ldhBlob);
+  const hyd = glowNucleus(G2, V3(0, 0, 0), '#FFE08A', 0.06, 5); const hp = glowNucleus(G2, V3(0, 0, 0), '#9FD8FF', 0.06, 7);
+  const ldhBlob = new THREE.Mesh(blobGeo(2.6, 1.9, 1.7, 41, 0.12), glassMat(0xffb070, { rim: 0.2, base: 0.004, pow: 2.6, keep: true })); ldhBlob.position.set(2.7, 0.3, 0); G2.add(ldhBlob);
   /* ---------- 4. зрение: родопсин ---------- */
   const G3 = new THREE.Group(); G3.position.set(80, 0, 0); scene.add(G3);
   const RH = PDB('rho'); const rhoS = 0.07;
   const rhoG = new THREE.Group(); G3.add(rhoG);
   const rhoM = cartoon(RH.chains[0], { scale: rhoS, k: 0.6, color: (i, n) => new THREE.Color().setHSL(0.55 + 0.35 * i / n, 0.65, 0.62).getStyle() }); rhoG.add(rhoM);
-  const ret = molMesh(RH.ligm[0], { scale: rhoS, style: 'ball' }); rhoG.add(ret);
-  { const ax = pcaAxis(caPoints('rho', rhoS)); rhoG.quaternion.setFromUnitVectors(ax.v, V3(0, 1, 0)); rhoG.position.copy(ax.c.clone().applyQuaternion(rhoG.quaternion).negate()); }
-  const mem = schemBilayer({ w: 9, d: 2.6, thick: 2.3, step: 0.24, head: '#7FA8D8', tail: '#5A6A80', seed: 9 }); mem.position.z = -1.7; G3.add(mem);
+  const ret = molMesh(RH.ligm[0], { scale: rhoS, style: 'space', tint: '#FF9A50' }); rhoG.add(ret);
+  const rhoAx = pcaAxis(caPoints('rho', rhoS)); rhoG.quaternion.setFromUnitVectors(rhoAx.v, V3(0, 1, 0));
+  const rhoCenter = () => rhoG.position.copy(rhoAx.c.clone().applyQuaternion(rhoG.quaternion).negate()); rhoCenter();
+  // мембрана диска вокруг белка: «срез» по середине белка (передняя половина видна) и отверстие под родопсин
+  const mem = schemBilayer({ w: 9, d: 4.0, thick: 2.3, step: 0.24, head: '#7FA8D8', tail: '#5A6A80', seed: 9 }); mem.position.z = -2.0; G3.add(mem);
+  { const dm = new THREE.Matrix4(), p = V3(), q = new THREE.Quaternion(), sc = V3(), zero = new THREE.Matrix4().makeScale(0, 0, 0);
+    mem.children.forEach((im) => { for (let i = 0; i < im.count; i++) { im.getMatrixAt(i, dm); dm.decompose(p, q, sc); if (Math.hypot(p.x, p.z + mem.position.z) < 1.55) im.setMatrixAt(i, zero); } im.instanceMatrix.needsUpdate = true; }); }
   const retC = (() => { const m = RH.ligm[0]; const c = V3(0, 0, 0); for (let i = 0; i < m.n; i++) c.add(V3(m.xyz[i * 3], m.xyz[i * 3 + 1], m.xyz[i * 3 + 2])); return c.multiplyScalar(rhoS / m.n); })();
   const retW = () => retC.clone().applyQuaternion(rhoG.quaternion).add(rhoG.position);
   const photon = glowNucleus(G3, V3(0, 6, 3), '#9FF0FF', 0.08, 12);
@@ -76,7 +80,7 @@ function makeVitamins() {
     flyStep(st, camera, controls, dt); st.cyc += dt;
     if (G1.visible) {
       if (st.rot && curMesh) curMesh.rotation.y += dt * 0.35;
-      RING.forEach((r, k) => { if (!r.g.visible) return; r.g.position.lerp(r.home, 1 - Math.exp(-dt * 4)); r.g.rotation.y += dt * 0.6; const s = r.v.id === st.sel ? 1.35 : 1; r.g.scale.lerp(V3(s, s, s), 1 - Math.exp(-dt * 6)); });
+      RING.forEach((r, k) => { if (!r.g.visible) return; r.g.position.lerp(r.home, 1 - Math.exp(-dt * 4)); r.g.rotation.y += dt * 0.6; const on = r.v.id === st.sel; const s = on ? 1.6 : 1; r.g.scale.lerp(V3(s, s, s), 1 - Math.exp(-dt * 6)); if (r.on !== on) { r.on = on; molGlow(r.g, on ? 0.25 : 0); } r.lab.copy(r.g.position).add(V3(-0.2, -0.75, 0)); });
     }
     if (st.mode === 'nad') {
       const T = 9, c = st.cyc % T;
@@ -95,10 +99,10 @@ function makeVitamins() {
       const T = 7, c = st.cyc % T; const rw = retW();
       const fly = c < 1.6; photon.core.visible = photon.spr.visible = fly;
       if (fly) { const u = c / 1.6; const p = V3(-3.5, 5.5, 3).lerp(rw, u); photon.core.position.copy(p); photon.spr.position.copy(p); }
-      const hit = c > 1.6 && c < 4.5; molGlow(ret, hit ? 0.7 * Math.exp(-(c - 1.6) * 0.9) : 0.02);
+      const hit = c > 1.6 && c < 4.5; molGlow(ret, hit ? 0.25 + 0.6 * Math.exp(-(c - 1.6) * 0.9) : 0.25);
       if (c > 1.6 && c < 1.7) for (let k = 0; k < 50; k++) fx.spawn(rw.clone().add(G3.position), randUnit().multiplyScalar(1.2), new THREE.Color(0xff9a50), 0.8, 2, 1.4);
       st.visPhase = c < 1.6 ? 'фотон летит' : c < 4.5 ? '11-цис → транс, родопсин активен' : 'восстановление';
-      if (st.rot) rhoG.rotateOnWorldAxis(V3(0, 1, 0), dt * 0.15);
+      if (st.rot) { rhoG.rotateOnWorldAxis(V3(0, 1, 0), dt * 0.15); rhoCenter(); }
     }
     fx.update(dt);
   }
@@ -115,7 +119,9 @@ function makeVitamins() {
     nad: '<b>НАД⁺ в работе.</b> Слева — вся молекула НАД⁺: аденозин, два фосфата и <b>никотинамид</b> (витамин PP) — рабочая часть. В активном центре дегидрогеназы (на примере лактатдегидрогеназы) от лактата отрывается <b>гидрид-ион H⁻</b> (два электрона и протон, жёлтый огонёк) и садится на никотинамидное кольцо: <b>НАД⁺ → НАДН</b>, кольцо теряет ароматичность. Второй протон уходит в раствор. Лактат становится пируватом. На графике — почему это удобно измерять: <b>НАДН поглощает свет 340 нм</b>, а НАД⁺ нет (оптический тест Варбурга — так в лаборатории определяют активность ферментов).',
     vision: '<b>Витамин A в зрении.</b> Реальная структура <b>родопсина</b> (PDB 1U19) — белка палочек сетчатки, семь спиралей пронизывают мембрану. В середине пучка лежит <b>11-цис-ретиналь</b> (альдегид витамина A). Фотон выпрямляет его в <b>полностью-транс</b>-форму за 200 фемтосекунд — белок меняет форму и запускает каскад трансдуцин → фосфодиэстераза → закрытие натриевых каналов. Затем ретиналь отделяется и восстанавливается — для этого нужен витамин A; при его нехватке страдает сумеречное зрение («куриная слепота»).',
   };
+  RING.forEach((r) => { r.lab = V3(); });
   const labels = [
+    ...RING.map((r) => ({ text: r.v.name.split(' · ')[0], pos: r.lab, color: r.v.color, show: () => st.labels && r.g.visible && G1.visible })),
     { text: 'никотинамид (витамин PP)', pos: V3(40 + 1.4, 1.35, 0), color: '#FF8A5C', show: () => st.labels && st.mode === 'nad' },
     { text: 'целая молекула НАД⁺', pos: V3(40 - 2.7, 2.4, -0.5), color: '#D9D2D8', show: () => st.labels && st.mode === 'nad' },
     { text: 'лактат → пируват', pos: V3(40 + 4.0, -0.75, 0.3), color: '#F2C14E', show: () => st.labels && st.mode === 'nad' },

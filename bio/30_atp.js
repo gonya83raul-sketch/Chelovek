@@ -49,32 +49,39 @@ function makeAtp() {
     if (d.id === 'mus') { for (let k = 0; k < 9; k++) { const s = new THREE.Mesh(new THREE.SphereGeometry(0.16, 14, 10), protMat('#E0C080', 0.3)); s.position.set(-0.9 + k * 0.22, -0.35 + 0.05 * Math.sin(k), 0); g.add(s); } const head = new THREE.Mesh(blobGeo(0.32, 0.22, 0.22, 3, 0.1, 4), protMat(d.color, 0.32)); head.position.set(0, 0.1, 0); g.add(head); g.userData.anim = head; }
     if (d.id === 'pump') { const memb = new THREE.Mesh(new THREE.BoxGeometry(2.0, 0.42, 1.0), new THREE.MeshPhysicalMaterial({ color: 0x3a4a60, roughness: 0.6, transparent: true, opacity: 0.55 })); g.add(memb); const b = new THREE.Mesh(blobGeo(0.38, 0.62, 0.38, 7, 0.1, 4), protMat(d.color, 0.3)); g.add(b); g.userData.anim = b; }
     if (d.id === 'syn') { const beads = []; for (let k = 0; k < 7; k++) { const s = new THREE.Mesh(new THREE.SphereGeometry(0.13, 12, 8), protMat(['#7FE0A0', '#F2C14E', '#FF8AB0', '#7FD6FF'][k % 4], 0.38)); s.position.set(-0.8 + k * 0.25, 0.08 * Math.sin(k * 1.3), 0); g.add(s); beads.push(s); } g.userData.beads = beads; }
-    if (d.id === 'ox') { const cap = new THREE.Mesh(new THREE.CapsuleGeometry(0.42, 1.2, 8, 24), glassMat(0xffb070, { rim: 0.45, base: 0.01 })); cap.rotation.z = Math.PI / 2; g.add(cap); for (let k = 0; k < 5; k++) { const c = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.55, 0.5), new THREE.MeshPhysicalMaterial({ color: 0x8a5a3a, roughness: 0.5 })); c.position.x = -0.6 + k * 0.3; g.add(c); } }
-    if (d.id === 'sub') { const m = molMesh(MOL('pep'), { scale: 0.13, hideH: true }); g.add(m); g.userData.anim = m; }
+    if (d.id === 'ox') { const cap = new THREE.Mesh(new THREE.CapsuleGeometry(0.42, 1.2, 8, 24), glassMat(0xffb070, { rim: 0.45, base: 0.01, keep: true })); cap.rotation.z = Math.PI / 2; g.add(cap); for (let k = 0; k < 5; k++) { const c = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.55, 0.5), new THREE.MeshPhysicalMaterial({ color: 0x8a5a3a, roughness: 0.5 })); c.position.x = -0.6 + k * 0.3; g.add(c); } }
+    if (d.id === 'sub') { const m = molMesh(MOL('pep'), { scale: 0.2, hideH: true }); g.add(m); g.userData.anim = m; }
     stations.push({ d, g, p, kind }); return g;
   };
-  ATP_USE.forEach((d, k) => addSt(d, [V3(5.6, 2.55, -0.8), V3(5.7, 1.2, -0.8), V3(3.3, 3.25, -1.0)][k], 'use'));
+  ATP_USE.forEach((d, k) => addSt(d, [V3(5.9, 2.4, -0.8), V3(5.9, 0.3, -0.8), V3(2.8, 3.3, -1.0)][k], 'use'));
   ATP_SRC.forEach((d, k) => addSt(d, V3(-5.3 + k * 1.2, 0.3 - k * 1.55, -0.8), 'src'));
   const packet = glowNucleus(G1, V3(0, 0, 0), '#FFD070', 0.1, 10);
   /* ---------- 2. воронка катаболизма ---------- */
   const G2 = new THREE.Group(); G2.position.set(40, 0, 0); scene.add(G2);
   const FY = [2.6, 0.9, -0.7, -2.3];
   const lane = (k) => -3.3 + k * 3.3;
-  const s1 = [proteinMesh('lyz', { scale: 0.028, colorBy: () => '#FF8AB0' }), (() => { const g = new THREE.Group(); for (let k = 0; k < 12; k++) { const m = molMesh(MOL('glucose'), { scale: 0.06, hideH: true }); const a = k * 0.55; m.position.set(Math.cos(a) * (0.2 + k * 0.05), k * 0.06 - 0.3, Math.sin(a) * (0.2 + k * 0.05)); g.add(m); } return g; })(), molMesh(MOL('tag'), { scale: 0.07, hideH: true })];
+  // полисахарид — цепочка глюкоз по горизонтали (слегка спиральная, как крахмал)
+  const s1 = [proteinMesh('lyz', { scale: 0.04, colorBy: () => '#FF8AB0' }), (() => { const g = new THREE.Group(); for (let k = 0; k < 6; k++) { const m = molMesh(MOL('glucose'), { scale: 0.08, hideH: true }); m.position.set((k - 2.5) * 0.46, 0.12 * Math.sin(k * 1.4), 0.12 * Math.cos(k * 1.4)); m.rotation.set(0, 0, k * 0.5); g.add(m); } return g; })(), molMesh(MOL('tag'), { scale: 0.085, hideH: true })];
   const s2 = [molMesh(MOL('ala'), { scale: 0.12, hideH: true }), molMesh(MOL('glucose'), { scale: 0.11, hideH: true }), molMesh(MOL('palmitic'), { scale: 0.065, hideH: true })];
-  s1.forEach((m, k) => { m.position.set(lane(k), FY[0], 0); G2.add(m); }); s2.forEach((m, k) => { m.position.set(lane(k), FY[1], 0); G2.add(m); });
+  // ТАГ и жирную кислоту кладём длинной осью по горизонтали (вращение вокруг y её не меняет)
+  const flat = (g) => { const M = g.userData.mol; const pts = []; for (let i = 0; i < M.n; i++) if (M.el[i] !== 'H') pts.push(V3(M.xyz[i * 3], M.xyz[i * 3 + 1], M.xyz[i * 3 + 2])); const inner = new THREE.Group(); inner.quaternion.setFromUnitVectors(pcaAxis(pts).v, V3(1, 0, 0)); [...g.children].forEach((c) => inner.add(c)); g.add(inner); };
+  flat(s1[2]); flat(s2[2]);
+  s1.forEach((m, k) => { m.position.set(lane(k), FY[0], 0); G2.add(m); }); s2.forEach((m, k) => { m.position.set(lane(k) - (k === 2 ? 0.35 : 0), FY[1], 0); G2.add(m); });
+  const glyc = molMesh(MOL('glycerol'), { scale: 0.12, hideH: true }); glyc.position.set(lane(2) + 0.95, FY[1], 0); G2.add(glyc); s2.push(glyc);
   const pyr = molMesh(MOL('pyruvate'), { scale: 0.13, hideH: true }); pyr.position.set(-1.1, FY[2] + 0.35, 0); G2.add(pyr);
   const acc = molMesh(MOL('acetyl'), { scale: 0.15, hideH: true }); acc.position.set(0, FY[2] - 0.25, 0); G2.add(acc);
   const accGlow = glowNucleus(G2, V3(0, FY[2] - 0.25, 0), '#F2C14E', 0.08, 12);
   const tca = new THREE.Mesh(new THREE.TorusGeometry(0.9, 0.08, 16, 80), new THREE.MeshPhysicalMaterial({ color: 0x3a6a90, emissive: 0x7fd6ff, emissiveIntensity: 0.25, roughness: 0.3, clearcoat: 0.6 })); tca.position.set(-0.9, FY[3], 0); G2.add(tca);
   const etcBar = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.28, 0.9), new THREE.MeshPhysicalMaterial({ color: 0x5a3a2a, emissive: 0xffb070, emissiveIntensity: 0.12, roughness: 0.5 })); etcBar.position.set(1.8, FY[3], 0); G2.add(etcBar);
-  const outs = ['co2', 'h2o', 'nh3'].map((id, k) => { const m = molMesh(MOL(id), { scale: 0.22 }); m.position.set(-2.6 + k * 0.9 + (k ? 3.6 : 0), FY[3] - 1.2, 0); G2.add(m); return m; });
+  // NH₃ — от аминокислот (дезаминирование), а не из дыхательной цепи
+  const OUTP = [V3(-2.6, FY[3] - 1.2, 0), V3(1.9, FY[3] - 1.2, 0), V3(lane(0) - 0.9, FY[1] - 0.9, 0)];
+  const outs = ['co2', 'h2o', 'nh3'].map((id, k) => { const m = molMesh(MOL(id), { scale: 0.22 }); m.position.copy(OUTP[k]); G2.add(m); return m; });
   const atpOut = molMesh(MOL('atp'), { scale: 0.07, hideH: true }); atpOut.position.set(3.4, FY[3] - 0.1, 0); G2.add(atpOut);
   const flows = [];
   const conn = (a, b, c) => flows.push(flowArrow(G2, a, b, c, { bend: 0.08, r: 0.022, speed: 0.6 }));
   [0, 1, 2].forEach((k) => conn(V3(lane(k), FY[0] - 0.55, 0), V3(lane(k), FY[1] + 0.45, 0), '#F2C14E'));
   conn(V3(lane(0), FY[1] - 0.4, 0), V3(-0.4, FY[2] - 0.1, 0), '#FF8A5C'); conn(V3(lane(1), FY[1] - 0.4, 0), V3(-1.1, FY[2] + 0.7, 0), '#FF8A5C'); conn(V3(-1.0, FY[2] + 0.1, 0), V3(-0.3, FY[2] - 0.15, 0), '#FF8A5C'); conn(V3(lane(2), FY[1] - 0.3, 0), V3(0.4, FY[2] - 0.1, 0), '#FF8A5C');
-  conn(V3(0, FY[2] - 0.6, 0), V3(-0.6, FY[3] + 0.85, 0), '#7FD6FF'); conn(V3(-0.1, FY[3] + 0.1, 0), V3(0.8, FY[3] + 0.05, 0), '#7FD6FF'); conn(V3(2.9, FY[3], 0), V3(3.2, FY[3] - 0.05, 0), '#FFB070');
+  conn(V3(0, FY[2] - 0.6, 0), V3(-0.6, FY[3] + 0.85, 0), '#7FD6FF'); conn(V3(-0.1, FY[3] + 0.1, 0), V3(0.8, FY[3] + 0.05, 0), '#7FD6FF'); conn(V3(2.9, FY[3], 0), V3(3.2, FY[3] - 0.05, 0), '#FFB070'); conn(V3(lane(0), FY[1] - 0.4, 0), V3(lane(0) - 0.8, FY[1] - 0.75, 0), '#9FD8FF');
   /* ---------- состояние ---------- */
   const st = { t: 0, mode: 'cycle', labels: true, rot: false, fly: null, cyc: 0, n: 0, sel: null, msg: null, made: 0, used: 0 };
   function setMode(m) { st.mode = m; refs.modeSeg && refs.modeSeg.sync(); G1.visible = m === 'cycle'; G2.visible = m === 'funnel'; st.fly = VIEW[m]; st.cyc = 0; st.sel = null; st.msg = null; refs.rebuild && refs.rebuild(); refs.setInfo && refs.setInfo(); }
@@ -125,7 +132,7 @@ function makeAtp() {
     funnel: '<b>Три стадии катаболизма.</b> Сотни разных молекул пищи сходятся в немногие общие пути: белки, углеводы и жиры распадаются до мономеров, мономеры — до <b>ацетил-КоА</b>, а он сгорает в цикле Кребса и дыхательной цепи до CO₂ и воды с образованием АТФ. Азот аминокислот уходит в виде аммиака (затем — мочевины). Нажмите на стадию.',
   };
   const labels = [
-    ...stations.map((s) => ({ text: s.d.name, pos: s.p.clone().add(V3(-0.7, -0.85, 0)), color: s.d.color, show: () => st.labels && st.mode === 'cycle' })),
+    ...stations.map((s) => ({ text: s.d.name, pos: s.p.clone().add(s.kind === 'use' ? V3(-0.6, -0.7, 0) : V3(-0.7, -0.85, 0)), color: s.d.color, show: () => st.labels && st.mode === 'cycle' })),
     
     { text: 'γ-фосфат', pos: gC.clone().add(V3(0, 1.3, 0)), color: '#FF9A30', show: () => st.labels && st.mode === 'cycle' && st.cyc % 8 < 3 },
     { text: 'Фн', pos: gC.clone().add(piDir.clone().multiplyScalar(1.4)).add(V3(0.2, 1.1, 0)), color: '#FF9A30', show: () => st.labels && st.mode === 'cycle' && st.cyc % 8 > 3.6 && st.cyc % 8 < 5.4 },
@@ -137,7 +144,7 @@ function makeAtp() {
     { text: 'цикл Кребса', pos: V3(40 - 2.4, FY[3] + 0.3, 0), color: '#7FD6FF', show: () => st.labels && st.mode === 'funnel' },
     { text: 'дыхательная цепь', pos: V3(40 + 0.9, FY[3] + 0.45, 0), color: '#FFB070', show: () => st.labels && st.mode === 'funnel' },
     { text: 'АТФ', pos: V3(40 + 3.7, FY[3] + 0.3, 0), color: '#FFD070', show: () => st.labels && st.mode === 'funnel' },
-    ...['CO₂', 'H₂O', 'NH₃ → мочевина'].map((n, k) => ({ text: n, pos: V3(40 - 2.6 + k * 0.9 + (k ? 3.6 : 0) + 0.3, FY[3] - 1.25, 0), color: '#D9D2D8', show: () => st.labels && st.mode === 'funnel' })),
+    ...['CO₂', 'H₂O', 'NH₃ → мочевина'].map((n, k) => ({ text: n, pos: V3(40 + 0.3, 0, 0).add(OUTP[k]).add(V3(0, -0.05, 0)), color: '#D9D2D8', show: () => st.labels && st.mode === 'funnel' })),
     ...CAT_ST.map((s, k) => ({ text: s.name, pos: V3(40 + 4.6, [FY[0] + 0.1, (FY[1] + FY[2]) / 2, FY[3]][k], 0), color: s.color, show: () => st.labels && st.mode === 'funnel' })),
   ];
   const refs = {};

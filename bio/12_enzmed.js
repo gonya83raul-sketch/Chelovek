@@ -13,7 +13,7 @@ const EM_LDH = { norm: [0.27, 0.36, 0.22, 0.09, 0.06], mi: [0.42, 0.32, 0.15, 0.
 function makeEnzmed() {
   rnd = mulberry(733);
   const scene = bioStage({ rim: 0xc77dff });
-  const VIEW = { allo: flyTarget(V3(0, -1.5, 0), V3(1.5, 0.2, 14.5)), phos: flyTarget(V3(40, -1, 0), V3(41, 1.0, 14)), prot: flyTarget(V3(80, -1, 0), V3(81, 1.2, 11)), ldh: flyTarget(V3(120, -0.6, 0), V3(120, 2.4, 13.5)), drug: flyTarget(V3(160, -1.2, 0), V3(160, 3.2, 17)) };
+  const VIEW = { allo: flyTarget(V3(0, -1.5, 0), V3(1.5, 0.2, 14.5)), phos: flyTarget(V3(40, -1, 0), V3(41, 1.0, 14)), prot: flyTarget(V3(80, -1, 0), V3(81, 1.2, 11)), ldh: flyTarget(V3(120, -0.6, 0), V3(120, 2.4, 13.5)), drug: flyTarget(V3(160, -1.2, 0), V3(160, 3.4, 19.5)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 500); camera.position.copy(VIEW.allo.pos);
   const controls = makeControls(camera, VIEW.allo.target); controls.minDistance = 2; controls.maxDistance = 40;
   const fx = new Sparks(1500, 0.08); scene.add(fx.obj);
@@ -26,10 +26,10 @@ function makeEnzmed() {
     const body = new THREE.Mesh(blobGeo(0.92, 0.92, 0.85, k + 11, 0.12), mat); g.add(body);
     const cleft = V3(Math.cos(a) * 0.78, Math.sin(a) * 0.78, 0.55);
     const site = new THREE.Mesh(new THREE.SphereGeometry(0.16, 16, 12), new THREE.MeshBasicMaterial({ color: 0x7fd6ff, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending, depthWrite: false })); site.position.copy(cleft); g.add(site);
-    const sub = molMesh(MOL('f6p'), { scale: 0.075, hideH: true }); sub.visible = false; g.add(sub); sub.position.copy(cleft).multiplyScalar(1.35);
+    const sub = molMesh(MOL('f6p'), { scale: 0.11, hideH: true }); sub.visible = false; g.add(sub); sub.position.copy(cleft);
     return { g, home, a, mat, site, sub, cleft, occ: 0 };
   });
-  const effSite = V3(0, 0, 1.05);
+  const effSite = V3(0, 0, 1.05); const tcol = new THREE.Color(), rcol = new THREE.Color('#7FD6FF');
   const effA = molMesh(MOL('amp'), { scale: 0.085, hideH: true, tint: '#7FE0A0' }), effI = molMesh(MOL('atp'), { scale: 0.085, hideH: true, tint: '#FF6A6A' }); G1.add(effA, effI);
   const effRing = new THREE.Mesh(new THREE.TorusGeometry(0.35, 0.03, 8, 40), new THREE.MeshBasicMaterial({ color: 0xc77dff, transparent: true, opacity: 0.6 })); effRing.position.copy(effSite); G1.add(effRing);
   /* ---------- 2. фосфорилирование: Src ---------- */
@@ -45,23 +45,27 @@ function makeEnzmed() {
   const ldm = (m) => { const c = V3(0, 0, 0); for (let i = 0; i < m.n; i++) c.add(V3(m.xyz[i * 3], m.xyz[i * 3 + 1], m.xyz[i * 3 + 2])); return c.multiplyScalar(0.08 / m.n); };
   const anpC = ldm(SR.ligm[0]);
   // справа — цикл «киназа → фермент → фосфатаза» на примере липазы
-  const lip = new THREE.Group(); lip.position.set(4.2, -0.4, 0); G2.add(lip);
+  const lip = new THREE.Group(); lip.position.set(3.6, -0.4, 0); G2.add(lip);
+  const pkaP = V3(3.3, 1.55, 0.3); const pkaAtp = molMesh(MOL('atp'), { scale: 0.06, hideH: true }); pkaAtp.position.copy(pkaP); G2.add(pkaAtp); // фосфат на липазу несёт ПКА, а не Src
   const lipMat = protMat('#9FA8B8', 0.25); const lipB = new THREE.Mesh(blobGeo(0.95, 0.8, 0.85, 21, 0.13), lipMat); lip.add(lipB);
   const lipP = new THREE.Mesh(new THREE.SphereGeometry(0.17, 16, 12), atomMat('P')); lipP.position.set(-0.55, 0.62, 0.35); lip.add(lipP);
   /* ---------- 3. частичный протеолиз: фактор X → Xa ---------- */
   const G3 = new THREE.Group(); G3.position.set(80, 0, 0); scene.add(G3);
   const FX = PDB('fxa'); const fxA = FX.chains.find((c) => c.id === 'A'), fxL = FX.chains.find((c) => c.id === 'L');
-  const fxM = cartoon(fxA, { scale: 0.1, color: '#FF8AB0' }), fxLM = cartoon(fxL, { scale: 0.1, color: '#C79BD8' }); G3.add(fxM, fxLM);
+  const G3i = new THREE.Group(); G3.add(G3i); // содержимое развёрнуто: каталитическая триада к зрителю, лёгкая цепь позади
+  const fxM = cartoon(fxA, { scale: 0.1, color: '#FF8AB0' }), fxLM = cartoon(fxL, { scale: 0.1, color: '#C79BD8' }); G3i.add(fxM, fxLM);
   const motif = (re, off) => { const m = fxA.seq.search(re); return m >= 0 ? m + off : 0; };
   const iH = motif(/AAHC/, 2), iD = motif(/DIA/, 0), iS = motif(/GDSGGP/, 2);
   const caF = (i) => V3(fxA.ca[i * 3], fxA.ca[i * 3 + 1], fxA.ca[i * 3 + 2]).multiplyScalar(0.1);
-  const triad = [iH, iD, iS].map((i, k) => glowNucleus(G3, caF(i), ['#7FD6FF', '#FF6A6A', '#F2C14E'][k], 0.07, 7));
+  { const pc = caPoints('fxa', 0.1); const c0 = pc.reduce((q, v) => q.add(v), V3(0, 0, 0)).multiplyScalar(1 / pc.length); const tc = caF(iH).add(caF(iD)).add(caF(iS)).multiplyScalar(1 / 3).sub(c0).normalize(); G3i.quaternion.setFromUnitVectors(tc, V3(0.25, 0.3, 1).normalize()); }
+  const rotF = (v) => v.clone().applyQuaternion(G3i.quaternion);
+  const triad = [iH, iD, iS].map((i, k) => glowNucleus(G3i, caF(i), ['#7FD6FF', '#FF6A6A', '#F2C14E'][k], 0.11, 7));
   const nTerm = caF(0);
   // «пропептид» — отрезаемый участок цепи
   const propPts = [nTerm.clone()]; { let p = nTerm.clone(); const d = nTerm.clone().normalize(); for (let k = 0; k < 9; k++) { p = p.clone().addScaledVector(d.clone().add(randUnit().multiplyScalar(0.7)).normalize(), 0.38); propPts.push(p); } }
-  const prop = new THREE.Mesh(tube(propPts, 0.032, 80, 8), organMat('#F2E6C8', 0.6)); G3.add(prop);
+  const prop = new THREE.Mesh(tube(propPts, 0.032, 80, 8), organMat('#F2E6C8', 0.6)); G3i.add(prop);
   const propHome = prop.position.clone();
-  const fxInh = molMesh(FX.ligm[0], { scale: 0.1 }); fxInh.visible = false; G3.add(fxInh);
+  const fxInh = molMesh(FX.ligm[0], { scale: 0.1 }); fxInh.visible = false; G3i.add(fxInh);
   /* ---------- 4. изоферменты ЛДГ ---------- */
   const G4 = new THREE.Group(); G4.position.set(120, 0, 0); scene.add(G4);
   const LDH = [0, 1, 2, 3, 4].map((k) => {
@@ -73,11 +77,25 @@ function makeEnzmed() {
   /* ---------- 5. лекарства ---------- */
   const G5 = new THREE.Group(); G5.position.set(160, 0, 0); scene.add(G5);
   const DR = EM_DRUGS.map((d, k) => {
-    const g = new THREE.Group(); g.position.set((k - 1.5) * 4.6, 0, 0); G5.add(g);
-    const S = PDB(d.pdb); const sc = 0.055;
-    const prot = proteinMesh(d.pdb, { scale: sc, colorBy: (c, ci) => ci ? '#9FB4D8' : d.color }); g.add(prot);
-    const ligs = S.ligm.map((m) => { const lm = molMesh(m, { scale: sc }); g.add(lm); return lm; });
-    if (d.id === 'dhfr') { const mtx = molMesh(MOL('methotrexate'), { scale: sc, hideH: true, tint: '#F2C14E' }); const c = ldm(S.ligm[0]).multiplyScalar(sc / 0.08); mtx.position.copy(c).add(V3(0.25, 0.35, 0.3)); g.add(mtx); ligs.push(mtx); }
+    const g = new THREE.Group(); g.position.set((k - 1.5) * 3.8, 0, 0); G5.add(g);
+    // белок по центру своей станции и к одному размеру; лиганды — Ван-дер-Ваальс, ленты полупрозрачные
+    const S = PDB(d.pdb); const pts = caPoints(d.pdb, 1); const c0 = pts.reduce((q, v) => q.add(v), V3(0, 0, 0)).multiplyScalar(1 / pts.length);
+    const sc = 1.5 / Math.max(...pts.map((v) => v.distanceTo(c0)));
+    const inner = new THREE.Group(); inner.position.copy(c0).multiplyScalar(-sc); g.add(inner);
+    const prot = proteinMesh(d.pdb, { scale: sc, colorBy: (c, ci) => ci ? '#9FB4D8' : d.color }); inner.add(prot);
+    prot.traverse((o) => { if (o.isMesh) { o.material = o.material.clone(); Object.assign(o.material, { transparent: true, opacity: 0.55, depthWrite: false }); } });
+    const ligs = S.ligm.map((m) => { const lm = molMesh(m, { scale: sc, style: 'space' }); inner.add(lm); return lm; });
+    if (d.id === 'dhfr') {
+      // метотрексат в кармане: птеридин у никотинамидного конца НАДФН, глутамат — наружу по щели
+      const nap = S.ligm[0], A = (m, i) => V3(m.xyz[i * 3], m.xyz[i * 3 + 1], m.xyz[i * 3 + 2]);
+      const pc = V3(0, 0, 0); let np = 0; for (let i = 0; i < nap.n; i++) if (nap.el[i] === 'P') { pc.add(A(nap, i)); np++; } pc.multiplyScalar(1 / np);
+      let nic = null, dm = -1; for (let i = 0; i < nap.n; i++) { if (nap.el[i] === 'H') continue; const dd = A(nap, i).distanceTo(pc); if (dd > dm) { dm = dd; nic = A(nap, i); } }
+      const u = nic.clone().sub(c0).normalize();
+      const M = MOL('methotrexate'); const cN = V3(0, 0, 0), cO = V3(0, 0, 0); let nN = 0, nO = 0;
+      for (let i = 0; i < M.n; i++) { if (M.el[i] === 'N') { cN.add(A(M, i)); nN++; } if (M.el[i] === 'O') { cO.add(A(M, i)); nO++; } } cN.multiplyScalar(1 / nN); cO.multiplyScalar(1 / nO);
+      const mtx = molMesh(M, { scale: sc, hideH: true, style: 'space', tint: '#F2C14E' }); mtx.quaternion.setFromUnitVectors(cO.clone().sub(cN).normalize(), u);
+      mtx.position.copy(nic).addScaledVector(u, 1.5).sub(cN.clone().applyQuaternion(mtx.quaternion)).multiplyScalar(sc); inner.add(mtx); ligs.push(mtx);
+    }
     prot.traverse((o) => { if (o.isMesh) o.userData.pick = d.id; });
     return { d, g, prot, ligs };
   });
@@ -96,7 +114,8 @@ function makeEnzmed() {
       const occ = curve()(st.S); st.occ = occ;
       const tight = st.eff === 'inh' ? 1 : st.eff === 'act' ? 0 : 1 - occ;
       SUB.forEach((s, k) => {
-        s.g.position.copy(s.home).multiplyScalar(1 + 0.12 * (1 - tight)); s.g.rotation.z = (k % 2 ? 1 : -1) * 0.25 * (1 - tight);
+        s.g.position.copy(s.home).multiplyScalar(1 + 0.22 * (1 - tight)); s.g.rotation.z = (k % 2 ? 1 : -1) * 0.45 * (1 - tight);
+        tcol.set('#5a6a90').lerp(rcol, 1 - tight); s.mat.color.copy(tcol).multiplyScalar(0.3); s.mat.emissive.copy(tcol); // T тусклое, R яркое
         const on = (k + 0.5) / 4 < occ; s.sub.visible = on; s.sub.rotation.y += dt;
         s.site.material.color.set(on ? '#F2C14E' : tight > 0.6 ? '#5a6a80' : '#7FD6FF'); s.site.scale.setScalar(on ? 1.2 + 0.2 * Math.sin(t * 8 + k) : 1);
         s.mat.emissiveIntensity = on ? 0.12 : 0.02;
@@ -110,7 +129,7 @@ function makeEnzmed() {
       ptrGlow.spr.material.opacity = 0.5 + 0.4 * Math.sin(t * 4);
       // липаза: АТФ-фосфат садится (0–3), активна (3–7), фосфатаза снимает (7–9)
       const on = c > 2.2 && c < 7.6; lipP.visible = c > 1.2 && c < 8.2;
-      if (c > 1.2 && c < 2.2) lipP.position.lerpVectors(V3(-3.2, 1.2, 0.3), V3(-0.55, 0.62, 0.35), (c - 1.2)); else if (c >= 7.6 && c < 8.2) lipP.position.lerpVectors(V3(-0.55, 0.62, 0.35), V3(-0.4, 2.2, 1), (c - 7.6) / 0.6); else lipP.position.set(-0.55, 0.62, 0.35);
+      pkaAtp.rotation.y += dt * 0.6; G2.updateMatrixWorld(); if (c > 1.2 && c < 2.2) lipP.position.lerpVectors(lip.worldToLocal(pkaP.clone().applyMatrix4(G2.matrixWorld)), V3(-0.55, 0.62, 0.35), (c - 1.2)); else if (c >= 7.6 && c < 8.2) lipP.position.lerpVectors(V3(-0.55, 0.62, 0.35), V3(-0.4, 2.2, 1), (c - 7.6) / 0.6); else lipP.position.set(-0.55, 0.62, 0.35);
       lipMat.color.set(on ? '#F2C14E' : '#9FA8B8').multiplyScalar(0.25); lipMat.emissive.set(on ? '#F2C14E' : '#9FA8B8'); lipMat.emissiveIntensity = on ? 0.15 + 0.05 * Math.sin(t * 6) : 0.02;
       if (on && rnd() < 0.3) fx.spawn(lip.position.clone().add(G2.position).add(randUnit().multiplyScalar(0.9)), randUnit().multiplyScalar(0.2), new THREE.Color(0xf2c14e), 0.6, 1, 1.2);
       lip.rotation.y += dt * 0.3; st.lipOn = on;
@@ -123,7 +142,7 @@ function makeEnzmed() {
       const act = c > 4.2 && c < 9.4; st.act = act;
       triad.forEach((g, k) => { g.spr.material.opacity = act ? 0.6 + 0.35 * Math.sin(t * 7 + k) : 0.12; g.core.visible = act; });
       fxInh.visible = c > 6.5 && c < 9.4;
-      if (c > 2.9 && c < 3.05) for (let k = 0; k < 30; k++) fx.spawn(nTerm.clone().add(G3.position), randUnit().multiplyScalar(0.8), new THREE.Color(0xffd070), 0.6, 2, 1.3);
+      if (c > 2.9 && c < 3.05) for (let k = 0; k < 30; k++) fx.spawn(rotF(nTerm).add(G3.position), randUnit().multiplyScalar(0.8), new THREE.Color(0xffd070), 0.6, 2, 1.3);
       st.protPhase = c < 3 ? 'неактивный профермент' : c < 4.2 ? 'отщепление пептида' : c < 6.5 ? 'активный фермент' : 'блок ингибитором';
     }
     if (st.mode === 'ldh') LDH.forEach((l, k) => { l.g.rotation.y += dt * (0.3 + k * 0.05); const amp = EM_LDH[st.ldh][k] / 0.3; l.g.scale.setScalar(0.85 + 0.25 * amp); });
@@ -165,13 +184,14 @@ function makeEnzmed() {
     { text: 'pTyr527 · фосфат-«защёлка»', pos: ptrC.clone().add(V3(40.3, 0.2, 0)), color: '#FF9A30', show: () => st.labels && st.mode === 'phos' },
     { text: 'аналог АТФ', pos: anpC.clone().add(V3(40.3, 0.3, 0)), color: '#F2C14E', show: () => st.labels && st.mode === 'phos' },
     { text: 'домен SH2', pos: V3(40, 0, 0).add(caPoints('src', 0.08)[110]).add(V3(0.2, 0.3, 0)), color: '#7FE0A0', show: () => st.labels && st.mode === 'phos' },
-    { text: 'липаза (мишень киназы)', pos: V3(44.2, 0.7, 0.4), color: '#F2C14E', show: () => st.labels && st.mode === 'phos' },
-    { text: 'отщепляемый пептид', pos: propPts[6].clone().add(V3(80.2, 0.2, 0)), color: '#F2E6C8', show: () => st.labels && st.mode === 'prot' && st.cyc % 10 < 3.5 },
-    { text: 'His57', pos: caF(iH).add(V3(80.15, 0.15, 0)), color: '#7FD6FF', show: () => st.labels && st.mode === 'prot' && st.act },
-    { text: 'Asp102', pos: caF(iD).add(V3(80.15, -0.15, 0)), color: '#FF6A6A', show: () => st.labels && st.mode === 'prot' && st.act },
-    { text: 'Ser195', pos: caF(iS).add(V3(80.15, 0.15, 0)), color: '#F2C14E', show: () => st.labels && st.mode === 'prot' && st.act },
+    { text: 'ПКА + АТФ', pos: V3(40.3, 0, 0).add(pkaP).add(V3(0.1, 0.35, 0)), color: '#FF9A30', show: () => st.labels && st.mode === 'phos' },
+    { text: 'липаза (мишень киназы)', pos: V3(43.6, -1.6, 0.4), color: '#F2C14E', show: () => st.labels && st.mode === 'phos' },
+    { text: 'отщепляемый пептид', pos: rotF(propPts[6]).add(V3(80.2, 0.2, 0)), color: '#F2E6C8', show: () => st.labels && st.mode === 'prot' && st.cyc % 10 < 3.5 },
+    { text: 'His57', pos: rotF(caF(iH)).add(V3(80.15, 0.15, 0)), color: '#7FD6FF', show: () => st.labels && st.mode === 'prot' && st.act },
+    { text: 'Asp102', pos: rotF(caF(iD)).add(V3(80.15, -0.15, 0)), color: '#FF6A6A', show: () => st.labels && st.mode === 'prot' && st.act },
+    { text: 'Ser195', pos: rotF(caF(iS)).add(V3(80.15, 0.15, 0)), color: '#F2C14E', show: () => st.labels && st.mode === 'prot' && st.act },
     ...[0, 1, 2, 3, 4].map((k) => ({ text: `ЛДГ${k + 1} · ${'H'.repeat(4 - k)}${'M'.repeat(k)}`, pos: V3(120 + (k - 2) * 2.3 - 0.5, -1.15, 0), color: k < 2 ? '#7FA8FF' : k > 2 ? '#FF8A8A' : '#C8A8D8', show: () => st.labels && st.mode === 'ldh' })),
-    ...EM_DRUGS.map((d, k) => ({ text: d.name, pos: V3(160 + (k - 1.5) * 4.6 - 1.2, -2.3, 0), color: d.color, show: () => st.labels && st.mode === 'drug' && (!st.drug || st.drug === d.id) })),
+    ...EM_DRUGS.map((d, k) => ({ text: d.name, pos: V3(160 + (k - 1.5) * 3.8 - 1.2, (k % 2 ? -2.5 : -2.05), 0), color: d.color, show: () => st.labels && st.mode === 'drug' && (!st.drug || st.drug === d.id) })),
   ];
   const refs = {};
   function ui(el) {

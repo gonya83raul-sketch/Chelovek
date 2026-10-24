@@ -26,7 +26,7 @@ function makeKinetics() {
   const edges = new THREE.LineSegments(new THREE.EdgesGeometry(box.geometry), new THREE.LineBasicMaterial({ color: 0x3a4a60, transparent: true, opacity: 0.6 })); scene.add(edges);
   // ферменты — копии реального лизоцима
   const L = PDB('lyz');
-  const eGeo = cartoon(L.chains[0], { scale: SC, color: (i, n, s) => s === 'H' ? '#E46FA8' : s === 'E' ? '#F2C14E' : '#9FB4D8', k: 0.75 }).geometry;
+  const eGeo = cartoon(L.chains[0], { scale: SC, color: (i, n, s) => s === 'H' ? '#E46FA8' : s === 'E' ? '#C8B8E8' : '#9FB4D8', k: 0.75 }).geometry; // β-тяжи сиреневые — не путать с жёлтым субстратом
   const eMat = new THREE.MeshPhysicalMaterial({ vertexColors: true, roughness: 0.4, clearcoat: 0.5, envMapIntensity: 0.45, side: THREE.DoubleSide });
   const ENZ = new THREE.InstancedMesh(eGeo, eMat, NE); scene.add(ENZ);
   const cent = (r) => { const v = V3(0, 0, 0); for (let i = 0; i < r.n; i++) v.add(V3(r.xyz[i * 3], r.xyz[i * 3 + 1], r.xyz[i * 3 + 2])); return v.multiplyScalar(SC / r.n); };
@@ -35,12 +35,19 @@ function makeKinetics() {
   const E = [];
   for (let i = 0; i < NE; i++) {
     const gx = i % 5, gz = Math.floor(i / 5);
-    const p = V3(-BX + 1.1 + gx * (2 * BX - 2.2) / 4 + rand(-0.4, 0.4), rand(-BY + 0.9, BY - 0.9), -BZ + 1.0 + gz * (2 * BZ - 2) / 2 + rand(-0.3, 0.3));
+    // копии не должны проходить друг сквозь друга: расстояние между центрами ≥ 1,75 (диаметр белка ≈ 1,5)
+    let p = null, best = -1;
+    for (let tr = 0; tr < 30; tr++) {
+      const c = V3(-BX + 1.1 + gx * (2 * BX - 2.2) / 4 + rand(-0.4, 0.4), rand(-BY + 0.9, BY - 0.9), -BZ + 1.0 + gz * (2 * BZ - 2) / 2 + rand(-0.3, 0.3));
+      const dmin = E.reduce((m, o) => Math.min(m, o.p.distanceTo(c)), 99); if (dmin > best) { best = dmin; p = c; } if (dmin >= 1.75) break;
+    }
     E.push({ p, q: new THREE.Quaternion().setFromEuler(new THREE.Euler(rand(0, 6), rand(0, 6), rand(0, 6))), w: randUnit(), state: 'free', tm: 0, dead: false, nc: 0, den: rand(0, 1) });
   }
-  const siteMark = new THREE.InstancedMesh(new THREE.SphereGeometry(0.075, 12, 8), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, depthWrite: false }), NE); scene.add(siteMark);
+  const siteMark = new THREE.InstancedMesh(new THREE.TorusGeometry(0.09, 0.02, 6, 16), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, depthWrite: false }), NE); scene.add(siteMark);
+  // аллостерические центры — видны, когда выбран неконкурентный ингибитор
+  const alloMark = new THREE.InstancedMesh(new THREE.TorusGeometry(0.09, 0.02, 6, 16), new THREE.MeshBasicMaterial({ color: 0xc77dff, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, depthWrite: false }), NE); scene.add(alloMark);
   // частицы: S — субстрат, P — продукт, C/N/X — ингибиторы
-  const PT = { S: '#F2C14E', P: '#5CE0C8', C: '#FF5A5A', N: '#C77DFF', X: '#FF8A2A' };
+  const PT = { S: '#F2C14E', P: '#5CE07A', C: '#FF5A5A', N: '#C77DFF', X: '#FF8A2A' };
   const PM = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(0.075, 2), new THREE.MeshPhysicalMaterial({ roughness: 0.3, clearcoat: 0.8, envMapIntensity: 0.6 }), NP); PM.frustumCulled = false; scene.add(PM);
   const P = []; for (let i = 0; i < NP; i++) P.push({ on: false, t: 'S', p: V3(0, 0, 0), v: V3(0, 0, 0), age: 0, bound: -1 });
   const fx = new Sparks(900, 0.07); scene.add(fx.obj);
@@ -80,16 +87,17 @@ function makeKinetics() {
       e.denat = denat;
       if (e.state === 'busy') {
         e.tm -= dt * Math.max(0.02, kact) * (e.nc > 0 ? 0 : 1);
-        if (e.tm <= 0) { e.state = 'free'; const x = spawn('P', siteW(e, tmpA)); if (x) x.v.copy(siteL.clone().applyQuaternion(e.q).normalize().multiplyScalar(1.2)); st.made.push(t); for (let k = 0; k < 8; k++) fx.spawn(siteW(e, tmpA).clone(), randUnit().multiplyScalar(0.4), new THREE.Color(0x5ce0c8), 0.5, 2, 1.2); }
+        if (e.tm <= 0) { e.state = 'free'; const x = spawn('P', siteW(e, tmpA)); if (x) x.v.copy(siteL.clone().applyQuaternion(e.q).normalize().multiplyScalar(1.2)); st.made.push(t); for (let k = 0; k < 8; k++) fx.spawn(siteW(e, tmpA).clone(), randUnit().multiplyScalar(0.4), new THREE.Color(0x5ce07a), 0.5, 2, 1.2); }
       }
       if (e.state === 'inh') { e.tm -= dt; if (e.tm <= 0 && !e.dead) { e.state = 'free'; const x = spawn('C', siteW(e, tmpA)); if (x) x.v.copy(randUnit().multiplyScalar(0.8)); } }
       if (e.nc > 0) { e.nc -= dt; if (e.nc <= 0) { const x = spawn('N', siteW(e, tmpA, alloL)); if (x) x.v.copy(randUnit().multiplyScalar(0.8)); } }
-      dm.position.copy(e.p); dm.quaternion.copy(e.q); dm.scale.setScalar(denat ? 0.9 + 0.08 * Math.sin(t * 9 + i) : 1); dm.updateMatrix(); ENZ.setMatrixAt(i, dm.matrix);
-      ENZ.setColorAt(i, col.set(e.dead ? '#5a3020' : denat ? '#6a6a70' : e.nc > 0 ? '#b8a0ff' : '#ffffff'));
-      siteW(e, tmpA); dm.position.copy(tmpA); dm.quaternion.identity(); dm.scale.setScalar(e.state === 'busy' ? 1.4 + 0.3 * Math.sin(t * 12) : e.state === 'free' && !denat ? 0.7 : 0.001); dm.updateMatrix(); siteMark.setMatrixAt(i, dm.matrix);
-      siteMark.setColorAt(i, col.set(e.state === 'busy' ? '#FFD070' : e.dead ? '#FF8A2A' : e.state === 'inh' ? '#FF5A5A' : '#7FD6FF'));
+      dm.position.copy(e.p); dm.quaternion.copy(e.q); if (denat) { const w = 0.06 * Math.sin(t * 9 + i); dm.scale.set(1.25 + w, 0.7 - w, 1.1); } else dm.scale.setScalar(1); dm.updateMatrix(); ENZ.setMatrixAt(i, dm.matrix); // денатурация: глобула расплющивается
+      ENZ.setColorAt(i, col.set(e.dead ? '#8a5a48' : denat ? '#6a6a70' : e.nc > 0 ? '#b8a0ff' : '#ffffff'));
+      siteW(e, tmpA); dm.position.copy(tmpA); dm.quaternion.identity(); dm.scale.setScalar(e.state === 'busy' ? 1.4 + 0.3 * Math.sin(t * 12) : e.state === 'inh' ? 1.0 : e.state === 'free' && !denat ? 0.7 : 0.001); dm.updateMatrix(); siteMark.setMatrixAt(i, dm.matrix);
+      siteW(e, tmpA, alloL); dm.position.copy(tmpA); dm.scale.setScalar(st.inh === 'nonc' && !denat && !e.dead ? (e.nc > 0 ? 1.3 : 0.8) : 0.001); dm.updateMatrix(); alloMark.setMatrixAt(i, dm.matrix);
+      siteMark.setColorAt(i, col.set(e.state === 'busy' ? '#FFD070' : e.dead ? '#FF8A2A' : e.state === 'inh' ? '#FF5A5A' : '#FFFFFF'));
     });
-    ENZ.instanceMatrix.needsUpdate = true; ENZ.instanceColor.needsUpdate = true; siteMark.instanceMatrix.needsUpdate = true; siteMark.instanceColor.needsUpdate = true;
+    ENZ.instanceMatrix.needsUpdate = true; ENZ.instanceColor.needsUpdate = true; siteMark.instanceMatrix.needsUpdate = true; siteMark.instanceColor.needsUpdate = true; alloMark.instanceMatrix.needsUpdate = true;
     // частицы: броуновское движение и захват
     let k = 0;
     P.forEach((x) => {
@@ -140,7 +148,7 @@ function makeKinetics() {
     { text: 'фермент (лизоцим, PDB 1AKI)', pos: E[4].p.clone().add(V3(-0.6, 1.0, 0)), color: '#E46FA8', show: () => st.labels },
     { text: 'субстрат', pos: V3(-0.2, BY + 0.5, -BZ), color: PT.S, show: () => st.labels },
     { text: 'продукт', pos: V3(1.6, BY + 0.5, -BZ), color: PT.P, show: () => st.labels },
-    { text: 'ингибитор', pos: V3(3.3, BY + 0.5, -BZ), color: '#FF7A6A', show: () => st.labels && st.inh !== 'none' },
+    ...['comp', 'nonc', 'irr'].map((k) => ({ text: 'ингибитор', pos: V3(3.3, BY + 0.5, -BZ), color: KN_INH[k].color, show: () => st.labels && st.inh === k })),
   ];
   const refs = {};
   function cond() {

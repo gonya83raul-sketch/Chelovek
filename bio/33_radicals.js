@@ -6,7 +6,7 @@
 function makeRadicals() {
   rnd = mulberry(3301);
   const scene = bioStage({ rim: 0xff8a5c });
-  const VIEW = { paths: [V3(0.4, -1.2, 0), V3(1.0, 0.6, 17)], ros: [V3(40.4, -1.75, 0), V3(41.0, 0.45, 20.5)], burst: [V3(80.3, -1.3, 0), V3(80.9, 0.6, 15.5)] };
+  const VIEW = { paths: [V3(0.4, -1.2, 0), V3(1.0, 0.6, 17)], ros: [V3(40.4, -1.5, 0), V3(41.0, 2.0, 18.5)], burst: [V3(80.3, -1.3, 0), V3(80.9, 0.6, 15.5)] };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VIEW.paths[1]);
   const controls = makeControls(camera, VIEW.paths[0]); controls.minDistance = 3; controls.maxDistance = 40;
   const fx = new Sparks(2600, 0.09); scene.add(fx.obj);
@@ -14,8 +14,11 @@ function makeRadicals() {
   // радикал: пара атомов кислорода с ореолом (супероксид / гидроксил)
   function radical(kind) {
     const g = new THREE.Group(); const om = atomMat('O'), hm = atomMat('H');
-    if (kind === 'oh') { const o = new THREE.Mesh(SPH, om); o.scale.setScalar(0.17); g.add(o); const hh = new THREE.Mesh(SPH, hm); hh.scale.setScalar(0.11); hh.position.set(0.17, 0.1, 0); g.add(hh); }
-    else [-1, 1].forEach((s) => { const o = new THREE.Mesh(SPH, om); o.scale.setScalar(0.17); o.position.x = s * 0.12; g.add(o); });
+    // шаростержневые, как O₂ и H₂O₂ рядом: два атома и связь
+    const a1 = kind === 'oh' ? V3(-0.12, -0.05, 0) : V3(-0.2, 0, 0), a2 = kind === 'oh' ? V3(0.16, 0.1, 0) : V3(0.2, 0, 0);
+    const o = new THREE.Mesh(SPH, om); o.scale.setScalar(0.13); o.position.copy(a1); g.add(o);
+    const o2 = new THREE.Mesh(SPH, kind === 'oh' ? hm : om); o2.scale.setScalar(kind === 'oh' ? 0.09 : 0.13); o2.position.copy(a2); g.add(o2);
+    const bd = new THREE.Mesh(CYL, om); const d = a2.clone().sub(a1); bd.position.copy(a1).addScaledVector(d, 0.5); bd.quaternion.setFromUnitVectors(V3(0, 1, 0), d.clone().normalize()); bd.scale.set(0.04, d.length(), 0.04); g.add(bd);
     const spr = new THREE.Sprite(new THREE.SpriteMaterial({ map: GLOW, color: kind === 'oh' ? C.oh : C.sup, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true, opacity: 0.75 })); spr.scale.setScalar(0.9); g.add(spr); g.userData.spr = spr;
     return g;
   }
@@ -25,7 +28,7 @@ function makeRadicals() {
   const G1 = new THREE.Group(); G1.position.set(0.5, 0, 0); scene.add(G1);
   const O2C = V3(0, 0.55, 0);
   const o2big = mol('o2', 0.55); o2big.position.copy(O2C); G1.add(o2big);
-  glowNucleus(G1, O2C, C.o2, 0.12, 10).core.visible = false;
+  glowNucleus(G1, O2C, C.o2, 0.12, 5).core.visible = false;
   const PATHS = [
     { id: 'ox', name: 'оксидазный', share: 0.9, pos: V3(-2.9, 2.2, 0), col: '#7FE0A0', prod: 'h2o', text: '<b>Оксидазный путь (~90% O₂).</b> Цитохромоксидаза — последний комплекс дыхательной цепи — передаёт кислороду <b>4 электрона</b> и 4 протона: O₂ + 4e⁻ + 4H⁺ → 2H₂O, удерживая промежуточные формы кислорода в активном центре — поэтому радикалы не вылетают. Энергия идёт на синтез АТФ.' },
     { id: 'mono', name: 'монооксигеназный', share: 0.05, pos: V3(3.0, 2.2, 0), col: '#7FD6FF', prod: 'phenol', text: '<b>Оксигеназный путь.</b> <b>Монооксигеназы</b> (цитохром P450 печени и надпочечников) встраивают один атом кислорода в вещество, второй уходит в воду: RH + O₂ + НАДФН + H⁺ → ROH + H₂O + НАДФ⁺. Так обезвреживаются лекарства и яды, синтезируются стероидные гормоны, желчные кислоты, активный витамин D. <b>Диоксигеназы</b> встраивают оба атома (например, при распаде триптофана, в синтезе простагландинов).' },
@@ -53,7 +56,7 @@ function makeRadicals() {
   const FE = V3(-0.1, 1.25, 0.2); const fe = glowNucleus(G2, FE, '#E0773A', 0.09, 7);
   // ферменты-защитники
   const ENZ = {
-    sod: { name: 'СОД', pos: V3(0.0, 2.8, -0.2), col: '#7FD6FF', metal: '#D9905A' },
+    sod: { name: 'СОД', pos: V3(0.0, 3.25, -0.3), col: '#7FD6FF', metal: '#D9905A' },
     cat: { name: 'каталаза', pos: V3(2.05, 3.05, -0.25), col: '#FF8AB0', metal: '#E0773A' },
     gpx: { name: 'глутатионпероксидаза', pos: V3(2.4, 1.6, -0.2), col: '#7FE0A0', metal: '#E0A040' },
   };
@@ -69,28 +72,28 @@ function makeRadicals() {
   };
   // мембрана с липидами
   const MEMY = -0.75;
-  const mem = schemBilayer({ w: 9.0, d: 2.4, thick: 0.75, step: 0.2, seed: 33 }); mem.position.set(0, MEMY, 0); G2.add(mem);
+  const mem = schemBilayer({ w: 9.0, d: 2.4, thick: 0.75, step: 0.2, seed: 33 }); mem.position.set(0, MEMY, -1.3); G2.add(mem); // «срез»: передний край у z ≈ 0, витамин E виден в толще
   rnd = mulberry(3302);
-  const HEADS = []; for (let x = -4.4; x <= 4.4; x += 0.2) for (let z = -1.2; z <= 1.2; z += 0.2) HEADS.push({ p: V3(x, MEMY + 0.38, z), d: 0, t: 0 });
+  const HEADS = []; for (let x = -4.4; x <= 4.4; x += 0.2) for (let z = -1.2; z <= 1.2; z += 0.2) HEADS.push({ p: V3(x, MEMY + 0.38, z - 1.3), d: 0, t: 0 });
   const dmgI = new THREE.InstancedMesh(new THREE.SphereGeometry(0.1, 8, 6), new THREE.MeshBasicMaterial({ color: 0xff3a5a, transparent: true, opacity: 0.85 }), HEADS.length); dmgI.count = 0; G2.add(dmgI);
-  const vitE = []; for (let i = 0; i < 9; i++) { const m = mol('tocopherol', 0.045); m.rotation.z = Math.PI / 2; m.position.set(-3.9 + i * 0.97 + rand(-0.2, 0.2), MEMY + 0.05, rand(-0.8, 0.8)); G2.add(m); vitE.push(m); }
+  const vitE = []; for (let i = 0; i < 9; i++) { const m = mol('tocopherol', 0.045); m.rotation.z = Math.PI / 2; m.position.set(-3.9 + i * 0.97 + rand(-0.2, 0.2), MEMY + 0.05, rand(-0.1, 0.2)); G2.add(m); vitE.push(m); }
   const vitC = []; for (let i = 0; i < 5; i++) { const m = mol('ascorbic', 0.07); m.position.set(-3.4 + i * 1.7, MEMY - 0.85, 0.6); G2.add(m); vitC.push(m); }
   const mdaM = []; for (let i = 0; i < 6; i++) { const m = mol('mda', 0.09); m.visible = false; G2.add(m); mdaM.push({ m, age: 9, v: V3(0, 0, 0) }); }
 
   /* ---------- 3. респираторный взрыв ---------- */
   const G3 = new THREE.Group(); G3.position.set(80, 0, 0); scene.add(G3);
   const cellG = blobGeo(3.1, 2.3, 1.6, 21, 0.06, 5); cellG.computeVertexNormals();
-  G3.add(new THREE.Mesh(cellG, new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xe0d0ff).multiplyScalar(0.18), roughness: 0.4, transparent: true, opacity: 0.18, depthWrite: false })), new THREE.Mesh(cellG, glassMat(0xd8c8ff, { rim: 0.45, base: 0.01, pow: 2 })));
+  G3.add(new THREE.Mesh(cellG, new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xe0d0ff).multiplyScalar(0.18), roughness: 0.4, transparent: true, opacity: 0.18, depthWrite: false })), new THREE.Mesh(cellG, glassMat(0xd8c8ff, { rim: 0.3, base: 0.01, pow: 2, keep: true })));
   // сегментированное ядро нейтрофила
   const LOB = [V3(-0.8, 1.1, -0.4), V3(-1.6, 0.6, -0.3), V3(-1.9, -0.3, -0.2), V3(-1.2, -0.9, -0.3)];
   for (let i = 0; i < 3; i++) G3.add(new THREE.Mesh(tube([LOB[i], LOB[i].clone().lerp(LOB[i + 1], 0.5).add(V3(-0.1, 0, 0.1)), LOB[i + 1]], 0.06, 12, 8), protMat('#9F7BFF', 0.3)));
   LOB.forEach((p, i) => { const m = new THREE.Mesh(blobGeo(0.45, 0.35, 0.35, 30 + i, 0.1, 3), protMat('#9F7BFF', 0.35)); m.geometry.computeVertexNormals(); m.position.copy(p); G3.add(m); });
   const PH = V3(0.8, 0.1, 0.2), PHR = 1.05;
   const phago = new THREE.Mesh(new THREE.SphereGeometry(PHR, 40, 30), new THREE.MeshPhysicalMaterial({ color: 0x2a1a20, roughness: 0.3, transparent: true, opacity: 0.35, depthWrite: false, side: THREE.DoubleSide })); phago.position.copy(PH); G3.add(phago);
-  const phagoRim = new THREE.Mesh(new THREE.SphereGeometry(PHR, 40, 30), glassMat(0xffb0a0, { rim: 0.6, base: 0.02, pow: 2 })); phagoRim.position.copy(PH); G3.add(phagoRim);
+  const phagoRim = new THREE.Mesh(new THREE.SphereGeometry(PHR, 40, 30), glassMat(0xffb0a0, { rim: 0.6, base: 0.02, pow: 2, keep: true })); phagoRim.position.copy(PH); G3.add(phagoRim);
   const NOX = []; for (let i = 0; i < 14; i++) { const d = randUnit(); const m = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.22, 8), protMat('#FF9A5C', 0.6)); m.position.copy(PH).addScaledVector(d, PHR); m.quaternion.setFromUnitVectors(V3(0, 1, 0), d); G3.add(m); NOX.push({ m, d }); }
   const mpo = []; for (let i = 0; i < 10; i++) { const m = new THREE.Mesh(new THREE.SphereGeometry(0.09, 10, 8), protMat('#9FE870', 0.6)); m.position.copy(PH).addScaledVector(randUnit(), 1.5 + rnd() * 0.6); G3.add(m); mpo.push(m); }
-  const bacG = new THREE.CapsuleGeometry(0.16, 0.42, 6, 12), bacMat = new THREE.MeshPhysicalMaterial({ color: 0x8ad04a, emissive: 0x2a4a08, emissiveIntensity: 0.17, roughness: 0.4, transparent: true });
+  const bacG = new THREE.CapsuleGeometry(0.16, 0.42, 6, 12), bacMat = new THREE.MeshPhysicalMaterial({ color: 0xc8d040, emissive: 0x4a4a08, emissiveIntensity: 0.17, roughness: 0.4, transparent: true });
   const BACS = [0, 1, 2].map((i) => { const m = new THREE.Mesh(bacG, bacMat.clone()); G3.add(m); return { m, home: V3(4.6 + i * 0.25, 1.2 - i * 0.9, 0.3), inside: PH.clone().add(V3(-0.25 + i * 0.25, 0.2 - i * 0.2, 0.1)), hp: 1 }; });
 
   /* ---------- состояние ---------- */
@@ -153,8 +156,8 @@ function makeRadicals() {
       NOX.forEach((x, i) => { x.m.material.emissiveIntensity = burst ? 0.6 + 0.4 * Math.sin(t * 8 + i) : 0.05; if (burst && rnd() < 0.25) fx.spawn(x.m.position.clone().add(G3.position), x.d.clone().multiplyScalar(-0.6), cc.set(C.sup), 0.8, 1.5, 1.3); });
       if (burst && rnd() < 0.35) fx.spawn(PH.clone().add(randUnit().multiplyScalar(0.5)).add(G3.position), randUnit().multiplyScalar(0.15), cc.set(rnd() < 0.5 ? C.h2o2 : C.ocl), 1.0, 0.8, 1.3);
       mpo.forEach((m, i) => { const r = PH.clone().addScaledVector(m.position.clone().sub(PH).normalize(), burst ? 1.15 : 1.6 + 0.3 * Math.sin(i)); m.position.lerp(r, dt * 0.8); });
-      phagoRim.material.uniforms.uRim.value = (burst ? 1.0 : 0.6) * LOOK.shell;
-      if (k > 0 && k < 2.6 && rnd() < 0.3) fx.spawn(V3(80 + 3.0, rand(-1, 1.5), 0.3), V3(-0.8, 0, 0), cc.set('#8ad04a'), 0.6, 0.5, 1);
+      phagoRim.material.uniforms.uRim.value = burst ? 1.0 : 0.6;
+      if (k > 0 && k < 2.6 && rnd() < 0.3) fx.spawn(V3(80 + 3.0, rand(-1, 1.5), 0.3), V3(-0.8, 0, 0), cc.set('#C8D040'), 0.6, 0.5, 1);
     }
     fx.update(dt);
   }
@@ -185,12 +188,12 @@ function makeRadicals() {
     { text: 'H₂O₂', pos: V3(-1.9, -1.2, 0.3), color: '#F2C14E', show: () => st.labels && st.mode === 'paths' },
     { text: 'O₂•⁻', pos: V3(4.0, -1.2, 0.3), color: '#FF6A5A', show: () => st.labels && st.mode === 'paths' },
     { text: 'O₂', pos: N.o2.clone().add(V3(40 - 0.2, 0.5, 0)), color: C.o2, show: () => st.labels && st.mode === 'ros' },
-    { text: 'супероксид O₂•⁻', pos: N.sup.clone().add(V3(40 - 0.6, 0.55, 0)), color: C.sup, show: () => st.labels && st.mode === 'ros' },
+    { text: 'супероксид O₂•⁻', pos: N.sup.clone().add(V3(40 - 1.1, 0.55, 0)), color: C.sup, show: () => st.labels && st.mode === 'ros' },
     { text: 'H₂O₂', pos: N.h2o2.clone().add(V3(40 - 0.2, 0.55, 0)), color: C.h2o2, show: () => st.labels && st.mode === 'ros' },
     { text: 'H₂O', pos: N.h2o.clone().add(V3(40 + 0.3, 0.45, 0)), color: C.h2o, show: () => st.labels && st.mode === 'ros' },
     { text: '•OH', pos: N.oh.clone().add(V3(40 + 0.35, -0.1, 0.1)), color: C.oh, show: () => st.labels && st.mode === 'ros' },
     { text: 'Fe²⁺ (Фентон)', pos: FE.clone().add(V3(40 - 1.6, 0, 0)), color: '#E0773A', show: () => st.labels && st.mode === 'ros' },
-    { text: 'СОД', pos: V3(40 + 0.0, 3.35, 0), color: '#7FD6FF', show: () => st.labels && st.mode === 'ros' && st.sod },
+    { text: 'СОД', pos: V3(40 + 0.0, 3.8, 0), color: '#7FD6FF', show: () => st.labels && st.mode === 'ros' && st.sod },
     { text: 'каталаза', pos: V3(40 + 2.55, 3.55, 0), color: '#FF8AB0', show: () => st.labels && st.mode === 'ros' && st.cat },
     { text: 'глутатионпероксидаза', pos: V3(40 + 2.9, 1.55, 0.3), color: '#7FE0A0', show: () => st.labels && st.mode === 'ros' && st.cat },
     { text: '2GSH → GSSG', pos: V3(40 + 3.7, 0.7, 0.3), color: '#C8E8A0', show: () => st.labels && st.mode === 'ros' && st.cat },
@@ -202,7 +205,7 @@ function makeRadicals() {
     { text: 'миелопероксидаза', pos: V3(80 - 0.3, 1.8, 0.5), color: '#9FE870', show: () => st.labels && st.mode === 'burst' },
     { text: 'ядро нейтрофила', pos: V3(80 - 2.2, 1.3, 0.2), color: '#9F7BFF', show: () => st.labels && st.mode === 'burst' },
   ];
-  const bacLab = { text: 'бактерии', pos: V3(0, 0, 0), color: '#8AD04A', show: () => st.labels && st.mode === 'burst' && st.kill < 0.95 }; labels.push(bacLab);
+  const bacLab = { text: 'бактерии', pos: V3(0, 0, 0), color: '#C8D040', show: () => st.labels && st.mode === 'burst' && st.kill < 0.95 }; labels.push(bacLab);
   const refs = {};
   function ui(el) {
     const ib = infoBox('1 1 440px');
