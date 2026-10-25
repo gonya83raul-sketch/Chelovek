@@ -6511,7 +6511,7 @@ function makeCereb() {
    таз y≈0, плечи y≈2.9, голова y≈4.15
    ========================================================= */
 const BODY = { heart: V3(0.18, 2.05, 0.18), neck: 3.45, head: V3(0, 4.15, 0.02) };
-function bodyShell(scene, { rim = 0.3, base = 0.012, opacity = 0.025, arms = true, legs = true, head = true, color = 0xe2c0b0, glass = 0xbfd8ff } = {}) {
+function bodyShell(scene, { rim = 0.3, base = 0.012, opacity = 0.025, arms = true, legs = true, head = true, color = 0xe2c0b0, glass = 0xbfd8ff, keep = false } = {}) {
   const prof = [[0.0, -0.7], [0.9, -0.62], [1.0, -0.2], [0.98, 0.15], [0.86, 0.75], [0.84, 1.15], [0.92, 1.7], [1.02, 2.3], [1.12, 2.75], [1.06, 3.0], [0.72, 3.17], [0.3, 3.3], [0.27, 3.55], [0.3, 3.7], [0.0, 3.72]].map(([r, y]) => new THREE.Vector2(r, y));
   const torso = new THREE.LatheGeometry(prof, 64); torso.scale(1, 1, 0.6);
   displaceGeo(torso, (v) => { if (v.z > 0 && v.y > 1.9 && v.y < 2.7) v.z += 0.05 * Math.exp(-(((Math.abs(v.x) - 0.5) / 0.3) ** 2)); if (v.z < 0) v.z *= 1 + 0.08 * Math.exp(-(((v.y - 2.4) / 0.5) ** 2)); });
@@ -6520,7 +6520,7 @@ function bodyShell(scene, { rim = 0.3, base = 0.012, opacity = 0.025, arms = tru
   if (arms) [1, -1].forEach((s) => { const c = new THREE.CatmullRomCurve3([V3(0.98 * s, 2.82, -0.02), V3(1.22 * s, 2.45, -0.04), V3(1.36 * s, 1.75, -0.06), V3(1.45 * s, 1.15, 0.02)]); geos.push(taperTube(c, (u) => 0.27 - 0.08 * u, 40, 20)); });
   if (legs) [1, -1].forEach((s) => { const c = new THREE.CatmullRomCurve3([V3(0.47 * s, -0.25, 0.0), V3(0.5 * s, -1.2, 0.02), V3(0.48 * s, -2.1, 0.03)]); geos.push(taperTube(c, (u) => 0.46 - 0.16 * u, 40, 22)); });
   const solid = new THREE.MeshPhysicalMaterial({ color, roughness: 0.6, transparent: true, opacity, depthWrite: false, envMapIntensity: 0.4 });
-  const gl = glassMat(glass, { rim, base, pow: 2.2 });
+  const gl = glassMat(glass, { rim, base, pow: 2.2, keep });
   const out = { solid, glass: gl, meshes: [] };
   geos.forEach((g) => { const a = new THREE.Mesh(g, solid), b = new THREE.Mesh(g, gl); a.renderOrder = -1; scene.add(a, b); out.meshes.push(a, b); });
   return out;
