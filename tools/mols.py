@@ -206,6 +206,18 @@ LIB = {
     'udpgal': ('УДФ-галактоза', 'O=c1ccn([C@@H]2O[C@H](COP(=O)(O)OP(=O)(O)O[C@H]3O[C@H](CO)[C@H](O)[C@H](O)[C@H]3O)[C@@H](O)[C@H]2O)c(=O)[nH]1'),
     'glyald': ('Глицеральдегид', 'OC[C@@H](O)C=O'),
     'pcr': ('Креатинфосфат', 'CN(CC(=O)O)C(=N)NP(=O)(O)O'),
+    # гипофиз, диабет, половые гормоны (app12)
+    'oxytocin': ('Окситоцин', 'CC[C@H](C)[C@H]1C(=O)N[C@@H](CCC(N)=O)C(=O)N[C@@H](CC(N)=O)C(=O)N[C@@H](CSSC[C@H](N)C(=O)N[C@@H](Cc2ccc(O)cc2)C(=O)N1)C(=O)N1CCC[C@H]1C(=O)N[C@@H](CC(C)C)C(=O)NCC(N)=O'),
+    'vasopressin': ('Вазопрессин', 'NC(=O)CC[C@@H]1NC(=O)[C@H](Cc2ccccc2)NC(=O)[C@H](Cc2ccc(O)cc2)NC(=O)[C@@H](N)CSSC[C@@H](C(=O)N2CCC[C@H]2C(=O)N[C@@H](CCCNC(N)=N)C(=O)NCC(N)=O)NC(=O)[C@H](CC(N)=O)NC1=O'),
+    'glibenclamide': ('Глибенкламид', 'COc1ccc(Cl)cc1C(=O)NCCc1ccc(cc1)S(=O)(=O)NC(=O)NC1CCCCC1'),
+    'dapagliflozin': ('Дапаглифлозин', 'CCOc1ccc(Cc2cc(ccc2Cl)[C@@H]2O[C@H](CO)[C@@H](O)[C@H](O)[C@H]2O)cc1'),
+    'sorbitol': ('Сорбит', 'OC[C@H](O)[C@@H](O)[C@H](O)[C@H](O)CO'),
+    'dht': ('Дигидротестостерон', 'C[C@]12CC[C@H]3[C@@H](CC[C@H]4CC(=O)CC[C@]34C)[C@@H]1CC[C@@H]2O'),
+    'estrone': ('Эстрон', 'C[C@]12CC[C@H]3[C@@H](CCc4cc(O)ccc34)[C@@H]1CCC2=O'),
+    'ethinylestradiol': ('Этинилэстрадиол', 'C#C[C@]1(O)CC[C@H]2[C@@H]3CCc4cc(O)ccc4[C@H]3CC[C@@]21C'),
+    'levonorgestrel': ('Левоноргестрел', 'CC[C@]12CC[C@H]3[C@@H](CCC4=CC(=O)CC[C@@H]34)[C@@H]1CC[C@]2(O)C#C'),
+    'letrozole': ('Летрозол', 'N#Cc1ccc(cc1)C(n1cncn1)c1ccc(cc1)C#N'),
+    'finasteride': ('Финастерид', 'CC(C)(C)NC(=O)[C@H]1CC[C@H]2[C@@H]3CC[C@H]4NC(=O)C=C[C@]4(C)[C@H]3CC[C@]12C'),
 }
 
 # жирные кислоты и ацилглицерины — вытянутые конформеры через RDKit (tools/molrd.py)
