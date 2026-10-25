@@ -13,7 +13,7 @@ Object.assign(BIO_MOL, {"o2":{"name":"Кислород","el":"O O","xyz":"JQDP/w
 function makeMutations() {
   __set_rnd(mulberry(7401));
   const scene = bioStage({ rim: 0xff8ab0 });
-  const VIEW = { mut: [V3(-0.9, -0.2, 0), V3(-0.5, 1.2, 15)], sickle: [V3(39.4, -1.4, 0), V3(39.8, 0.8, 12)], ptm: [V3(79.4, -1.4, 0), V3(79.8, 0.6, 13.5)] };
+  const VIEW = { mut: [V3(-1.6, 1.0, 0), V3(-1.2, 2.2, 18)], sickle: [V3(38.4, -0.4, 0), V3(38.8, 1.6, 13)], ptm: [V3(78.8, -0.9, 0), V3(79.2, 1.0, 14.5)] };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VIEW.mut[1]);
   const controls = makeControls(camera, VIEW.mut[0]); controls.minDistance = 3; controls.maxDistance = 40;
   const fx = new Sparks(1800, 0.07); scene.add(fx.obj);
@@ -24,7 +24,7 @@ function makeMutations() {
   const AA3 = { F: 'Фен', L: 'Лей', S: 'Сер', Y: 'Тир', C: 'Цис', W: 'Три', P: 'Про', H: 'Гис', Q: 'Глн', R: 'Арг', I: 'Иле', M: 'Мет', T: 'Тре', N: 'Асн', K: 'Лиз', V: 'Вал', A: 'Ала', D: 'Асп', E: 'Глу', G: 'Гли', '*': 'стоп' };
   const AACOL = { E: '#FF6A6A', D: '#FF6A6A', K: '#5B8CFF', R: '#5B8CFF', H: '#7FB4FF', V: '#F2C14E', L: '#F2C14E', I: '#F2C14E', M: '#F2C14E', A: '#E6E08A', F: '#E6A040', '*': '#FF3A3A' };
   const tr3 = (c) => AA[B.indexOf(c[0]) * 16 + B.indexOf(c[1]) * 4 + B.indexOf(c[2])];
-  const WT = 'ATGGTGCACCTGACTCCTGAGGAGAAGTCTGCCGTTACT';   // начало гена β-глобина: Мет-Вал-Гис-Лей-Тре-Про-Глу-Глу-Лиз-Сер-Ала-Вал-Тре
+  const WT = 'ATGGTGCATCTGACTCCTGAGGAGAAGTCTGCCGTTACT';   // начало гена β-глобина: Мет-Вал-Гис-Лей-Тре-Про-Глу-Глу-Лиз-Сер-Ала-Вал-Тре
   const MUTS = {
     wt: { seq: WT, at: -1, name: 'Норма' },
     silent: { seq: WT.slice(0, 11) + 'C' + WT.slice(12), at: 11, name: 'Молчащая' },
@@ -33,18 +33,19 @@ function makeMutations() {
     frame: { seq: WT.slice(0, 22) + WT.slice(23) + 'G', at: 22, name: 'Сдвиг рамки' },
   };
   const BCOL = { A: '#FF6A6A', T: '#F2C14E', U: '#F2C14E', G: '#5CC48A', C: '#5B8CFF' };
+  const LMAT = {}; const letterMat = (b) => { if (LMAT[b]) return LMAT[b]; const cv = document.createElement('canvas'); cv.width = cv.height = 64; const x = cv.getContext('2d'); x.fillStyle = new THREE.Color(BCOL[b]).multiplyScalar(0.75).getStyle(); x.fillRect(0, 0, 64, 64); x.fillStyle = '#111'; x.font = 'bold 46px Arial, sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(b, 32, 35); const tx = new THREE.CanvasTexture(cv); tx.colorSpace = THREE.SRGBColorSpace; return (LMAT[b] = new THREE.MeshBasicMaterial({ map: tx })); };
   const COMP = { A: 'T', T: 'A', G: 'C', C: 'G' };
 
   /* ---------- 1. ген → мРНК → белок ---------- */
   const G1 = new THREE.Group(); scene.add(G1);
-  const N = WT.length, DXB = 0.24, X0 = -(N - 1) * DXB / 2;
+  const N = WT.length, DXB = 0.24, GAP = 0.07, X0 = -((N - 1) * DXB + (N / 3 - 1) * GAP) / 2; const BX = (i) => X0 + i * DXB + Math.floor(i / 3) * GAP;
   const bx = new THREE.BoxGeometry(0.22, 0.34, 0.22);
-  const mk = (y, z) => Array.from({ length: N }, (_, i) => { const m = new THREE.Mesh(bx, organMat('#888', 0.6, { emissiveIntensity: 0.12 })); m.position.set(X0 + i * DXB, y, z); G1.add(m); return m; });
+  const mk = (y, z) => Array.from({ length: N }, (_, i) => { const m = new THREE.Mesh(bx, letterMat('A')); m.position.set(BX(i), y, z); G1.add(m); return m; });
   const DNA1 = mk(2.25, 0), DNA2 = mk(1.85, 0), RNA = mk(0.85, 0.15);
   [2.25, 1.85].forEach((y) => { const b = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, N * DXB, 8), organMat('#C8C8D0', 0.5)); b.rotation.z = Math.PI / 2; b.position.set(0, y + (y > 2 ? 0.19 : -0.19), 0); G1.add(b); });
   const rb = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, N * DXB, 8), organMat('#FF6FA8', 0.6)); rb.rotation.z = Math.PI / 2; rb.position.set(0, 0.66, 0.15); G1.add(rb);
   const NC = Math.floor(N / 3);
-  const beads = Array.from({ length: NC }, (_, i) => { const m = new THREE.Mesh(new THREE.SphereGeometry(0.2, 18, 12), organMat('#ccc', 0.6, { emissiveIntensity: 0.12 })); m.position.set(X0 + (i * 3 + 1) * DXB, -0.35, 0.1); G1.add(m); return m; });
+  const beads = Array.from({ length: NC }, (_, i) => { const m = new THREE.Mesh(new THREE.SphereGeometry(0.2, 18, 12), organMat('#ccc', 0.6, { emissiveIntensity: 0.12 })); m.position.set(BX(i * 3 + 1), -0.35, 0.1); G1.add(m); return m; });
   const pep = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 1, 8), organMat('#E8E0D0', 0.5)); pep.rotation.z = Math.PI / 2; G1.add(pep);
   const ribo = new THREE.Group(); G1.add(ribo);
   const rS = new THREE.Mesh(blobGeo(0.55, 0.28, 0.4, 3, 0.1), glassMat('#E8C772', { rim: 0.9, base: 0.08, keep: true })); rS.position.y = 0.6; ribo.add(rS);
@@ -68,6 +69,7 @@ function makeMutations() {
   const kin = new THREE.Mesh(blobGeo(0.5, 0.4, 0.4, 41, 0.14), protMat('#F2A040', 0.5)); G3.add(kin);
   const groups = Array.from({ length: 10 }, () => { const g = new THREE.Group(); G3.add(g); g.visible = false; return g; });
   const ub = Array.from({ length: 5 }, () => { const m = new THREE.Mesh(blobGeo(0.17, 0.15, 0.15, 51, 0.1), protMat('#7FE0A0', 0.6)); m.visible = false; G3.add(m); return m; });
+  const SS = [[3, 23], [7, 27]].map(([a, b]) => { const m = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 1, 8), new THREE.MeshPhysicalMaterial({ color: 0xf2cc3a, emissive: 0xf2cc3a, emissiveIntensity: 0.4 })); m.visible = false; G3.add(m); return { m, a, b }; });   // дисульфидные мостики A–B
   const prot = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.42, 1.3, 24, 1, true), organMat('#9F7BFF', 0.5, { side: THREE.DoubleSide, emissiveIntensity: 0.08 })); prot.rotation.z = Math.PI / 2; prot.position.set(3.9, 0, 0); prot.visible = false; G3.add(prot);
 
   /* ---------- состояние ---------- */
@@ -75,22 +77,21 @@ function makeMutations() {
   function setMode(m) { st.mode = m; refs.modeSeg && refs.modeSeg.sync(); [G1, G2, G3].forEach((g, k) => { g.visible = ['mut', 'sickle', 'ptm'][k] === m; }); st.fly = flyTarget(VIEW[m][0], VIEW[m][1]); st.msg = null; refs.rebuild && refs.rebuild(); refs.setInfo && refs.setInfo(); }
   function applyMut() {
     const M = MUTS[st.mut], s = M.seq;
-    for (let i = 0; i < N; i++) { const b = s[i], c = COMP[b]; DNA1[i].material.color.set(BCOL[b]).multiplyScalar(0.6); DNA2[i].material.color.set(BCOL[c]).multiplyScalar(0.6); RNA[i].material.color.set(BCOL[b === 'T' ? 'U' : b]).multiplyScalar(0.6); const hit = i === M.at; [DNA1[i], DNA2[i], RNA[i]].forEach((m) => { m.material.emissiveIntensity = hit ? 0.5 : 0.1; m.scale.setScalar(hit ? 1.25 : 1); }); }
+    for (let i = 0; i < N; i++) { const b = s[i], c = COMP[b]; DNA1[i].material = letterMat(b); DNA2[i].material = letterMat(c); RNA[i].material = letterMat(b === 'T' ? 'U' : b); const hit = i === M.at && st.mut !== 'frame'; [DNA1[i], DNA2[i], RNA[i]].forEach((m) => { m.scale.setScalar(hit ? 1.3 : 1); }); }
     st.prot = []; let stop = false;
     for (let k = 0; k < NC; k++) { const a = stop ? null : tr3(s.slice(k * 3, k * 3 + 3)); if (a === '*') stop = true; st.prot.push(stop && a !== '*' ? null : a); }
     const wt = []; for (let k = 0; k < NC; k++) wt.push(tr3(WT.slice(k * 3, k * 3 + 3)));
     st.wtProt = wt; st.rx = 0;
-    if (M.at >= 0) mark.position.set(X0 + M.at * DXB, 1.55, 0.25); mark.visible = M.at >= 0;
+    if (M.at >= 0) mark.position.set(BX(M.at), 1.55, 0.25); mark.visible = M.at >= 0; st.hold = 0;
   }
   function mutUpdate(dt, t) {
-    st.rx = Math.min(NC + 0.5, st.rx + dt * 1.1);   // рибосома идёт по мРНК
-    if (st.rx >= NC + 0.5 && st.t % 6 < dt) st.rx = 0;
+    if (st.rx >= NC + 0.5) { st.hold += dt; if (st.hold > 5) { st.rx = 0; st.hold = 0; } } else st.rx = Math.min(NC + 0.5, st.rx + dt * 1.1);   // рибосома идёт по мРНК, готовый белок держится 5 с
     const k = Math.floor(st.rx);
-    ribo.position.set(X0 + (Math.min(k, NC - 1) * 3 + 1) * DXB, -0.15, 0.15);
+    ribo.position.set(BX(Math.min(k, NC - 1) * 3 + 1), -0.15, 0.15);
     const stopAt = st.prot.indexOf('*'); const endK = stopAt >= 0 ? stopAt : NC;
     ribo.visible = k <= endK;
-    beads.forEach((b, i) => { const a = st.prot[i]; const show = i < Math.min(k, endK) && a && a !== '*'; b.visible = show; if (show) { const diff = a !== st.wtProt[i]; b.material.color.set(AACOL[a] || '#B8C4D8').multiplyScalar(0.6); b.material.emissiveIntensity = diff ? 0.45 + 0.2 * Math.sin(t * 5) : 0.1; b.scale.setScalar(diff ? 1.2 : 1); } });
-    const nb = Math.min(k, endK); pep.visible = nb > 1; if (nb > 1) { pep.scale.y = (nb - 1) * 3 * DXB; pep.position.set(X0 + ((nb - 1) * 3 / 2 + 1) * DXB, -0.35, 0.1); }
+    beads.forEach((b, i) => { const a = st.prot[i]; const show = i < Math.min(k, endK) && a && a !== '*'; b.visible = show; if (show) { const diff = a !== st.wtProt[i]; b.material.color.set(AACOL[a] || '#B8C4D8').multiplyScalar(0.6); b.material.emissive.set(AACOL[a] || '#B8C4D8'); b.material.emissiveIntensity = diff ? 0.25 + 0.12 * Math.sin(t * 5) : 0.06; b.scale.setScalar(diff ? 1.3 : 1); } });
+    const nb = Math.min(k, endK); pep.visible = nb > 1; if (nb > 1) { pep.scale.y = BX((nb - 1) * 3 + 1) - BX(1); pep.position.set((BX((nb - 1) * 3 + 1) + BX(1)) / 2, -0.35, 0.1); }
     const ms = 1 + 0.06 * Math.sin(t * 4); mark.scale.set(ms, 4.4 * ms, 1);
     if (stopAt >= 0 && k === stopAt && rnd() < 0.3) fx.spawn(ribo.position.clone(), V3(0, 0.5, 0.3), C.set('#FF3A3A'), 0.5, 0.6, 1);
   }
@@ -99,7 +100,7 @@ function makeMutations() {
     RBC.forEach((r, i) => {
       r.x += dt * r.v * (lowO2 && st.hbs === 'ss' ? 0.35 : 1); if (r.x > 4.5) r.x -= 9;
       const canSickle = st.hbs === 'ss' || (st.hbs === 'as' && r.het && lowO2 && rnd() < 0.002);
-      const want = lowO2 && st.hbs !== 'aa' ? (st.hbs === 'ss' ? 1 : (r.het ? 0.35 : 0)) : 0;
+      const want = lowO2 && st.hbs !== 'aa' ? (st.hbs === 'ss' ? 1 : (r.het ? 0.7 : 0)) : 0;
       r.s += (want - r.s) * Math.min(1, dt * (want > r.s ? 0.6 : 1.5));
       if (r.s > 0.5) ns++;
       r.m.morphTargetInfluences[0] = r.s; r.m.position.set(r.x, r.y + 0.1 * Math.sin(t + i), r.z); r.m.rotation.set(0.3 + 0.2 * Math.sin(t * 0.5 + i), r.rot + t * 0.2 * (1 - r.s), 0.2);
@@ -119,13 +120,14 @@ function makeMutations() {
     const P = PTM[st.ptm]; st.pt += dt * 0.35; const ph = st.pt % 4; const done = Math.min(P.at.length, Math.floor(ph / 2.4 * (P.at.length + 0.5)));
     // фермент идёт вдоль цепи и оставляет метки
     const ka = P.at[Math.min(done, P.at.length - 1)];
-    kin.position.copy(chainPts[ka]).add(V3(0, 0.55, 0.15)); kin.visible = ph < 2.6 && st.ptm !== 'cleave';
+    kin.position.copy(chainPts[ka]).add(V3(st.ptm === 'ubq' ? -0.7 : 0, 0.55, 0.15)); kin.visible = ph < 2.6 && st.ptm !== 'cleave';
     kin.material.color.set(P.col).multiplyScalar(0.5);
     groups.forEach((g, i) => { const show = i < done && i < P.at.length && st.ptm !== 'cleave' && st.ptm !== 'ubq'; g.visible = show; if (!show) return; if (!g.userData.k || g.userData.k !== st.ptm) { g.clear(); g.userData.k = st.ptm; const n = st.ptm === 'glyco' ? 4 : 1; for (let j = 0; j < n; j++) { const m = new THREE.Mesh(st.ptm === 'glyco' ? new THREE.IcosahedronGeometry(0.09, 0) : new THREE.SphereGeometry(st.ptm === 'phos' ? 0.11 : 0.08, 12, 8), new THREE.MeshPhysicalMaterial({ color: new THREE.Color(P.col).multiplyScalar(0.6), emissive: P.col, emissiveIntensity: 0.35 })); m.position.set(j % 2 ? 0.1 : -0.05, 0.22 + j * 0.15, 0); g.add(m); } } g.position.copy(chainPts[P.at[i]]); });
     // протеолиз проинсулина: C-пептид уплывает, цепи A и B остаются связаны S–S
     const cut = st.ptm === 'cleave' && ph > 1.2;
-    cb.forEach((m, i) => { let col = '#B8C4D8'; const p = chainPts[i].clone(); if (st.ptm === 'cleave') { col = i < 10 ? '#7FD6FF' : i < 20 ? '#C8C8D0' : '#FF8AB0'; if (cut && i >= 10 && i < 20) p.add(V3(0, -0.9 * smooth(1.2, 2.4, ph), 0.5 * smooth(1.2, 2.4, ph))); if (cut && i >= 20) p.add(V3(-2.3 * smooth(1.2, 2.4, ph), 0.55 * smooth(1.2, 2.4, ph), 0)); } if (st.ptm === 'hydroxy' && P.at.includes(i)) col = i < done * 3 + 1 ? '#E6E08A' : '#B8C4D8'; if (st.ptm === 'ubq' && ph > 2.2) p.lerp(V3(3.9, 0, 0), smooth(2.2, 3.4, ph) * (1 - i / NB * 0.4)); m.position.copy(p); m.material.color.set(col).multiplyScalar(0.6); m.visible = !(st.ptm === 'ubq' && ph > 3.3); });
+    cb.forEach((m, i) => { let col = '#B8C4D8'; const p = chainPts[i].clone(); if (st.ptm === 'cleave') { col = i < 10 ? '#7FD6FF' : i < 20 ? '#C8C8D0' : '#FF8AB0'; if (cut && i >= 10 && i < 20) p.add(V3(0, -0.9 * smooth(1.2, 2.4, ph), 0.5 * smooth(1.2, 2.4, ph))); if (cut && i >= 20) p.add(V3(-5.0 * smooth(1.2, 2.4, ph), 0.62 * smooth(1.2, 2.4, ph), 0)); } if (st.ptm === 'hydroxy' && P.at.includes(i)) col = i < done * 3 + 1 ? '#E6E08A' : '#B8C4D8'; if (st.ptm === 'ubq' && ph > 2.2) p.lerp(V3(3.9, 0, 0), smooth(2.2, 3.4, ph) * (1 - i / NB * 0.4)); m.position.copy(p); m.material.color.set(col).multiplyScalar(0.6); m.visible = !(st.ptm === 'ubq' && ph > 3.3); });
     chainTube.visible = st.ptm !== 'cleave' && !(st.ptm === 'ubq' && ph > 2.2);
+    SS.forEach((s) => { const on = st.ptm === 'cleave' && ph > 2.3; s.m.visible = on; if (on) { const A = cb[s.a].position, Bp = cb[s.b].position; s.m.position.copy(A).lerp(Bp, 0.5); s.m.scale.y = A.distanceTo(Bp); s.m.quaternion.setFromUnitVectors(V3(0, 1, 0), Bp.clone().sub(A).normalize()); } });
     ub.forEach((m, i) => { const on = st.ptm === 'ubq' && ph > 0.4 + i * 0.3 && ph < 3.4; m.visible = on; if (on) { const base = ph > 2.2 ? chainPts[14].clone().lerp(V3(3.9, 0, 0), smooth(2.2, 3.4, ph)) : chainPts[14].clone(); m.position.copy(base).add(V3(0.05 * i, 0.3 + i * 0.27, 0.1)); } });
     prot.visible = st.ptm === 'ubq'; if (prot.visible && ph > 3.2 && ph < 3.3) fx.spawn(V3(83.9, 0, 0), V3(0.6, 0.2, 0), C.set('#B8C4D8'), 0.8, 0.7, 1.2);
     st.done = done;
@@ -158,19 +160,20 @@ function makeMutations() {
     ubq: '<b>Убиквитин</b> (зелёные шарики) — метка «на уничтожение»: ферменты пришивают к лизину белка цепочку из нескольких убиквитинов, и <b>протеасома</b> (фиолетовая бочка) разрезает его на короткие пептиды. Так клетка убирает повреждённые и ненужные белки, регулирует клеточный цикл. Ингибитор протеасомы бортезомиб лечит миеломную болезнь.',
   };
   const labels = [
-    { text: 'ДНК (кодирующая цепь)', pos: V3(X0 - 0.2, 2.65, 0.2), color: '#C8C8D0', show: () => st.labels && st.mode === 'mut' },
+    { text: 'ДНК (кодирующая цепь сверху)', pos: V3(X0 - 0.2, 2.65, 0.2), color: '#C8C8D0', show: () => st.labels && st.mode === 'mut' },
     { text: 'мРНК 5′ → 3′', pos: V3(X0 - 0.2, 1.2, 0.3), color: '#FF6FA8', show: () => st.labels && st.mode === 'mut' },
     { text: 'белок', pos: V3(X0 - 0.2, -0.85, 0.3), color: '#B8C4D8', show: () => st.labels && st.mode === 'mut' },
     { text: 'рибосома', pos: () => ribo.position.clone().add(V3(0.5, 1.6, 0.2)), color: '#8FB4E6', show: () => st.labels && st.mode === 'mut' && ribo.visible },
-    ...Array.from({ length: NC }, (_, i) => [...new Set(Object.values(MUTS).map((m) => tr3(m.seq.slice(i * 3, i * 3 + 3))))].filter((a) => a !== '*').map((a) => ({ text: AA3[a], pos: V3(X0 + (i * 3 + 1) * DXB - 0.12, i % 2 ? -0.95 : -0.72, 0.35), color: AACOL[a] || '#E8E0D0', show: () => st.labels && st.mode === 'mut' && beads[i].visible && st.prot[i] === a }))).flat(),
-    { text: 'стоп', pos: () => ribo.position.clone().add(V3(-0.1, -0.55, 0.4)), color: '#FF3A3A', show: () => st.labels && st.mode === 'mut' && st.prot && st.prot.indexOf('*') >= 0 && Math.floor(st.rx) >= st.prot.indexOf('*') },
+    ...Array.from({ length: NC }, (_, i) => [...new Set(Object.values(MUTS).map((m) => tr3(m.seq.slice(i * 3, i * 3 + 3))))].filter((a) => a !== '*').map((a) => ({ text: AA3[a], pos: V3(BX(i * 3 + 1) - 0.12, i % 2 ? -0.95 : -0.72, 0.35), color: AACOL[a] || '#E8E0D0', show: () => st.labels && st.mode === 'mut' && beads[i].visible && st.prot[i] === a }))).flat(),
+    { text: 'стоп-кодон', pos: () => V3(BX(Math.max(0, st.prot.indexOf('*')) * 3 + 1) - 0.2, 0.45, 0.4), color: '#FF3A3A', show: () => st.labels && st.mode === 'mut' && st.prot && st.prot.indexOf('*') >= 0 && Math.floor(st.rx) >= st.prot.indexOf('*') },
+    { text: '✕ выпал A', pos: V3(BX(22) - 0.2, 2.75, 0.35), color: '#FF3A3A', show: () => st.labels && st.mode === 'mut' && st.mut === 'frame' },
     { text: 'серповидные клетки', pos: V3(40 - 0.4, 1.35, 0.3), color: '#9A3050', show: () => st.labels && st.mode === 'sickle' && st.sickled > 0 },
     { text: 'капилляр', pos: V3(40 + 3.2, -1.35, -0.6), color: '#D86A7A', show: () => st.labels && st.mode === 'sickle' },
     { text: 'фермент', pos: () => kin.position.clone().add(V3(80.4, 0.4, 0.1)), color: '#F2A040', show: () => st.labels && st.mode === 'ptm' && kin.visible },
     { text: 'протеасома', pos: V3(80 + 3.6, 0.75, 0.3), color: '#9F7BFF', show: () => st.labels && st.mode === 'ptm' && st.ptm === 'ubq' },
-    { text: 'цепь B', pos: V3(80 - 3.2, -0.55, 0.3), color: '#7FD6FF', show: () => st.labels && st.mode === 'ptm' && st.ptm === 'cleave' },
+    { text: 'цепь B', pos: V3(80 - 3.2, -0.6, 0.3), color: '#7FD6FF', show: () => st.labels && st.mode === 'ptm' && st.ptm === 'cleave' },
     { text: 'C-пептид', pos: V3(80 - 0.6, -1.4, 0.6), color: '#C8C8D0', show: () => st.labels && st.mode === 'ptm' && st.ptm === 'cleave' },
-    { text: 'цепь A', pos: V3(80 + 0.4, 0.95, 0.3), color: '#FF8AB0', show: () => st.labels && st.mode === 'ptm' && st.ptm === 'cleave' },
+    { text: 'цепь A', pos: V3(80 - 2.6, 1.15, 0.3), color: '#FF8AB0', show: () => st.labels && st.mode === 'ptm' && st.ptm === 'cleave' },
   ];
   const dyn = labels.filter((l) => typeof l.pos === 'function'); dyn.forEach((l) => { l.fn = l.pos; l.pos = V3(0, 0, 0); });
   const refs = {};
@@ -205,12 +208,12 @@ function makeMutations() {
   }
   const upd0 = update;
   const self = {
-    scene, camera, controls, update: (dt) => { upd0(dt); dyn.forEach((l) => { l.pos.copy(l.fn()); }); }, ui, onKey, stats, labels, drawScope: null, accent: '#FF8AB0',
+    mobZoom: 1.0, scene, camera, controls, update: (dt) => { upd0(dt); dyn.forEach((l) => { l.pos.copy(l.fn()); }); }, ui, onKey, stats, labels, drawScope: null, accent: '#FF8AB0',
     kicker: 'Биохимия · молекулярная генетика', title: 'Мутации и модификация белков',
     lede: 'Одна буква в ДНК может ничего не изменить — или превратить эритроцит в серп. А после сборки белок ещё дорабатывают: метят, режут и отправляют на уничтожение.',
     notes: `
       <div><h2>Мутации</h2>
-        <p><b>Генные (точечные)</b> мутации: замены оснований — транзиции (пурин ↔ пурин) и трансверсии; по последствиям — молчащие, миссенс, нонсенс; вставки и выпадения — со сдвигом рамки или без. Бывают также мутации регуляторных участков и сплайсинга (многие β⁺-талассемии). <b>Хромосомные</b> — делеции, дупликации, инверсии, транслокации; <b>геномные</b> — изменение числа хромосом (трисомия 21).</p>
+        <p><b>Генные (точечные)</b> мутации: замены оснований — транзиции и трансверсии; по последствиям — молчащие, миссенс, нонсенс; вставки и выпадения — со сдвигом рамки или без. Транзиции — пурин ↔ пурин или пиримидин ↔ пиримидин, трансверсии — пурин ↔ пиримидин (HbS — трансверсия A → T). Бывают также мутации регуляторных участков и сплайсинга (многие β⁺-талассемии). <b>Хромосомные</b> — делеции, дупликации, инверсии, транслокации; <b>геномные</b> — изменение числа хромосом (трисомия 21).</p>
         <h3>Причины и защита</h3><p>Ошибки репликации, спонтанное дезаминирование и депуринизация, УФ (тиминовые димеры), ионизирующее излучение, химические мутагены. Репарация: прямая, эксцизионная (оснований и нуклеотидов — при её дефекте пигментная ксеродерма), исправление неспаренных оснований (дефект — синдром Линча). См. тему «ДНК».</p>
         <h3>Посттрансляционные модификации</h3><ul><li>Отщепление метионина и сигнального пептида, частичный протеолиз.</li><li>Фосфорилирование, ацетилирование (гистоны), метилирование.</li><li>Гликозилирование, присоединение липидов (якоря в мембране).</li><li>Гидроксилирование (витамин C), γ-карбоксилирование (витамин K), образование дисульфидных связей.</li><li>Убиквитинирование — распад в протеасоме.</li></ul></div>
       <div><h2>Условности</h2><ul><li>Последовательность — настоящее начало кодирующей части гена β-глобина человека; аминокислоты считаются по стандартному генетическому коду. Нонсенс и сдвиг рамки поставлены в это место для наглядности.</li><li>Эритроциты, цепь белка, ферменты и протеасома — схемы, не в масштабе.</li></ul></div>
