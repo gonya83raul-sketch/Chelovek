@@ -297,7 +297,7 @@ dialog.donate p{color:var(--text);margin:0 0 14px}
     <p class="dlead">«Кто мы?» бесплатный и без рекламы. Новые темы, 3D-модели и приложение делаются на энтузиазме — если атлас вам полезен, вы можете помочь его развитию.</p>
     <div class="dopts">
       <a class="dopt" href="https://boosty.to/chelovek3d/donate" target="_blank" rel="noopener"><b>Boosty</b><span class="dsub">картой или по СБП, разово или подпиской</span></a>
-      <a class="dopt" href="https://tips.tips/0004897066" target="_blank" rel="noopener"><b>tips.tips</b><span class="dsub">чаевые картой — по ссылке или QR-коду</span><img src="img/qr-tips.png" alt="QR-код tips.tips" width="120" height="120" loading="lazy"></a>
+      <a class="dopt" href="https://tips.tips/000489706" target="_blank" rel="noopener"><b>tips.tips</b><span class="dsub">чаевые картой — по ссылке или QR-коду</span><img src="img/qr-tips.svg" alt="QR-код tips.tips" width="120" height="120" loading="lazy"></a>
     </div>
     <details class="dcrypto"><summary>Криптовалюта: USDT (TRC-20)</summary>
       <div class="dqr"><img src="img/qr-usdt.svg" alt="QR-код адреса USDT" width="150" height="150" loading="lazy"></div>
@@ -322,7 +322,7 @@ let L = new URLSearchParams(location.search).get('lang');
 try { if (L) localStorage.setItem('lang', L); else L = localStorage.getItem('lang'); } catch (e) { /* без памяти */ }
 if (L !== 'en' && L !== 'ru') L = (navigator.languages || [navigator.language || '']).some((l) => /^(ru|uk|be|kk)/i.test(l)) ? 'ru' : 'en';
 document.documentElement.lang = L;
-import(L === 'en' ? './app10/en/core.js' : './app10/core.js');
+import(L === 'en' ? './app11/en/core.js' : './app11/core.js');
 </script>
 </body>
 </html>
