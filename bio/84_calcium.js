@@ -7,7 +7,7 @@
 function makeCalcium() {
   rnd = mulberry(8401);
   const scene = bioStage({ rim: 0xf2e6c8 });
-  const VIEW = { reg: [V3(-0.7, 1.15, 0), V3(-0.2, 2.2, 14)], vitd: [V3(39.3, -1.7, 0), V3(39.8, 0.1, 15)], bone: [V3(79.0, -2.9, 0), V3(79.4, 2.3, 12.5)] };
+  const VIEW = { reg: [V3(-1.0, -0.1, 0), V3(-0.5, 1.0, 18.5)], vitd: [V3(39.9, -0.9, 0), V3(40.4, 0.6, 17)], bone: [V3(80.3, -1.8, 0), V3(80.3, 4.5, 10.5)] };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VIEW.reg[1]);
   const controls = makeControls(camera, VIEW.reg[0]); controls.minDistance = 3; controls.maxDistance = 40;
   const fx = new Sparks(2000, 0.07); scene.add(fx.obj);
@@ -18,7 +18,7 @@ function makeCalcium() {
   /* ---------- 1. регуляция в организме ---------- */
   const G1 = new THREE.Group(); scene.add(G1);
   bodyShell(G1, { rim: 0.14, keep: true, legs: true });
-  const THY = V3(0, 3.28, 0.24), HRT = BODY.heart.clone(), LIV = V3(-0.35, 1.5, 0.18), KID = [V3(0.33, 1.12, -0.12), V3(-0.33, 1.12, -0.12)], GUT = V3(0.02, 0.45, 0.22), BONE = V3(0.5, -1.0, 0.05), SKIN = V3(-1.15, 2.6, 0.15);
+  const THY = V3(0, 3.28, 0.24), HRT = BODY.heart.clone(), LIV = V3(-0.35, 1.5, 0.18), KID = [V3(0.33, 1.12, -0.12), V3(-0.33, 1.12, -0.12)], GUT = V3(0.02, 0.45, 0.22), BONE = V3(0.5, -1.0, 0.05), SKIN = V3(1.15, 2.6, 0.15);
   const thyMat = organMat('#D86A8A', 0.45, { emissiveIntensity: 0.05, transparent: true, opacity: 0.6 });
   [-1, 1].forEach((s) => { const l = new THREE.Mesh(blobGeo(0.075, 0.15, 0.06, 2 + s, 0.08), thyMat); l.position.copy(THY).add(V3(s * 0.085, 0.01, 0)); l.rotation.z = -s * 0.25; G1.add(l); });
   const PTG = [V3(0.1, 3.35, 0.17), V3(-0.1, 3.35, 0.17), V3(0.1, 3.2, 0.17), V3(-0.1, 3.2, 0.17)].map((p) => { const m = new THREE.Mesh(new THREE.SphereGeometry(0.03, 12, 8), organMat('#F2C14E', 0.7, { emissiveIntensity: 0.3 })); m.position.copy(p); G1.add(m); return m; });
@@ -30,7 +30,7 @@ function makeCalcium() {
   { const pts = []; for (let i = 0; i <= 120; i++) { const u = i / 120, a = u * Math.PI * 9; pts.push(GUT.clone().add(V3(Math.cos(a) * 0.36 * (0.5 + 0.5 * Math.sin(u * 7)), (u - 0.5) * 0.7, Math.sin(a) * 0.12))); } G1.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 300, 0.04, 8), organMat('#E8A08A', 0.45, { emissiveIntensity: 0.05 }))); }
   const femur = new THREE.Mesh(taperTube(new THREE.CatmullRomCurve3([V3(0.47, -0.2, 0.0), V3(0.5, -1.1, 0.02), V3(0.48, -2.0, 0.03)]), (u) => 0.07 + 0.05 * (Math.abs(u - 0.5) * 2) ** 3, 40, 14), organMat('#F2E6C8', 0.55, { emissiveIntensity: 0.06 })); G1.add(femur);
   const boneG = glowNucleus(G1, BONE.clone().add(V3(0, 0, 0.1)), CA, 0.03, 10);
-  const sun = new THREE.Mesh(new THREE.SphereGeometry(0.16, 20, 14), new THREE.MeshBasicMaterial({ color: '#FFD98A' })); sun.position.set(-1.9, 3.6, 0.3); G1.add(sun);
+  const sun = new THREE.Mesh(new THREE.SphereGeometry(0.16, 20, 14), new THREE.MeshBasicMaterial({ color: '#FFD98A' })); sun.position.set(1.8, 4.0, 0.3); G1.add(sun);
   const A1 = {
     pthB: flowArrow(G1, PTG[2].position.clone().add(V3(0.05, -0.05, 0.05)), BONE.clone().add(V3(-0.02, 0.2, 0.1)), '#F2C14E', { bend: -0.12, r: 0.012 }),
     pthK: flowArrow(G1, PTG[3].position.clone().add(V3(-0.05, -0.05, 0.05)), KID[1].clone().add(V3(0.0, 0.2, 0.12)), '#F2C14E', { bend: 0.15, r: 0.012 }),
@@ -44,23 +44,23 @@ function makeCalcium() {
   /* ---------- 2. витамин D: кожа → печень → почки ---------- */
   const G2 = new THREE.Group(); G2.position.set(40, 0, 0); scene.add(G2);
   const VD = [
-    { id: 'dhc7', x: -2.6, organ: 'кожа', col: '#FFC8A8', enz: 'УФ-B: раскрывается кольцо B' },
+    { id: 'dhc7', x: -2.6, organ: 'кожа', col: '#FFC8A8', enz: 'УФ-B: кольцо B рвётся' },
     { id: 'calciol', x: -0.25, organ: 'кожа / пища', col: '#FFD98A', enz: '25-гидроксилаза (печень)' },
     { id: 'calcidiol', x: 2.1, organ: 'печень — запас в крови', col: '#F2C14E', enz: '1α-гидроксилаза (почки)' },
     { id: 'calcitriol', x: 4.45, organ: 'почки — гормон', col: '#FF9A5C', enz: '' },
   ];
   VD.forEach((v, i) => { v.g = fit(v.id, 0.95); v.g.position.set(v.x, 0, 0); v.g.rotation.z = Math.PI / 2; G2.add(v.g); v.glow = glowNucleus(G2, V3(v.x, 0, -0.4), v.col, 0.1, 12); v.glow.core.visible = false; if (i < 3) v.arr = flowArrow(G2, V3(v.x + 0.85, 0.05, 0), V3(VD[i + 1] ? VD[i + 1].x - 0.85 : v.x + 1.5, 0.05, 0), v.col, { bend: 0.25, r: 0.025 }); });
   const inact = flowArrow(G2, V3(4.45, -0.7, 0), V3(4.45, -1.8, 0), '#8A8A96', { bend: 0.3, r: 0.02 });
-  const sun2 = new THREE.Mesh(new THREE.SphereGeometry(0.28, 24, 16), new THREE.MeshBasicMaterial({ color: '#FFD98A' })); sun2.position.set(-3.6, 2.3, 0); G2.add(sun2);
+  const sun2 = new THREE.Mesh(new THREE.SphereGeometry(0.28, 24, 16), new THREE.MeshBasicMaterial({ color: '#FFD98A' })); sun2.position.set(-1.3, 2.7, 0); G2.add(sun2);
   const photons = Array.from({ length: 16 }, () => { const s = new THREE.Mesh(new THREE.SphereGeometry(0.04, 8, 6), new THREE.MeshBasicMaterial({ color: '#D8B8FF' })); s.visible = false; G2.add(s); return { s, t: 0, on: false }; });
 
   /* ---------- 3. перестройка кости ---------- */
   const G3 = new THREE.Group(); G3.position.set(80, 0, 0); scene.add(G3);
   const SW = 9, NX = 90;
   const surfGeo = new THREE.PlaneGeometry(SW, 3.2, NX, 24); surfGeo.rotateX(-Math.PI / 2);
-  const bonePos = surfGeo.attributes.position, base0 = Float32Array.from(bonePos.array);
-  const surf = new THREE.Mesh(surfGeo, new THREE.MeshPhysicalMaterial({ color: new THREE.Color('#E8DCC0').multiplyScalar(0.55), roughness: 0.7, clearcoat: 0.2, emissive: 0xf2e6c8, emissiveIntensity: 0.04, side: THREE.DoubleSide })); surf.position.y = -1.6; G3.add(surf);
-  const slab = new THREE.Mesh(new THREE.BoxGeometry(SW, 1.2, 3.2), new THREE.MeshPhysicalMaterial({ color: new THREE.Color('#C8B898').multiplyScalar(0.45), roughness: 0.85 })); slab.position.y = -2.2; G3.add(slab);
+  const bonePos = surfGeo.attributes.position, base0 = Float32Array.from(bonePos.array); const bcol = new Float32Array(bonePos.count * 3).fill(1); surfGeo.setAttribute('color', new THREE.BufferAttribute(bcol, 3));
+  const surf = new THREE.Mesh(surfGeo, new THREE.MeshPhysicalMaterial({ vertexColors: true, color: new THREE.Color('#E8DCC0').multiplyScalar(0.55), roughness: 0.7, clearcoat: 0.2, emissive: 0xf2e6c8, emissiveIntensity: 0.04, side: THREE.DoubleSide })); surf.position.y = -1.6; G3.add(surf);
+  const slab = new THREE.Mesh(new THREE.BoxGeometry(SW, 1.2, 3.2), new THREE.MeshPhysicalMaterial({ color: new THREE.Color('#C8B898').multiplyScalar(0.45), roughness: 0.85 })); slab.position.y = -3.0; G3.add(slab);
   const prof = new Float32Array(NX + 1).fill(0);   // глубина ямы по x (0 — поверхность, <0 — яма, >0 — новый остеоид)
   const ocl = new THREE.Group(); G3.add(ocl);
   const oclM = new THREE.Mesh(blobGeo(0.95, 0.42, 0.7, 21, 0.18), organMat('#B08AE8', 0.5, { emissiveIntensity: 0.08 })); ocl.add(oclM);
@@ -69,8 +69,8 @@ function makeCalcium() {
   const vessel = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([V3(-4.6, -0.7, -1.5), V3(-1, -0.55, -1.6), V3(2, -0.7, -1.45), V3(4.6, -0.55, -1.5)]), 60, 0.15, 12), organMat('#D84A50', 0.45, { emissiveIntensity: 0.06 })); vessel.visible = false; G3.add(vessel);
   const XI = (x) => clamp(Math.round((x + SW / 2) / SW * NX), 0, NX);
   function applyProf() {
-    for (let i = 0; i < bonePos.count; i++) { const x = base0[i * 3], z = base0[i * 3 + 2]; const k = XI(x); const edge = Math.exp(-((z / 1.15) ** 4)); bonePos.setY(i, base0[i * 3 + 1] + prof[k] * edge + 0.02 * noise3(x * 1.7, z * 1.7, 0.5)); }
-    bonePos.needsUpdate = true; surfGeo.computeVertexNormals();
+    for (let i = 0; i < bonePos.count; i++) { const x = base0[i * 3], z = base0[i * 3 + 2]; const k = XI(x); const edge = Math.exp(-((z / 1.15) ** 4)); bonePos.setY(i, base0[i * 3 + 1] + prof[k] * edge + 0.02 * noise3(x * 1.7, z * 1.7, 0.5)); const d = clamp(-prof[k] * edge / 0.6, 0, 1); bcol[i * 3] = 1 - 0.25 * d; bcol[i * 3 + 1] = 1 - 0.6 * d; bcol[i * 3 + 2] = 1 - 0.45 * d; }
+    bonePos.needsUpdate = true; surfGeo.attributes.color.needsUpdate = true; surfGeo.computeVertexNormals();
   }
 
   /* ---------- состояние ---------- */
@@ -80,7 +80,7 @@ function makeCalcium() {
   function regUpdate(dt, t) {
     const D0 = st.dis, tr = st.treat;
     let diet = D0 === 'lowdiet' && !tr ? 0.5 : 1, vit = D0 === 'vitd' && !tr ? 0.25 : 1, fix = D0 === 'hyper' && !tr ? 14 : 0, cap = D0 === 'hypo' ? 0.8 : 0;
-    if (D0 === 'hypo' && tr) { diet = 1.6; vit = 2.0; }
+    if (D0 === 'hypo' && tr) { diet = 1.25; vit = 1.6; }
     for (let i = 0; i < 6; i++) {
       const h = Math.min(dt, 0.05) / 6 * 3;
       let pt = 0.8 + 10 / (1 + Math.exp(clamp((st.Ca - 2.36) / 0.05, -50, 50))); if (fix) pt = Math.max(pt, fix); if (cap) pt = Math.min(pt, cap);
@@ -89,25 +89,25 @@ function makeCalcium() {
       const Dt = vit * (0.3 + 0.7 * p) / (0.3 + 0.7 * p0); st.D += (Dt - st.D) * h * 0.5;
       st.gut = 0.6 * diet * st.D; st.boneNet = 0.45 * (p - p0); st.ren = 0.6 * (st.Ca / 2.4) ** 3 * (1.45 - 0.9 * p);
       st.Ca += 0.8 * (st.gut + st.boneNet - st.ren) * h;
-      st.boneMass = clamp(st.boneMass - st.boneNet * h * 2, 55, 110);
+      st.boneMass = clamp(st.boneMass - st.boneNet * h * 2 + (100 - st.boneMass) * h * (st.boneNet <= 0.02 ? 0.02 : 0), 55, 110);
     }
     const lv = (v) => clamp(v, 0.04, 1.2);
     A1.pthB.mat.uniforms.uOn.value = lv(st.PTH / 9); A1.pthK.mat.uniforms.uOn.value = lv(st.PTH / 9); A1.d3.mat.uniforms.uOn.value = lv(st.D * 0.55);
     A1.caG.mat.uniforms.uOn.value = lv(st.gut * 1.2); A1.caB.mat.uniforms.uOn.value = lv(0.2 + st.boneNet * 3); A1.caU.mat.uniforms.uOn.value = lv(st.ren * 1.1); A1.uv.mat.uniforms.uOn.value = D0 === 'vitd' && !tr ? 0.06 : 0.6;
     Object.values(A1).forEach((a) => { a.mat.uniforms.uTime.value = t; });
     ptgG.spr.material.opacity = 0.15 + 0.6 * clamp(st.PTH / 12, 0, 1); ptgG.spr.scale.setScalar(0.5 + 0.4 * clamp(st.PTH / 12, 0, 1.2));
-    PTG.forEach((m) => { m.scale.setScalar(D0 === 'hyper' && !tr ? 1.6 : 1); m.material.emissiveIntensity = 0.1 + 0.4 * clamp(st.PTH / 12, 0, 1); });
+    PTG.forEach((m, i) => { m.scale.setScalar(D0 === 'hyper' && !tr && i === 0 ? 2.2 : D0 === 'hyper' && !tr ? 0.8 : 1); m.material.emissiveIntensity = 0.1 + 0.4 * clamp(st.PTH / 12, 0, 1); });
     kidG.spr.material.opacity = 0.15 + 0.5 * clamp(st.D / 1.6, 0, 1); boneG.spr.material.opacity = 0.1 + 0.6 * clamp(st.boneNet * 4, 0, 1);
     femur.material.color.set('#F2E6C8').multiplyScalar(0.25 + 0.3 * st.boneMass / 100);
     sun.visible = !(D0 === 'vitd' && !tr);
     heartM.scale.setScalar(1 + 0.07 * Math.max(0, Math.sin(t * Math.PI * 2 * 72 / 60)) ** 6);
-    if (st.Ca < 2.0 && rnd() < dt * 4) fx.spawn(V3(1.35 + rand(-0.1, 0.1), 1.3 + rand(-0.3, 0.3), 0.1), V3(rand(-0.3, 0.3), rand(-0.2, 0.3), 0.2), C.set('#FF6A5A'), 0.4, 0.8, 1);   // судороги рук (тетания)
+    if (st.Ca < 2.0 && rnd() < dt * 14) fx.spawn(V3(1.45 + rand(-0.12, 0.12), 1.15 + rand(-0.15, 0.15), 0.1), V3(rand(-0.4, 0.4), rand(-0.3, 0.4), 0.3), C.set('#FF6A5A'), 0.7, 0.8, 1.4);   // судороги рук (тетания)
     if (!st.hist.length || st.t - st.hist[st.hist.length - 1][0] > 0.1) { st.hist.push([st.t, st.Ca, st.PTH]); while (st.hist.length && st.t - st.hist[0][0] > 30) st.hist.shift(); }
   }
   function vitdUpdate(dt, t) {
     const uv = st.sunS === 'summer' ? 1 : st.sunS === 'winter' ? 0.15 : 0.03;
     const one = st.kidOK ? (st.pthHi ? 1.6 : 1) : 0.08;
-    const tg = [0.6, 0.15 + 0.85 * uv * 0.9 + 0.1, 0.25 + 0.75 * (0.15 + 0.85 * uv), (0.25 + 0.75 * (0.15 + 0.85 * uv)) * 0.6 * one];
+    const d25 = 0.25 + 0.75 * (0.15 + 0.85 * uv); const tg = [0.6, 0.15 + 0.85 * uv * 0.9 + 0.1, d25, 0.6 * one * Math.min(1, 0.45 + 0.6 * d25)];   // почки поддерживают кальцитриол, пока 25-OH-D не упал совсем
     st.lv = st.lv.map((v, i) => v + (tg[i] - v) * Math.min(1, dt * (i === 2 ? 0.25 : 0.8)));
     if (rnd() < dt * 14 * uv) { const p = photons.find((x) => !x.on); if (p) { p.on = true; p.t = 0; p.s.visible = true; p.from = sun2.position.clone().add(randUnit().multiplyScalar(0.25)); p.to = V3(-2.6 + rand(-0.4, 0.4), rand(-0.3, 0.3), 0.2); } }
     photons.forEach((p) => { if (!p.on) return; p.t += dt * 1.6; if (p.t >= 1) { p.on = false; p.s.visible = false; fx.spawn(p.to.clone().add(G2.position), V3(0, 0.3, 0.2), C.set('#D8B8FF'), 0.5, 0.6, 1); return; } p.s.position.copy(p.from).lerp(p.to, p.t); });
@@ -121,9 +121,9 @@ function makeCalcium() {
     const form = B === 'meno' ? 0.8 : B === 'pth' ? 1.15 : 1;
     // остеокласт ходит по поверхности и копает яму
     st.oclX += st.oclDir * dt * 0.35 * Math.min(1.4, res);
-    if (st.oclX > 3.4) st.oclDir = -1; if (st.oclX < -3.4) st.oclDir = 1;
+    if (st.oclX > 3.4) st.oclDir = -1; if (st.oclX < -2.8) st.oclDir = 1;
     const k = XI(st.oclX);
-    for (let j = -4; j <= 4; j++) { const i = k + j; if (i < 0 || i > NX) continue; prof[i] = Math.max(-0.75, prof[i] - dt * 0.09 * res * Math.exp(-j * j / 6)); }
+    for (let j = -4; j <= 4; j++) { const i = k + j; if (i < 0 || i > NX) continue; prof[i] = Math.max(-0.75, prof[i] - dt * 0.2 * res * Math.exp(-j * j / 6)); }
     if (rnd() < dt * 10 * res) fx.spawn(V3(st.oclX + rand(-0.5, 0.5), -1.75, rand(-0.4, 0.4)).add(G3.position), V3(rand(-0.1, 0.1), 1.0, rand(-0.6, -0.2)), C.set(CA), 1.0, 0.4, 1);
     // остеобласты заполняют ямы позади остеокласта
     for (let i = 0; i <= NX; i++) { const x = -SW / 2 + i / NX * SW; if (Math.abs(x - st.oclX) > 1.3 && prof[i] < 0) prof[i] = Math.min(0, prof[i] + dt * 0.035 * form); }
@@ -134,7 +134,7 @@ function makeCalcium() {
     const holes = []; for (let i = 0; i <= NX; i += 3) { const x = -SW / 2 + i / NX * SW; if (prof[i] < -0.08 && Math.abs(x - st.oclX) > 1.3) holes.push([x, prof[i]]); }
     OB.forEach((m, i) => { const hh = holes[Math.floor(i * holes.length / OB.length)]; m.visible = !!hh; if (hh) { m.position.set(hh[0], -1.6 + hh[1] + 0.2, -0.6 + (i % 3) * 0.6); m.material.emissiveIntensity = 0.05 + 0.08 * form * (0.5 + 0.5 * Math.sin(t * 3 + i)); } });
     st.bm = clamp(st.bm + dt * 1.6 * (form * 0.95 - res * 0.95), 50, 110);
-    ocl.visible = true; ocl.scale.setScalar(B === 'bisph' ? 0.75 : 1);
+    ocl.visible = true; ocl.scale.setScalar(B === 'bisph' ? 0.75 : B === 'ct' ? 0.6 : 1);
   }
   function update(dt) {
     st.t += dt; const t = st.t; controls.autoRotate = st.rot; controls.autoRotateSpeed = 0.4; flyStep(st, camera, controls, dt);
@@ -150,24 +150,24 @@ function makeCalcium() {
       return;
     }
     if (st.mode !== 'reg') { scopeShow(false); return; }
-    scopeShow(true); const A = plotAxes(ctx, w, h, { title: 'Ca²⁺ крови (норма 2,2–2,6) · ПТГ · 30 с', xl: 'время →' });
+    scopeShow(true); const A = plotAxes(ctx, w, h, { title: 'Ca²⁺ (голубой, норма 2,2–2,6), ПТГ (жёлтый)', xl: 'время →' });
     const t1 = st.t, X = (tt) => A.X(clamp((tt - (t1 - 30)) / 30, 0, 1)), Yc = (c) => A.Y(clamp((c - 1.4) / 1.8, 0, 1));
     ctx.fillStyle = 'rgba(159,224,255,.10)'; ctx.fillRect(A.X(0), Yc(2.6), A.X(1) - A.X(0), Yc(2.2) - Yc(2.6));
     const line = (fy, col) => { ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.beginPath(); st.hist.forEach((r, i) => { const x = X(r[0]), y = fy(r); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.stroke(); };
-    line((r) => Yc(r[1]), CA); line((r) => A.Y(clamp(r[2] / 16, 0, 1)), '#F2C14E');
+    line((r) => Yc(r[1]), CA); line((r) => A.Y(clamp(r[2] / 32, 0, 1)), '#F2C14E');
   }
 
   const DIS = { norm: 'Норма', lowdiet: 'Мало кальция в пище', vitd: 'Нет витамина D', hyper: 'Гиперпаратиреоз', hypo: 'Гипопаратиреоз' };
-  const TREAT = { lowdiet: 'Молочные продукты', vitd: 'Витамин D', hyper: 'Операция', hypo: 'Кальций + кальцитриол' };
+  const TREAT = { lowdiet: 'Молочные продукты', vitd: 'Добавки витамина D', hyper: 'Операция', hypo: 'Кальций + кальцитриол' };
   const DISTXT = {
     norm: '<b>Кальций крови</b> держится в узких пределах (2,2–2,6 ммоль/л): от него зависят возбудимость нервов и мышц, свёртывание крови, сокращение сердца. Датчик — <b>кальций-чувствительный рецептор</b> околощитовидных желёз (4 жёлтые точки). Чуть упал кальций — выходит <b>паратгормон</b> (ПТГ): освобождает кальций из костей, удерживает его в почках и заставляет почки делать <b>кальцитриол</b>, а тот усиливает всасывание кальция в кишечнике. Кальцитонин щитовидной железы у человека играет малую роль.',
-    lowdiet: '<b>Мало кальция в пище</b>. Кишечник отдаёт меньше — кальций чуть падает, и ПТГ растёт (вторичный гиперпаратиреоз). Кальций крови почти в норме, но платят за это кости: их «счёт» постепенно тает (бледнеет бедро). Так годами развивается остеопороз.',
+    lowdiet: '<b>Мало кальция в пище</b>. Кишечник отдаёт меньше — кальций чуть падает, и ПТГ растёт (вторичный гиперпаратиреоз). Кальций крови почти в норме, но платят за это кости: их «счёт» постепенно тает (бледнеет бедренная кость). Так годами развивается остеопороз.',
     vitd: '<b>Дефицит витамина D</b> (мало солнца, тёмная кожа, пожилой возраст, болезни кишечника). Без кальцитриола кишечник всасывает лишь 10–15% кальция. ПТГ высокий, кальций и фосфат низкие, кости плохо минерализуются: у детей — <b>рахит</b> (искривление ног, «чётки» на рёбрах), у взрослых — <b>остеомаляция</b>.',
     hyper: '<b>Первичный гиперпаратиреоз</b> — чаще всего доброкачественная аденома одной околощитовидной железы, которая выделяет ПТГ, не слушая обратную связь. Кальций высокий, фосфат низкий. Классика: «камни, кости, стоны и психические расстройства» — камни в почках, остеопороз, боли в животе, слабость и депрессия. Часто находят случайно по анализу крови.',
     hypo: '<b>Гипопаратиреоз</b> — чаще после операции на щитовидной железе, когда случайно удалены или повреждены околощитовидные железы. Без ПТГ кальций падает — возбудимость нервов растёт: покалывание вокруг рта и в пальцах, судороги кистей («рука акушера», красные искры), в тяжёлых случаях — ларингоспазм. Помогает кальций внутривенно, затем таблетки кальция и кальцитриол.',
   };
   const TREATTXT = { lowdiet: '<b>Молочные продукты</b>, сыр, рыба с костями, кунжут — и ПТГ возвращается к норме, кости перестают терять минерал. Потребность взрослого — около 1000 мг кальция в сутки.', vitd: '<b>Витамин D</b> (холекальциферол) в каплях или таблетках, солнце летом — и кишечник снова всасывает кальций; ПТГ снижается, кости минерализуются.', hyper: '<b>Операция</b> — удаление аденомы. Уровень ПТГ падает в течение минут, кальций нормализуется за дни; кости восстанавливаются годами.', hypo: '<b>Кальций и кальцитриол</b> (активный витамин D — его почки без ПТГ сами почти не делают) поддерживают кальций на нижней границе нормы.' };
-  const VTXT = '<b>Витамин D</b> — скорее гормон, чем витамин. В коже <b>7-дегидрохолестерин</b> под ультрафиолетом B разрывает кольцо B и превращается в <b>холекальциферол</b> (D₃; ещё он поступает с рыбой, яйцами, добавками). Печень добавляет OH в положение 25 — получается <b>кальцидиол</b> (25-OH-D), основная форма в крови; по ней судят о запасах (норма — от 30 нг/мл). Почки добавляют OH в положение 1 — это <b>кальцитриол</b>, активный гормон. Его синтез включают ПТГ и низкий фосфат, выключают сам кальцитриол и FGF23; лишнее разрушает 24-гидроксилаза (серая стрелка).';
+  const VTXT = '<b>Витамин D</b> — скорее гормон, чем витамин. В коже <b>7-дегидрохолестерин</b> под ультрафиолетом B разрывает кольцо B — получается превитамин D₃, который от тепла кожи переходит в <b>холекальциферол</b> (D₃; ещё он поступает с рыбой, яйцами, добавками). Печень добавляет OH в положение 25 — получается <b>кальцидиол</b> (25-OH-D), основная форма в крови; по ней судят о запасах (норма — от 30 нг/мл). Почки добавляют OH в положение 1 — это <b>кальцитриол</b>, активный гормон. Его синтез включают ПТГ и низкий фосфат, выключают сам кальцитриол и FGF23; лишнее разрушает 24-гидроксилаза (серая стрелка).';
   const BSTATE = { norm: 'Норма', pth: 'Много ПТГ', ct: 'Кальцитонин', meno: 'Менопауза', bisph: 'Бисфосфонаты' };
   const BTXT = {
     norm: '<b>Кость всё время перестраивается</b>: за год заменяется около 10% скелета. <b>Остеокласт</b> (фиолетовый, многоядерный) прикрепляется к кости, выделяет кислоту и катепсин K — растворяет минерал и коллаген, кальций уходит в кровь (голубые искры). Затем <b>остеобласты</b> (зелёные) выстилают яму, откладывают коллаген (остеоид), и на нём кристаллизуется гидроксиапатит Ca₁₀(PO₄)₆(OH)₂. Пока работа уравновешена, масса кости постоянна.',
@@ -178,17 +178,17 @@ function makeCalcium() {
   };
   const labels = [
     { text: 'околощитовидные железы (ПТГ)', pos: THY.clone().add(V3(0.25, 0.2, 0.1)), color: '#F2C14E', show: () => st.labels && st.mode === 'reg' },
-    { text: 'почки: кальцитриол', pos: KID[0].clone().add(V3(0.22, -0.1, 0.2)), color: '#FF9A5C', show: () => st.labels && st.mode === 'reg' },
+    { text: 'почки: кальцитриол', pos: KID[1].clone().add(V3(-0.95, -0.1, 0.2)), color: '#FF9A5C', show: () => st.labels && st.mode === 'reg' },
     { text: 'кишечник', pos: GUT.clone().add(V3(0.45, -0.25, 0.2)), color: '#E8A08A', show: () => st.labels && st.mode === 'reg' },
     { text: 'кость', pos: BONE.clone().add(V3(0.2, -0.3, 0.1)), color: '#F2E6C8', show: () => st.labels && st.mode === 'reg' },
     { text: 'кровь (Ca²⁺)', pos: HRT.clone().add(V3(0.25, 0.05, 0.2)), color: CA, show: () => st.labels && st.mode === 'reg' },
-    { text: 'кожа: витамин D₃', pos: SKIN.clone().add(V3(-0.2, -0.25, 0.1)), color: '#FFD98A', show: () => st.labels && st.mode === 'reg' },
+    { text: 'кожа: витамин D₃', pos: SKIN.clone().add(V3(0.1, -0.25, 0.1)), color: '#FFD98A', show: () => st.labels && st.mode === 'reg' },
     { text: 'с мочой', pos: V3(-0.1, -0.35, 0.25), color: CA, show: () => st.labels && st.mode === 'reg' },
-    ...VD.map((v) => ({ text: MOL(v.id).name, pos: V3(40 + v.x - 0.6, -1.25, 0.3), color: v.col, show: () => st.labels && st.mode === 'vitd' })),
+    ...VD.map((v) => ({ text: { dhc7: '7-дегидрохолестерин', calciol: 'холекальциферол (D₃)', calcidiol: 'кальцидиол (25-OH-D₃)', calcitriol: 'кальцитриол' }[v.id], pos: V3(40 + v.x - 0.6, -1.25, 0.3), color: v.col, show: () => st.labels && st.mode === 'vitd' })),
     ...VD.map((v) => ({ text: v.organ, pos: V3(40 + v.x - 0.6, 1.3, 0.3), color: '#B8B0C0', show: () => st.labels && st.mode === 'vitd' })),
-    ...VD.filter((v) => v.enz).map((v, i) => ({ text: v.enz, pos: V3(40 + v.x + 0.35, 0.62, 0.3), color: v.col, show: () => st.labels && st.mode === 'vitd' })),
-    { text: '24-гидроксилаза → выведение', pos: V3(40 + 4.65, -1.7, 0.3), color: '#8A8A96', show: () => st.labels && st.mode === 'vitd' },
-    { text: 'остеокласт', pos: () => ocl.position.clone().add(V3(80.6, 0.55, 0.3)), color: '#B08AE8', show: () => st.labels && st.mode === 'bone' },
+    ...VD.filter((v) => v.enz).map((v, i) => ({ text: v.enz, pos: V3(40 + v.x + 0.35, i % 2 ? 0.95 : 0.62, 0.3), color: v.col, show: () => st.labels && st.mode === 'vitd' })),
+    { text: '24-гидроксилаза: распад', pos: V3(40 + 4.45 - 2.3, -1.7, 0.3), color: '#8A8A96', show: () => st.labels && st.mode === 'vitd' },
+    { text: 'остеокласт', pos: () => ocl.position.clone().add(V3(80.6, 0.85, 0.3)), color: '#B08AE8', show: () => st.labels && st.mode === 'bone' },
     { text: 'остеобласты', pos: () => (OB.find((m) => m.visible) || OB[0]).position.clone().add(V3(80.2, 0.35, 0.3)), color: '#7FD6A8', show: () => st.labels && st.mode === 'bone' && OB.some((m) => m.visible) },
     
     { text: 'кость', pos: V3(80 - 4.2, -2.4, 1.6), color: '#E8DCC0', show: () => st.labels && st.mode === 'bone' },
@@ -232,14 +232,14 @@ function makeCalcium() {
   }
   const upd0 = update;
   const self = {
-    scene, camera, controls, update: (dt) => { upd0(dt); dyn.forEach((l) => { l.pos.copy(l.fn()); }); }, ui, onKey, stats, labels, drawScope, accent: '#9FE0FF',
+    mobZoom: 0.95, scene, camera, controls, update: (dt) => { upd0(dt); dyn.forEach((l) => { l.pos.copy(l.fn()); }); }, ui, onKey, stats, labels, drawScope, accent: '#9FE0FF',
     kicker: 'Биохимия · гормоны', title: 'Кальций и витамин D',
-    lede: 'Килограмм кальция лежит в костях, а в крови — меньше грамма. Паратгормон и витамин D следят, чтобы этот грамм не сдвинулся ни на процент.',
+    lede: 'Килограмм кальция лежит в костях, а в крови — меньше грамма. Паратгормон и витамин D следят, чтобы этот грамм не сдвинулся больше чем на несколько процентов.',
     notes: `
       <div><h2>Обмен кальция и фосфата</h2>
         <p>В организме около 1 кг кальция, 99% — в костях в виде гидроксиапатита. В плазме общий кальций 2,2–2,6 ммоль/л: почти половина связана с альбумином, активен ионизированный (1,1–1,3 ммоль/л). Ацидоз увеличивает долю ионизированного, алкалоз (например, при гипервентиляции) уменьшает — возможны судороги.</p>
         <h3>Гормоны</h3><ul><li><b>Паратгормон</b> (84 аминокислоты): кость — резорбция через RANKL остеобластов; почки — реабсорбция Ca²⁺, выведение фосфата, синтез кальцитриола.</li><li><b>Кальцитриол</b> (1,25-(OH)₂-D₃): ядерный рецептор VDR; в кишечнике включает белки всасывания кальция (TRPV6, кальбиндин), действует на кость и почки, тормозит ПТГ.</li><li><b>Кальцитонин</b> (C-клетки щитовидной железы): тормозит остеокласты.</li><li><b>FGF23</b> из кости выводит фосфат и тормозит синтез кальцитриола.</li></ul>
-        <h3>Болезни</h3><p>Гипер- и гипопаратиреоз, рахит и остеомаляция, остеопороз, почечная остеодистрофия, гиперкальциемия при опухолях (ПТГ-подобный пептид).</p></div>
+        <h3>Болезни</h3><p>Гипер- и гипопаратиреоз, рахит и остеомаляция, остеопороз, почечная остеодистрофия, гиперкальциемия при опухолях (ПТГ-родственный пептид, PTHrP).</p></div>
       <div><h2>Условности</h2><ul><li>Молекулы витамина D — по химическим формулам; органы, клетки и поверхность кости — схемы.</li><li>Уровни кальция и ПТГ — простая модель с обратной связью; числа типичные, не диагностические.</li><li>Перестройка кости показана в тысячи раз быстрее: настоящий цикл занимает 3–6 месяцев.</li></ul></div>
       <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>3</code> режим</li><li><code>R</code> · <code>N</code></li></ul></div>`,
   };

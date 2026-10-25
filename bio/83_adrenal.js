@@ -245,7 +245,7 @@ function makeAdrenal() {
   }
   const upd0 = update;
   const self = {
-    scene, camera, controls, update: (dt) => { upd0(dt); dyn.forEach((l) => { l.pos.copy(l.fn()); }); }, ui, onKey, stats, labels, drawScope, accent: '#F2C14E',
+    mobZoom: 0.9, scene, camera, controls, update: (dt) => { upd0(dt); dyn.forEach((l) => { l.pos.copy(l.fn()); }); }, ui, onKey, stats, labels, drawScope, accent: '#F2C14E',
     kicker: 'Биохимия · гормоны', title: 'Надпочечники',
     lede: 'Две железы в одной: кора из холестерина делает стероиды — альдостерон, кортизол, андрогены, а мозговое вещество выбрасывает адреналин за секунды.',
     notes: `

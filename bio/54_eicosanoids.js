@@ -16,7 +16,7 @@ function makeEicosanoids() {
 
   /* ---------- 1. арахидоновый каскад ---------- */
   const G1 = new THREE.Group(); scene.add(G1);
-  const mem = schemBilayer({ w: 3.2, d: 2.2, thick: 0.6, step: 0.17, seed: 54 }); mem.rotation.z = Math.PI / 2; mem.position.set(-3.6, 0, 0); G1.add(mem);
+  const mem = schemBilayer({ w: 2.5, d: 2.2, thick: 0.6, step: 0.17, seed: 54 }); mem.rotation.z = Math.PI / 2; mem.position.set(-3.6, -0.35, 0); G1.add(mem);
   rnd = mulberry(5402);
   const NODE = {
     aa: { m: 'arachidonic', p: V3(-1.5, 0, 0), col: '#F2C14E' },
@@ -35,8 +35,10 @@ function makeEicosanoids() {
   };
   const ENZ = { pla2: { p: V3(-2.7, 0.55, 0.2), col: '#F2C14E' }, cox: { p: V3(-0.25, 0.95, 0.3), col: '#FF9A5C' }, lox: { p: V3(0.0, -1.25, 0.3), col: '#7FE0A0' } };
   Object.values(ENZ).forEach((e) => { e.m = new THREE.Mesh(blobGeo(0.3, 0.24, 0.24, 31 + e.p.x, 0.14), protMat(e.col, 0.5)); e.m.position.copy(e.p); G1.add(e.m); });
+  const xMat = new THREE.MeshBasicMaterial({ color: '#FF3A3A' }); const mkX = (p) => { const g = new THREE.Group(); [1, -1].forEach((s) => { const c = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.42, 8), xMat); c.rotation.z = s * Math.PI / 4; g.add(c); }); g.position.copy(p); g.visible = false; G1.add(g); return g; };
+  const XC = { cox: mkX(V3(-0.1, 0.62, 0.3)), pla2: mkX(V3(-2.65, 0.1, 0.3)) };
   const DRUG = { aspirin: { m: 'aspirin', at: 'cox', name: 'Аспирин', col: '#FFFFFF' }, ibu: { m: 'ibuprofen', at: 'cox', name: 'Ибупрофен', col: '#9FE0FF' }, coxib: { m: 'celecoxib', at: 'cox', name: 'Целекоксиб (ЦОГ-2)', col: '#FFB0D0' }, gc: { m: 'cortisol', at: 'pla2', name: 'Глюкокортикоиды', col: '#F2C14E' } };
-  Object.values(DRUG).forEach((d) => { d.g = fit(d.m, 0.42); d.g.position.copy(ENZ[d.at].p).add(V3(0.15, 0.6, 0.25)); d.g.visible = false; G1.add(d.g); });
+  Object.values(DRUG).forEach((d) => { d.g = fit(d.m, 0.42); d.g.position.copy(ENZ[d.at].p).add(V3(0.6, 0.5, 0.35)); d.g.visible = false; G1.add(d.g); });
 
   /* ---------- 2. тромбоциты и эндотелий: аспирин ---------- */
   const G2 = new THREE.Group(); G2.position.set(40, 0, 0); scene.add(G2);
@@ -56,8 +58,8 @@ function makeEicosanoids() {
   bodyShell(G3, { rim: 0.14, keep: true, legs: false });
   const SITES = {
     brain: { p: V3(0, 4.25, 0.08), col: '#FF6A5A', name: 'гипоталамус: лихорадка' }, stomach: { p: V3(-0.2, 1.75, 0.3), col: '#FF9A5C', name: 'желудок: защита слизистой' },
-    kidney: { p: V3(0.33, 1.15, -0.12), col: '#7FD6FF', name: 'почки: кровоток' }, lung: { p: V3(0.42, 2.4, 0.05), col: '#7FE0A0', name: 'бронхи: лейкотриены' },
-    joint: { p: V3(1.4, 1.2, 0.05), col: '#FF6A5A', name: 'воспаление: боль, отёк' }, uterus: { p: V3(0, 0.15, 0.2), col: '#FFB0D0', name: 'матка: сокращения' },
+    kidney: { p: V3(-0.33, 1.15, -0.12), col: '#7FD6FF', name: 'почки: кровоток' }, lung: { p: V3(0.42, 2.4, 0.05), col: '#7FE0A0', name: 'бронхи: лейкотриены (у части больных астмой)' },
+    joint: { p: V3(1.42, 1.15, 0.05), col: '#FF6A5A', name: 'запястье: боль, отёк' }, uterus: { p: V3(0, 0.15, 0.2), col: '#FFB0D0', name: 'матка: сокращения' },
   };
   Object.values(SITES).forEach((s) => { s.g = glowNucleus(G3, s.p, s.col, 0.045, 10); });
   const stomM = new THREE.Mesh(ell3(0.32, 0.2, 0.16, SITES.stomach.p), organMat('#E8908A', 0.45)); G3.add(stomM);
@@ -73,25 +75,25 @@ function makeEicosanoids() {
     const cox1 = D === 'aspirin' || D === 'ibu' ? 0.06 : 1, cox2 = D === 'aspirin' || D === 'ibu' || D === 'coxib' ? 0.06 : 1;
     const coxAll = (cox1 * 0.35 + cox2 * 0.65 * infl) / (0.35 + 0.65 * infl);
     const aaL = pla2 * infl, pghL = aaL * coxAll;
-    const lv = { aa: aaL, pgh2: pghL, pge2: pghL * (D === 'coxib' ? 0.25 : 1), pgi2: pghL * (D === 'coxib' ? 0.3 : 1), txa2: pghL * (D === 'coxib' ? 1 : 1) * (D === 'coxib' ? cox1 / Math.max(coxAll, 0.05) : 1), ltb4: aaL * (D === 'aspirin' || D === 'ibu' ? 1.35 : 1) };
-    lv.txa2 = D === 'coxib' ? aaL * 0.9 : pghL;
+    const lv = { aa: aaL, pgh2: pghL, pge2: pghL * (D === 'coxib' ? 0.25 : 1), pgi2: pghL * (D === 'coxib' ? 0.3 : 1), txa2: D === 'coxib' ? aaL * 0.9 : pghL, ltb4: aaL * (D === 'aspirin' || D === 'ibu' ? 1.35 : 1) };
     st.lv = lv;
     AR.pla2.mat.uniforms.uOn.value = clamp(0.8 * pla2 * infl, 0.04, 1); AR.cox.mat.uniforms.uOn.value = clamp(0.8 * coxAll * aaL, 0.04, 1); AR.lox.mat.uniforms.uOn.value = clamp(0.7 * lv.ltb4, 0.04, 1.1);
     AR.pge.mat.uniforms.uOn.value = clamp(0.8 * lv.pge2, 0.04, 1); AR.pgi.mat.uniforms.uOn.value = clamp(0.8 * lv.pgi2, 0.04, 1); AR.txa.mat.uniforms.uOn.value = clamp(0.8 * lv.txa2, 0.04, 1);
     Object.values(AR).forEach((a) => { a.mat.uniforms.uTime.value = t; });
     Object.entries(NODE).forEach(([k, n]) => { const v = clamp(lv[k], 0, 1.4); n.glow.spr.material.opacity = 0.08 + 0.55 * v; n.glow.spr.scale.setScalar(1 + 0.1 * Math.sin(t * 3)); n.g.rotation.y += dt * (0.15 + 0.4 * v); n.g.scale.setScalar(0.75 + 0.3 * Math.min(v, 1)); });
     Object.entries(DRUG).forEach(([k, d]) => { d.g.visible = k === D; d.g.rotation.y += dt * 0.6; });
+    XC.cox.visible = D === 'aspirin' || D === 'ibu' || (D === 'coxib' && st.infl); XC.pla2.visible = D === 'gc';
     ENZ.cox.m.material.emissiveIntensity = 0.03 + 0.25 * coxAll * (0.5 + 0.5 * Math.sin(t * 4)); ENZ.pla2.m.material.emissiveIntensity = 0.03 + 0.25 * pla2 * (0.5 + 0.5 * Math.sin(t * 4 + 1)); ENZ.lox.m.material.emissiveIntensity = 0.03 + 0.25 * (0.5 + 0.5 * Math.sin(t * 4 + 2));
     if (rnd() < dt * 6 * aaL) fx.spawn(V3(-3.0, rand(-0.6, 0.6), rand(-0.6, 0.6)), V3(0.6, 0, 0), C.set('#F2C14E'), 0.6, 0.6, 1);
   }
   function plateletUpdate(dt, t) {
     // аспирин в малой дозе: ЦОГ тромбоцитов выключена до конца их жизни (7–10 сут), эндотелий делает ЦОГ заново за часы
     const A = st.asp; st.day += dt * 0.6;
-    const txT = A === 'low' ? Math.max(0.08, 1 - Math.exp(-(st.day - 0) * 0) * 0.92) : A === 'high' ? 0.08 : A === 'stop' ? Math.min(1, 0.08 + st.day / 9) : 1;
-    const pgT = A === 'high' ? 0.25 : A === 'low' ? 0.9 : 1;
+    const txT = A === 'low' ? 0.08 : A === 'high' ? 0.08 : A === 'stop' ? Math.min(1, 0.08 + st.day / 9) : 1;
+    const pgT = A === 'high' ? 0.45 : A === 'low' ? 0.9 : 1;
     st.txa += (txT - st.txa) * Math.min(1, dt * 1.5); st.pgi += (pgT - st.pgi) * Math.min(1, dt * 1.5);
     const drive = clamp(st.txa - 0.55 * st.pgi + 0.3, 0, 1.2);   // сколько тромбоцитов прилипает
-    const want = Math.round(4 + 22 * drive);
+    const want = Math.round(10 + 14 * drive);   // пробка всё равно образуется (АДФ, тромбин, коллаген); TXA₂ её усиливает
     const stuck = PLT.filter((p) => p.stuck);
     if (stuck.length < want && rnd() < dt * 6) { const p = PLT.find((q) => !q.stuck && Math.abs(q.x - INJ.x) < 1.2); if (p) { p.stuck = true; const k = stuck.length; p.slot = INJ.clone().add(V3(rand(-0.4, 0.4) * (1 + k * 0.03), rand(-0.3, 0.3), 0.08 + 0.08 * Math.floor(k / 5) + rand(0, 0.04))); } }
     if (stuck.length > want && rnd() < dt * 3) { const p = stuck[(rnd() * stuck.length) | 0]; p.stuck = false; p.r = 0.5; }
@@ -111,7 +113,7 @@ function makeEicosanoids() {
     const N = st.ndrug;
     const cox = N === 'nsaid' || N === 'aspirin' ? 0.1 : N === 'coxib' ? 0.6 : N === 'para' ? 0.55 : 1;
     const peri = N === 'coxib' ? 1 : cox;   // ЦОГ-1 в желудке и почках
-    const lvl = { brain: N === 'none' ? (st.fever ? 1 : 0.3) : 0.15, stomach: peri, kidney: peri, lung: N === 'aspirin' || N === 'nsaid' ? 1.0 : 0.35, joint: N === 'none' || N === 'para' ? 1 : 0.2, uterus: cox * 0.8 };
+    const lvl = { brain: N === 'none' ? 1 : 0.15, stomach: N === 'nsaid' || N === 'aspirin' ? 0.1 : 1, kidney: N === 'nsaid' || N === 'aspirin' ? 0.1 : N === 'coxib' ? 0.6 : 1, lung: N === 'aspirin' || N === 'nsaid' ? 0.6 : 0.35, joint: N === 'none' || N === 'para' ? 1 : 0.2, uterus: cox * 0.8 };
     Object.entries(SITES).forEach(([k, s]) => { const v = lvl[k]; s.g.spr.material.opacity = 0.12 + 0.6 * v; s.g.spr.scale.setScalar((0.6 + 0.6 * v) * (1 + 0.08 * Math.sin(t * 4))); });
     ulcer.visible = (N === 'nsaid' || N === 'aspirin') && Math.sin(t * 2) > -0.7;
   }
@@ -137,9 +139,9 @@ function makeEicosanoids() {
   };
   const ATXT = {
     none: '<b>Баланс в сосуде.</b> Тромбоциты делают <b>тромбоксан A₂</b> (ЦОГ-1): он склеивает их на месте повреждения (коллаген стенки) и сужает сосуд. Здоровый <b>эндотелий</b> выделяет <b>простациклин</b>: расширяет сосуд и не даёт тромбоцитам слипаться там, где стенка цела. Пока они в равновесии, тромб растёт только там, где нужно.',
-    low: '<b>Малая доза аспирина</b> (75–150 мг в сутки). У тромбоцита нет ядра — он не может сделать новую ЦОГ, и тромбоксана нет до конца его жизни (7–10 дней). Эндотелиальные клетки с ядром синтезируют ЦОГ заново за часы, и простациклин почти сохраняется. Итог — меньше тромбов: так предотвращают повторные инфаркты и инсульты. Цена — кровоточивость и риск язвы.',
+    low: '<b>Малая доза аспирина</b> (75–150 мг в сутки). У тромбоцита нет ядра — он не может сделать новую ЦОГ, и тромбоксана нет до конца его жизни (7–10 дней). Эндотелиальные клетки с ядром синтезируют ЦОГ заново за часы, и простациклин почти сохраняется. Пробка на месте ранения всё равно образуется (АДФ, тромбин), но меньше — и меньше тромбов в бляшках: так предотвращают повторные инфаркты и инсульты. Ибупрофен, принятый до аспирина, занимает канал ЦОГ и мешает аспирину сработать. Цена — кровоточивость и риск язвы.',
     high: '<b>Большая доза аспирина</b> (обезболивающая, граммы в сутки) подавляет ЦОГ и в эндотелии: простациклина тоже меньше, и выигрыш против тромбов не растёт, а риск кровотечений и язв — растёт.',
-    stop: '<b>Отмена аспирина.</b> Тромбоксан возвращается постепенно — по мере того, как костный мозг выпускает новые тромбоциты (около 10% в сутки). Поэтому аспирин отменяют за 5–7 дней до плановой операции.',
+    stop: '<b>Отмена аспирина.</b> Тромбоксан возвращается постепенно — по мере того, как костный мозг выпускает новые тромбоциты (около 10% в сутки). Поэтому перед плановой операцией его отменяют за 5–7 дней — если риск кровотечения выше риска тромбоза (после стентирования сосудов сердца аспирин обычно не отменяют).',
   };
   const OTXT = {
     none: '<b>Где работают простагландины.</b> В гипоталамусе PGE₂ поднимает «уставку» температуры — <b>лихорадка</b>. В очаге воспаления делает нервные окончания чувствительнее — <b>боль</b>, расширяет сосуды — краснота и отёк. В желудке защищает слизистую (слизь, бикарбонат, кровоток), в почках поддерживает кровоток, в матке вызывает сокращения (менструальные боли, роды). В бронхах лейкотриены вызывают спазм.',
@@ -150,7 +152,7 @@ function makeEicosanoids() {
   };
   const labels = [
     { text: 'мембрана: фосфолипиды', pos: V3(-3.6 - 0.4, -1.75, 0.3), color: '#E8C07A', show: () => st.labels && st.mode === 'path' },
-    ...Object.entries(NODE).map(([k, n]) => ({ text: MOL(n.m).name, pos: n.p.clone().add(V3(-0.45, -0.68, 0.3)), color: n.col, show: () => st.labels && st.mode === 'path' })),
+    ...Object.entries(NODE).map(([k, n]) => ({ text: { aa: 'арахидоновая кислота', pgh2: 'простагландин H₂', pge2: 'простагландин E₂', pgi2: 'простациклин (PGI₂)', txa2: 'тромбоксан A₂', ltb4: 'лейкотриен B₄' }[k], pos: n.p.clone().add(V3(-0.45, -0.68, 0.3)), color: n.col, show: () => st.labels && st.mode === 'path' })),
     { text: 'фосфолипаза A₂', pos: ENZ.pla2.p.clone().add(V3(-0.4, 0.38, 0.2)), color: '#F2C14E', show: () => st.labels && st.mode === 'path' },
     { text: 'ЦОГ-1 / ЦОГ-2', pos: ENZ.cox.p.clone().add(V3(-0.45, 0.4, 0.2)), color: '#FF9A5C', show: () => st.labels && st.mode === 'path' },
     { text: '5-липоксигеназа', pos: ENZ.lox.p.clone().add(V3(-0.5, -0.45, 0.2)), color: '#7FE0A0', show: () => st.labels && st.mode === 'path' },
@@ -159,11 +161,11 @@ function makeEicosanoids() {
     { text: 'расширяет сосуды, против тромбов', pos: NODE.pgi2.p.clone().add(V3(0.6, 0.05, 0.2)), color: '#7FD6FF', show: () => st.labels && st.mode === 'path' },
     { text: 'склеивает тромбоциты', pos: NODE.txa2.p.clone().add(V3(0.6, 0.05, 0.2)), color: '#C77DFF', show: () => st.labels && st.mode === 'path' },
     { text: 'зовёт нейтрофилы; бронхоспазм (C₄, D₄)', pos: NODE.ltb4.p.clone().add(V3(0.6, 0.05, 0.2)), color: '#7FE0A0', show: () => st.labels && st.mode === 'path' },
-    { text: 'повреждение: коллаген', pos: INJ.clone().add(V3(40.55, -0.45, 0.3)), color: '#F2E6C8', show: () => st.labels && st.mode === 'platelet' },
-    { text: 'тромбоциты: TXA₂', pos: INJ.clone().add(V3(40 - 1.4, 0.55, 0.5)), color: '#C77DFF', show: () => st.labels && st.mode === 'platelet' },
+    { text: 'повреждение: коллаген', pos: INJ.clone().add(V3(40 - 1.3, -0.55, 0.3)), color: '#F2E6C8', show: () => st.labels && st.mode === 'platelet' },
+    { text: 'тромбоциты: TXA₂', pos: INJ.clone().add(V3(40 + 0.35, 0.45, 0.5)), color: '#C77DFF', show: () => st.labels && st.mode === 'platelet' },
     { text: 'эндотелий: PGI₂', pos: V3(40 - 3.3, 0.9, -0.95), color: '#7FD6FF', show: () => st.labels && st.mode === 'platelet' },
-    { text: 'эритроциты', pos: V3(40 + 2.9, 0.75, 0.3), color: '#C83A40', show: () => st.labels && st.mode === 'platelet' },
-    ...Object.entries(SITES).map(([k, s]) => ({ text: s.name, pos: s.p.clone().add(V3(80 + (k === 'joint' ? 0.15 : 0.25), 0.12, 0.15)), color: s.col, show: () => st.labels && st.mode === 'organs' })),
+    { text: 'эритроциты', pos: V3(40 + 2.9, 1.55, 0.3), color: '#FF8A8A', show: () => st.labels && st.mode === 'platelet' },
+    ...Object.entries(SITES).map(([k, s]) => ({ text: s.name, pos: s.p.clone().add(V3(80 + (k === 'kidney' ? -1.15 : k === 'joint' ? 0.15 : 0.25), 0.12, 0.15)), color: s.col, show: () => st.labels && st.mode === 'organs' })),
   ];
   const refs = {};
   function ui(el) {
@@ -174,7 +176,7 @@ function makeEicosanoids() {
     refs.rebuild = () => {
       box.innerHTML = '';
       if (st.mode === 'path') box.append(h('div', { class: 'glabel' }, 'Лекарство'), h('div', { class: 'gctl' }, seg([{ id: 'none', label: 'Нет' }, ...Object.entries(DRUG).map(([id, d]) => ({ id, label: d.name }))], () => st.drug, (v) => { st.drug = v; refs.setInfo(); }), toggle('Воспаление', () => st.infl, (v) => { st.infl = v; })));
-      else if (st.mode === 'platelet') box.append(h('div', { class: 'glabel' }, 'Аспирин'), h('div', { class: 'gctl' }, seg([{ id: 'none', label: 'Нет' }, { id: 'low', label: 'Малая доза' }, { id: 'high', label: 'Большая доза' }, { id: 'stop', label: 'Отмена' }], () => st.asp, (v) => { st.asp = v; st.day = 0; if (v === 'stop') st.txa = 0.08; refs.setInfo(); })));
+      else if (st.mode === 'platelet') box.append(h('div', { class: 'glabel' }, 'Аспирин'), h('div', { class: 'gctl' }, seg([{ id: 'none', label: 'Нет' }, { id: 'low', label: 'Малая доза' }, { id: 'high', label: 'Большая доза' }, { id: 'stop', label: 'Отмена малой дозы' }], () => st.asp, (v) => { st.asp = v; st.day = 0; if (v === 'stop') st.txa = 0.08; refs.setInfo(); })));
       else box.append(h('div', { class: 'glabel' }, 'Препарат'), h('div', { class: 'gctl' }, seg([{ id: 'none', label: 'Нет' }, { id: 'nsaid', label: 'НПВС' }, { id: 'aspirin', label: 'Аспирин' }, { id: 'coxib', label: 'Коксиб' }, { id: 'para', label: 'Парацетамол' }], () => st.ndrug, (v) => { st.ndrug = v; refs.setInfo(); })));
     };
     refs.rot = toggle('Вращение', () => st.rot, (v) => { st.rot = v; });
@@ -195,14 +197,14 @@ function makeEicosanoids() {
     const L = st.lv || {}; return [['Простагландины', Math.round(100 * clamp(L.pge2 || 0, 0, 1.5)), '%'], ['Лейкотриены', Math.round(100 * clamp(L.ltb4 || 0, 0, 1.5)), '%']];
   }
   const self = {
-    scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#FF8A5C',
+    mobZoom: 0.95, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#FF8A5C',
     kicker: 'Биохимия · обмен липидов', title: 'Эйкозаноиды',
     lede: 'Из одной жирной кислоты мембраны клетка за секунды делает сигналы боли, жара, тромба и спазма — а аспирин и ибупрофен выключают один фермент на этом пути.',
     notes: `
       <div><h2>Эйкозаноиды</h2>
         <p>Производные полиненасыщенных C₂₀-кислот (арахидоновая — ω-6, эйкозапентаеновая — ω-3). Простаноиды (простагландины, простациклин, тромбоксаны) — циклооксигеназный путь; лейкотриены и липоксины — липоксигеназный; эпоксиды — цитохромы P450. Действуют через рецепторы, сопряжённые с G-белками (EP1–EP4, IP, TP, BLT, CysLT), местно, распадаются за секунды–минуты.</p>
         <h3>ЦОГ-1 и ЦОГ-2</h3><p>ЦОГ-1 — конститутивная (желудок, почки, тромбоциты), ЦОГ-2 — индуцибельная (воспаление: цитокины, эндотоксин), но есть и в эндотелии, почках, мозге. Фермент двойной: циклооксигеназа (арахидоновая кислота → PGG₂) и пероксидаза (PGG₂ → PGH₂).</p>
-        <h3>Лекарства</h3><ul><li>НПВС: аспирин (необратимо), ибупрофен, диклофенак, напроксен (обратимо); коксибы — селективно ЦОГ-2.</li><li>Глюкокортикоиды — фосфолипаза A₂ и ген ЦОГ-2.</li><li>Против лейкотриенов: монтелукаст (рецептор CysLT₁), зилеутон (5-ЛОГ) — при астме.</li><li>Аналоги простагландинов: мизопростол (защита желудка, акушерство), латанопрост (глаукома), алпростадил (открытый артериальный проток у новорождённых).</li></ul></div>
+        <h3>Лекарства</h3><ul><li>НПВС: аспирин (необратимо), ибупрофен, диклофенак, напроксен (обратимо); коксибы — селективно ЦОГ-2.</li><li>Глюкокортикоиды — фосфолипаза A₂ и ген ЦОГ-2.</li><li>Против лейкотриенов: монтелукаст (рецептор CysLT₁), зилеутон (5-ЛОГ) — при астме.</li><li>Аналоги простагландинов: мизопростол (защита желудка, акушерство), латанопрост (глаукома), алпростадил (сохраняет артериальный проток открытым при протоково-зависимых пороках сердца у новорождённых; закрывают проток, наоборот, НПВС).</li></ul></div>
       <div><h2>Условности</h2><ul><li>Молекулы — по химическим формулам; ферменты — условные капли, мембрана и сосуд — схемы.</li><li>Уровни эйкозаноидов и число тромбоцитов — качественная модель; время отмены аспирина сжато.</li></ul></div>
       <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>3</code> режим</li><li><code>R</code> · <code>N</code></li></ul></div>`,
   };

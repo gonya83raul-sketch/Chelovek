@@ -31,7 +31,7 @@ for i, fn, name, grp in scenes:
 if scenes:
     page = page.replace(c0, c0 + "  { id: 'bio', name: 'Биохимия', scenes: [" + ', '.join(items) + '] },\n')
 import json, shutil
-APP = 'app8'   # меняется при каждой публикации со старой структурой кэша
+APP = 'app9'   # меняется при каждой публикации со старой структурой кэша
 OUT = os.path.join(ROOT, 'out'); os.makedirs(OUT, exist_ok=True)
 i0 = page.index('<script type="module">') ; i1 = page.index('</script>', i0)
 mod = page[i0 + len('<script type="module">'):i1]
@@ -71,9 +71,35 @@ page = page[:i0] + (LOADER if EN else f'<script type="module" src="{APP}/core.js
 head = '<!doctype html>\n<html lang="ru">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">\n</head>\n<body>\n'
 full = head + page + '</body>\n</html>\n'
 open(os.path.join(OUT, 'index.html'), 'w', encoding='utf8').write(full)
+# SEO: заголовок и описание в <head>, canonical, языковые версии, schema.org; статический список тем (виден поисковикам без JS)
+BASE = 'https://gonya83raul-sketch.github.io/Chelovek/'
+DESC = 'Бесплатный интерактивный 3D-атлас человека: анатомия, клетка, мозг и биохимия — от молекулы до мысли. Вращайте модели, запускайте процессы, изучайте болезни и лекарства.'
+merged = open(os.path.join(OUT, '_merged.mjs'), encoding='utf8').read()
+sb = merged[merged.index('const SECTIONS = ['):]; sb = sb[:sb.index('].map(')]
+SEC_ORDER = {'bio': 0, 'cell': 1, 'body': 2, 'brain': 3}
+secs = []
+for m in re.finditer(r"\{ id: '(\w+)', name: '([^']+)', scenes: \[(.*?)\] \}", sb, re.S):
+    items = re.findall(r"\['(#|\w+)', '([^']+)'\]", m.group(3))
+    secs.append((m.group(1), m.group(2), items))
+secs.sort(key=lambda s: SEC_ORDER.get(s[0], 9))
+ntop = sum(1 for s in secs for i, _ in s[2] if i != '#')
+def esc(s): return s.replace('&', '&amp;').replace('<', '&lt;')
+blocks = []
+for sid, name, items in secs:
+    li = []; 
+    for i, n in items:
+        li.append(f'<li class="sg">{esc(n)}</li>' if i == '#' else f'<li><a href="#{i}">{esc(n)}</a></li>')
+    blocks.append(f'<div><h3>{esc(name)}</h3><ul>{"".join(li)}</ul></div>')
+TOPICS = f'<details class="alltopics"><summary>Все темы атласа ({ntop})</summary><div class="atgrid">{"".join(blocks)}</div></details>'
+JSONLD = json.dumps({'@context': 'https://schema.org', '@type': 'WebApplication', 'name': 'Кто мы? — от молекулы до мысли', 'alternateName': 'Who are we? From molecule to mind', 'url': BASE, 'description': DESC, 'applicationCategory': 'EducationalApplication', 'operatingSystem': 'Web', 'inLanguage': ['ru', 'en'], 'isAccessibleForFree': True, 'offers': {'@type': 'Offer', 'price': '0', 'priceCurrency': 'RUB'}, 'sameAs': ['https://t.me/KTOMY_ATLAS', 'https://boosty.to/chelovek3d']}, ensure_ascii=False)
+SEO_HEAD = (f'<title>Кто мы? — от молекулы до мысли · 3D-атлас человека</title>\n<meta name="description" content="{DESC}">\n<link rel="canonical" href="{BASE}">\n'
+  f'<link rel="alternate" hreflang="ru" href="{BASE}?lang=ru">\n<link rel="alternate" hreflang="en" href="{BASE}?lang=en">\n<link rel="alternate" hreflang="x-default" href="{BASE}">\n'
+  f'<meta property="og:type" content="website">\n<meta property="og:title" content="Кто мы? — от молекулы до мысли">\n<meta property="og:description" content="{DESC}">\n<meta property="og:url" content="{BASE}">\n<meta property="og:image" content="{BASE}icons/icon-512.png">\n<meta property="og:locale" content="ru_RU">\n'
+  f'<script type="application/ld+json">{JSONLD}</script>\n')
 # сайт-приложение (PWA) для своего хостинга: manifest, иконки, офлайн-кэш
 PWA_HEAD = '<meta name="theme-color" content="#08070A">\n<meta name="mobile-web-app-capable" content="yes">\n<link rel="manifest" href="manifest.webmanifest">\n<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">\n<link rel="apple-touch-icon" href="icons/apple-180.png">\n'
-site_html = full.replace('</head>', PWA_HEAD + '</head>', 1)
+site_html = full.replace('</head>', SEO_HEAD + PWA_HEAD + '</head>', 1).replace('<title>Кто мы? — от молекулы до мысли</title>\n', '', 1).replace('<!--TOPICS-->', TOPICS, 1)
+full = full.replace('<!--TOPICS-->', TOPICS, 1)
 SITE = os.path.join(OUT, 'site'); shutil.rmtree(SITE, ignore_errors=True); os.makedirs(SITE)
 open(os.path.join(SITE, 'index.html'), 'w', encoding='utf8').write(site_html)
 shutil.copytree(os.path.join(OUT, APP), os.path.join(SITE, APP)); shutil.copytree(os.path.join(OUT, 'models'), os.path.join(SITE, 'models'))
@@ -83,11 +109,19 @@ sw = open(os.path.join(ROOT, 'pwa', 'sw.tpl.js'), encoding='utf8').read()
 if not EN: sw = sw.replace("'./__APP__/en/core.js', ", '')
 open(os.path.join(SITE, 'sw.js'), 'w', encoding='utf8').write(sw.replace('__APP__', APP))
 open(os.path.join(SITE, '.nojekyll'), 'w').write('')
+shutil.copytree(os.path.join(ROOT, 'pwa', 'img'), os.path.join(SITE, 'img'))
+open(os.path.join(SITE, 'robots.txt'), 'w').write(f'User-agent: *\nAllow: /\n\nSitemap: {BASE}sitemap.xml\n')
+open(os.path.join(SITE, 'sitemap.xml'), 'w').write(f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n<url><loc>{BASE}</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>\n<url><loc>{BASE}?lang=en</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>\n</urlset>\n')
+llms = ['# Кто мы? — от молекулы до мысли (Who are we? From molecule to mind)', '', '> ' + DESC, '', f'Сайт: {BASE} (английская версия: {BASE}?lang=en). Каждая тема открывается по адресу вида {BASE}#id. Обратная связь: https://t.me/KTOMY_ATLAS, gonya83raul@gmail.com.', '']
+for sid, name, items in secs:
+    llms.append(f'## {name}'); llms += [f'- [{n}]({BASE}#{i})' for i, n in items if i != '#']; llms.append('')
+open(os.path.join(SITE, 'llms.txt'), 'w', encoding='utf8').write('\n'.join(llms))
 # локальный тест (с PWA)
 LT = os.path.join(ROOT, 'lt')
 full = site_html
 for f in ('sw.js', 'manifest.webmanifest'): shutil.copy(os.path.join(SITE, f), LT)
 shutil.rmtree(os.path.join(LT, 'icons'), ignore_errors=True); shutil.copytree(os.path.join(SITE, 'icons'), os.path.join(LT, 'icons'))
+shutil.rmtree(os.path.join(LT, 'img'), ignore_errors=True); shutil.copytree(os.path.join(SITE, 'img'), os.path.join(LT, 'img'))
 lt = full.replace("? 'ru' : 'en';", "? 'ru' : 'ru'; // тесты: по умолчанию русский").replace('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js', './three/build/three.module.js').replace('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/', './three/examples/jsm/')
 open(os.path.join(LT, 'index.html'), 'w', encoding='utf8').write(lt)
 shutil.rmtree(os.path.join(LT, APP), ignore_errors=True); shutil.copytree(os.path.join(OUT, APP), os.path.join(LT, APP))
