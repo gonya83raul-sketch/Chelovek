@@ -186,6 +186,7 @@ LIB = {
     'ptu': ('Пропилтиоурацил', 'CCCc1cc(=O)[nH]c(=S)[nH]1'),
     'pregnenolone': ('Прегненолон', 'CC(=O)[C@H]1CC[C@H]2[C@@H]3CC=C4C[C@@H](O)CC[C@]4(C)[C@H]3CC[C@]12C'),
     'dhea': ('ДГЭА', 'C[C@]12CC[C@H]3[C@@H](CC=C4C[C@@H](O)CC[C@]34C)[C@@H]1CCC2=O'),
+    'dhc7': ('7-Дегидрохолестерин', 'C[C@H](CCCC(C)C)[C@H]1CC[C@@H]2[C@@]1(CC[C@H]3C2=CC=C4[C@@]3(CC[C@@H](C4)O)C)C'),
     'calcidiol': ('Кальцидиол (25-OH-D3)', 'C=C1CC[C@H](O)C/C1=C/C=C1\\CCC[C@]2(C)[C@@H]1CC[C@@H]2[C@H](C)CCCC(C)(C)O'),
     'pgh2': ('Простагландин H2', 'CCCCC[C@H](O)/C=C/[C@H]1[C@H]2C[C@H](OO2)[C@@H]1C/C=C\\CCCC(=O)O'),
     'txa2': ('Тромбоксан A2', 'CCCCC[C@H](O)/C=C/[C@H]1OC2CC(O2)[C@@H]1C/C=C\\CCCC(=O)O'),
