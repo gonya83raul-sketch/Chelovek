@@ -26,6 +26,11 @@
   - токены цвета в `:root`; акцент по-прежнему задаёт каждая сцена (`accentSet`).
 - Черновик карусели для Instagram (лактоза, 7 слайдов 1080×1350): promo/insta.html, рендер `python3 tools/insta_render.py promo/insta.html promo/insta` (папки promo нет в ветке — фоны снимались tools/capture.py со сцены carbdig).
 
+## РАЗДЕЛЕНИЕ РАБОТЫ (25.10, две сессии одновременно)
+- Облачная сессия Claude Code: повторная проверка критиками старых 61 сцены (снимки «после» → lt/rev2, задание tools/critic2_brief.md, отчёты review/round2-*.md) и доработка по ним; правит только функции/файлы старых сцен.
+- Сессия Cowork: новые темы (antibiotics, thyroid, adrenal — готовы; далее calcium, eicosanoids, nitrogen, mutations) и их перевод.
+- Перед push — `git pull --rebase origin source`; публикацию (APP+1) делает тот, кто публикует, предварительно подтянув чужие коммиты.
+
 ## СТАТУС НА МОМЕНТ ПЕРЕКЛЮЧЕНИЯ СЕССИИ (продолжать отсюда)
 Сделано и запушено в source:
 - Английская версия ГОТОВА: словари data/i18n/en/*.json (перевод 100%, редактура терминов, уточнения по месту в b99_ctx.json, ключи `unit::строка`). Сборка build.py делает out/appN/en/, загрузчик языка (?lang=, localStorage, язык браузера; в lt/ по умолчанию ru), кнопка RU/EN в шапке. Инструмент tools/i18n.mjs (extract/apply). НЕ ОПУБЛИКОВАНО (сайт ещё app6 без EN).
