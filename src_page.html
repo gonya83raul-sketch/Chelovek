@@ -112,6 +112,8 @@ button,select{font-family:inherit}
 .rng output{font:500 13px var(--f-body);color:var(--fg);min-width:52px;font-variant-numeric:tabular-nums}
 .info{font-size:14px;line-height:1.5;color:var(--text);max-width:460px;min-height:20px;text-wrap:pretty}
 .info b{color:var(--fg);font-weight:600}
+/* на компьютере пульт лежит поверх сцены: длинный текст «Что видно» прокручивается, чтобы пульт не закрывал сцену */
+@media (min-width:701px){ .console:not(.out) .info{max-height:9em;overflow-y:auto;scrollbar-width:thin;padding-right:6px} }
 .loading{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);z-index:6;padding:12px 18px;border-radius:12px;background:rgba(18,17,23,.9);border:1px solid var(--line-2);color:var(--fg);font:500 14px/1.4 var(--f-body);max-width:min(440px,calc(100% - 32px));text-align:center}
 .loading[hidden]{display:none}
 .fallback{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;color:var(--mute)}

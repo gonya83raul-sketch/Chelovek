@@ -192,6 +192,7 @@ LIB = {
     'txa2': ('Тромбоксан A2', 'CCCCC[C@H](O)/C=C/[C@H]1OC2CC(O2)[C@@H]1C/C=C\\CCCC(=O)O'),
     'pgi2': ('Простациклин', 'CCCCC[C@H](O)/C=C/[C@@H]1[C@H](O)C[C@@H]2O/C(=C\\CCCC(=O)O)C[C@@H]12'),
     'ltb4': ('Лейкотриен B4', 'CCCCC/C=C\\C[C@@H](O)/C=C/C=C/C=C\\[C@@H](O)CCCC(=O)O'),
+    'celecoxib': ('Целекоксиб', 'Cc1ccc(cc1)-c1cc(nn1-c1ccc(cc1)S(N)(=O)=O)C(F)(F)F'),
     'ibuprofen': ('Ибупрофен', 'CC(C)Cc1ccc(cc1)C(C)C(=O)O'),
     'hiaa': ('5-Гидроксииндолуксусная кислота', 'OC(=O)Cc1c[nH]c2ccc(O)cc12'),
     'hva': ('Гомованилиновая кислота', 'COc1cc(CC(=O)O)ccc1O'),
