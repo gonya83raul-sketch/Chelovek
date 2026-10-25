@@ -33,7 +33,7 @@
 
 ## Сайт app10 (25.10, сессия Cowork)
 - Опубликованы 7 новых тем + правки по рецензиям (review/new-*.md).
-- Окно «Поддержать»: Boosty (https://boosty.to/chelovek3d/donate), tips.tips (https://tips.tips/0004897066, QR pwa/img/qr-tips.png), USDT TRC-20 с QR (pwa/img/qr-usdt.svg, сделан qrcode-generator) и кнопкой «Скопировать адрес» + уведомление «Скопировано!»; обратная связь: Telegram @KTOMY_ATLAS (QR pwa/img/qr-telegram.png), gonya83raul@gmail.com — также в подвале.
+- Окно «Поддержать»: Boosty (https://boosty.to/chelovek3d/donate), tips.tips (https://tips.tips/000489706, QR pwa/img/qr-tips.svg), USDT TRC-20 с QR (pwa/img/qr-usdt.svg, сделан qrcode-generator) и кнопкой «Скопировать адрес» + уведомление «Скопировано!»; обратная связь: Telegram @KTOMY_ATLAS (QR pwa/img/qr-telegram.png), gonya83raul@gmail.com — также в подвале.
 - SEO: H1 = название атласа в разметке (заголовок сцены теперь h2), в site-сборке <title>, meta description, canonical, hreflang, Open Graph, JSON-LD (WebApplication); статический список «Все темы атласа» (<!--TOPICS--> заменяется в build.py; в EN пересобирается из SECTIONS); robots.txt, sitemap.xml, llms.txt в корне сайта. Корневой robots.txt домена github.io недоступен — нужен репозиторий gonya83raul-sketch.github.io или свой домен (спросили пользователя).
 - Сцена может задать self.mobZoom (зум кадра на телефоне, по умолчанию 0.7; широким схемам — 0.9–1.0).
 - Промо: карусель Instagram (лактоза) отправлена пользователю; шортс — кадры снимает promo/short_frames.py (в scratchpad, медленно на swiftshader).
