@@ -9236,7 +9236,12 @@ function layout() {
   renderer.setSize(w, hgt, false); composer.setSize(w, hgt); bloom.setSize(w, hgt);
   // на узком (портретном) экране расширяем угол обзора, чтобы сцена помещалась по ширине
   const asp = w / Math.max(1, hgt), A0 = 1.5;
-  Object.values(built).forEach((s) => { const c = s.camera; if (c.userData.fov0 === undefined) c.userData.fov0 = c.fov; c.fov = asp < A0 ? 2 * Math.atan(Math.tan(c.userData.fov0 * Math.PI / 360) * A0 / asp) * 180 / Math.PI : c.userData.fov0; c.aspect = asp; c.updateProjectionMatrix(); });
+  // ракурсы сцен биохимии рассчитаны на компьютер: цель камеры смещена, чтобы объект не прятался под заголовком и пультом.
+  // На телефоне пульт вынесен под сцену — возвращаем объект к центру сдвигом кадра (вниз и влево).
+  const bioMob = mqMob.matches;
+  Object.entries(built).forEach(([id, s]) => { const c = s.camera; if (c.userData.fov0 === undefined) c.userData.fov0 = c.fov; c.fov = asp < A0 ? 2 * Math.atan(Math.tan(c.userData.fov0 * Math.PI / 360) * A0 / asp) * 180 / Math.PI : c.userData.fov0; c.aspect = asp;
+    if (bioMob && (secOf(id) || {}).id === 'bio') { const z = 0.7; c.setViewOffset(w, hgt, (1 - z) / 2 * w + 0.05 * w, (1 - z) / 2 * hgt - Math.min(0.2, 0.13 * asp) * hgt, z * w, z * hgt); } else c.clearViewOffset();
+    c.updateProjectionMatrix(); });
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
   scopeEl.width = scopeEl.clientWidth * dpr; scopeEl.height = scopeEl.clientHeight * dpr; sctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   placeScope();
