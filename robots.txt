@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://gonya83raul-sketch.github.io/Chelovek/sitemap.xml
