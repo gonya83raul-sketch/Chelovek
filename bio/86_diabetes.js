@@ -260,7 +260,7 @@ function makeDiabetes() {
       ctx.fillStyle = 'rgba(242,193,78,.6)'; MEALS.forEach(([tm]) => { ctx.beginPath(); ctx.arc(X(tm), A.Y(0) - 4, 3, 0, 7); ctx.fill(); });
       const line = (arr, col) => { ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.beginPath(); arr.forEach(([hh, g], i) => { i ? ctx.lineTo(X(hh), Y(g)) : ctx.moveTo(X(hh), Y(g)); }); ctx.stroke(); };
       line(st.prev.filter((r) => r[0] > st.hr + 0.3), 'rgba(242,193,78,.25)'); line(st.day, GLU);
-      ctx.fillStyle = 'rgba(255,255,255,.5)'; ctx.font = '500 9px JetBrains Mono, monospace'; [5, 10, 20, 30].forEach((g) => ctx.fillText(String(g), A.X(0) + 3, Y(g) - 2)); [6, 12, 18].forEach((hh) => ctx.fillText(hh + ' ч', X(hh) - 6, A.Y(0) - 8));
+      ctx.fillStyle = 'rgba(255,255,255,.5)'; ctx.font = '500 9px JetBrains Mono, monospace'; [5, 10, 20, 30].forEach((g) => ctx.fillText(String(g), A.X(0) + 3, Y(g) - 2)); [6, 12, 18].forEach((hh) => ctx.fillText(hh + ':00', X(hh) - 10, A.Y(0) - 8));
       return;
     }
     scopeShow(true); const A = plotAxes(ctx, w, h, { title: 'ср. глюкоза (жёлтый), HbA1c (оранжевый)', xl: '26 недель' });
