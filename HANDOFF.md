@@ -1,4 +1,4 @@
-# Передача работы в Claude Code (состояние на 26.10.2026, сайт app14)
+# Передача работы в Claude Code (состояние на 26.10.2026, сайт app15)
 
 Этот файл — самое короткое и полное описание того, как продолжить работу над атласом «Кто мы? — от молекулы до мысли» в Claude Code.
 Подробная история решений — в NOTES.md (читать по нужде, он длинный).
@@ -34,7 +34,7 @@ cd lt && python3 -m http.server 8765  # локальный сервер (ост�
 - `bio/*.js` — сцены биохимии, `body/*.js` — новые сцены раздела «Тело». Первая строка файла — заголовок:
   `// @scene id makeFn | Название | Группа` (биохимия) или `// @scene id makeFn | Название | @body Группа` (тело; `@body ^Группа` — поставить группу в начало раздела).
 - `tools/build.py` собирает всё; константа `APP = 'app14'` — имя папки версии, **увеличивать при каждой публикации**.
-- `data/i18n/en/*.json` — словарь перевода «русская строка → английская». Последний файл — `b23_netter.json`, следующий делать `b24_*.json`.
+- `data/i18n/en/*.json` — словарь перевода «русская строка → английская». Последний файл — `b25_ux2.json`, следующий делать `b26_*.json`.
 - `data/mols.json`, `tools/mols.py` — молекулы (SMILES в LIB, своя генерация 3D; RDKit не нужен): `python3 tools/mols.py data/mols.json <ids>` → `python3 tools/mkdata.py`.
 - `review/*.md` — отчёты рецензентов (последние: new-referred.md, netter-fixes-2.md, netter-intro-existing.md).
 - `drafts/13_skull.js` — черновик следующей сцены «Череп» (в сборку не входит, см. п. 9).
@@ -66,7 +66,7 @@ cd lt && python3 -m http.server 8765  # локальный сервер (ост�
    В EN использовать кавычки “ ”, не «ёлочки».
 2. Поднять `APP` в tools/build.py, собрать, прогнать sweep.
 3. Сайт: клон ветки main рядом (`git clone -b main https://github.com/gonya83raul-sketch/Chelovek.git ../chelovek-site`), затем
-   `cd ../chelovek-site && git pull --rebase && git rm -rq app14 && cp -r ../chelovek-src/out/site/. . && git add -A && git commit -m "app15: …" && git push`.
+   `cd ../chelovek-site && git pull --rebase && git rm -rq app15 && cp -r ../chelovek-src/out/site/. . && git add -A && git commit -m "app16: …" && git push`.
 4. Исходники: `git add -A && git commit -m "…" && git pull --rebase origin source && git push origin HEAD:source`.
 5. Дописать в NOTES.md раздел о сделанном.
 
