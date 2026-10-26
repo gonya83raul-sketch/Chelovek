@@ -10,8 +10,11 @@ self.addEventListener('fetch', (e) => {
   // страница: сначала сеть (чтобы приходили обновления), без сети — из кэша
   // у каждой темы своя страница (krebs.html): кэшируется под своим адресом; без сети и без кэша — главная (она откроет тему по адресу)
   if (req.mode === 'navigate') {
-    const root = /\/(index\.html)?$/.test(url.pathname), key = root ? './index.html' : url.origin + url.pathname;
-    e.respondWith(fetch(req).then((r) => put(key, r)).catch(() => caches.match(key).then((hit) => hit || caches.match('./index.html')))); return;
+    const root = /\/(index\.html)?$/.test(url.pathname) && !url.searchParams.has('lang'), key = root ? './index.html' : url.origin + url.pathname;
+    const cached = () => caches.match(key).then((hit) => hit || caches.match('./index.html'));
+    // медленная сеть: через 4 с отдаём сохранённую копию (если есть), свежая всё равно ляжет в кэш
+    const net = fetch(req).then((r) => put(key, r));
+    e.respondWith(Promise.race([net, new Promise((res) => setTimeout(res, 4000)).then(() => caches.match(key).then((hit) => hit || net))]).catch(cached)); return;
   }
   const same = url.origin === self.location.origin;
   const immutable = (same && (url.pathname.includes('/__APP__/') || url.pathname.includes('/models/') || url.pathname.includes('/icons/'))) || url.hostname === 'cdn.jsdelivr.net';
