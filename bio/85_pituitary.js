@@ -7,8 +7,8 @@
 function makePituitary() {
   rnd = mulberry(8501);
   const scene = bioStage({ rim: 0x9f7bff });
-  const VIEW = { map: [V3(-0.7, -1.2, 0), V3(-0.2, -0.2, 15)], water: [V3(38.5, -1.55, 0), V3(39.0, -0.6, 16)], growth: [V3(79.0, -0.3, 0), V3(79.6, 1.0, 24)] };
-  const VIEWM = { water: [V3(40, -1.55, 0), V3(40.5, -0.6, 16)], growth: [V3(80, -0.3, 0), V3(80.6, 1.0, 24)] }, mqm = window.matchMedia('(max-width:700px)'), VV = (m) => (mqm.matches && VIEWM[m]) || VIEW[m];
+  const VIEW = { map: [V3(-0.3, -0.7, 0), V3(0.2, 0.3, 17)], water: [V3(39.4, -0.9, 0), V3(39.9, -0.1, 21)], growth: [V3(79.0, 0.4, 0), V3(79.6, 1.6, 27)] };
+  const VIEWM = { map: [V3(0.7, -0.4, 0), V3(1.1, 0.4, 17)], water: [V3(40, -0.5, 0), V3(40.4, 0.3, 25)], growth: [V3(80, 0.4, 0), V3(80.6, 1.6, 27)] }, mqm = window.matchMedia('(max-width:700px)'), VV = (m) => (mqm.matches && VIEWM[m]) || VIEW[m];
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VIEW.map[1]);
   const controls = makeControls(camera, VIEW.map[0]); controls.minDistance = 3; controls.maxDistance = 40;
   const fx = new Sparks(1600, 0.07); scene.add(fx.obj);
@@ -32,7 +32,7 @@ function makePituitary() {
   sella.scale.set(1.95, 1.15, 1.25); sella.position.set(0.1, -0.55, 0); G1.add(sella);
   // перекрёст зрительных нервов
   const nerveM = organMat('#E8E0C8', 0.6, { emissiveIntensity: 0.05 });
-  [0.55, -0.55].forEach((a) => { const c = new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.075, 1.5, 12), nerveM); c.rotation.set(Math.PI / 2, 0, 0); c.rotation.y = a; c.position.set(1.15, 1.32, 0); G1.add(c); });
+  [0.55, -0.55].forEach((a) => { const c = new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.075, 1.7, 12), nerveM); c.rotation.set(Math.PI / 2, 0, a); c.position.set(1.15, 1.32, 0); G1.add(c); });
   // сосуды: первичная сеть в срединном возвышении → портальные вены → вторичная сеть в передней доле → в кровь
   const artM = organMat('#D84A50', 0.6, { emissiveIntensity: 0.1 }), veinM = organMat('#6A70D8', 0.6, { emissiveIntensity: 0.1 });
   for (let k = 0; k < 5; k++) { const a = k / 5 * Math.PI * 2; const pts = []; for (let j = 0; j <= 12; j++) { const u = j / 12 * Math.PI * 2; pts.push(ME.clone().add(V3(Math.cos(a) * 0.18 + Math.cos(u) * 0.1, Math.sin(u) * 0.12, Math.sin(a) * 0.18 + Math.sin(u) * 0.06))); } G1.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts, true), 30, 0.018, 6, true), artM)); }
@@ -70,16 +70,19 @@ function makePituitary() {
   let px = 0; const pomcSeg = POMC.map(([, col, w]) => { const m = new THREE.Mesh(new THREE.CapsuleGeometry(0.075, w - 0.15, 4, 10), protMat(col, 0.55, { emissiveIntensity: 0.15 })); m.rotation.z = Math.PI / 2; m.userData.x0 = px + w / 2; px += w; pomc.add(m); return m; });
   pomcSeg.forEach((m) => { m.userData.x0 -= px / 2; m.position.x = m.userData.x0; });
   // молекулы-регуляторы справа
-  const MOLS = { tsh: fit('trh', 0.5), prl: fit('dopamine', 0.45), adh: fit('vasopressin', 0.75), oxt: fit('oxytocin', 0.75) };
-  Object.values(MOLS).forEach((m) => { m.position.set(2.65, 1.45, 0.2); m.visible = false; G1.add(m); });
+  const MOLS = { tsh: fit('trh', 0.65), prl: fit('dopamine', 0.6), adh: fit('vasopressin', 0.9), oxt: fit('oxytocin', 0.9) };
+  Object.values(MOLS).forEach((m) => { m.position.set(2.75, 0.75, 0.2); m.visible = false; G1.add(m); });
   // частицы
   const P1 = Array.from({ length: 70 }, () => ({ s: ball(0.042, '#ffffff', G1), on: false, t: 0, path: null, next: null, col: '#fff', sp: 0.3 }));
   const launch1 = (path, col, sp, next) => { const p = P1.find((x) => !x.on); if (!p) return; Object.assign(p, { on: true, t: 0, path, col, sp, next }); p.s.material.color.set(col); p.s.visible = true; };
   const HORM = {
-    gh: { rel: '#7FE0A0', out: '#7FE0A0', nuc: 'arc' }, prl: { rel: '#FF5A5A', out: '#FF8AB0', nuc: 'arc' }, acth: { rel: '#F2C14E', out: '#F2C14E', nuc: 'arc' },
-    tsh: { rel: '#7FD6FF', out: '#7FD6FF', nuc: 'arc' }, gn: { rel: '#C77DFF', out: '#C77DFF', nuc: 'arc' }, adh: { out: '#5B8CFF', nuc: 'son' }, oxt: { out: '#FF9AE0', nuc: 'pvn' },
+    gh: { rel: '#7FE0A0', out: '#7FE0A0', nuc: 'arc' }, prl: { rel: '#FF5A5A', out: '#FF8AB0', nuc: 'arc' }, acth: { rel: '#F2C14E', out: '#F2C14E', nuc: 'pvnp' },
+    tsh: { rel: '#7FD6FF', out: '#7FD6FF', nuc: 'pvnp' }, gn: { rel: '#C77DFF', out: '#C77DFF', nuc: 'arc' }, adh: { out: '#5B8CFF', nuc: 'son' }, oxt: { out: '#FF9AE0', nuc: 'pvn' },
   };
+  const axPVNp = new THREE.CatmullRomCurve3([PVN.clone(), V3(0.0, 1.9, 0.3), ME.clone().add(V3(-0.02, 0.06, 0.1))]);
+  const axPm = new THREE.Mesh(new THREE.TubeGeometry(axPVNp, 40, 0.016, 6), axMat('#7FE0A0')); G1.add(axPm);
   const relPath = PORT.map((pc) => new THREE.CatmullRomCurve3([...axARC.getPoints(6), ...pc.getPoints(8).slice(1)]));
+  const relPathP = PORT.map((pc) => new THREE.CatmullRomCurve3([...axPVNp.getPoints(6), ...pc.getPoints(8).slice(1)]));
 
   /* ---------- 2. вазопрессин и вода: клетка собирательной трубки ---------- */
   const G2 = new THREE.Group(); G2.position.set(40, 0, 0); scene.add(G2);
@@ -93,7 +96,7 @@ function makePituitary() {
   const nuc2 = new THREE.Mesh(new THREE.SphereGeometry(0.62, 30, 20), glassMat('#9F7BFF', { rim: 0.8, base: 0.05, keep: true })); nuc2.position.set(2.6, -0.15, -0.6); nuc2.scale.setScalar(0.8); G2.add(nuc2);
   // рецептор V2 (структура GPCR + Gs; на примере β2-адренорецептора, PDB 3SN6) в базолатеральной мембране
   const gs = 0.022, GP = new THREE.Group(); G2.add(GP);
-  const recM = proteinMesh('gpcr', { scale: gs, chains: ['R'], colorBy: () => '#FF8A5C' }), gaM = proteinMesh('gpcr', { scale: gs, chains: ['A', 'B', 'G'], colorBy: (c) => (c.id === 'A' ? '#7FD6FF' : c.id === 'B' ? '#C77DFF' : '#F2C14E') });
+  const recM = proteinMesh('gpcr', { scale: gs, chains: ['R'], colorBy: () => '#FF8A5C' }), gaM = proteinMesh('gpcr', { scale: gs, chains: ['A', 'B', 'G'], colorBy: () => '#8FB8A8' });
   GP.add(recM, gaM); recM.children.forEach((m) => { if (m.material) m.material.emissive = new THREE.Color('#FF8A5C'); });
   { const cen = (ch) => { const pts = caPoints('gpcr', gs, ch); return pts.reduce((a, p) => a.add(p), V3(0, 0, 0)).multiplyScalar(1 / pts.length); };
     const rc = cen(['R']), gc = cen(['A', 'B', 'G']); GP.quaternion.setFromUnitVectors(rc.clone().sub(gc).normalize(), V3(0, -1, 0));
@@ -153,16 +156,17 @@ function makePituitary() {
   function mapUpdate(dt, t) {
     const sel = st.sel, all = sel === 'all';
     const on = (k) => all || sel === k;
-    TYPES.forEach((T) => { T.mat.emissiveIntensity = on(T.id) ? 0.25 + 0.2 * Math.sin(t * 4 + T.n) : 0.03; });
+    TYPES.forEach((T) => { const o = on(T.id); T.mat.emissiveIntensity = o ? 0.25 + 0.2 * Math.sin(t * 4 + T.n) : 0.0; T.mat.color.set(T.col).multiplyScalar(o ? 0.45 : 0.07); });
     axM[0].material.emissiveIntensity = on('adh') || (sel === 'oxt') ? 0.4 : 0.06; axM[1].material.emissiveIntensity = on('oxt') || sel === 'adh' ? 0.4 : 0.06;
-    axM[2].material.emissiveIntensity = all || ['gh', 'prl', 'acth', 'tsh', 'gn'].includes(sel) ? 0.4 : 0.06;
-    sonG.spr.material.opacity = on('adh') || sel === 'oxt' ? 0.7 : 0.15; pvnG.spr.material.opacity = on('oxt') || sel === 'adh' ? 0.7 : 0.15; arcG.spr.material.opacity = axM[2].material.emissiveIntensity > 0.1 ? 0.7 : 0.15;
+    axM[2].material.emissiveIntensity = all || ['gh', 'prl', 'gn'].includes(sel) ? 0.4 : 0.06; axPm.material.emissiveIntensity = all || ['tsh', 'acth'].includes(sel) ? 0.4 : 0.06;
+    sonG.spr.material.opacity = on('adh') || sel === 'oxt' ? 0.7 : 0.15; pvnG.spr.material.opacity = on('oxt') || ['adh', 'tsh', 'acth'].includes(sel) ? 0.7 : 0.15; arcG.spr.material.opacity = axM[2].material.emissiveIntensity > 0.1 ? 0.7 : 0.15;
     // выпуск частиц
     const keys = all ? Object.keys(HORM) : [sel];
     keys.forEach((k) => {
       const H = HORM[k], rate = (all ? 0.9 : 2.6) * (k === 'gn' ? (Math.sin(t * 1.4) > 0.6 ? 3 : 0.1) : 1);   // ГнРГ — импульсами
       if (rnd() > dt * rate) return;
       if (H.nuc === 'arc') launch1(relPath[(rnd() * 2) | 0], H.rel, 0.33, k);
+      else if (H.nuc === 'pvnp') launch1(relPathP[(rnd() * 2) | 0], H.rel, 0.33, k);
       else { const ax = k === 'adh' ? (rnd() < 0.75 ? axSON : axPVN) : (rnd() < 0.75 ? axPVN : axSON); launch1(ax, H.out, 0.22, 'post'); }
     });
     P1.forEach((p) => {
@@ -187,14 +191,15 @@ function makePituitary() {
     let adhS = clamp(0.25 * (st.posm - 283), 0, 12);
     if (D === 'dic') adhS = 0; if (D === 'siadh') adhS = Math.max(adhS, 6);
     st.adh += (adhS - st.adh) * Math.min(1, dtd * 30);
-    let a = st.adh * (D === 'din' ? 0.04 : 1); if (D === 'dic' && tr) a += 4;
+    let a = st.adh * (D === 'din' ? 0.04 : 1); if (D === 'dic' && tr) a += 1.1;
     const E = a / (a + 1.5);
-    st.uosm = 50 + 1150 * E; let Uv = 700 / st.uosm; if (D === 'din' && tr) Uv *= 0.5;
+    st.uosm = 50 + 1250 * E; if (D === 'din' && tr) st.uosm *= 2; const Uv = 700 / st.uosm;
     st.urine = Uv; st.E = E;
     const drive = Math.max(0, st.posm - 292) * 3;
-    st.intake = D === 'thirst' ? (tr ? 1.6 + drive : 0) : D === 'siadh' ? (tr ? 0.8 : 1.9) : 1.3 + drive;
+    const B = clamp(2.2 + 0.3 * (st.posm - 287), 0.6, 2.6);
+    st.intake = D === 'thirst' ? (tr ? B + drive : 0) : D === 'siadh' ? (tr ? (st.posm < 285 ? 1.0 : B + drive) : 2.2) : B + drive;
     st.intake = Math.min(st.intake, 22);
-    st.tbw = clamp(st.tbw + (st.intake - Uv - 0.8) * dtd, 36, 47);
+    st.tbw = clamp(st.tbw + (st.intake - Uv - 0.8) * dtd, 33, 47);
   }
   function waterUpdate(dt, t) {
     const dtd = dt / 6; for (let i = 0; i < 4; i++) waterStep(dtd / 4);
@@ -230,7 +235,7 @@ function makePituitary() {
       if (D === 'giant' && a >= 8) { const on = !(tr && a >= 11); f = on ? 1.5 : 1; igf = on ? 300 : 110; }
       if (D === 'acro' && a >= 20) { const on = !(tr && a >= 22); igf = on ? 350 : 120; }
       let dh = v * f * 0.05; if (D === 'giant' && a >= 18 && a < 22 && !(tr)) dh += 2.5 * 0.05;
-      hgt += dh; if (D === 'acro' && a >= 20 && igf > 200) acro = Math.min(1.45, acro + 0.08 * 0.05 * 5);
+      hgt += dh; if (D === 'acro' && a >= 20 && igf > 200) acro = Math.min(1.45, acro + 0.08 * 0.05); if (D === 'acro' && tr && a >= 22) acro -= (acro - 1.08) * 0.4 * 0.05;
       out.push([a, hgt, igf, acro]);
     }
     st.curve = out;
@@ -244,7 +249,7 @@ function makePituitary() {
     const g = clamp(st.igf / 100, 0.1, 3.5), open = st.age < 18 + (st.gdis === 'giant' && !st.gtreat ? 4 : 0);
     A3.gh.mat.uniforms.uOn.value = clamp(0.25 + 0.3 * g, 0.1, 1.3); ['k1', 'k2', 'h1', 'h2'].forEach((k) => { A3[k].mat.uniforms.uOn.value = clamp(0.2 + 0.28 * g, 0.08, 1.2) * (k[0] === 'h' && st.gdis !== 'acro' ? 0.5 : 1); });
     Object.values(A3).forEach((a) => { a.mat.uniforms.uTime.value = t; });
-    plateM.forEach((m, i) => { m.visible = i < 2 ? open : open || st.gdis === 'acro'; m.material.color.set(i >= 2 && !open ? '#FF9A5C' : '#7FE0A0'); m.material.opacity = 0.35 + 0.5 * clamp(g / 2, 0, 1) * (0.7 + 0.3 * Math.sin(t * 5 + i)); });
+    plateM.forEach((m, i) => { m.visible = open; m.material.color.set(i >= 2 && !open ? '#FF9A5C' : '#7FE0A0'); m.material.opacity = 0.35 + 0.5 * clamp(g / 2, 0, 1) * (0.7 + 0.3 * Math.sin(t * 5 + i)); });
     pitG3.spr.material.opacity = 0.25 + 0.2 * Math.min(g, 3); const tum = (st.gdis === 'giant' && st.age >= 8 && !(st.gtreat && st.age >= 11)) || (st.gdis === 'acro' && st.age >= 20 && !(st.gtreat && st.age >= 22));
     tumor.visible = tum; tumor.scale.setScalar(1 + 0.15 * Math.sin(t * 4));
     if (rnd() < dt * 6 * g && open) { const p = PLATES[(rnd() * 2) | 0]; fx.spawn(IN.localToWorld(p.clone()), V3(0, 0.3, 0.1), C.set('#7FE0A0'), 0.5, 0.6, 0.9); }
@@ -260,17 +265,17 @@ function makePituitary() {
   }
   function drawScope(ctx, w, h) {
     if (st.mode === 'water') {
-      scopeShow(true); const A = plotAxes(ctx, w, h, { title: 'осмоляльность (голубой), моча (жёлтый)', xl: 'время →' });
-      const t1 = st.t, X = (tt) => A.X(clamp((tt - (t1 - 40)) / 40, 0, 1)), Yo = (o) => A.Y(clamp((o - 255) / 60, 0, 1)), Yu = (u) => A.Y(clamp(u / 20, 0, 1));
+      scopeShow(true); const A = plotAxes(ctx, w, h, { title: 'осм. (голубой) · моча, л/сут, лог. (жёлтый)', xl: 'время →' });
+      const t1 = st.t, X = (tt) => A.X(clamp((tt - (t1 - 40)) / 40, 0, 1)), Yo = (o) => A.Y(clamp((o - 255) / 60, 0, 1)), Yu = (u) => A.Y(clamp(Math.log10(u / 0.3) / Math.log10(70), 0, 1));
       ctx.fillStyle = 'rgba(127,214,255,.10)'; ctx.fillRect(A.X(0), Yo(295), A.X(1) - A.X(0), Yo(280) - Yo(295));
       const line = (fy, col) => { ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.beginPath(); st.hist.forEach((r, i) => { const x = X(r[0]), y = fy(r); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.stroke(); };
       line((r) => Yo(r[1]), '#7FD6FF'); line((r) => Yu(r[2]), '#F2D27A');
       return;
     }
     if (st.mode === 'growth') {
-      scopeShow(true); const A = plotAxes(ctx, w, h, { title: 'рост, см (серое — норма ±2 SD)', xl: 'возраст, 0–25 лет' });
+      scopeShow(true); const A = plotAxes(ctx, w, h, { title: 'рост, см (серое — норма)', xl: 'возраст, 0–25 лет' });
       const X = (a) => A.X(a / AMAX), Y = (v) => A.Y(clamp((v - 40) / 190, 0, 1));
-      ctx.fillStyle = 'rgba(255,255,255,.09)'; ctx.beginPath(); for (let a = 0; a <= AMAX; a += 0.5) ctx.lineTo(X(a), Y(med(a) * 1.045)); for (let a = AMAX; a >= 0; a -= 0.5) ctx.lineTo(X(a), Y(med(a) * 0.955)); ctx.fill();
+      ctx.fillStyle = 'rgba(255,255,255,.09)'; ctx.beginPath(); for (let a = 0; a <= AMAX; a += 0.5) ctx.lineTo(X(a), Y(med(a) * 1.08)); for (let a = AMAX; a >= 0; a -= 0.5) ctx.lineTo(X(a), Y(med(a) * 0.92)); ctx.fill();
       ctx.strokeStyle = '#7FE0A0'; ctx.lineWidth = 2; ctx.beginPath(); st.curve.forEach(([a, v], i) => { if (a > st.age) return; i ? ctx.lineTo(X(a), Y(v)) : ctx.moveTo(X(a), Y(v)); }); ctx.stroke();
       ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.font = '500 9px JetBrains Mono, monospace'; [100, 150, 200].forEach((v) => ctx.fillText(String(v), A.X(0) + 3, Y(v) - 2));
       return;
@@ -280,18 +285,18 @@ function makePituitary() {
 
   const SEL = { all: 'Все', gh: 'СТГ', prl: 'Пролактин', acth: 'АКТГ', tsh: 'ТТГ', gn: 'ЛГ и ФСГ', adh: 'Вазопрессин', oxt: 'Окситоцин' };
   const SELTXT = {
-    all: '<b>Гипофиз</b> — железа размером с горошину в костном «турецком седле» под мозгом; им управляет гипоталамус. <b>Передняя доля</b> (аденогипофиз) — настоящая железа: пять типов клеток делают шесть гормонов. Ими управляют <b>либерины</b> (включают) и <b>статины</b> (тормозят) — их выделяют мелкие нейроны гипоталамуса в <b>срединном возвышении</b>, и по коротким <b>портальным сосудам</b> они попадают прямо к клеткам передней доли. <b>Задняя доля</b> (нейрогипофиз) сама гормонов не делает: вазопрессин и окситоцин синтезируют крупные нейроны супраоптического и паравентрикулярного ядер, гормоны спускаются по их аксонам и ждут сигнала в окончаниях. Выберите гормон.',
+    all: '<b>Гипофиз</b> — железа размером с горошину в костном «турецком седле» под мозгом; им управляет гипоталамус. <b>Передняя доля</b> (аденогипофиз) — настоящая железа: пять типов клеток делают шесть гормонов. Ими управляют <b>либерины</b> (включают) и <b>статины</b> (тормозят) — их выделяют мелкие нейроны аркуатного, паравентрикулярного и других ядер гипоталамуса в <b>срединном возвышении</b>, и по коротким <b>портальным сосудам</b> они попадают прямо к клеткам передней доли. <b>Задняя доля</b> (нейрогипофиз) сама гормонов не делает: вазопрессин и окситоцин синтезируют крупные нейроны супраоптического и паравентрикулярного ядер, гормоны спускаются по их аксонам и ждут сигнала в окончаниях. Выберите гормон.',
     gh: '<b>Соматотропный гормон</b> (СТГ, гормон роста) — белок из 191 аминокислоты; его делают соматотрофы, почти половина клеток передней доли. Включает его <b>соматолиберин</b>, тормозит <b>соматостатин</b>, ещё стимулирует грелин из желудка. Выделяется импульсами, больше всего — в глубоком сне. Сам СТГ поднимает сахар крови и усиливает распад жира (он контринсулярный), а рост костей идёт через посредника — ИФР-1 из печени. Подробнее — режим «Гормон роста».',
     prl: '<b>Пролактин</b> запускает и поддерживает выработку молока. Это единственный гормон передней доли, который гипоталамус в основном <b>тормозит</b>: <b>дофамин</b> (красный поток, молекула справа) держит лактотрофы «на тормозе» — поэтому лактотрофы светятся, но выпускают немного. Если ножку гипофиза пережмёт опухоль или дофамин заблокируют лекарства (антипсихотики, метоклопрамид), пролактин растёт. <b>Пролактинома</b> — самая частая гормонально-активная опухоль гипофиза: у женщин нарушает цикл и даёт выделение молока, у мужчин снижает либидо. Её лечат агонистами дофамина (каберголин), опухоль часто уменьшается без операции.',
-    acth: 'Кортикотрофы делают большой белок-предшественник <b>проопиомеланокортин</b> (ПОМК, справа). Ферменты-конвертазы режут его на части: <b>АКТГ</b> (включает кору надпочечников — кортизол), <b>меланоцитстимулирующие гормоны</b> (МСГ, пигментация кожи) и <b>β-эндорфин</b> (собственный опиоид). Включает их <b>кортиколиберин</b> (вместе с вазопрессином при стрессе); кортизол по обратной связи тормозит и гипоталамус, и гипофиз. При болезни Аддисона АКТГ очень высок — и кожа темнеет, потому что вместе с ним растут фрагменты с действием МСГ. Аденома из кортикотрофов — болезнь Иценко — Кушинга. См. тему «Надпочечники».',
-    tsh: '<b>Тиреотропный гормон</b> (ТТГ) — гликопротеин из двух субъединиц: α такая же, как у ЛГ, ФСГ и ХГЧ, β — своя. Включает его <b>тиреолиберин</b> (ТРГ — всего три аминокислоты, молекула справа), тормозят соматостатин и сами гормоны щитовидной железы. ТТГ — самый чувствительный анализ работы щитовидной железы. См. тему «Гормоны щитовидной железы».',
+    acth: 'Кортикотрофы делают большой белок-предшественник <b>проопиомеланокортин</b> (ПОМК, справа). Ферменты-конвертазы режут его на части: <b>АКТГ</b> (включает кору надпочечников — кортизол), <b>меланоцитстимулирующие гормоны</b> (МСГ, пигментация кожи) и <b>β-эндорфин</b> (собственный опиоид). Включает их <b>кортиколиберин</b> из паравентрикулярного ядра (вместе с вазопрессином при стрессе); кортизол по обратной связи тормозит и гипоталамус, и гипофиз. При болезни Аддисона АКТГ очень высок — и кожа темнеет: начало молекулы АКТГ совпадает с α-МСГ, и избыток АКТГ сам действует на рецепторы МСГ (MC1R) в меланоцитах. Аденома из кортикотрофов — болезнь Иценко — Кушинга. См. тему «Надпочечники».',
+    tsh: '<b>Тиреотропный гормон</b> (ТТГ) — гликопротеин из двух субъединиц: α такая же, как у ЛГ, ФСГ и ХГЧ, β — своя. Включает его <b>тиреолиберин</b> (ТРГ — всего три аминокислоты, молекула справа; его делают мелкие нейроны паравентрикулярного ядра), тормозят соматостатин и сами гормоны щитовидной железы. ТТГ — самый чувствительный анализ работы щитовидной железы. См. тему «Гормоны щитовидной железы».',
     gn: 'Гонадотрофы делают <b>лютеинизирующий</b> (ЛГ) и <b>фолликулостимулирующий</b> (ФСГ) гормоны. Их включает <b>гонадолиберин</b> (ГнРГ), но только если он приходит <b>импульсами</b> — примерно раз в 1–2 часа (видно по вспышкам потока). Постоянный ГнРГ через пару недель, наоборот, выключает гонадотрофы — на этом основано лечение рака простаты аналогами ГнРГ. У мужчин ЛГ включает синтез тестостерона, ФСГ — созревание сперматозоидов; у женщин они ведут созревание фолликула и овуляцию. См. тему «Половые гормоны».',
     adh: '<b>Вазопрессин</b> (антидиуретический гормон, АДГ) — пептид из 9 аминокислот с дисульфидным мостиком (молекула справа). Его делают нейроны супраоптического (больше) и паравентрикулярного ядер, гранулы спускаются по аксонам в заднюю долю. Сигнал к выбросу — рост осмоляльности крови (осморецепторы чувствуют сдвиг на 1–2%) и сильное падение давления или объёма крови. В почке через <b>рецептор V2</b> он встраивает водные каналы — аквапорины, моча становится концентрированной (режим «Вазопрессин и вода»); через рецептор V1 сужает сосуды. Алкоголь тормозит выброс вазопрессина — отсюда частое мочеиспускание.',
     oxt: '<b>Окситоцин</b> — тоже нонапептид; от вазопрессина он отличается двумя аминокислотами (молекула справа). Делается в основном в паравентрикулярном ядре. Выбрасывается рефлекторно: при растяжении шейки матки в родах (схватки усиливают выброс, выброс усиливает схватки — положительная обратная связь) и при сосании груди — молоко выталкивается из альвеол («рефлекс отдачи молока»). Синтетический окситоцин вводят для стимуляции родов и чтобы остановить кровотечение после них. В мозге он участвует в привязанности и доверии.',
   };
   const DIS = { norm: 'Норма', thirst: 'Нет воды', dic: 'Центральный несахарный диабет', din: 'Нефрогенный несахарный диабет', siadh: 'СНСАДГ' };
   const DISTXT = {
-    norm: 'Клетка <b>собирательной трубки</b> почки. Сверху — просвет трубочки (будущая моча), снизу — кровь. Вазопрессин садится на <b>рецептор V2</b>, через G-белок растёт цАМФ, <b>протеинкиназа A</b> фосфорилирует <b>аквапорин-2</b> (голубые), и пузырьки с ним встраиваются в мембрану со стороны мочи. Вода по осмотическому градиенту уходит из мочи через клетку в кровь (через всегда открытые аквапорины 3 и 4, зелёные) — моча концентрируется. Без вазопрессина аквапорины уходят обратно внутрь клетки, мембрана становится непроницаемой для воды, и моча разбавленная. Обычно мочи 1–2 л в сутки.',
+    norm: 'Клетка <b>собирательной трубки</b> почки. Сверху — просвет трубочки (будущая моча), снизу — кровь. Вазопрессин садится на <b>рецептор V2</b>, через G-белок растёт цАМФ, <b>протеинкиназа A</b> фосфорилирует <b>аквапорин-2</b> (голубые), и пузырьки с ним встраиваются в мембрану со стороны мочи. Вода по осмотическому градиенту уходит из мочи через клетку в кровь (через всегда открытые аквапорины 3 и 4, зелёные) — моча концентрируется. Без вазопрессина аквапорины уходят обратно внутрь клетки, мембрана становится непроницаемой для воды, и моча разбавленная. Обычно мочи 1–2 л в сутки (1 секунда — 4 часа).',
     thirst: 'Человек <b>без доступа к воде</b>. Вода уходит с дыханием, потом и мочой, кровь становится концентрированнее, осмоляльность растёт — гипоталамус включает <b>жажду</b> и выброс вазопрессина. Все аквапорины в мембране, мочи меньше литра в сутки, она тёмная и концентрированная (до 1200 мОсм/кг — вчетверо концентрированнее крови). Почки могут только экономить воду — восполнить её можно лишь питьём.',
     dic: '<b>Центральный несахарный диабет</b>: вазопрессина нет (травма или опухоль в области гипофиза, операция, иногда аутоиммунное поражение). Аквапорины не встраиваются, и почка выводит до 15–20 литров разбавленной мочи в сутки. Человек постоянно хочет пить: если пить вволю, натрий в крови держится у верхней границы нормы; если доступа к воде нет — быстро обезвоживается.',
     din: '<b>Нефрогенный несахарный диабет</b>: вазопрессина много, но почка его не слышит — мутация рецептора V2 (сцеплена с X-хромосомой) или аквапорина-2, либо побочное действие лекарств (соли лития). Гормон в крови высокий, а аквапоринов в мембране нет. Десмопрессин не помогает.',
@@ -300,14 +305,14 @@ function makePituitary() {
   const TREAT = { thirst: 'Попить воды', dic: 'Десмопрессин', din: 'Тиазид', siadh: 'Ограничить питьё' };
   const TREATTXT = {
     thirst: 'Человек пьёт — осмоляльность возвращается к норме, вазопрессина становится меньше, часть аквапоринов уходит из мембраны, и почки выводят лишнюю воду.',
-    dic: '<b>Десмопрессин</b> — синтетический аналог вазопрессина: действует только на рецептор V2 (почти не сужает сосуды) и живёт дольше. Таблетки или спрей в нос возвращают аквапорины в мембрану — мочи снова около 1,5–2 литров. Пить приходится уже не больше обычного.',
+    dic: '<b>Десмопрессин</b> — синтетический аналог вазопрессина: действует только на рецептор V2 (почти не сужает сосуды) и живёт дольше. Таблетки или спрей в нос возвращают аквапорины в мембрану — мочи снова около 1–1,5 литра. Пить приходится уже не больше обычного.',
     din: '<b>Тиазидные диуретики</b> парадоксально уменьшают объём мочи: небольшая потеря натрия усиливает всасывание соли и воды в проксимальном канальце, и до собирательных трубок доходит меньше жидкости. Вместе с диетой с малым количеством соли и белка мочи становится примерно вдвое меньше, но до нормы не доходит.',
-    siadh: '<b>Лечение СНСАДГ</b>: ограничить питьё до 0,8–1 л в сутки и лечить причину; в тяжёлых случаях — ваптаны (блокаторы рецептора V2) и осторожное введение солевого раствора. Натрий поднимают медленно — слишком быстрая коррекция повреждает мозг.',
+    siadh: '<b>Лечение СНСАДГ</b>: ограничить питьё до 0,8–1 л в сутки и лечить причину; в тяжёлых случаях — ваптаны (блокаторы рецептора V2) и осторожное введение <b>гипертонического (3%)</b> раствора NaCl (обычный физраствор может даже усилить гипонатриемию). Натрий поднимают не быстрее 8–10 ммоль/л за сутки — иначе возникает осмотическая демиелинизация в мозге.',
   };
   const GDIS = { norm: 'Норма', def: 'Дефицит СТГ', giant: 'Гигантизм', acro: 'Акромегалия' };
   const GTREAT = { def: 'Гормон роста с 4 лет', giant: 'Операция в 11 лет', acro: 'Операция в 22 года' };
   const GTXT = {
-    norm: '<b>Гормон роста</b> выделяется импульсами — больше всего ночью, в глубоком сне, и в подростковом возрасте. Сам по себе он поднимает сахар крови и сжигает жир, а расти костям велит в основном через посредника — <b>инсулиноподобный фактор роста 1</b> (ИФР-1), который в ответ на СТГ делает печень (и сами ткани). ИФР-1 заставляет делиться хрящевые клетки в <b>пластинках роста</b> на концах длинных костей (светятся). К 16–18 годам под действием половых гормонов пластинки закрываются — после этого человек в длину уже не растёт. Время идёт само; график — справа.',
+    norm: '<b>Гормон роста</b> выделяется импульсами — больше всего ночью, в глубоком сне, и в подростковом возрасте. Сам по себе он поднимает сахар крови и сжигает жир, а расти костям велит в основном через посредника — <b>инсулиноподобный фактор роста 1</b> (ИФР-1), который в ответ на СТГ делает печень (и сами ткани). ИФР-1 заставляет делиться хрящевые клетки в <b>пластинках роста</b> на концах длинных костей (светятся). К 16–18 годам под действием половых гормонов пластинки закрываются — после этого человек в длину уже не растёт. Время идёт само; график роста — в углу.',
     def: '<b>Дефицит гормона роста</b> у ребёнка (врождённый или после опухоли, облучения): до года ребёнок растёт почти нормально, потом скорость роста падает вдвое, пропорции тела сохраняются. Без лечения взрослый рост — около 130–140 см. Интеллект не страдает (в отличие от врождённого гипотиреоза).',
     giant: '<b>Гигантизм</b>: аденома из соматотрофов появилась в детстве (здесь — в 8 лет), пока пластинки роста открыты. ИФР-1 в 3 раза выше нормы, кости растут в длину, рост превышает 2 метра, пластинки закрываются позже обычного. Опухоль может давить на перекрёст зрительных нервов — выпадают боковые поля зрения.',
     acro: '<b>Акромегалия</b>: аденома появилась у взрослого (здесь — в 20 лет), когда пластинки роста уже закрыты. В длину кости не растут, зато утолщаются и разрастаются кисти, стопы, нижняя челюсть, нос, язык и внутренние органы. Болезнь развивается медленно, её часто замечают через 5–10 лет — по тому, что стали малы кольца и обувь. Опасна диабетом, гипертонией и болезнями сердца.',
@@ -324,7 +329,7 @@ function makePituitary() {
     { text: 'гипоталамус', pos: V3(-1.2, 3.25, 0.4), color: '#C8B8FF', show: L1 },
     { text: 'супраоптическое ядро', pos: SON.clone().add(V3(0.75, 0.2, 0.2)), color: '#7FD6FF', show: L1 },
     { text: 'паравентрикулярное ядро', pos: PVN.clone().add(V3(-0.4, 0.28, 0.2)), color: '#7FE0A0', show: L1 },
-    { text: 'аркуатное ядро (либерины, статины)', pos: ARC.clone().add(V3(-1.3, -0.12, 0.2)), color: '#F2C14E', show: L1 },
+    { text: 'аркуатное ядро (соматолиберин, дофамин)', pos: ARC.clone().add(V3(-1.3, -0.12, 0.2)), color: '#F2C14E', show: L1 },
     { text: 'портальные сосуды', pos: V3(0.95, 0.35, 0.3), color: '#D84A50', show: L1 },
     { text: 'ножка', pos: V3(-0.42, 0.55, 0.2), color: '#E8C0D0', show: L1 },
     { text: 'передняя доля', pos: P_ANT.clone().add(V3(0.6, -0.72, 0.4)), color: '#E890A0', show: L1 },
@@ -334,14 +339,14 @@ function makePituitary() {
     { text: 'в кровь', pos: V3(2.5, -2.35, 0.1), color: '#9FA8FF', show: L1 },
     { text: 'в кровь', pos: V3(-2.15, -2.35, 0.1), color: '#9FA8FF', show: L1 },
     { text: 'ПОМК → γ-МСГ · АКТГ · γ-ЛПГ · β-эндорфин', pos: V3(2.35, 0.05, 0.4), color: '#F2C14E', show: () => L1() && st.sel === 'acth' },
-    { text: 'тиреолиберин', pos: V3(2.65, 2.15, 0.3), color: '#7FD6FF', show: () => L1() && st.sel === 'tsh' },
-    { text: 'дофамин (тормозит)', pos: V3(2.65, 2.1, 0.3), color: '#FF6A5A', show: () => L1() && st.sel === 'prl' },
-    { text: 'вазопрессин', pos: V3(2.65, 2.35, 0.3), color: '#5B8CFF', show: () => L1() && st.sel === 'adh' },
-    { text: 'окситоцин', pos: V3(2.65, 2.35, 0.3), color: '#FF9AE0', show: () => L1() && st.sel === 'oxt' },
+    { text: 'тиреолиберин', pos: V3(2.65, 1.35, 0.3), color: '#7FD6FF', show: () => L1() && st.sel === 'tsh' },
+    { text: 'дофамин (тормозит)', pos: V3(2.65, 1.35, 0.3), color: '#FF6A5A', show: () => L1() && st.sel === 'prl' },
+    { text: 'вазопрессин', pos: V3(2.65, 1.45, 0.3), color: '#5B8CFF', show: () => L1() && st.sel === 'adh' },
+    { text: 'окситоцин', pos: V3(2.65, 1.45, 0.3), color: '#FF9AE0', show: () => L1() && st.sel === 'oxt' },
     { text: 'моча (просвет трубки)', pos: V3(40 - 2.6, AY + 1.25, 0.5), color: '#F2D27A', show: L2 },
     { text: 'кровь', pos: V3(40 - 3.1, BY - 1.5, 0.4), color: '#FF6A5A', show: L2 },
     { text: 'рецептор V2', pos: V3(40 - 3.3, BY - 0.25, 0.8), color: '#FF8A5C', show: L2 },
-    { text: 'G-белок', pos: V3(40 - 3.4, BY + 0.8, 0.8), color: '#7FD6FF', show: L2 },
+    { text: 'G-белок', pos: V3(40 - 3.4, BY + 0.8, 0.8), color: '#8FB8A8', show: L2 },
     { text: 'вазопрессин', pos: V3(40 - 1.6, BY - 1.25, 0.8), color: '#5B8CFF', show: () => L2() && avp.visible },
     { text: 'протеинкиназа A', pos: V3(40 - 0.9, 0.4, 0.6), color: '#C77DFF', show: L2 },
     { text: 'аквапорин-2', pos: V3(40 + 0.4, AY + 0.45, 0.9), color: '#7FD6FF', show: L2 },
@@ -349,9 +354,9 @@ function makePituitary() {
     { text: 'ядро', pos: V3(40 + 2.6, 0.55, 0.2), color: '#9F7BFF', show: L2 },
     { text: 'гипофиз (СТГ)', pos: w3(PIT3.clone().add(V3(0.55, 0.15, 0.1))), color: '#9F7BFF', show: L3 },
     { text: 'печень (ИФР-1)', pos: w3(LIV3.clone().add(V3(-0.75, -0.2, 0.2))), color: '#E07A5A', show: L3 },
-    { text: 'пластинки роста', pos: w3(PLATES[0].clone().add(V3(0.75, 0.1, 0.1))), color: '#7FE0A0', show: L3 },
+    { text: 'пластинки роста', pos: w3(PLATES[0].clone().add(V3(0.75, 0.1, 0.1))), color: '#7FE0A0', show: () => L3() && plateM[0].visible },
     { text: 'аденома', pos: w3(PIT3.clone().add(V3(-0.55, 0.15, 0.1))), color: '#FF5A5A', show: () => L3() && tumor.visible },
-    { text: 'кисти, челюсть', pos: w3(HANDS[0].position.clone().add(V3(0.55, -0.1, 0.1))), color: '#E2B0A0', show: () => L3() && st.gdis === 'acro' },
+    { text: 'кисти, челюсть', pos: w3(HANDS[0].position.clone().add(V3(0.3, -0.5, 0.1))), color: '#E2B0A0', show: () => L3() && st.gdis === 'acro' },
     ...[50, 100, 150, 200].map((v) => ({ text: `${v} см`, pos: V3(80 - 2.1, FOOT + v * CM + 0.12, 0), color: '#8A90A8', show: L3 })),
   ];
   const dyn = labels.filter((l) => typeof l.pos === 'function'); dyn.forEach((l) => { l.fn = l.pos; l.pos = V3(0, 0, 0); });
@@ -368,7 +373,7 @@ function makePituitary() {
     refs.rebuild = () => {
       box.innerHTML = '';
       if (st.mode === 'map') box.append(h('div', { class: 'glabel' }, 'Гормон'), h('div', { class: 'gctl' }, seg(Object.entries(SEL).map(([id, label]) => ({ id, label })), () => st.sel, (v) => { st.sel = v; refs.setInfo(); })));
-      else if (st.mode === 'water') { const tb = toggle(TREAT[st.dis] || 'Лечение', () => st.treat, (v) => { st.treat = v; refs.setInfo(); }); box.append(h('div', { class: 'glabel' }, 'Состояние'), h('div', { class: 'gctl' }, seg(Object.entries(DIS).map(([id, label]) => ({ id, label })), () => st.dis, (v) => { st.dis = v; st.treat = false; refs.rebuild(); refs.setInfo(); }), st.dis !== 'norm' ? tb : null)); }
+      else if (st.mode === 'water') { const tb = toggle(TREAT[st.dis] || 'Лечение', () => st.treat, (v) => { st.treat = v; refs.setInfo(); }); box.append(h('div', { class: 'glabel' }, 'Состояние'), h('div', { class: 'gctl' }, seg(Object.entries(DIS).map(([id, label]) => ({ id, label })), () => st.dis, (v) => { st.dis = v; st.treat = false; st.day = 0; refs.rebuild(); refs.setInfo(); }), st.dis !== 'norm' ? tb : null, button('Сначала', () => { st.tbw = 42; st.adh = 1; st.day = 0; st.hist = []; }))); }
       else { const tb = toggle(GTREAT[st.gdis] || 'Лечение', () => st.gtreat, (v) => { st.gtreat = v; growthCurve(); st.age = 0; st.hold = 0; refs.setInfo(); }); box.append(h('div', { class: 'glabel' }, 'Ребёнок'), h('div', { class: 'gctl' }, seg(Object.entries(GDIS).map(([id, label]) => ({ id, label })), () => st.gdis, (v) => { st.gdis = v; st.gtreat = false; growthCurve(); st.age = 0; st.hold = 0; refs.rebuild(); refs.setInfo(); }), st.gdis !== 'norm' ? tb : null, button('Сначала', () => { st.age = 0; st.hold = 0; }))); }
     };
     refs.rot = toggle('Вращение', () => st.rot, (v) => { st.rot = v; });
@@ -385,9 +390,10 @@ function makePituitary() {
   }
   const f1 = (v) => v.toFixed(1).replace('.', ',');
   function stats() {
-    if (st.mode === 'water') return [['Осмоляльность', Math.round(st.posm), 'мОсм/кг'], ['Na⁺', Math.round(st.posm / 2 - 5.5), 'ммоль/л'], ['Мочи', f1(st.urine), 'л/сут'], ['Моча', Math.round(st.uosm), 'мОсм/кг']];
+    if (st.mode === 'water') return [['Na⁺', Math.round(st.posm / 2 - 5.5), 'ммоль/л'], ['Мочи', f1(st.urine), 'л/сут'], ['Моча', Math.round(st.uosm), 'мОсм/кг'], ['Прошло', Math.floor(st.day), 'сут']];
     if (st.mode === 'growth') return [['Возраст', Math.floor(st.age), 'лет'], ['Рост', Math.round(st.hgt), 'см'], ['ИФР-1', Math.round(st.igf), '% нормы']];
-    return [['Гормонов передней доли', 6, ''], ['Задней доли', 2, '']];
+    const SH = { all: ['Типов клеток', 5, ''], gh: ['Клеток передней доли', '≈ 50', '%'], prl: ['Клеток передней доли', '15–20', '%'], acth: ['Клеток передней доли', '15–20', '%'], tsh: ['Клеток передней доли', '≈ 5', '%'], gn: ['Клеток передней доли', '≈ 10', '%'], adh: ['Где делается', 'гипоталамус', ''], oxt: ['Где делается', 'гипоталамус', ''] };
+    return [SH[st.sel]];
   }
   const upd0 = update;
   const self = {

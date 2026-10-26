@@ -7,8 +7,8 @@
 function makeDiabetes() {
   rnd = mulberry(8601);
   const scene = bioStage({ rim: 0x5b8cff });
-  const VIEW = { beta: [V3(-1.7, -1.9, 0), V3(-1.2, -0.6, 18.5)], day: [V3(39.2, 0.3, 0), V3(39.8, 1.6, 17.5)], glyc: [V3(78.9, -1.9, 0), V3(79.4, -0.8, 17)] };
-  const VIEWM = { beta: [V3(0.3, -1.9, 0), V3(0.8, -0.6, 18.5)], glyc: [V3(80.8, -1.9, 0), V3(81.3, -0.8, 17)] }, mqm = window.matchMedia('(max-width:700px)'), VV = (m) => (mqm.matches && VIEWM[m]) || VIEW[m];
+  const VIEW = { beta: [V3(-1.5, -1.5, 0), V3(-1.0, -0.3, 20)], day: [V3(39.3, 0.6, 0), V3(39.7, 1.4, 10.5)], glyc: [V3(78.9, -1.9, 0), V3(79.4, -0.8, 17)] };
+  const VIEWM = { beta: [V3(0.3, -1.5, 0), V3(0.8, -0.3, 20)], day: [V3(40, 1.0, 0), V3(40.3, 1.6, 8.5)], glyc: [V3(80.6, -0.4, 0), V3(81, 0.4, 14)] }, mqm = window.matchMedia('(max-width:700px)'), VV = (m) => (mqm.matches && VIEWM[m]) || VIEW[m];
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VIEW.beta[1]);
   const controls = makeControls(camera, VIEW.beta[0]); controls.minDistance = 3; controls.maxDistance = 40;
   const fx = new Sparks(2000, 0.07); scene.add(fx.obj);
@@ -31,9 +31,9 @@ function makeDiabetes() {
   const gk = new THREE.Mesh(blobGeo(0.3, 0.25, 0.25, 41, 0.12, 3), protMat(GLU, 0.5, { emissiveIntensity: 0.1 })); gk.position.set(-2.3, -0.35, 0.3); G1.add(gk);
   const MITO = [V3(-1.35, -0.75, 0.2), V3(-0.55, -0.15, 0.4), V3(-1.6, 0.55, 0.1)].map((p, i) => { const m = new THREE.Mesh(new THREE.CapsuleGeometry(0.17, 0.5, 6, 12), organMat('#FF8A5C', 0.55, { emissiveIntensity: 0.1 })); m.position.copy(p); m.rotation.z = 0.7 + i; G1.add(m); return m; });
   // K-АТФ-канал: 4 Kir6.2 (пора) + 4 SUR1
-  const KD = 100, kch = new THREE.Group(); placeOnMem(kch, KD);
+  const KD = 120, kch = new THREE.Group(); placeOnMem(kch, KD);
   const KIR = [0, 1, 2, 3].map((i) => { const a = i * Math.PI / 2 + Math.PI / 4; const m = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.5, 10), protMat('#B090FF', 0.6, { emissiveIntensity: 0.15 })); m.userData.a = a; m.position.set(Math.cos(a) * 0.13, 0, Math.sin(a) * 0.13); kch.add(m); return m; });
-  const SUR = [0, 1, 2, 3].map((i) => { const a = i * Math.PI / 2; const m = new THREE.Mesh(blobGeo(0.13, 0.24, 0.13, 50 + i, 0.1, 3), protMat(INS, 0.5, { emissiveIntensity: 0.08 })); m.position.set(Math.cos(a) * 0.33, -0.02, Math.sin(a) * 0.33); kch.add(m); return m; });
+  const SUR = [0, 1, 2, 3].map((i) => { const a = i * Math.PI / 2; const m = new THREE.Mesh(blobGeo(0.13, 0.24, 0.13, 50 + i, 0.1, 3), protMat('#8A9BFF', 0.5, { emissiveIntensity: 0.08 })); m.position.set(Math.cos(a) * 0.33, -0.02, Math.sin(a) * 0.33); kch.add(m); return m; });
   const sulfo = fit('glibenclamide', 0.5); sulfo.visible = false; G1.add(sulfo);
   // Ca²⁺-канал
   const CD = 18; const cach = placeOnMem(new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.52, 14), protMat('#5BC8FF', 0.55, { emissiveIntensity: 0.1 })), CD);
@@ -44,7 +44,7 @@ function makeDiabetes() {
   const granGeo = new THREE.SphereGeometry(0.13, 16, 12), coreGeo = new THREE.IcosahedronGeometry(0.065, 0);
   for (let i = 0; i < NG; i++) {
     const g = new THREE.Group(); const halo = new THREE.Mesh(granGeo, new THREE.MeshPhysicalMaterial({ color: 0x40506a, emissive: 0x7fd6ff, emissiveIntensity: 0.06, transparent: true, opacity: 0.45, depthWrite: false, roughness: 0.3 }));
-    const core = new THREE.Mesh(coreGeo, new THREE.MeshPhysicalMaterial({ color: 0x806020, emissive: 0xf2c14e, emissiveIntensity: 0.25, roughness: 0.35 })); g.add(halo, core);
+    const core = new THREE.Mesh(coreGeo, new THREE.MeshPhysicalMaterial({ color: 0x806020, emissive: 0x7fd6ff, emissiveIntensity: 0.35, roughness: 0.35 })); g.add(halo, core);
     let p; do { p = V3(rand(0.2, 2.8), rand(-0.6, 1.7), rand(-0.6, 0.7)); } while ((p.x / (RX - 0.45)) ** 2 + (p.y / (RY - 0.45)) ** 2 > 1 || p.distanceTo(nuc1.position) < 0.95);
     g.position.copy(p); G1.add(g);
     const deg = Math.atan2(p.y / RY, p.x / RX) * 180 / Math.PI; GR.push({ g, home: p.clone(), dock: onMem(deg, 0.94), out: onMem(deg, 1.25), k: 0, st: 0 });
@@ -55,12 +55,12 @@ function makeDiabetes() {
   const capC = new THREE.CatmullRomCurve3([V3(4.3, -2.6, -0.2), V3(4.0, 0.0, 0.0), V3(4.25, 2.6, -0.2)]);
   G1.add(new THREE.Mesh(new THREE.TubeGeometry(capC, 40, 0.32, 16, false), organMat('#D84A50', 0.5, { transparent: true, opacity: 0.55, depthWrite: false })));
   const gluM = Array.from({ length: 10 }, () => { const m = fit('glucose', 0.2); m.visible = false; G1.add(m); return { m, on: false, t: 0, path: null }; });
-  const pGlu = [0, 1, 2].map((k) => new THREE.CatmullRomCurve3([V3(-4.7, -0.8 + k * 0.7, 0.3), V3(-3.9, -0.3 + k * 0.2, 0.3), onMem(180), V3(-2.9, -0.2, 0.3), gk.position.clone()]));
+  const pGlu = [0, 1, 2].map((k) => new THREE.CatmullRomCurve3([V3(-4.2, -1.6 + k * 0.5, 0.3), V3(-3.8, -0.6 + k * 0.2, 0.3), onMem(180), V3(-2.9, -0.2, 0.3), gk.position.clone()]));
   const ATP = Array.from({ length: 24 }, () => ({ s: ball(0.05, '#FF9A5C', G1), on: false, t: 0, a: V3(0, 0, 0) }));
   const KI = Array.from({ length: 14 }, () => ({ s: ball(0.05, '#C090FF', G1), on: false, t: 0 }));
-  const CAI = Array.from({ length: 18 }, () => ({ s: ball(0.045, '#5BE0FF', G1), on: false, t: 0, b: V3(0, 0, 0) }));
+  const CAI = Array.from({ length: 18 }, () => ({ s: ball(0.045, '#9CFF8A', G1), on: false, t: 0, b: V3(0, 0, 0) }));
   const INSP = Array.from({ length: 50 }, () => ({ s: ball(0.04, INS, G1), on: false, t: 0, a: V3(0, 0, 0), b: V3(0, 0, 0) }));
-  const CAMP = Array.from({ length: 10 }, () => ({ s: ball(0.045, GLU, G1), on: false, t: 0, b: V3(0, 0, 0) }));
+  const CAMP = Array.from({ length: 10 }, () => ({ s: ball(0.045, '#FF7FD0', G1), on: false, t: 0, b: V3(0, 0, 0) }));
 
   /* ---------- 2. сутки: тело, органы и лекарства ---------- */
   const G2 = new THREE.Group(); G2.position.set(40, 0, 0); scene.add(G2);
@@ -75,16 +75,16 @@ function makeDiabetes() {
   const fat2 = new THREE.Mesh(ell3(0.55, 0.3, 0.12, FAT), organMat('#F2D08A', 0.5, { transparent: true, opacity: 0.45, depthWrite: false })); G2.add(fat2);
   const blad2 = new THREE.Mesh(ell3(0.14, 0.11, 0.11, BLAD), organMat('#E8D070', 0.5, { transparent: true, opacity: 0.6 })); G2.add(blad2);
   const A2 = {
-    meal: flowArrow(G2, GUT.clone().add(V3(-0.1, 0.12, 0.1)), LIV.clone().add(V3(0.1, -0.12, 0.12)), GLU, { bend: -0.4, r: 0.02 }),
-    insL: flowArrow(G2, PAN.clone().add(V3(-0.1, 0.05, 0.1)), LIV.clone().add(V3(0.15, -0.02, 0.12)), INS, { bend: 0.5, r: 0.017 }),
-    insM: flowArrow(G2, PAN.clone().add(V3(0.1, -0.05, 0.1)), MUS[0].clone().add(V3(0, 0.4, 0.15)), INS, { bend: -0.15, r: 0.017 }),
-    insF: flowArrow(G2, PAN.clone().add(V3(0.0, -0.06, 0.1)), FAT.clone().add(V3(0.2, 0.05, 0.05)), INS, { bend: 0.3, r: 0.017 }),
-    egp: flowArrow(G2, LIV.clone().add(V3(-0.1, 0.12, 0.12)), BODY.heart.clone().add(V3(-0.1, 0, 0.1)), '#FF9A5C', { bend: -0.3, r: 0.017 }),
-    uri: flowArrow(G2, KID[1].clone().add(V3(0, -0.15, 0.1)), BLAD.clone().add(V3(-0.05, 0.1, 0.05)), GLU, { bend: 0.2, r: 0.017 }),
-    uri2: flowArrow(G2, KID[0].clone().add(V3(0, -0.15, 0.1)), BLAD.clone().add(V3(0.05, 0.1, 0.05)), GLU, { bend: -0.2, r: 0.017 }),
-    inj: flowArrow(G2, FAT.clone().add(V3(-0.35, 0.0, 0.1)), MUS[1].clone().add(V3(0, 0.35, 0.15)), '#5BE0FF', { bend: 0.2, r: 0.017 }),
+    meal: flowArrow(G2, GUT.clone().add(V3(-0.1, 0.12, 0.1)), LIV.clone().add(V3(0.1, -0.12, 0.12)), GLU, { bend: -0.4, r: 0.035 }),
+    insL: flowArrow(G2, PAN.clone().add(V3(-0.1, 0.05, 0.1)), LIV.clone().add(V3(0.15, -0.02, 0.12)), INS, { bend: 0.5, r: 0.032 }),
+    insM: flowArrow(G2, PAN.clone().add(V3(0.1, -0.05, 0.1)), MUS[0].clone().add(V3(0, 0.4, 0.15)), INS, { bend: -0.15, r: 0.032 }),
+    insF: flowArrow(G2, PAN.clone().add(V3(0.0, -0.06, 0.1)), FAT.clone().add(V3(0.2, 0.05, 0.05)), INS, { bend: 0.3, r: 0.032 }),
+    egp: flowArrow(G2, LIV.clone().add(V3(-0.1, 0.12, 0.12)), BODY.heart.clone().add(V3(-0.1, 0, 0.1)), '#FF9A5C', { bend: -0.3, r: 0.032 }),
+    uri: flowArrow(G2, KID[1].clone().add(V3(0, -0.15, 0.1)), BLAD.clone().add(V3(-0.05, 0.1, 0.05)), GLU, { bend: 0.2, r: 0.032 }),
+    uri2: flowArrow(G2, KID[0].clone().add(V3(0, -0.15, 0.1)), BLAD.clone().add(V3(0.05, 0.1, 0.05)), GLU, { bend: -0.2, r: 0.032 }),
+    inj: flowArrow(G2, FAT.clone().add(V3(-0.35, 0.0, 0.1)), BODY.heart.clone().add(V3(-0.15, -0.1, 0.12)), '#5BE0FF', { bend: 0.3, r: 0.03 }),
   };
-  const DRUG = { met: { p: LIV, col: '#5B8CFF' }, sglt: { p: KID[0].clone().lerp(KID[1], 0.5), col: '#7FE0A0' }, glp: { p: PAN, col: '#C77DFF' }, ins: { p: FAT.clone().add(V3(-0.35, 0, 0.12)), col: '#5BE0FF' } };
+  const DRUG = { met: { p: LIV, col: '#5B8CFF' }, sglt: { p: KID[0].clone(), col: '#7FE0A0' }, glp: { p: PAN, col: '#C77DFF' }, ins: { p: FAT.clone().add(V3(-0.35, 0, 0.12)), col: '#5BE0FF' } };
   Object.values(DRUG).forEach((d) => { d.g = glowNucleus(G2, d.p.clone().add(V3(0, 0, 0.25)), d.col, 0.05, 12); });
   const ketG = glowNucleus(G2, LIV.clone().add(V3(-0.2, 0.15, 0.3)), '#FF5A5A', 0.04, 10);
   const pancG = glowNucleus(G2, PAN.clone().add(V3(0.1, 0, 0.12)), INS, 0.035, 9);
@@ -104,7 +104,7 @@ function makeDiabetes() {
     const mark = new THREE.Mesh(new THREE.SphereGeometry(0.09, 12, 8), new THREE.MeshBasicMaterial({ color: '#FF9A3C', transparent: true, opacity: 0.9 })); mark.position.copy(p); mark.visible = false; hbG.add(mark);
     return { p, dir, m, mark, st: 0, t: 0, nterm: i === 0 };
   });
-  const FREE = Array.from({ length: 12 }, (_, i) => { const m = fit('glucose', 0.3); m.visible = false; G3.add(m); return { m, ph: rand(0, 6.28), r: rand(2.0, 2.6), y: rand(-1.4, 1.6), sp: rand(0.15, 0.3) * (i % 2 ? 1 : -1) }; });
+  const FREE = Array.from({ length: 12 }, (_, i) => { const m = fit('glucose', 0.3); m.visible = false; G3.add(m); return { m, ph: rand(0, 6.28), r: rand(1.5, 1.9), y: rand(-0.6, 1.5), sp: rand(0.15, 0.3) * (i % 2 ? 1 : -1) }; });
   const flyG = { m: fit('glucose', 0.32), on: false, t: 0, site: null, a: V3(0, 0, 0) }; flyG.m.visible = false; G3.add(flyG.m);
   // 100 молекул гемоглобина: доля гликированных = HbA1c
   const dmy0 = new THREE.Object3D();
@@ -132,9 +132,9 @@ function makeDiabetes() {
     st.G += (tgt - st.G) * Math.min(1, dt * 0.8);
     const metab = st.G * st.G / (st.G * st.G + 49); st.metab = metab;
     let kopen = clamp(1.25 - 1.9 * metab, 0.03, 1); if (st.su) kopen *= 0.12; st.kopen += (kopen - st.kopen) * Math.min(1, dt * 2);
-    const vm = -72 + 50 * Math.pow(1 - st.kopen, 1.5); st.vm = vm;
-    st.ca = clamp((vm + 55) / 30, 0, 1);
-    const amp = st.glp ? 1 + 1.5 * smooth(0.3, 0.6, metab) : 1;
+    const vm = -70 + 25 * Math.pow(1 - st.kopen, 1.5); st.vm = vm;
+    st.ca = clamp((vm + 58) / 12, 0, 1);
+    const amp = st.glp ? 1 + 1.5 * smooth(0.3, 0.8, st.ca) : 1;
     st.sec = 0.04 + st.ca * amp;
     // глюкоза входит
     if (rnd() < dt * 3.2 * st.G / 5) { const p = gluM.find((x) => !x.on); if (p) { p.on = true; p.t = 0; p.path = pGlu[(rnd() * 3) | 0]; p.m.visible = true; } }
@@ -149,7 +149,7 @@ function makeDiabetes() {
     KIR.forEach((m) => { const r = 0.08 + 0.07 * st.kopen; m.position.set(Math.cos(m.userData.a) * r, 0, Math.sin(m.userData.a) * r); m.material.emissiveIntensity = 0.1 + 0.25 * st.kopen; });
     if (rnd() < dt * 8 * st.kopen) { const p = KI.find((x) => !x.on); if (p) { p.on = true; p.t = 0; p.s.visible = true; } }
     KI.forEach((p) => { if (!p.on) return; p.t += dt * 0.8; if (p.t >= 1) { p.on = false; p.s.visible = false; return; } p.s.position.copy(kch.position).addScaledVector(nrm(KD), -0.4 + 1.3 * p.t).add(V3(Math.sin(p.t * 9) * 0.05, 0, 0)); });
-    sulfo.visible = st.su; if (st.su) { sulfo.position.copy(kch.position).addScaledVector(nrm(KD), 0.55).add(V3(0.45, 0, 0.2)); sulfo.rotation.y += dt * 0.5; }
+    sulfo.visible = st.su; if (st.su) { sulfo.position.copy(kch.position).addScaledVector(nrm(KD), 0.55).add(V3(-0.45, 0, 0.2)); sulfo.rotation.y += dt * 0.5; }
     SUR.forEach((m) => { m.material.emissiveIntensity = st.su ? 0.25 + 0.1 * Math.sin(t * 5) : 0.08; });
     // Ca²⁺
     cach.material.emissiveIntensity = 0.06 + 0.35 * st.ca;
@@ -169,7 +169,7 @@ function makeDiabetes() {
     INSP.forEach((p) => { if (!p.on) return; p.t += dt * 0.45; if (p.t >= 1) { p.on = false; p.s.visible = false; return; } p.s.position.copy(p.a).lerp(p.b, p.t); });
     cell.material.uniforms.uColor.value.set(st.vm > -55 ? '#FFB0C8' : '#FFC8A8');
     // мембранный потенциал: вспышки (пачки потенциалов действия)
-    st.ph += dt; let v = st.vm; if (st.ca > 0.02) { const burst = (st.ph % 2.2) < 0.6 + 1.2 * st.ca; if (burst) { const fq = 4 + 5 * st.ca, s = (st.ph * fq) % 1; v = st.vm + (s < 0.18 ? 40 * Math.sin(s / 0.18 * Math.PI) : 0); } else v = st.vm - 8; }
+    st.ph += dt; let v = st.vm; if (st.ca > 0.02) { const burst = (st.ph % 2.2) < 0.6 + 1.2 * st.ca; if (burst) { const fq = 4 + 5 * st.ca, s = (st.ph * fq) % 1; v = st.vm + (s < 0.18 ? 35 * Math.sin(s / 0.18 * Math.PI) : 0); } else v = -62; }
     st.vh.push([st.t, v]); while (st.vh.length && st.vh[0][0] < st.t - 4) st.vh.shift();
   }
 
@@ -179,10 +179,10 @@ function makeDiabetes() {
     const D = st.dis, d = st.drugs;
     let beta = 1, sens = 1, egpK = 1, thr = 10, glp = false, basal = 0, bolus = 0;
     if (D === 't1') { beta = 0.03; if (d.ins) { basal = 1.15; bolus = 2.2; } }
-    if (D === 't2') { beta = 0.5; sens = 0.4; egpK = 1.5; if (d.met) { egpK *= 0.7; sens *= 1.2; } if (d.sglt) thr = 5; if (d.glp) glp = true; if (d.ins) basal = 0.8; }
+    if (D === 't2') { beta = 0.5; sens = 0.4; egpK = 1.5; if (d.met) { egpK *= 0.7; sens *= 1.2; } if (d.sglt) thr = 4; if (d.glp) glp = true; if (d.ins) basal = 2.5; }
     const tau = 0.7 * (glp ? 1.5 : 1), amp = glp ? 0.85 : 1;
     let Ra = 0; MEALS.forEach(([tm, M]) => { [0, 24, -24].forEach((dd) => { const x = h - tm + dd; if (x > 0) Ra += amp * M * x / (tau * tau) * Math.exp(-x / tau); }); });
-    const base = 0.6 + 0.35 * Math.max(0, st.Gd - 4) ** 1.3 * (glp ? 1.9 : 1);
+    const base = 0.6 + 0.35 * Math.max(0, st.Gd - 3) ** 1.3 * (glp ? 1.9 : 1);
     const secr = beta > 0.05 ? beta * base : beta;
     let exo = basal; if (bolus) MEALS.forEach(([tm, M]) => { [0, 24, -24].forEach((dd) => { const x = h - tm + dd + 0.25; if (x > 0) exo += bolus * M / 4.5 * x / 0.64 * Math.exp(-x / 0.8); }); });
     st.I += (secr - st.I) * dt / 0.3; st.exo = exo; st.secr = secr;
@@ -198,7 +198,7 @@ function makeDiabetes() {
     const all = st.prev.filter((r) => r[0] > st.hr).concat(st.day); if (all.length > 10) { const m = all.reduce((s, r) => s + r[1], 0) / all.length; st.mean = m; st.tir = Math.round(100 * all.filter((r) => r[1] >= 3.9 && r[1] <= 10).length / all.length); st.a1cD = (m * 18 + 46.7) / 28.7; }
     const lv = (v) => clamp(v, 0.04, 1.3);
     A2.meal.mat.uniforms.uOn.value = lv(st.Ra / 3); A2.egp.mat.uniforms.uOn.value = lv(st.EGP / 2.5);
-    const ins = lv((st.secr || 0) / 2.2); A2.insL.mat.uniforms.uOn.value = ins; A2.insM.mat.uniforms.uOn.value = ins; A2.insF.mat.uniforms.uOn.value = ins;
+    const ins = lv(((st.secr || 0) + (st.exo || 0)) / 2.2); A2.insL.mat.uniforms.uOn.value = ins; A2.insM.mat.uniforms.uOn.value = ins; A2.insF.mat.uniforms.uOn.value = ins;
     A2.uri.mat.uniforms.uOn.value = lv(st.R / 0.6); A2.uri2.mat.uniforms.uOn.value = lv(st.R / 0.6);
     A2.inj.mat.uniforms.uOn.value = st.drugs.ins && st.dis !== 'norm' ? lv((st.exo || 0) / 2) : 0;
     Object.values(A2).forEach((a) => { a.mat.uniforms.uTime.value = t; });
@@ -216,7 +216,7 @@ function makeDiabetes() {
     st.weeks += dt; st.a1c += (tgt - st.a1c) * dt / 6;   // 1 с ≈ 1 неделя; HbA1c отстаёт на 1–3 месяца
     if (!st.gh.length || st.t - st.gh[st.gh.length - 1][0] > 0.2) { st.gh.push([st.t, mg, st.a1c]); while (st.gh.length && st.gh[0][0] < st.t - 26) st.gh.shift(); }
     hbM.rotation.y = 0; hbG.rotation.y = Math.sin(t * 0.15) * 0.4;
-    const nFree = Math.round(mg * 0.9); FREE.forEach((f, i) => { f.m.visible = i < nFree; f.ph += dt * f.sp; f.m.position.set(-0.8 + Math.cos(f.ph) * f.r, f.y + 0.2 * Math.sin(f.ph * 2), Math.sin(f.ph) * f.r * 0.6); f.m.rotation.y += dt * 0.6; });
+    const nFree = Math.round(mg * 0.9); FREE.forEach((f, i) => { f.m.visible = i < nFree; f.ph += dt * f.sp; f.m.position.set(-0.8 + Math.cos(f.ph) * f.r, f.y + 0.2 * Math.sin(f.ph * 2), Math.sin(f.ph) * f.r * 0.4 - 0.3); f.m.rotation.y += dt * 0.6; });
     const nPerm = clamp(Math.round((st.a1c - 4.2) / 0.9), 0, SITES.length);
     SITES.forEach((s, k) => { if (s.st === 2 && k >= nPerm) s.st = 0; });
     // попытка: глюкоза подлетает к сайту
@@ -248,45 +248,48 @@ function makeDiabetes() {
     if (st.mode === 'beta') {
       scopeShow(true); const A = plotAxes(ctx, w, h, { title: 'потенциал мембраны β-клетки, мВ', xl: '4 с' });
       const Y = (v) => A.Y(clamp((v + 80) / 85, 0, 1)), X = (tt) => A.X(clamp((tt - (st.t - 4)) / 4, 0, 1));
-      ctx.strokeStyle = 'rgba(255,255,255,.18)'; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(A.X(0), Y(-50)); ctx.lineTo(A.X(1), Y(-50)); ctx.stroke(); ctx.setLineDash([]);
-      ctx.fillStyle = 'rgba(255,255,255,.5)'; ctx.font = '500 9px JetBrains Mono, monospace'; ctx.fillText('порог', A.X(0) + 3, Y(-50) - 3);
+      ctx.strokeStyle = 'rgba(255,255,255,.18)'; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(A.X(0), Y(-55)); ctx.lineTo(A.X(1), Y(-55)); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = 'rgba(255,255,255,.5)'; ctx.font = '500 9px JetBrains Mono, monospace'; ctx.fillText('порог', A.X(0) + 3, Y(-55) - 3);
       ctx.strokeStyle = '#FF8AB0'; ctx.lineWidth = 1.6; ctx.beginPath(); st.vh.forEach(([tt, v], i) => { i ? ctx.lineTo(X(tt), Y(v)) : ctx.moveTo(X(tt), Y(v)); }); ctx.stroke();
       return;
     }
     if (st.mode === 'day') {
       scopeShow(true); const A = plotAxes(ctx, w, h, { title: 'глюкоза; зелёное — цель 3,9–10', xl: 'сутки, 0–24 ч' });
-      const X = (hh) => A.X(hh / 24), Y = (g) => A.Y(clamp(g / 25, 0, 1));
+      const X = (hh) => A.X(hh / 24), Y = (g) => A.Y(clamp(g / 30, 0, 1));
       ctx.fillStyle = 'rgba(127,224,160,.10)'; ctx.fillRect(A.X(0), Y(10), A.X(1) - A.X(0), Y(3.9) - Y(10));
       ctx.fillStyle = 'rgba(242,193,78,.6)'; MEALS.forEach(([tm]) => { ctx.beginPath(); ctx.arc(X(tm), A.Y(0) - 4, 3, 0, 7); ctx.fill(); });
       const line = (arr, col) => { ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.beginPath(); arr.forEach(([hh, g], i) => { i ? ctx.lineTo(X(hh), Y(g)) : ctx.moveTo(X(hh), Y(g)); }); ctx.stroke(); };
       line(st.prev.filter((r) => r[0] > st.hr + 0.3), 'rgba(242,193,78,.25)'); line(st.day, GLU);
-      ctx.fillStyle = 'rgba(255,255,255,.5)'; ctx.font = '500 9px JetBrains Mono, monospace'; [5, 10, 20].forEach((g) => ctx.fillText(String(g), A.X(0) + 3, Y(g) - 2));
+      ctx.fillStyle = 'rgba(255,255,255,.5)'; ctx.font = '500 9px JetBrains Mono, monospace'; [5, 10, 20, 30].forEach((g) => ctx.fillText(String(g), A.X(0) + 3, Y(g) - 2)); [6, 12, 18].forEach((hh) => ctx.fillText(hh + ' ч', X(hh) - 6, A.Y(0) - 8));
       return;
     }
     scopeShow(true); const A = plotAxes(ctx, w, h, { title: 'ср. глюкоза (жёлтый), HbA1c (оранжевый)', xl: '26 недель' });
     const X = (tt) => A.X(clamp((tt - (st.t - 26)) / 26, 0, 1)), Yg = (g) => A.Y(clamp(g / 14, 0, 1)), Ya = (a) => A.Y(clamp((a - 4) / 7, 0, 1));
     const line = (fy, col) => { ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.beginPath(); st.gh.forEach((r, i) => { i ? ctx.lineTo(X(r[0]), fy(r)) : ctx.moveTo(X(r[0]), fy(r)); }); ctx.stroke(); };
+    ctx.strokeStyle = 'rgba(255,154,60,.35)'; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(A.X(0), Ya(7)); ctx.lineTo(A.X(1), Ya(7)); ctx.stroke(); ctx.setLineDash([]);
+    ctx.font = '500 9px JetBrains Mono, monospace'; ctx.fillStyle = 'rgba(242,193,78,.75)'; [5, 10].forEach((g) => ctx.fillText(g + ' ммоль/л', A.X(0) + 3, Yg(g) - 2)); ctx.fillStyle = 'rgba(255,154,60,.85)'; [5, 7, 9].forEach((a) => ctx.fillText(a + '%', A.X(1) - 22, Ya(a) - 2));
     line((r) => Yg(r[1]), GLU); line((r) => Ya(r[2]), '#FF9A3C');
   }
 
   const GSEL = { fast: 'Натощак: 5 ммоль/л', meal: 'После еды: 10', hypo: 'Мало: 3' };
   const BTXT = {
-    base: '<b>β-клетка</b> островка Лангерганса — датчик сахара. Глюкоза входит через транспортёр <b>GLUT2</b>, <b>глюкокиназа</b> фосфорилирует её (у неё высокая K<sub>m</sub>, поэтому скорость растёт вместе с глюкозой крови), гликолиз и митохондрии дают <b>АТФ</b>. АТФ закрывает <b>K-АТФ-канал</b> (пора из Kir6.2 и регуляторные SUR1): калий перестаёт выходить, мембрана деполяризуется, открываются <b>Ca²⁺-каналы</b>, и кальций запускает слияние гранул с мембраной — инсулин выходит в кровь (вместе с С-пептидом: оба отщепляются от проинсулина в гранулах). Включите разные уровни глюкозы и следите за потенциалом на графике.',
-    fast: 'Натощак (около 5 ммоль/л) АТФ мало, K-АТФ-каналы в основном открыты, мембрана около −60 мВ — клетка молчит, выходит только небольшой базальный инсулин.',
+    base: '<b>β-клетка</b> островка Лангерганса — датчик сахара. Глюкоза входит через транспортёр <b>GLUT2</b> (у человека — в основном GLUT1), <b>глюкокиназа</b> фосфорилирует её (у неё высокая K<sub>m</sub>, поэтому скорость растёт вместе с глюкозой крови), гликолиз и митохондрии дают <b>АТФ</b>. АТФ закрывает <b>K-АТФ-канал</b> (пора из Kir6.2 и регуляторные SUR1): калий перестаёт выходить, мембрана деполяризуется, открываются <b>Ca²⁺-каналы</b> (ионы кальция — зелёные), и кальций запускает слияние гранул с мембраной — инсулин выходит в кровь вместе с С-пептидом, вырезанным из проинсулина (их поровну — поэтому по С-пептиду судят о собственной секреции). Включите разные уровни глюкозы и следите за потенциалом на графике.',
+    fast: 'Натощак (около 5 ммоль/л) АТФ мало, K-АТФ-каналы в основном открыты, мембрана около −65 мВ — клетка молчит, выходит только небольшой базальный инсулин.',
     meal: 'После еды глюкозы 10 ммоль/л: АТФ много, K-АТФ-каналы закрыты, мембрана поднимается выше порога, идут пачки потенциалов действия, кальций входит — гранулы массово выпускают инсулин.',
     hypo: 'Глюкозы 3 ммоль/л — секреция почти выключена, клетка не мешает печени поднимать сахар. Так β-клетка защищает от гипогликемии.',
-    su: '<b>Сульфонилмочевина</b> (глибенкламид, молекула у канала) садится на SUR1 и закрывает K-АТФ-канал <b>независимо от глюкозы</b>. Поэтому она выпускает инсулин даже при низком сахаре — главный риск таких таблеток гипогликемия. Включите «Мало: 3» — секреция продолжается. Эти же каналы мутируют при неонатальном диабете, и таких детей лечат таблетками вместо уколов.',
+    su: '<b>Сульфонилмочевина</b> (глибенкламид, молекула у канала) садится на SUR1 и закрывает K-АТФ-канал <b>независимо от глюкозы</b>. Поэтому она выпускает инсулин даже при низком сахаре — главный риск таких таблеток гипогликемия. Включите «Мало: 3» — секреция продолжается. Эти же каналы мутируют при неонатальном диабете, и таких детей лечат таблетками вместо уколов. С агонистами GLP-1 риск гипогликемии ещё выше: раз канал уже закрыт, усиление через цАМФ срабатывает и при низком сахаре — дозу сульфонилмочевины снижают. Включите оба.',
     glp: '<b>GLP-1</b> — гормон-инкретин из кишечника. Через свой рецептор (фиолетовый) и цАМФ он <b>усиливает</b> выброс инсулина, но только когда глюкоза высокая: при «Мало: 3» эффекта нет, поэтому агонисты GLP-1 (лираглутид, семаглутид) сами по себе почти не вызывают гипогликемию. Ещё они замедляют опорожнение желудка, уменьшают аппетит и выброс глюкагона.',
   };
   const DIS = { norm: 'Здоров', t1: 'Диабет 1 типа', t2: 'Диабет 2 типа' };
   const DRUGS = { t1: [['ins', 'Инсулин (базальный + к еде)']], t2: [['met', 'Метформин'], ['sglt', 'Глифлозин'], ['glp', 'Лираглутид'], ['ins', 'Инсулин']] };
+  const DLAB = { met: 'метформин', sglt: 'глифлозин', glp: 'лираглутид', ins: 'инсулин' };
   const DTXT = {
     norm: '<b>Сутки здорового человека</b> (1 секунда — 1 час, точки внизу графика — еда). После завтрака, обеда и ужина глюкоза из кишечника поднимает сахар до 7–8 ммоль/л, поджелудочная выбрасывает инсулин (голубые потоки), печень, мышцы и жир забирают глюкозу, и за 2 часа сахар возвращается к 4–6. Ночью печень (оранжевый поток) понемногу выдаёт глюкозу из гликогена, а базальный инсулин не даёт ей выдать лишнее.',
-    t1: '<b>Диабет 1 типа</b>: иммунная система разрушила β-клетки, инсулина нет. Глюкоза не может войти в мышцы и жир, печень без тормоза выдаёт всё больше глюкозы — сахар 20 ммоль/л и выше. Выше почечного порога (~10) глюкоза уходит с мочой и тянет за собой воду — жажда и много мочи. Без инсулина жир распадается, печень делает кетоновые тела (красное свечение) — без лечения развивается <b>кетоацидоз</b>, опасный для жизни.',
+    t1: '<b>Диабет 1 типа</b>: иммунная система разрушила β-клетки — <b>С-пептид</b> почти нулевой, инсулина нет. Сахар поднимается до 20–30 ммоль/л (как именно — см. тему «Гликоген и сахар крови»), глюкоза уходит с мочой и тянет воду. Без инсулина жир распадается без тормоза, печень делает кетоновые тела (красное свечение): кетоны выше 3 ммоль/л и pH крови ниже 7,3 — <b>диабетический кетоацидоз</b>: тошнота и рвота, боль в животе, запах ацетона изо рта, глубокое шумное дыхание (Куссмауля), обезвоживание, спутанность. Это неотложное состояние: лечат инсулином в вену, растворами и калием.',
     t1ins: '<b>Инсулинотерапия</b> заменяет поджелудочную: длинный (базальный) инсулин раз в сутки держит печень в узде, короткий — перед каждой едой (уколы в подкожный жир). Сахар в основном в целевом коридоре; дозу считают по углеводам еды и замерам глюкозы (сегодня — часто с датчиком и помпой). Перебор дозы — гипогликемия, поэтому важно знать её признаки.',
     t2: '<b>Диабет 2 типа</b> — 90% всех случаев. Ткани плохо отвечают на инсулин (<b>инсулинорезистентность</b> — особенно при избытке висцерального жира), печень выдаёт лишнюю глюкозу, а β-клетки постепенно истощаются и не справляются с повышенной нагрузкой. Сахар стоит высоко весь день. Основа лечения — питание, движение и снижение веса; дальше — таблетки и уколы. Попробуйте лекарства по одному и вместе.',
     met: '<b>Метформин</b> — первое лекарство при диабете 2 типа. Главное — тормозит выход глюкозы из печени (глюконеогенез; часть эффекта — через фермент AMPK) и немного повышает чувствительность к инсулину. Сам не вызывает гипогликемию и не прибавляет вес.',
-    sglt: '<b>Глифлозины</b> (дапаглифлозин, эмпаглифлозин) блокируют переносчик <b>SGLT2</b> в почечных канальцах — почечный порог глюкозы падает примерно до 5 ммоль/л, и 50–80 г глюкозы в сутки уходит с мочой (жёлтый поток к мочевому пузырю). Сахар снижается независимо от инсулина; доказано защищают сердце и почки.',
+    sglt: '<b>Глифлозины</b> (дапаглифлозин, эмпаглифлозин) блокируют переносчик <b>SGLT2</b> в почечных канальцах — почечный порог глюкозы падает примерно до 5 ммоль/л, и 40–80 г глюкозы в сутки уходит с мочой (жёлтый поток к мочевому пузырю). Сахар снижается независимо от инсулина; доказано защищают сердце и почки.',
     glp: '<b>Лираглутид / семаглутид</b> — агонисты рецептора GLP-1: усиливают выброс инсулина только при высоком сахаре, тормозят глюкагон, замедляют опорожнение желудка (пики после еды ниже) и снижают аппетит — помогают похудеть.',
     ins: '<b>Инсулин</b> при диабете 2 типа добавляют, когда таблеток уже не хватает: чаще начинают с одного укола длинного инсулина в сутки — он снижает сахар натощак.',
   };
@@ -294,7 +297,7 @@ function makeDiabetes() {
   const GTXT = {
     norm: '<b>Гликирование</b> — глюкоза сама, без фермента, присоединяется к свободным аминогруппам белков. Альдегидная группа глюкозы образует с NH₂ <b>основание Шиффа</b> (обратимо — глюкоза может уйти), которое перестраивается в устойчивый <b>продукт Амадори</b>. Так получается <b>HbA1c</b> — гемоглобин с глюкозой на N-концевом валине β-цепи (оранжевые точки — гликированные места; лизины гликируются тоже). Эритроцит живёт около 120 дней, поэтому HbA1c показывает средний сахар за 2–3 месяца: норма — меньше 6%, цель при диабете — обычно меньше 7%. Внизу — 100 молекул гемоглобина, оранжевые — гликированные.',
     ok: 'Средний сахар около 7,5 ммоль/л — HbA1c около 6,3%. Это хорошая компенсация: риск осложнений невысокий. Обратите внимание на график: HbA1c меняется медленно, через недели после изменения сахара.',
-    bad: 'Средний сахар около 12 ммоль/л — HbA1c около 9%. Гликируются белки во всём теле — коллаген, белки хрусталика, стенки сосудов, базальные мембраны почечных клубочков. Со временем из продуктов Амадори образуются необратимые <b>конечные продукты гликирования</b> (AGE): белки сшиваются, ткани теряют эластичность, запускается воспаление. В <b>хрусталике</b> (справа) глюкоза по <b>сорбитоловому пути</b> превращается альдозоредуктазой в сорбит; сорбит плохо выходит из клеток, тянет воду, волокна набухают и мутнеют — диабетическая катаракта. Тот же путь вредит нервам и сетчатке. Поэтому диабет поражает мелкие сосуды (глаза, почки, нервы) и крупные (инфаркт, инсульт).',
+    bad: 'Средний сахар около 12 ммоль/л — HbA1c около 9%. Гликируются белки во всём теле — коллаген, белки хрусталика, стенки сосудов, базальные мембраны почечных клубочков. Со временем из продуктов Амадори образуются необратимые <b>конечные продукты гликирования</b> (AGE): белки сшиваются, ткани теряют эластичность, запускается воспаление. В <b>хрусталике</b> (справа) глюкоза по <b>сорбитоловому пути</b> превращается альдозоредуктазой в сорбит; сорбит плохо выходит из клеток, тянет воду, волокна набухают и мутнеют — диабетическая катаракта. Альдозоредуктаза работает только при высоком сахаре (у неё высокая K<sub>m</sub>) и тратит NADPH — клетке не хватает восстановленного глутатиона, растёт окислительный стресс. Тот же путь вредит нервам и сетчатке. Поэтому диабет поражает мелкие сосуды (глаза, почки, нервы) и крупные (инфаркт, инсульт).',
   };
   const hemeP = (() => { const l = HB.ligm[1]; const i = l.el.indexOf('Fe'); return V3(l.xyz[i * 3], l.xyz[i * 3 + 1], l.xyz[i * 3 + 2]).multiplyScalar(HSC); })();
   const hbL = (ch, out) => { const p = caPoints('hb', HSC, [ch]); const c = p.reduce((v, q) => v.add(q), V3(0, 0, 0)).multiplyScalar(1 / p.length); const d = c.clone().sub(hbCen).normalize(); c.addScaledVector(d, out); return () => hbG.localToWorld(c.clone()); };
@@ -304,29 +307,33 @@ function makeDiabetes() {
     { text: 'глюкокиназа', pos: gk.position.clone().add(V3(-0.3, -0.45, 0.2)), color: GLU, show: L1 },
     { text: 'митохондрии → АТФ', pos: V3(-1.3, -1.25, 0.4), color: '#FF8A5C', show: L1 },
     { text: 'K-АТФ-канал (Kir6.2 + SUR1)', pos: onMem(KD, 1.2).add(V3(-0.1, 0.1, 0.2)), color: '#B090FF', show: L1 },
-    { text: 'глибенкламид', pos: onMem(KD, 1.35).add(V3(0.9, 0.0, 0.2)), color: INS, show: () => L1() && st.su },
+    { text: 'глибенкламид', pos: onMem(KD, 1.35).add(V3(-1.0, 0.0, 0.2)), color: '#E8E8E8', show: () => L1() && st.su },
     { text: 'Ca²⁺-канал', pos: onMem(CD, 1.12).add(V3(0.15, 0.2, 0.2)), color: '#5BC8FF', show: L1 },
     { text: 'рецептор GLP-1', pos: onMem(GD, 1.15).add(V3(-0.5, -0.1, 0.2)), color: '#C77DFF', show: L1 },
-    { text: 'гранулы инсулина', pos: V3(2.0, 1.85, 0.6), color: '#F2C14E', show: L1 },
+    { text: 'гранулы инсулина', pos: V3(2.0, 1.85, 0.6), color: INS, show: L1 },
     { text: 'ядро', pos: nuc1.position.clone().add(V3(0.0, -0.9, 0.3)), color: '#9F7BFF', show: L1 },
-    { text: 'капилляр', pos: V3(4.55, -2.0, 0.3), color: '#D84A50', show: L1 },
-    { text: 'глюкоза', pos: V3(-4.6, 1.2, 0.3), color: GLU, show: L1 },
+    { text: 'капилляр', pos: V3(4.6, 2.3, 0.3), color: '#D84A50', show: L1 },
+    { text: 'глюкоза', pos: V3(-4.3, -1.9, 0.3), color: GLU, show: L1 },
     { text: 'печень', pos: LIV.clone().add(V3(39.4, 0.25, 0.2)), color: '#E07A5A', show: L2 },
     { text: 'поджелудочная', pos: PAN.clone().add(V3(40.45, 0.12, 0.2)), color: '#E8B070', show: L2 },
     { text: 'кишечник', pos: GUT.clone().add(V3(40.5, -0.05, 0.2)), color: '#E0A0A0', show: L2 },
     { text: 'почки', pos: KID[0].clone().add(V3(40.3, 0.15, 0.2)), color: '#E07070', show: L2 },
     { text: 'мышцы', pos: MUS[0].clone().add(V3(40.35, -0.2, 0.2)), color: '#C0504A', show: L2 },
     { text: 'жир', pos: FAT.clone().add(V3(39.25, -0.2, 0.2)), color: '#F2D08A', show: L2 },
+    { text: 'метформин', pos: LIV.clone().add(V3(39.15, -0.15, 0.4)), color: '#5B8CFF', show: () => L2() && st.dis === 't2' && st.drugs.met },
+    { text: 'глифлозин → SGLT2', pos: KID[0].clone().add(V3(40.25, -0.15, 0.4)), color: '#7FE0A0', show: () => L2() && st.dis === 't2' && st.drugs.sglt },
+    { text: 'лираглутид', pos: PAN.clone().add(V3(40.45, -0.2, 0.4)), color: '#C77DFF', show: () => L2() && st.dis === 't2' && st.drugs.glp },
+    { text: 'инсулин (укол)', pos: FAT.clone().add(V3(39.0, -0.3, 0.4)), color: '#5BE0FF', show: () => L2() && st.dis !== 'norm' && st.drugs.ins },
     { text: 'кетоновые тела', pos: LIV.clone().add(V3(39.3, 0.55, 0.3)), color: '#FF5A5A', show: () => L2() && st.ket > 1 },
     { text: 'глюкоза с мочой', pos: BLAD.clone().add(V3(40.25, -0.15, 0.2)), color: GLU, show: () => L2() && (st.R || 0) > 0.05 },
     { text: 'β-цепь', pos: hbL('B', 0.9), color: '#7FD6FF', show: L3 },
     { text: 'α-цепь', pos: hbL('A', 0.9), color: '#FF8AB0', show: L3 },
     { text: 'гем', pos: () => hbG.localToWorld(hemeP.clone()), color: '#FF6A5A', show: L3 },
     { text: 'глюкоза', pos: () => FREE[0].m.getWorldPosition(V3(0, 0, 0)).add(V3(0.25, 0.1, 0)), color: GLU, show: L3 },
-    { text: 'N-конец β-цепи + глюкоза = HbA1c', pos: () => hbG.localToWorld(SITES[0].m.position.clone()).add(V3(0.3, 0.1, 0.2)), color: '#FF9A3C', show: () => L3() && SITES[0].st === 2 },
+    { text: 'N-конец β-цепи + глюкоза = HbA1c', pos: () => hbG.localToWorld(SITES[0].m.position.clone()).add(V3(-1.6, -0.3, 0.2)), color: '#FF9A3C', show: () => L3() && SITES[0].st === 2 },
     { text: '100 молекул Hb · оранжевые — HbA1c', pos: V3(80 - 2.6, -1.25, 0.3), color: '#FF9A3C', show: L3 },
     { text: 'хрусталик', pos: LENS.clone().add(V3(80.3, 1.15, 0.3)), color: '#BFE4FF', show: L3 },
-    { text: 'альдозоредуктаза: глюкоза → сорбит', pos: LENS.clone().add(V3(79.0, 1.55, 0.6)), color: '#7FE0A0', show: L3 },
+    { text: 'альдозоредуктаза', pos: () => lensG.localToWorld(ar.position.clone()).add(V3(-0.2, 0.35, 0)), color: '#7FE0A0', show: L3 },
   ];
   const dyn = labels.filter((l) => typeof l.pos === 'function'); dyn.forEach((l) => { l.fn = l.pos; l.pos = V3(0, 0, 0); });
   const refs = {};
@@ -335,8 +342,8 @@ function makeDiabetes() {
     refs.setInfo = () => {
       let s = st.msg;
       if (!s) {
-        if (st.mode === 'beta') s = st.su ? BTXT.su : st.glp ? BTXT.glp : BTXT.base + ' ' + BTXT[st.gsel];
-        else if (st.mode === 'day') { const on = Object.keys(st.drugs).filter((k) => st.drugs[k]); s = st.dis === 'norm' ? DTXT.norm : st.dis === 't1' ? (st.drugs.ins ? DTXT.t1ins : DTXT.t1) : on.length ? on.map((k) => DTXT[k]).join(' ') : DTXT.t2; }
+        if (st.mode === 'beta') s = st.su && st.glp ? BTXT.su + ' ' + BTXT.glp : st.su ? BTXT.su : st.glp ? BTXT.glp : BTXT.base + ' ' + BTXT[st.gsel];
+        else if (st.mode === 'day') { const on = Object.keys(st.drugs).filter((k) => st.drugs[k]); s = st.dis === 'norm' ? DTXT.norm : st.dis === 't1' ? (st.drugs.ins ? DTXT.t1ins : DTXT.t1) : on.length ? (on.length > 1 ? '<b>Сейчас:</b> ' + on.map((k) => DLAB[k]).join(' + ') + '. ' : '') + DTXT[on.includes(st.lastDrug) ? st.lastDrug : on[on.length - 1]] : DTXT.t2; }
         else s = st.lvl === 'norm' ? GTXT.norm : GTXT[st.lvl];
       }
       ib.info.innerHTML = s;
@@ -347,8 +354,8 @@ function makeDiabetes() {
       box.innerHTML = '';
       if (st.mode === 'beta') box.append(h('div', { class: 'glabel' }, 'Глюкоза крови'), h('div', { class: 'gctl' }, seg(Object.entries(GSEL).map(([id, label]) => ({ id, label })), () => st.gsel, (v) => { st.gsel = v; refs.setInfo(); }), toggle('Глибенкламид', () => st.su, (v) => { st.su = v; refs.setInfo(); }), toggle('Агонист GLP-1', () => st.glp, (v) => { st.glp = v; refs.setInfo(); })));
       else if (st.mode === 'day') {
-        const dr = (DRUGS[st.dis] || []).map(([k, label]) => toggle(label, () => st.drugs[k], (v) => { st.drugs[k] = v; refs.setInfo(); }));
-        box.append(h('div', { class: 'glabel' }, 'Человек'), h('div', { class: 'gctl' }, seg(Object.entries(DIS).map(([id, label]) => ({ id, label })), () => st.dis, (v) => { st.dis = v; Object.keys(st.drugs).forEach((k) => { st.drugs[k] = false; }); refs.rebuild(); refs.setInfo(); }), ...dr));
+        const dr = (DRUGS[st.dis] || []).map(([k, label]) => toggle(label, () => st.drugs[k], (v) => { st.drugs[k] = v; if (v) st.lastDrug = k; refs.setInfo(); }));
+        box.append(h('div', { class: 'glabel' }, 'Человек'), h('div', { class: 'gctl' }, seg(Object.entries(DIS).map(([id, label]) => ({ id, label })), () => st.dis, (v) => { st.dis = v; Object.keys(st.drugs).forEach((k) => { st.drugs[k] = false; }); st.urine = 0; st.urineDay = 0; st.day = st.day.slice(-1); st.prev = []; refs.rebuild(); refs.setInfo(); }), ...dr));
       } else box.append(h('div', { class: 'glabel' }, 'Средний сахар, ммоль/л'), h('div', { class: 'gctl' }, seg(Object.entries(LVL).map(([id, label]) => ({ id, label })), () => st.lvl, (v) => { st.lvl = v; refs.setInfo(); })));
     };
     refs.rot = toggle('Вращение', () => st.rot, (v) => { st.rot = v; });
@@ -365,8 +372,8 @@ function makeDiabetes() {
   }
   const f1 = (v) => v.toFixed(1).replace('.', ',');
   function stats() {
-    if (st.mode === 'beta') return [['Глюкоза', f1(st.G), 'ммоль/л'], ['Потенциал', Math.round(st.vm), 'мВ'], ['Секреция инсулина', Math.round(100 * st.sec / 2.5), '%']];
-    if (st.mode === 'day') return [['Глюкоза', f1(st.Gd), 'ммоль/л'], ['В целевом коридоре', st.tir, '%'], ['HbA1c ≈', f1(st.a1cD), '%'], st.dis === 't1' && !st.drugs.ins ? ['Кетоны', f1(st.ket), 'ммоль/л'] : ['Глюкоза с мочой', Math.round(st.urineDay || st.urine), 'г/сут']];
+    if (st.mode === 'beta') return [['Глюкоза', f1(st.G), 'ммоль/л'], ['Потенциал', Math.round(st.vm), 'мВ'], ['Секреция инсулина', Math.min(100, Math.round(100 * st.sec / 2.6)), '%']];
+    if (st.mode === 'day') { const r = [['Глюкоза', f1(st.Gd), 'ммоль/л'], ['В коридоре', st.day.length + st.prev.length < 100 ? '…' : st.tir, '%'], ['HbA1c, если так 3 мес.', st.day.length + st.prev.length < 100 ? '…' : st.a1cD > 14 ? '> 14' : f1(st.a1cD), '%'], ['Глюкоза с мочой', Math.round(st.urineDay || st.urine), 'г/сут']]; if (st.dis === 't1' && !st.drugs.ins) r.push(['Кетоны', f1(st.ket), 'ммоль/л']); return r; }
     return [['HbA1c', f1(st.a1c), '%'], ['Средний сахар', f1(A1C[st.lvl]), 'ммоль/л'], ['Сорбит в хрусталике', Math.round(st.sorb * 100), '%']];
   }
   const self = {
@@ -379,7 +386,7 @@ function makeDiabetes() {
         <h3>Секреция</h3><ul><li>Глюкоза → GLUT2 (у человека в основном GLUT1) → глюкокиназа (датчик) → АТФ/АДФ ↑ → закрытие K-АТФ-каналов → деполяризация → потенциал-зависимые Ca²⁺-каналы → экзоцитоз.</li><li>Усиливают: инкретины GLP-1 и ГИП (цАМФ), аминокислоты, парасимпатические нервы; тормозят: адреналин (α₂), соматостатин.</li><li>Две фазы: быстрая (готовые гранулы у мембраны) и медленная.</li></ul>
         <h3>Действие</h3><p>Рецептор-тирозинкиназа → IRS → PI3K → Akt: GLUT4 в мембрану мышц и жира, синтез гликогена, жиров и белка; торможение глюконеогенеза, гликогенолиза, липолиза и кетогенеза. Глюкагон, адреналин, кортизол и СТГ — контринсулярные гормоны.</p>
         <h3>Диабет</h3><ul><li><b>1 тип</b> — аутоиммунное разрушение β-клеток, абсолютный дефицит инсулина; риск кетоацидоза.</li><li><b>2 тип</b> — инсулинорезистентность + прогрессирующая недостаточность β-клеток; гиперосмолярное состояние у пожилых.</li><li>Гестационный, MODY (моногенный, например мутации глюкокиназы), вторичный.</li><li>Диагноз: глюкоза натощак ≥ 7,0 ммоль/л, через 2 часа после нагрузки ≥ 11,1, HbA1c ≥ 6,5%.</li><li>Осложнения: микроангиопатии (ретинопатия, нефропатия, нейропатия), макроангиопатии, диабетическая стопа.</li></ul></div>
-      <div><h2>Условности</h2><ul><li>Клетка, гранулы и каналы — схемы, не в масштабе; молекулы глюкозы, глибенкламида и сорбита — по химическим формулам; гемоглобин — настоящая структура (PDB 2HHB).</li><li>Модель суток — упрощённая, дозы и ответы на лекарства примерные; 1 секунда = 1 час. Пересчёт среднего сахара в HbA1c — по формуле исследования ADAG.</li><li>Число гликированных мест на молекуле показано условно — оно отражает уровень HbA1c, а не реальную долю.</li></ul></div>
+      <div><h2>Условности</h2><ul><li>Клетка, гранулы и каналы — схемы, не в масштабе; молекулы глюкозы, глибенкламида и сорбита — по химическим формулам; гемоглобин — настоящая структура (PDB 4HHB).</li><li>Модель суток — упрощённая, дозы и ответы на лекарства примерные; 1 секунда = 1 час. Пересчёт среднего сахара в HbA1c — по формуле исследования ADAG.</li><li>Число гликированных мест на молекуле показано условно — оно отражает уровень HbA1c, а не реальную долю.</li></ul></div>
       <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>3</code> режим</li><li><code>R</code> · <code>N</code></li></ul></div>`,
   };
   setMode('beta'); camera.position.copy(st.fly.pos); controls.target.copy(st.fly.target); controls.update(); st.fly = null;
