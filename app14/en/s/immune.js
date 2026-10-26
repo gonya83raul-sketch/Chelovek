@@ -10,6 +10,7 @@ const IM_PARTS = [
   { id: 'spl', name: 'Spleen', color: '#B0506A', text: '<b>The spleen</b> (about 150 g) filters blood, not lymph: it removes old red blood cells, stores a reserve of platelets and monocytes, and in its white pulp lymphocytes meet antigens from the blood.' },
   { id: 'thym', name: 'Thymus', color: '#7FD6C8', text: '<b>The thymus</b> is a central organ of immunity: this is where T lymphocytes are “trained”. Only those that recognize foreign antigens and do not attack the body’s own survive — up to 95% die during selection.' },
   { id: 'bm', name: 'Bone marrow', color: '#E06A6A', text: '<b>Red bone marrow</b> (in flat bones, vertebrae and the ends of long bones) is the factory of all blood cells: red blood cells, platelets and white blood cells. B lymphocytes mature here.' },
+  { id: 'galt', name: 'Gut lymphoid tissue', color: '#E8C070', text: '<b>Gut lymphoid tissue</b> is the largest part of the immune system: the intestinal wall holds more lymphocytes than all lymph nodes together. Clusters of follicles in the ileum are called <b>Peyer\'s patches</b>: special M cells above them let samples of gut contents in, and the immune system learns to tell food and friendly bacteria from pathogens. Plasma cells that secrete IgA antibodies into the gut lumen also come from here.' },
   { id: 'ton', name: 'Tonsils', color: '#F2A0B0', text: '<b>The tonsils</b> form a ring around the entrance to the pharynx and meet microbes arriving with air and food.' },
 ];
 function makeImmune() {
@@ -20,7 +21,14 @@ function makeImmune() {
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(VIEW.sys.pos);
   const controls = makeControls(camera, VIEW.sys.target); controls.minDistance = 1.5; controls.maxDistance = 22;
   const body = new THREE.Group(); scene.add(body);
-  bodyShell(body, { rim: 0.2 });
+  const shell = bodyShell(body, { rim: 0.2 });
+  // зоны оттока: правый лимфатический проток (правая половина головы, шеи, груди и правая рука) и грудной проток (всё остальное)
+  const zoneM = new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.13, depthWrite: false });
+  const zones = new THREE.Group(); zones.visible = false; body.add(zones);
+  const Z_R = new THREE.Color(0x4ab8ff), Z_T = new THREE.Color(0xffb040);
+  shell.meshes.filter((m, i) => i % 2 === 0).forEach((m) => { const g = m.geometry.clone(), P = g.attributes.position, col = new Float32Array(P.count * 3);
+    for (let i = 0; i < P.count; i++) { const x = P.getX(i), y = P.getY(i), c = x < 0 && (y > 1.5 || (x < -0.95 && y > 0.9)) ? Z_R : Z_T; col[i * 3] = c.r; col[i * 3 + 1] = c.g; col[i * 3 + 2] = c.b; }
+    g.setAttribute('color', new THREE.BufferAttribute(col, 3)); zones.add(new THREE.Mesh(g, zoneM)); });
   const PART = Object.fromEntries(IM_PARTS.map((p) => [p.id, { ...p, mats: [] }])), pick = [];
   const add = (id, g, o = {}, parent = body) => { const m = organMat(PART[id].color, o.k ?? 0.45, { emissiveIntensity: 0.1, ...(o.mat || {}) }); PART[id].mats.push(m); const me = new THREE.Mesh(g, m); me.userData.pick = id; pick.push(me); parent.add(me); return me; };
   /* ---------- лимфатическая сеть ---------- */
@@ -36,16 +44,28 @@ function makeImmune() {
   branch([V3(0.0, 0.75, 0.2), V3(0.0, 0.8, 0.0), V3(0.05, 0.9, -0.28)]);
   const lvG = []; LYM.forEach((c, i) => { lvG.push(taperTube(c, () => (i === 0 ? 0.03 : 0.018), 80, 6)); for (let k = 0; k < 6; k++) { const arr = []; branchTree(arr, c.getPointAt(0.1 + k * 0.14), randUnit(), 0.22, 0.008, 1, { segs: 6, rad: 4 }); lvG.push(...arr); } });
   add('lv', mergeGeometries(lvG), { k: 0.4, mat: { transparent: true, opacity: 0.75 } });
+  add('lv', ell3(0.055, 0.13, 0.05, V3(0.05, 0.98, -0.28)), { k: 0.5 });   // цистерна грудного протока (L1–L2)
+  // венозные углы: внутренняя яремная + подключичная → плечеголовная → верхняя полая вена
+  const VEN_ANG = (() => { const g = []; [1, -1].forEach((s) => { const ang = V3(0.33 * s, 2.86, 0.06);
+    g.push(tube([V3(0.24 * s, 3.5, 0.1), V3(0.27 * s, 3.15, 0.1), ang], 0.04, 16, 8), tube([V3(0.95 * s, 2.82, 0.0), V3(0.62 * s, 2.9, 0.04), ang], 0.035, 16, 8),
+      tube([ang, V3(0.12 * s - 0.02, 2.74, 0.12), V3(-0.1, 2.62, 0.14)], 0.045, 16, 8)); });
+    g.push(tube([V3(-0.1, 2.62, 0.14), V3(-0.1, 2.38, 0.14), V3(-0.08, 2.15, 0.1)], 0.055, 12, 8)); return mergeGeometries(g); })();
+  body.add(new THREE.Mesh(VEN_ANG, organMat('#5C7CE8', 0.5, { transparent: true, opacity: 0.8 })));
   const NODES = [];
   const cluster = (c, n, r) => { for (let i = 0; i < n; i++) { const p = c.clone().add(randUnit().multiplyScalar(r * rnd())); const g = ell3(0.035 + rnd() * 0.02, 0.025 + rnd() * 0.015, 0.03, p, 14); add('ln', g, { k: 0.5 }); NODES.push(p); } };
   [1, -1].forEach((s) => { cluster(V3(0.2 * s, 3.4, 0.08), 6, 0.12); cluster(V3(0.85 * s, 2.6, 0.0), 6, 0.12); cluster(V3(0.34 * s, -0.12, 0.2), 6, 0.1); });
   cluster(V3(0.0, 0.8, 0.1), 9, 0.18); cluster(V3(0.0, 2.35, -0.05), 5, 0.12);
+  [1, -1].forEach((s) => { cluster(V3(0.13 * s, 0.6, -0.2), 5, 0.1); cluster(V3(0.25 * s, 0.2, 0.0), 4, 0.08); });   // поясничные и подвздошные
+  // конец подвздошной кишки (призрак) с пейеровыми бляшками
+  const ILE = new THREE.CatmullRomCurve3([V3(0.15, 0.55, 0.32), V3(-0.05, 0.45, 0.36), V3(-0.2, 0.32, 0.34), V3(-0.33, 0.3, 0.3), V3(-0.42, 0.4, 0.26)]);
+  body.add(new THREE.Mesh(taperTube(ILE, () => 0.06, 40, 12), new THREE.MeshPhysicalMaterial({ color: 0xe8b0a0, roughness: 0.5, transparent: true, opacity: 0.16, depthWrite: false })));
+  for (let i = 0; i < 5; i++) { const u = 0.1 + i * 0.19, p = ILE.getPointAt(u), tg = ILE.getTangentAt(u), q = new THREE.Quaternion().setFromUnitVectors(V3(1, 0, 0), tg); const g = ell3(0.05, 0.03, 0.014); g.applyQuaternion(q); g.translate(p.x, p.y, p.z + 0.055); add('galt', g, { k: 0.5 }); }
   const splG = displaceGeo(new THREE.SphereGeometry(1, 32, 24), (v) => { v.set(v.x * 0.1, v.y * 0.18, v.z * 0.07); if (v.x < 0) v.x *= 0.5; }); splG.rotateZ(-0.4); splG.translate(0.68, 1.38, -0.18); add('spl', splG, { k: 0.45 });
   [1, -1].forEach((s) => add('thym', ell3(0.08, 0.16, 0.05, V3(0.06 * s, 2.72, 0.3))));
   [1, -1].forEach((s) => add('ton', ell3(0.03, 0.05, 0.025, V3(0.07 * s, 3.78, 0.1))));
   // красный костный мозг взрослого: плоские кости (таз, грудина, позвонки) и верхние концы бёдер
   [1, -1].forEach((s) => { add('bm', tube([V3(0.48 * s, -0.25, 0.0), V3(0.49 * s, -0.55, 0.01), V3(0.5 * s, -0.8, 0.02)], (u) => 0.055 * (1 - 0.5 * u), 12, 10), { k: 0.35, mat: { transparent: true, opacity: 0.5 } }); add('bm', ell3(0.08, 0.1, 0.08, V3(0.48 * s, -0.3, 0.0)), { k: 0.5 });
-    const wing = ell3(0.3, 0.22, 0.06); wing.rotateZ(0.3 * s); wing.translate(0.42 * s, 0.3, -0.12); add('bm', wing, { k: 0.35, mat: { transparent: true, opacity: 0.5 } }); });   // крылья подвздошных костей
+    const wing = ell3(0.28, 0.2, 0.025); wing.rotateZ(0.3 * s); wing.rotateY(-0.75 * s); wing.translate(0.42 * s, 0.3, -0.08); add('bm', wing, { k: 0.35, mat: { transparent: true, opacity: 0.22 } }); });   // крылья подвздошных костей
   const BMP = [V3(0.48, -0.4, 0), V3(-0.48, -0.4, 0), V3(0.42, 0.3, -0.12), V3(-0.42, 0.3, -0.12), V3(0, 2.5, 0.5), V3(0, 1.2, -0.48), V3(0, 2.2, -0.48)];   // где рождаются клетки крови
   add('bm', tube([V3(0, 2.85, 0.5), V3(0, 2.2, 0.52)], 0.04, 10, 8), { k: 0.35, mat: { transparent: true, opacity: 0.5 } });   // грудина
   add('bm', mergeGeometries(Array.from({ length: 14 }, (_, i) => { const g = new THREE.CylinderGeometry(0.05, 0.05, 0.12, 10); g.translate(0, 0.45 + i * 0.18, -0.48); return g; })), { k: 0.35, mat: { transparent: true, opacity: 0.45 } });   // тела позвонков
@@ -76,7 +96,7 @@ function makeImmune() {
   const fx = new Sparks(2400, 0.06); scene.add(fx.obj);
   /* ---------- состояние ---------- */
   const st = { t: 0, mode: 'sys', sel: null, labels: true, rot: false, fly: null, msg: null, infT: -99, mem: false, second: false, titre: [], days: 0, phase: '' };
-  function select(id) { st.sel = id === 'all' ? null : id; refs.seg && refs.seg.sync(); dimOthers(IM_PARTS.map((p) => PART[p.id]), st.sel); st.msg = null; refs.setInfo && refs.setInfo(); }
+  function select(id) { const was = st.sel; st.sel = id === 'all' ? null : id; refs.seg && refs.seg.sync(); dimOthers(IM_PARTS.map((p) => PART[p.id]), st.sel); st.msg = null; if (st.sel === 'galt') st.fly = flyTarget(V3(-0.2, 0.15, 0.35), V3(-0.75, 0.75, 3.6)); else if (was === 'galt') st.fly = VIEW.sys; refs.setInfo && refs.setInfo(); }
   function setMode(m) { st.mode = m; refs.modeSeg && refs.modeSeg.sync(); st.msg = null; body.visible = m === 'sys'; node.visible = m !== 'sys'; st.fly = VIEW[m]; refs.setInfo && refs.setInfo(); }
   function infect() { if (st.mode !== 'resp') setMode('resp'); st.second = st.mem; st.infT = st.t; st.titre = []; BAC.length = 0; AB.length = 0; for (let i = 0; i < 60; i++) BAC.push({ c: AFF[i % 4], u: -rnd() * 1.5, alive: 1, p: V3(0, 0, 0), q: new THREE.Quaternion().setFromAxisAngle(randUnit(), rnd() * 6) }); st.msg = st.second ? TXT.second : TXT.first; refs.setInfo(); }
   pickOn(() => self, camera, pick, (id) => { if (st.mode === 'sys') select(id); });
@@ -127,6 +147,7 @@ function makeImmune() {
     first: '<b>First encounter.</b> Bacteria (green rods) are carried in with the lymph. Nonspecific defense — macrophages — is already at work, but there are many microbes.',
     present: '<b>Antigen presentation.</b> A dendritic cell (orange star) has captured bits of bacteria and brought them to the T zone. Helper T cells that recognize the antigen activate matching B lymphocytes — germinal centers light up in the follicles.',
     ab: '<b>Antibodies.</b> B lymphocytes multiply and turn into plasma cells that release thousands of antibodies per second (yellow Ys). Antibodies clump bacteria together and tag them for macrophages. On first encounter this takes 1–2 weeks — that is why we get sick. Some cells remain as memory cells.',
+    zones: '<b>Where lymph drains.</b> <span style="color:#4ab8ff">The right lymphatic duct</span> drains the right half of the head, neck and chest and the right arm. <span style="color:#ffb040">The thoracic duct</span> drains about ¾ of the body: it starts as the cisterna chyli at L1–L2 and empties into the left venous angle, where the jugular and subclavian veins join.',
     second: '<b>Second encounter (or after vaccination).</b> Memory cells recognize the same antigen immediately.',
     ab2: '<b>The secondary response</b> is faster (2–4 days) and many times stronger, and the antibodies are more precise (IgG). The microbe is destroyed before it can cause disease. Vaccination is based on this: a vaccine introduces the immune system to a harmless part of the pathogen.',
   };
@@ -140,6 +161,13 @@ function makeImmune() {
     { text: 'thymus', pos: V3(0.2, 2.75, 0.35), color: '#7FD6C8', show: () => st.labels && st.mode === 'sys' },
     { text: 'tonsils', pos: V3(0.15, 3.82, 0.12), color: '#F2A0B0', show: () => st.labels && st.mode === 'sys' },
     { text: 'bone marrow', pos: V3(0.62, -0.6, 0.05), color: '#E06A6A', show: () => st.labels && st.mode === 'sys' },
+    { text: 'mediastinal', pos: V3(0.2, 2.4, -0.05), color: '#7FD6FF', show: () => st.labels && st.mode === 'sys' },
+    { text: 'lumbar', pos: V3(-0.3, 0.62, -0.2), color: '#7FD6FF', show: () => st.labels && st.mode === 'sys' },
+    { text: 'iliac', pos: V3(-0.42, 0.18, 0.0), color: '#7FD6FF', show: () => st.labels && st.mode === 'sys' },
+    { text: 'cisterna chyli', pos: V3(0.16, 0.98, -0.3), color: '#9FE8C0', show: () => st.labels && st.mode === 'sys' },
+    { text: 'left venous angle', pos: V3(0.42, 2.92, 0.08), color: '#8AA6FF', show: () => st.labels && st.mode === 'sys' },
+    { text: 'right lymphatic duct', pos: V3(-0.55, 3.1, 0.1), color: '#9FE8C0', show: () => st.labels && st.mode === 'sys' && (!st.sel || st.sel === 'lv') },
+    { text: 'Peyer\'s patches', pos: V3(-0.25, 0.3, 0.42), color: '#E8C070', show: () => st.labels && st.mode === 'sys' && st.sel === 'galt' },
     { text: 'follicle (B cells)', pos: V3(31.0, 0.8, 0.3), color: '#8FB8FF', show: () => st.labels && st.mode !== 'sys' },
     { text: 'T zone', pos: V3(30.4, -0.1, 0.5), color: '#7FE0A0', show: () => st.labels && st.mode !== 'sys' },
     { text: 'afferent vessels', pos: AFF[0].getPointAt(0.4).add(V3(30.1, 0.1, 0)), color: '#9FE8C0', show: () => st.labels && st.mode !== 'sys' },
@@ -155,15 +183,18 @@ function makeImmune() {
     refs.seg = seg([{ id: 'all', label: 'All' }, ...IM_PARTS.map((p) => ({ id: p.id, label: p.name, color: p.color }))], () => st.sel || 'all', (v) => { if (st.mode !== 'sys') setMode('sys'); select(v); });
     refs.rot = toggle('Rotate', () => st.rot, (v) => { st.rot = v; });
     const lab = toggle('Labels', () => st.labels, (v) => { st.labels = v; });
-    Object.assign(refs, { lab });
+    const zt = toggle('Drainage zones', () => zones.visible, (v) => { zones.visible = v; if (v && st.mode !== 'sys') setMode('sys'); st.msg = v ? TXT.zones : null; refs.setInfo(); });
+    Object.assign(refs, { lab, zt });
     el.append(group('Mode', '1–3', refs.modeSeg), h('div', { class: 'grp', style: 'flex:1 1 480px' }, h('div', { class: 'glabel' }, 'Organs', h('kbd', {}, 'click')), h('div', { class: 'gctl' }, refs.seg)),
-      group('Experiment', 'I · M', button('Infection', infect, true), button('Reset memory', () => { st.mem = false; st.msg = '<b>Memory reset:</b> the next infection will trigger a primary response again.'; refs.setInfo(); })), group('View', 'R · N', refs.rot, lab), ib.el);
+      group('Experiment', 'I · M', button('Infection', infect, true), button('Reset memory', () => { st.mem = false; st.msg = '<b>Memory reset:</b> the next infection will trigger a primary response again.'; refs.setInfo(); })), group('View', 'Z · R · N', zt, refs.rot, lab), ib.el);
     refs.setInfo();
   }
   function onKey(e) {
     const k = e.key.toLowerCase(), n = parseInt(e.key, 10);
     if (n >= 1 && n <= 3) { setMode(['sys', 'node', 'resp'][n - 1]); return true; }
     if (k === 'i' || k === 'ш') { infect(); return true; }
+    if (k === 'z' || k === 'я') { refs.zt.click(); return true; }
+    if (k === 'm' || k === 'ь') { st.mem = false; st.msg = '<b>Memory reset:</b> the next infection will trigger a primary response again.'; refs.setInfo(); return true; }
     if (k === 'r' || k === 'к') { refs.rot.click(); return true; } if (k === 'n' || k === 'т') { refs.lab.click(); return true; }
     if (e.key === 'Escape') { select('all'); return true; }
     return false;
@@ -178,7 +209,7 @@ function makeImmune() {
         <p><b>Innate immunity</b> works immediately and in the same way against everything: skin and mucous membranes, phagocytes (neutrophils, macrophages), inflammation, interferons. <b>Adaptive immunity</b> is specific and has memory: B lymphocytes release antibodies, killer T cells destroy infected cells, helper T cells coordinate the response.</p>
         <h3>Vaccination</h3><p>A vaccine creates memory cells without the disease. The first vaccine (against smallpox) was introduced by Edward Jenner in 1796; the theory of phagocytosis was proposed by Ilya Mechnikov (Nobel Prize, 1908).</p></div>
       <div><h2>Simplifications</h2><ul><li>The node is magnified about 500 times, and the bacteria and antibodies even more.</li><li>Days are compressed into fractions of a second; the antibody curve is schematic.</li></ul></div>
-      <div class="keys"><h2>Keys</h2><ul><li><code>1</code>–<code>3</code> mode</li><li>click: organ</li><li><code>I</code> infection</li><li><code>R</code> · <code>N</code></li></ul></div>`,
+      <div class="keys"><h2>Keys</h2><ul><li><code>1</code>–<code>3</code> mode</li><li>click: organ</li><li><code>I</code> infection · <code>M</code> reset memory</li><li><code>Z</code> drainage zones</li><li><code>R</code> rotate · <code>N</code> labels</li></ul></div>`,
   };
   return self;
 }

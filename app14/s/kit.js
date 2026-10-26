@@ -1,4 +1,4 @@
-import { THREE, V3, __set_rnd, displaceGeo, envTex, fetchModel, flowTubeMat, labLights, mergeVertices, mulberry, noise3, organMat, rand, rnd, smooth } from '../core.js';
+import { SKEL_META, THREE, V3, __set_rnd, displaceGeo, envTex, fetchModel, flowTubeMat, labLights, mergeVertices, mulberry, noise3, organMat, rand, rnd, smooth, taperTube } from '../core.js';
 
 
 /* малые молекулы: координаты построены по формулам (SMILES) */
@@ -271,4 +271,22 @@ function loadSkeletonStatic(group, mat, onDone) {
     onDone && onDone(out); return out;
   });
 }
-export { BASECOL, BIO_MOL, BIO_PDB, CPK, CYL, MOL, PDB, RVDW, SPH, SPH_LO, atomMat, bin64, bioStage, blobGeo, caPoints, cartoon, dI16, flowArrow, lipidMol, loadSkeletonStatic, molFade, molFit, molGlow, molMesh, nucTrace, pcaAxis, plotAxes, plotLine, protMat, proteinMesh, schemBilayer, smoothIco, surfaceMesh };
+/* стеклянный силуэт тела, подогнанный под скелет (координаты SKEL_META) */
+function skelShell(parent, mat) {
+  const J = Object.fromEntries(Object.entries(SKEL_META.joints).map(([k, v]) => [k, V3(...v)]));
+  const prof = [[0.0, 8.55], [0.75, 8.62], [1.18, 9.05], [1.22, 9.55], [1.08, 10.4], [1.02, 11.0], [1.12, 11.8], [1.26, 12.6], [1.38, 13.4], [1.5, 13.95], [1.32, 14.35], [0.8, 14.6], [0.42, 14.8], [0.38, 14.95], [0.0, 15.0]].map(([r, y]) => new THREE.Vector2(r, y));
+  const torso = new THREE.LatheGeometry(prof, 64); torso.scale(1, 1, 0.62); torso.translate(0.05, 0, 0.18);
+  const geos = [torso];
+  const head = new THREE.SphereGeometry(1, 40, 30); head.scale(0.78, 1.12, 0.98); head.translate(0.08, 16.1, 0.15); geos.push(head);
+  const neck = new THREE.CylinderGeometry(0.4, 0.45, 1.2, 24); neck.translate(0.04, 14.85, 0.0); geos.push(neck);
+  [['R', -1], ['L', 1]].forEach(([k, s]) => {
+    const sh = J['sh' + k].clone().add(V3(-s * 0.05, 0.1, -0.15)), el = J['el' + k], wr = J['wr' + k], hd = J['hd' + k];
+    geos.push(taperTube(new THREE.CatmullRomCurve3([sh, sh.clone().lerp(el, 0.5).add(V3(s * 0.05, 0, 0)), el, wr, hd]), (u) => 0.42 - 0.2 * u, 50, 18));
+    const hand = new THREE.SphereGeometry(1, 20, 14); hand.scale(0.2, 0.45, 0.11); hand.translate(hd.x, hd.y - 0.35, hd.z); geos.push(hand);
+    const hp = J['hp' + k].clone().add(V3(s * 0.08, 0.2, 0)), kn = J['kn' + k], an = J['an' + k];
+    geos.push(taperTube(new THREE.CatmullRomCurve3([hp, hp.clone().lerp(kn, 0.5), kn, kn.clone().lerp(an, 0.5).add(V3(0, 0, -0.05)), an]), (u) => 0.72 - 0.42 * u, 60, 20));
+    const foot = new THREE.SphereGeometry(1, 20, 14); foot.scale(0.3, 0.2, 0.75); foot.translate(an.x, an.y - 0.6, an.z + 0.45); geos.push(foot);
+  });
+  return geos.map((g) => { const m = new THREE.Mesh(g, mat); parent.add(m); return m; });
+}
+export { BASECOL, BIO_MOL, BIO_PDB, CPK, CYL, MOL, PDB, RVDW, SPH, SPH_LO, atomMat, bin64, bioStage, blobGeo, caPoints, cartoon, dI16, flowArrow, lipidMol, loadSkeletonStatic, molFade, molFit, molGlow, molMesh, nucTrace, pcaAxis, plotAxes, plotLine, protMat, proteinMesh, schemBilayer, skelShell, smoothIco, surfaceMesh };

@@ -1,4 +1,4 @@
-import { Sparks, THREE, V3, __set_rnd, button, displaceGeo, envTex, flyStep, flyTarget, glassMat, group, infoBox, labLights, makeControls, mergeGeometries, mulberry, noise3, organMat, pickOn, rand, randUnit, rnd, seg, smooth, toggle } from '../core.js';
+import { Sparks, THREE, V3, __set_rnd, button, displaceGeo, ell3, envTex, flyStep, flyTarget, glassMat, group, infoBox, labLights, lerp, makeControls, mergeGeometries, mulberry, noise3, organMat, pickOn, rand, randUnit, rnd, scopeShow, seg, smooth, toggle, tube } from '../core.js';
 
 
 /* =========================================================
@@ -6,16 +6,16 @@ import { Sparks, THREE, V3, __set_rnd, button, displaceGeo, envTex, flyStep, fly
    ========================================================= */
 const BL_CELLS = [
   { id: 'rbc', name: 'Red blood cells', color: '#E0505A', text: '<b>Red blood cells</b> (erythrocytes) are biconcave discs 7–8 µm across, without a nucleus and packed with hemoglobin. They carry oxygen from the lungs to the tissues and some of the CO₂ back. There are 4–5 million in 1 µL of blood; they live ~120 days and are destroyed in the spleen and liver; every second the bone marrow releases ~2 million new ones. Their flexible shape lets them squeeze through capillaries narrower than themselves.' },
-  { id: 'wbc', name: 'White blood cells', color: '#E8E8F8', text: '<b>White blood cells</b> (leukocytes) are nucleated cells, 4–9 thousand per 1 µL. <b>Neutrophils</b> (up to 70%, segmented nucleus) are the first to arrive at an infection and eat bacteria. <b>Lymphocytes</b> (large round nucleus) are the B and T cells of immune memory. <b>Monocytes</b> (bean-shaped nucleus) move into the tissues and become macrophages. <b>Eosinophils</b> fight parasites and take part in allergy; <b>basophils</b> release histamine. White blood cells can leave a vessel through its wall.' },
+  { id: 'wbc', name: 'White blood cells', color: '#E8E8F8', text: '<b>White blood cells</b> are nucleated cells, 4–9 thousand per µL. <b>Neutrophils</b> (up to 70%, segmented nucleus) are the first to reach an infection and eat bacteria. <b>Lymphocytes</b> (large round nucleus) are the B and T cells of immune memory. <b>Monocytes</b> (bean-shaped nucleus) enter tissues and become macrophages. <b>Eosinophils</b> (1–4%, two-lobed nucleus and orange granules) fight parasites and take part in allergy, <b>basophils</b> (under 1%, dark purple granules hide the nucleus) release histamine. A white cell is 1.5–2.5 times larger than a red cell. White cells can leave a vessel through its wall.' },
   { id: 'plt', name: 'Platelets', color: '#F2C88A', text: '<b>Platelets</b> (thrombocytes) are anucleate plates 2–3 µm across, fragments of giant bone marrow cells. There are 150–400 thousand in 1 µL; they live 7–10 days. When a vessel is damaged, they stick to the wound, become activated (put out projections) and clump together into a plug.' },
-  { id: 'plasma', name: 'Plasma', color: '#F2E08A', text: '<b>Plasma</b> makes up 55% of blood volume: it is 90% water and 7–8% proteins (albumins keep water in the vessels, globulins include antibodies, fibrinogen is for clotting), plus glucose, salts, hormones and metabolic products. An adult has about 5 L of blood — 7–8% of body weight.' },
+  { id: 'plasma', name: 'Plasma', color: '#F2E08A', text: '<b>Plasma</b> is 55% of blood volume: 92% water, 7% proteins (albumins — 60% of the proteins — keep water in the vessels; globulins — 35%, including antibodies; fibrinogen — 4%, needed for clotting), plus glucose, salts, hormones and waste products. An adult has about 5 L of blood — 7–8% of body mass.' },
 ];
 const BL_GROUPS = { O: { a: [], ab: ['A', 'B'] }, A: { a: ['A'], ab: ['B'] }, B: { a: ['B'], ab: ['A'] }, AB: { a: ['A', 'B'], ab: [] } };
 function makeBlood() {
   __set_rnd(mulberry(2020));
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x0a0507); scene.environment = envTex;
   labLights(scene, 0xff7a7a);
-  const VIEW = { flow: flyTarget(V3(0, -1.1, 0), V3(2.6, 1.2, 11.8)), clot: flyTarget(V3(0.3, -0.4, 0), V3(1.4, 3.2, 7.4)), groups: flyTarget(V3(30, -0.9, 0), V3(30.6, 0.8, 7.2)) };
+  const VIEW = { flow: flyTarget(V3(-0.8, -1.2, 0), V3(1.9, 1.2, 12.9)), clot: flyTarget(V3(0.3, -0.4, 0), V3(1.4, 3.2, 7.4)), groups: flyTarget(V3(30, -0.9, 0), V3(30.6, 0.8, 7.2)), tube: flyTarget(V3(60.55, -0.55, 0), V3(61.7, 0.9, 12.4)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(VIEW.flow.pos);
   const controls = makeControls(camera, VIEW.flow.target); controls.minDistance = 1.5; controls.maxDistance = 18;
   const pick = [];
@@ -27,8 +27,23 @@ function makeBlood() {
   const endo = new THREE.Mesh(wallG, new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xe8a0a8).multiplyScalar(0.4), roughness: 0.35, clearcoat: 0.7, transparent: true, opacity: 0.2, side: THREE.DoubleSide, depthWrite: false, sheen: 0.3, sheenColor: new THREE.Color(0xffc0c8) }));
   const musc = new THREE.Mesh(wallG2, new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xb05050).multiplyScalar(0.4), roughness: 0.5, transparent: true, opacity: 0.18, side: THREE.DoubleSide, depthWrite: false }));
   ves.add(endo, musc);
+  // стенка артерии: интима (эндотелий + волнистая внутренняя эластическая мембрана), медия (гладкие мышцы), адвентиция (коллаген, vasa vasorum, нерв)
+  const TH0 = Math.PI * 0.15, TH1 = Math.PI * 1.7;
+  const ielG = displaceGeo(new THREE.CylinderGeometry(R + 0.03, R + 0.03, L, 400, 1, true, TH0, TH1), (v) => { const a = Math.atan2(v.x, v.z), k = 1 + 0.012 * Math.sin(a * 60); v.x *= k; v.z *= k; }); ielG.rotateZ(Math.PI / 2);
+  ves.add(new THREE.Mesh(ielG, new THREE.MeshPhysicalMaterial({ color: 0xf2e6a0, emissive: 0x4a4010, emissiveIntensity: 0.3, transparent: true, opacity: 0.12, side: THREE.DoubleSide, depthWrite: false })));
+  const advG = new THREE.CylinderGeometry(R + 0.38, R + 0.38, L, 64, 1, true, TH0, TH1); advG.rotateZ(Math.PI / 2);
+  ves.add(new THREE.Mesh(advG, new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xe0d0b0).multiplyScalar(0.3), roughness: 0.7, transparent: true, opacity: 0.08, side: THREE.DoubleSide, depthWrite: false })));
+  { const eel = new THREE.CylinderGeometry(R + 0.22, R + 0.22, L, 64, 1, true, TH0, TH1); eel.rotateZ(Math.PI / 2); ves.add(new THREE.Mesh(eel, new THREE.MeshPhysicalMaterial({ color: 0xf2e6a0, emissive: 0x4a4010, emissiveIntensity: 0.3, transparent: true, opacity: 0.08, side: THREE.DoubleSide, depthWrite: false }))); }   // наружная эластическая мембрана
+  { const NS = 260, smc = new THREE.InstancedMesh(ell3(0.16, 0.025, 0.03, null, 10), new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xc06060).multiplyScalar(0.5), roughness: 0.5, transparent: true, opacity: 0.3, depthWrite: false }), NS), mq = new THREE.Matrix4();
+    for (let i = 0; i < NS; i++) { const a = TH0 + 0.05 + rnd() * (TH1 - 0.1), rr = R + 0.07 + rnd() * 0.1, x = rand(-L / 2, L / 2), p = V3(x, Math.sin(a) * rr, Math.cos(a) * rr), tg = V3(0, Math.cos(a), -Math.sin(a)).add(V3(rand(-0.15, 0.15), 0, 0)).normalize();
+      mq.compose(p, new THREE.Quaternion().setFromUnitVectors(V3(1, 0, 0), tg), V3(1, 1, 1)); smc.setMatrixAt(i, mq); }
+    ves.add(smc); }
+  const VV = []; for (let i = 0; i < 3; i++) { const a = Math.PI * (0.55 + i * 0.45), rr = R + 0.29, pts = []; for (let j = 0; j <= 8; j++) { const aa = a + 0.08 * Math.sin(j * 1.3 + i); pts.push(V3(-L / 2 + j * L / 8, Math.sin(aa) * rr, Math.cos(aa) * rr)); } VV.push(tube(pts, 0.025, 60, 6)); }
+  ves.add(new THREE.Mesh(mergeGeometries(VV), organMat('#E0505A', 0.6)));
+  { const VN = []; for (let i = 0; i < 2; i++) { const a = Math.PI * (0.75 + i * 0.6), rr = R + 0.3, pts = []; for (let j = 0; j <= 8; j++) { const aa = a + 0.07 * Math.sin(j * 1.1 + i * 2); pts.push(V3(-L / 2 + j * L / 8, Math.sin(aa) * rr, Math.cos(aa) * rr)); } VN.push(tube(pts, 0.022, 60, 6)); } ves.add(new THREE.Mesh(mergeGeometries(VN), organMat('#5C7CE8', 0.6))); }   // венулы стенки
+  { const a = Math.PI * 1.25, rr = R + 0.3, pts = []; for (let j = 0; j <= 8; j++) pts.push(V3(-L / 2 + j * L / 8, Math.sin(a + 0.05 * Math.sin(j)) * rr, Math.cos(a + 0.05 * Math.sin(j)) * rr)); ves.add(new THREE.Mesh(tube(pts, 0.035, 60, 8), organMat('#F2D060', 0.6))); }
   // кромки разреза
-  [Math.PI * 0.15, Math.PI * 1.85].forEach((a) => { const g = new THREE.BoxGeometry(L, 0.18, 0.02); const m = new THREE.Mesh(g, organMat('#b05050', 0.4)); m.position.set(0, Math.sin(a) * (R + 0.09), Math.cos(a) * (R + 0.09)); m.rotation.x = Math.PI / 2 - a; ves.add(m); });
+  [Math.PI * 0.15, Math.PI * 1.85].forEach((a) => [[0, 0.04, '#e8a0a8', 1], [0.04, 0.22, '#b05050', 1], [0.22, 0.38, '#a89870', 0.45]].forEach(([r0, r1, c, o]) => { const m = new THREE.Mesh(new THREE.BoxGeometry(L, r1 - r0, 0.02), organMat(c, 0.4, o < 1 ? { transparent: true, opacity: o, depthWrite: false } : {})); const rc = R + (r0 + r1) / 2; m.position.set(0, Math.sin(a) * rc, Math.cos(a) * rc); m.rotation.x = Math.PI / 2 - a; ves.add(m); }));
   // эритроциты
   // двояковогнутый диск (профиль Эванса — Фунга): тонкий центр, толстый скруглённый валик;
   // профиль идёт снизу вверх — иначе у LatheGeometry грани вывернуты наизнанку
@@ -50,13 +65,31 @@ function makeBlood() {
   const WBC = [];
   const wbcMat = new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xe8e8f8).multiplyScalar(0.5), roughness: 0.3, transparent: true, opacity: 0.45, depthWrite: false, clearcoat: 0.6, sheen: 0.4 });
   const nucMat = new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0x8a5ad8).multiplyScalar(0.6), roughness: 0.4, emissive: 0x2a1050, emissiveIntensity: 0.6 });
-  const mkWBC = (kind, x, y, z) => { const g = new THREE.Group(); g.position.set(x, y, z); const cell = new THREE.Mesh(displaceGeo(new THREE.SphereGeometry(0.45, 32, 24), (v) => v.multiplyScalar(1 + 0.05 * noise3(v.x * 9, v.y * 9, v.z * 9))), wbcMat); cell.userData.pick = 'wbc'; pick.push(cell); g.add(cell);
-    if (kind === 'neu') [V3(-0.15, 0.05, 0), V3(0.0, -0.1, 0.08), V3(0.15, 0.06, -0.05), V3(0.05, 0.16, 0.1)].forEach((p) => { const n = new THREE.Mesh(new THREE.SphereGeometry(0.11, 16, 12), nucMat); n.position.copy(p); g.add(n); });
-    if (kind === 'lym') { const n = new THREE.Mesh(new THREE.SphereGeometry(0.33, 20, 16), nucMat); g.add(n); }
-    if (kind === 'mon') { const n = new THREE.Mesh(displaceGeo(new THREE.SphereGeometry(0.25, 20, 16), (v) => { if (v.x > 0) v.x *= 0.4; v.y *= 1.3; }), nucMat); g.add(n); }
-    if (kind === 'eos') { [-1, 1].forEach((s) => { const n = new THREE.Mesh(new THREE.SphereGeometry(0.14, 14, 10), nucMat); n.position.x = 0.12 * s; g.add(n); }); for (let i = 0; i < 30; i++) { const gr = new THREE.Mesh(new THREE.SphereGeometry(0.03, 6, 4), new THREE.MeshBasicMaterial({ color: 0xff7a4a })); gr.position.copy(randUnit().multiplyScalar(0.2 + rnd() * 0.18)); g.add(gr); } }
+  const WR = { lym: 0.5, neu: 0.62, eos: 0.65, mon: 0.8, bas: 0.58 };   // радиус относительно эритроцита (0.42): лимфоцит 7–10 мкм, нейтрофил 12–15, моноцит до 20
+  const mkWBC = (kind, x, y, z) => { const g = new THREE.Group(); g.position.set(x, y, z); const cell = new THREE.Mesh(displaceGeo(new THREE.SphereGeometry(WR[kind], 32, 24), (v) => v.multiplyScalar(1 + 0.05 * noise3(v.x * 9, v.y * 9, v.z * 9))), wbcMat); cell.userData.pick = 'wbc'; pick.push(cell); g.add(cell);
+    if (kind === 'neu') [V3(-0.2, 0.07, 0), V3(0.0, -0.13, 0.1), V3(0.2, 0.08, -0.06), V3(0.07, 0.21, 0.13)].forEach((p) => { const n = new THREE.Mesh(new THREE.SphereGeometry(0.14, 16, 12), nucMat); n.position.copy(p); g.add(n); });
+    if (kind === 'lym') { const n = new THREE.Mesh(new THREE.SphereGeometry(0.4, 20, 16), nucMat); g.add(n); }
+    if (kind === 'mon') { const n = new THREE.Mesh(displaceGeo(new THREE.SphereGeometry(0.42, 20, 16), (v) => { if (v.x > 0) v.x *= 0.4; v.y *= 1.3; }), nucMat); g.add(n); }
+    const gran = (n, col, r0, r1, sz) => { const gm = new THREE.MeshBasicMaterial({ color: col }); for (let i = 0; i < n; i++) { const gr = new THREE.Mesh(new THREE.SphereGeometry(sz, 6, 4), gm); gr.position.copy(randUnit().multiplyScalar(r0 + rnd() * (r1 - r0))); g.add(gr); } };
+    if (kind === 'eos') { [-1, 1].forEach((s) => { const n = new THREE.Mesh(new THREE.SphereGeometry(0.19, 14, 10), nucMat); n.position.x = 0.17 * s; g.add(n); }); gran(45, 0xff7a4a, 0.3, 0.58, 0.035); }
+    if (kind === 'bas') { [-1, 1].forEach((s) => { const n = new THREE.Mesh(new THREE.SphereGeometry(0.17, 14, 10), nucMat); n.position.set(0.12 * s, 0.05 * s, 0); g.add(n); }); gran(70, 0x4a2a8a, 0.05, 0.52, 0.05); }
     ves.add(g); WBC.push({ g, kind, x, y, z, ph: rnd() * 6 }); };
-  mkWBC('neu', -2.6, -0.65, 0.1); mkWBC('lym', 0.5, -0.7, -0.3); mkWBC('mon', 2.8, -0.6, 0.35); mkWBC('eos', -0.9, 0.55, -0.55);
+  mkWBC('neu', -2.6, -0.5, 0.15); mkWBC('lym', 0.4, -0.55, 0.3); mkWBC('mon', 2.6, -0.25, 0.2); mkWBC('eos', -0.9, 0.0, 0.3); mkWBC('bas', 1.4, 0.05, 0.35);
+  /* ---------- пробирка после центрифуги ---------- */
+  const tubeG = new THREE.Group(); tubeG.position.set(60, 0, 0); scene.add(tubeG); tubeG.visible = false;
+  { const prof = []; for (let i = 0; i <= 12; i++) { const a = -Math.PI / 2 + i / 12 * Math.PI / 2; prof.push(new THREE.Vector2(Math.cos(a) * 0.4, Math.sin(a) * 0.4)); } prof.push(new THREE.Vector2(0.4, 3.0), new THREE.Vector2(0.43, 3.05));
+    const tg = new THREE.LatheGeometry(prof, 48); tubeG.add(new THREE.Mesh(tg, glassMat(0xd8e8ff, { rim: 0.5, base: 0.02 })), new THREE.Mesh(tg, new THREE.MeshPhysicalMaterial({ color: 0xdde8ff, roughness: 0.05, clearcoat: 1, transparent: true, opacity: 0.05, depthWrite: false, side: THREE.BackSide })));
+    const lip = new THREE.Mesh(new THREE.TorusGeometry(0.42, 0.02, 8, 48), new THREE.MeshPhysicalMaterial({ color: 0xdde8ff, roughness: 0.1, transparent: true, opacity: 0.5 })); lip.rotation.x = Math.PI / 2; lip.position.y = 3.04; tubeG.add(lip); }
+  const TH = 2.4, TR = 0.36, HR = 0.45 * (TH + TR) - TR;   // жидкость до y=2.4; эритроциты — 45% объёма
+  const rbcLayM = new THREE.MeshPhysicalMaterial({ color: 0x8a1420, roughness: 0.3, clearcoat: 0.8, emissive: 0x300408, emissiveIntensity: 0.3 });
+  const botM = new THREE.Mesh(new THREE.SphereGeometry(TR, 32, 16, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2), rbcLayM); tubeG.add(botM);
+  const unitCyl = () => { const g = new THREE.CylinderGeometry(TR, TR, 1, 40); g.translate(0, 0.5, 0); return g; };
+  const rbcCol = new THREE.Mesh(unitCyl(), rbcLayM), buffy = new THREE.Mesh(unitCyl(), new THREE.MeshPhysicalMaterial({ color: 0xf4f0e8, roughness: 0.5, emissive: 0x404040, emissiveIntensity: 0.4, transparent: true }));
+  const plasmaM = new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xf2d870).multiplyScalar(0.8), roughness: 0.1, clearcoat: 1, transparent: true, opacity: 0.7, emissive: 0x3a3008, emissiveIntensity: 0.4, depthWrite: false }), plasma = new THREE.Mesh(unitCyl(), plasmaM);
+  tubeG.add(rbcCol, buffy, plasma);
+  function setTube(k) { const e = smooth(0, 1, k), hr = lerp(TH, HR, e), bh = 0.05 * smooth(0.6, 1, k); rbcCol.scale.y = hr; buffy.position.y = hr; buffy.scale.y = Math.max(0.001, bh); buffy.material.opacity = smooth(0.6, 1, k);
+    plasma.position.y = hr + bh; plasma.scale.y = Math.max(0.001, TH - hr - bh); rbcLayM.color.setHex(0x8a1420).lerp(new THREE.Color(0x5a0810), e); }
+  setTube(0);
   /* ---------- рана и фибрин ---------- */
   const WOUND = V3(0.3, R, 0.0);
   const hole = new THREE.Mesh(new THREE.CircleGeometry(0.42, 32), new THREE.MeshBasicMaterial({ color: 0x1a0306 })); hole.position.copy(WOUND).add(V3(0, 0.2, 0)); hole.rotation.x = -Math.PI / 2; hole.scale.set(1.6, 1, 0.01); hole.visible = false; ves.add(hole);
@@ -76,11 +109,12 @@ function makeBlood() {
   const AB = Array.from({ length: 80 }, () => ({ p: V3(rand(-1.6, 1.6), rand(-0.8, 0.8), rand(-1.3, 1.3)), r: randUnit(), a: rnd() * 6 }));
   const fx = new Sparks(2400, 0.06); scene.add(fx.obj);
   /* ---------- состояние ---------- */
-  const st = { t: 0, mode: 'flow', sel: null, labels: true, rot: false, fly: null, msg: null, cutT: -99, donor: 'A', recip: 'B', mixT: -99, agg: 0 };
+  const st = { t: 0, mode: 'flow', sel: null, labels: true, rot: false, fly: null, msg: null, cutT: -99, spinT: -99, spin: 0, donor: 'A', recip: 'B', mixT: -99, agg: 0 };
   const compatible = () => BL_GROUPS[st.donor].a.every((ag) => !BL_GROUPS[st.recip].ab.includes(ag));
   function select(id) { st.sel = id === 'all' ? null : id; refs.seg && refs.seg.sync(); rbcMat.emissiveIntensity = st.sel === 'rbc' ? 0.8 : 0.12; pltMat.emissiveIntensity = st.sel === 'plt' ? 1.4 : 0.4; nucMat.emissiveIntensity = st.sel === 'wbc' ? 1.4 : 0.6; st.msg = null; refs.setInfo && refs.setInfo(); }
-  function setMode(m) { st.mode = m; refs.modeSeg && refs.modeSeg.sync(); st.msg = null; ves.visible = m !== 'groups'; grp.visible = m === 'groups'; st.fly = VIEW[m]; if (m === 'groups') mix(); refs.setInfo && refs.setInfo(); }
+  function setMode(m) { st.mode = m; refs.modeSeg && refs.modeSeg.sync(); st.msg = null; ves.visible = m === 'flow' || m === 'clot'; grp.visible = m === 'groups'; tubeG.visible = m === 'tube'; st.fly = VIEW[m]; if (m === 'groups') mix(); if (m === 'tube') spin(); refs.setInfo && refs.setInfo(); }
   function cut() { if (st.mode !== 'clot') setMode('clot'); st.cutT = st.t; PLT.forEach((p) => { p.act = 0; p.tgt = null; }); RBC.forEach((r) => { r.stuck = 0; }); st.stage = -1; }
+  function spin() { if (st.mode !== 'tube') { setMode('tube'); return; } st.spinT = st.t + (st.fly ? 1.2 : 0); st.spin = 0; }
   function mix() { st.mixT = st.t; st.agg = 0; refs.setInfo && refs.setInfo(); }
   pickOn(() => self, camera, pick, (id) => { if (st.mode === 'flow') select(id); });
   const CLOT_STAGES = [
@@ -118,7 +152,9 @@ function makeBlood() {
     pltI.instanceMatrix.needsUpdate = true; pltAct.count = na; pltAct.instanceMatrix.needsUpdate = true;
     if (!wounded) PLT.forEach((p) => { p.tgt = null; p.act = 0; });
     // лейкоциты катятся у стенки
-    WBC.forEach((w) => { w.x += dt * 0.25 * flowK; if (w.x > L / 2) w.x -= L; w.g.position.set(w.x, w.y, w.z); w.g.rotation.z -= dt * 0.5; });
+    WBC.forEach((w) => { w.x += dt * 0.25 * flowK; if (w.x > L / 2) w.x -= L; w.g.position.set(w.x, w.y, w.z); w.g.rotation.z -= dt * 0.5; if (w.lab) w.lab.pos.set(w.x + 0.1, w.y + 0.15, w.z + WR[w.kind] + 0.12); });
+    // пробирка: 4 с центрифуги, потом слои
+    if (st.mode === 'tube') { const ks = (t - st.spinT) / 4; st.spin = Math.min(1, Math.max(0, ks)); setTube(st.spin); tubeG.rotation.y += dt * (st.spin < 1 ? 6 * (1 - st.spin) : 0.3); }
     if (wounded && k < 6) for (let j = 0; j < 4; j++) fx.spawn(WOUND.clone().add(V3(rand(-0.4, 0.4), 0.15, rand(-0.25, 0.25))), V3(rand(-0.3, 0.3), 0.8 + rnd() * 0.6, rand(-0.3, 0.3)).multiplyScalar(1 - smooth(1.5, 6, k)), C_R, 1.0, 0.8, 1.4);
     if (st.mode === 'flow' && rnd() < 0.6) fx.spawn(V3(-L / 2, rand(-R * 0.8, R * 0.8), rand(-R * 0.8, R * 0.8)), V3(1.5, 0, 0), C_P, 4, 0, 0.5);
     // группы крови
@@ -136,19 +172,37 @@ function makeBlood() {
     }
     fx.update(dt);
   }
+  // состав плазмы (Неттер, BP 15): вода/белки/прочее и доли белков
+  const PL_BARS = [['Plasma', [['water', 92, '#7FB8E8'], ['proteins', 7, '#F2D060'], ['other', 1, '#B0B0B0']]], ['Plasma proteins', [['albumins', 60, '#F2D060'], ['globulins', 35, '#E0A040'], ['fibrinogen', 4, '#F8F0D8']]]];
+  function drawScope(ctx, w, hgt) {
+    ctx.clearRect(0, 0, w, hgt); const on = st.mode === 'tube' || (st.mode === 'flow' && st.sel === 'plasma'); scopeShow(on); if (!on) return;
+    const small = w < 330, fs = small ? 9 : 10; let y = 4;
+    PL_BARS.forEach(([title, parts]) => { ctx.fillStyle = 'rgba(255,255,255,.75)'; ctx.font = '600 ' + (fs + 1) + 'px Inter, sans-serif'; ctx.fillText(title, 10, y + 10);
+      let x = 10; const bw = w - 20, by = y + 15, bh = small ? 7 : 9;
+      parts.forEach(([, p, c]) => { const ww = bw * p / 100; ctx.fillStyle = c; ctx.fillRect(x, by, Math.max(1.5, ww - 1), bh); x += ww; });
+      ctx.font = '500 ' + fs + 'px JetBrains Mono, monospace'; let lx = 10, ly = by + bh + 11;
+      parts.forEach(([n, p, c]) => { const s2 = n + ' ' + p + '%', tw = ctx.measureText(s2).width + 10; if (lx + tw > w - 6) { lx = 10; ly += fs + 3; } ctx.fillStyle = c; ctx.fillRect(lx, ly - 7, 7, 7); ctx.fillStyle = 'rgba(255,255,255,.7)'; ctx.fillText(s2, lx + 10, ly); lx += tw + (small ? 8 : 12); });
+      y = ly + 6; });
+  }
   const TXT = {
-    flow: '<b>Blood</b> is a liquid tissue: plasma (55%) and formed elements (45%). In a vessel, cells flow faster in the center and slower near the wall. Red blood cells carry gases, white blood cells defend, platelets stop bleeding. All of them are born in the red bone marrow from stem cells. Click a cell.',
+    tube: '<b>Blood in a test tube.</b> Spin a tube of blood in a centrifuge and the cells settle: heavy red cells at the bottom (about 45% of the volume — the <b>hematocrit</b>), above them a thin whitish film of white cells and platelets (under 1%), and clear yellow <b>plasma</b> on top (about 55%). A low hematocrit points to anemia, a high one to thickened blood (dehydration, life at high altitude).',
+    flow: '<b>Blood</b> is a liquid tissue: plasma (55%) and formed elements (45%). In an artery, cells flow faster in the centre and slower near the wall. The arterial wall has three layers: the intima (endothelium and elastic membrane), the media (smooth muscle) and the outer adventitia with its own vessels and nerve. Red cells carry gases, white cells defend, platelets stop bleeding. All of them are born in red bone marrow from stem cells. Click a cell.',
     clot: '<b>Blood clotting.</b> Click “Cut” to damage the vessel wall, and watch how the body stops the bleeding.',
     groups: '<b>ABO blood groups.</b> Red blood cells may carry antigen A (yellow spikes) and antigen B (blue). The plasma contains antibodies against the antigens the person lacks (Y-shaped). If the recipient’s antibodies meet their antigens on the donor’s red cells, the cells clump together — <b>agglutination</b>, which is life-threatening. Choose a donor and a recipient.',
   };
   const grpTxt = () => { const ok = compatible(); return `<b>Donor ${st.donor} → recipient ${st.recip}: ${ok ? 'compatible' : 'incompatible!'}</b> ${ok ? 'The recipient’s plasma has no antibodies against the donor’s antigens — the red blood cells float freely.' : 'The recipient’s antibodies (' + BL_GROUPS[st.recip].ab.join(' и ') + ') bind the donor’s antigens — the red blood cells clump together.'} Group O (I) is the “universal donor” of red blood cells, and AB (IV) is the “universal recipient”. In practice, only blood of the same group is transfused, and the Rh factor is also taken into account.`; };
   const labels = [
     { text: 'red blood cell', pos: V3(-1.6, 0.4, 0.9), color: '#E0505A', show: () => st.labels && st.mode === 'flow' },
-    { text: 'neutrophil', pos: V3(-2.6, -0.1, 0.5), color: '#E8E8F8', show: () => st.labels && st.mode === 'flow' },
-    { text: 'lymphocyte', pos: V3(0.5, -0.15, 0.2), color: '#E8E8F8', show: () => st.labels && st.mode === 'flow' },
-    { text: 'monocyte', pos: V3(2.8, -0.05, 0.75), color: '#E8E8F8', show: () => st.labels && st.mode === 'flow' },
-    { text: 'eosinophil', pos: V3(-0.9, 1.05, -0.3), color: '#FFB08A', show: () => st.labels && st.mode === 'flow' },
-    { text: 'vessel wall', pos: V3(3.6, R + 0.2, -0.5), color: '#E8A0A8', show: () => st.labels && st.mode !== 'groups' },
+    ...[['neu', 'neutrophil · 50–70%', '#E8E8F8'], ['lym', 'lymphocyte · 20–30%', '#E8E8F8'], ['mon', 'monocyte · 2–8%', '#E8E8F8'], ['eos', 'eosinophil · 1–4%', '#FFB08A'], ['bas', 'basophil · <1%', '#B8A0F0']].map(([k, tx, c]) => { const w = WBC.find((q) => q.kind === k); w.lab = { text: tx, pos: V3(0, 0, 0), color: c, show: () => st.labels && st.mode === 'flow' }; return w.lab; }),
+    { text: 'intima', pos: V3(-3.6, Math.sin(Math.PI * 1.85) * R, Math.cos(Math.PI * 1.85) * R + 0.05), color: '#F2C0C8', show: () => st.labels && st.mode === 'flow' },
+    { text: 'media: smooth muscle', pos: V3(-3.6, Math.sin(Math.PI * 1.85) * (R + 0.13), Math.cos(Math.PI * 1.85) * (R + 0.13) + 0.05), color: '#E08080', show: () => st.labels && st.mode === 'flow' },
+    { text: 'adventitia', pos: V3(-3.6, Math.sin(Math.PI * 1.85) * (R + 0.3), Math.cos(Math.PI * 1.85) * (R + 0.3) + 0.05), color: '#E0D0A8', show: () => st.labels && st.mode === 'flow' },
+    { text: 'vasa vasorum', pos: V3(2.6, Math.sin(Math.PI * 0.55) * (R + 0.35), Math.cos(Math.PI * 0.55) * (R + 0.35)), color: '#E0505A', show: () => st.labels && st.mode === 'flow' },
+    { text: 'wall nerve', pos: V3(-1.6, Math.sin(Math.PI * 1.25) * (R + 0.32), Math.cos(Math.PI * 1.25) * (R + 0.32)), color: '#F2D060', show: () => st.labels && st.mode === 'flow' },
+    { text: 'vessel wall', pos: V3(3.6, R + 0.2, -0.5), color: '#E8A0A8', show: () => st.labels && st.mode === 'clot' },
+    { text: 'plasma ≈ 55%', pos: V3(60.45, 1.9, 0.2), color: '#F2E08A', show: () => st.labels && st.mode === 'tube' && st.spin > 0.95 },
+    { text: 'white cells and platelets < 1%', pos: V3(60.45, HR + 0.03, 0.2), color: '#F4F0E8', show: () => st.labels && st.mode === 'tube' && st.spin > 0.95 },
+    { text: 'red cells ≈ 45% (hematocrit)', pos: V3(60.45, 0.35, 0.2), color: '#E0505A', show: () => st.labels && st.mode === 'tube' && st.spin > 0.95 },
     { text: 'wound', pos: WOUND.clone().add(V3(0.7, 0.3, 0.3)), color: '#ff6a5a', show: () => st.labels && st.mode === 'clot' && st.t > st.cutT },
     { text: 'fibrin threads', pos: WOUND.clone().add(V3(-0.9, 0.2, 0.4)), color: '#f8f0d8', show: () => st.labels && st.mode === 'clot' && st.t - st.cutT > 5 },
     { text: 'recipient plasma', pos: V3(31.6, 0.9, 0.5), color: '#F2E08A', show: () => st.labels && st.mode === 'groups' },
@@ -157,7 +211,7 @@ function makeBlood() {
   function ui(el) {
     const ib = infoBox('1 1 340px');
     refs.setInfo = () => { ib.info.innerHTML = st.msg || (st.mode === 'groups' ? grpTxt() : st.mode === 'flow' && st.sel ? BL_CELLS.find((c) => c.id === st.sel).text : TXT[st.mode]); };
-    refs.modeSeg = seg([{ id: 'flow', label: 'Blood cells' }, { id: 'clot', label: 'Clotting' }, { id: 'groups', label: 'Blood groups' }], () => st.mode, (v) => setMode(v));
+    refs.modeSeg = seg([{ id: 'flow', label: 'Blood cells' }, { id: 'clot', label: 'Clotting' }, { id: 'groups', label: 'Blood groups' }, { id: 'tube', label: 'Test tube' }], () => st.mode, (v) => setMode(v));
     refs.seg = seg([{ id: 'all', label: 'All' }, ...BL_CELLS.map((c) => ({ id: c.id, label: c.name, color: c.color }))], () => st.sel || 'all', (v) => { if (st.mode !== 'flow') setMode('flow'); select(v); });
     const G4 = ['O', 'A', 'B', 'AB'].map((g) => ({ id: g, label: g === 'O' ? '0 (I)' : g === 'A' ? 'A (II)' : g === 'B' ? 'B (III)' : 'AB (IV)' }));
     refs.dSeg = seg(G4, () => st.donor, (v) => { st.donor = v; if (st.mode !== 'groups') setMode('groups'); else mix(); });
@@ -165,20 +219,21 @@ function makeBlood() {
     refs.rot = toggle('Rotate', () => st.rot, (v) => { st.rot = v; });
     const lab = toggle('Labels', () => st.labels, (v) => { st.labels = v; });
     Object.assign(refs, { lab });
-    el.append(group('Mode', '1–3', refs.modeSeg), group('Composition', 'click', refs.seg), group('Experiment', 'C', button('Cut', cut, true)), group('Donor', '', refs.dSeg), group('Recipient', '', refs.rSeg), group('View', 'R · N', refs.rot, lab), ib.el);
+    el.append(group('Mode', '1–4', refs.modeSeg), group('Composition', 'click', refs.seg), group('Experiment', 'C · S', button('Cut', cut, true), button('Centrifuge', spin)), group('Donor', '', refs.dSeg), group('Recipient', '', refs.rSeg), group('View', 'R · N', refs.rot, lab), ib.el);
     refs.setInfo();
   }
   function onKey(e) {
     const k = e.key.toLowerCase(), n = parseInt(e.key, 10);
-    if (n >= 1 && n <= 3) { setMode(['flow', 'clot', 'groups'][n - 1]); return true; }
+    if (n >= 1 && n <= 4) { setMode(['flow', 'clot', 'groups', 'tube'][n - 1]); return true; }
     if (k === 'c' || k === 'с') { cut(); return true; }
+    if (k === 's' || k === 'ы') { spin(); return true; }
     if (k === 'r' || k === 'к') { refs.rot.click(); return true; } if (k === 'n' || k === 'т') { refs.lab.click(); return true; }
     if (e.key === 'Escape') { select('all'); return true; }
     return false;
   }
-  function stats() { return st.mode === 'groups' ? [['Compatibility', compatible() ? 'yes' : 'no', '']] : [['Red blood cells', '4–5', 'million/µL'], ['White blood cells', '4–9', 'thousand/µL'], ['Platelets', '150–400', 'thousand/µL']]; }
+  function stats() { return st.mode === 'tube' ? [['Hematocrit', '40–45', '%'], ['Plasma', '≈ 55', '%'], ['Plasma protein', '65–80', 'g/L']] : st.mode === 'groups' ? [['Compatibility', compatible() ? 'yes' : 'no', '']] : [['Red blood cells', '4–5', 'million/µL'], ['White blood cells', '4–9', 'thousand/µL'], ['Platelets', '150–400', 'thousand/µL']]; }
   const self = {
-    scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#E0505A',
+    scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#E0505A',
     kicker: 'Body · blood', title: 'Blood',
     lede: 'Five liters of liquid tissue: 25 trillion red blood cells, an army of white blood cells, and platelets that seal any small wound within minutes.',
     notes: `

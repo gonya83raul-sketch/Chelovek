@@ -1,4 +1,4 @@
-import { GLOW, Sparks, THREE, V3, __set_rnd, addLights, button, clamp, displaceGeo, envTex, glassMat, group, h, lerp, makeControls, mergeVertices, mulberry, noise3, rand, randUnit, rnd, seg, smooth, taperTube, toggle } from '../core.js';
+import { GLOW, Sparks, THREE, V3, __set_rnd, addLights, button, clamp, displaceGeo, ell3, envTex, glassMat, group, h, lerp, makeControls, mergeVertices, mulberry, noise3, rand, randUnit, rnd, seg, smooth, taperTube, toggle } from '../core.js';
 
 
 /* =========================================================
@@ -46,11 +46,16 @@ function makeNeuron() {
   const nodeU = []; for (let u = 0.09; u <= 0.97; u += 0.11) nodeU.push(u);
   const nodes = nodeU.map((u) => axon.getPointAt(u));
   const myelin = new THREE.Group(); scene.add(myelin);
+  const schwM = new THREE.MeshPhysicalMaterial({ color: 0x8a6ad0, roughness: 0.4, emissive: 0x2a1a50, emissiveIntensity: 0.5 }), SCHW = [];
   for (let i = 0; i < nodes.length - 1; i++) {
     const a = nodes[i], b = nodes[i + 1], dir = b.clone().sub(a), dist = dir.length(); dir.normalize();
     const inner = Math.max(0.05, dist - 0.24 - 0.52);
     const m = new THREE.Mesh(new THREE.CapsuleGeometry(0.26, inner, 10, 24), myelinMat);
     m.position.copy(a).add(b).multiplyScalar(0.5); m.quaternion.setFromUnitVectors(V3(0, 1, 0), dir); myelin.add(m);
+    // каждый сегмент миелина — одна шванновская клетка; её ядро прижато к наружной поверхности
+    const nrm = V3(0, 0.35, 1).addScaledVector(dir, -V3(0, 0.35, 1).dot(dir)).normalize(), sc = new THREE.Mesh(ell3(0.07, 0.22, 0.05, null, 16), schwM);
+    sc.quaternion.setFromUnitVectors(V3(0, 1, 0), dir); sc.position.copy(m.position).addScaledVector(nrm, 0.25); sc.lookAt(sc.position.clone().add(nrm)); sc.rotateZ(0); { const q = new THREE.Quaternion().setFromUnitVectors(V3(0, 1, 0), dir); sc.quaternion.copy(q); const lz = V3(0, 0, 1).applyQuaternion(q); sc.quaternion.premultiply(new THREE.Quaternion().setFromUnitVectors(lz, nrm)); }
+    myelin.add(sc); SCHW.push(sc.position.clone());
   }
   const ringMats = nodes.map(() => new THREE.MeshBasicMaterial({ color: 0x3a2a30 }));
   nodes.forEach((p, i) => {
@@ -179,6 +184,8 @@ function makeNeuron() {
     { text: 'axon hillock', pos: V3(1.4, -0.75, 0.3) },
     { text: 'myelin', pos: axon.getPointAt(0.33).add(V3(0, 0.6, 0.2)), show: () => st.myelin },
     { text: 'node of Ranvier', pos: nodes[5].clone().add(V3(0, -0.55, 0)) },
+    { text: 'Schwann cell', pos: SCHW[2].clone().add(V3(0, 0.12, 0.1)), show: () => st.myelin },
+    { text: 'initial segment', pos: axon.getPointAt(0.05).add(V3(0, -0.18, 0.15)) },
     { text: 'electrode', pos: probeP.clone().add(V3(0.25, 3.6, 0.3)) },
     { text: 'lidocaine', pos: axon.getPointAt(0.565).add(V3(0, 1.3, 0)), show: () => st.lido },
     { text: 'axon terminals', pos: V3(19.8, 1.9, 0.6) },

@@ -1,4 +1,4 @@
-import { Sparks, THREE, V3, __set_rnd, button, displaceGeo, envTex, flyStep, flyTarget, glassMat, group, infoBox, labLights, lerp, makeControls, mergeGeometries, mulberry, randUnit, rnd, seg, taperTube, tissue, toggle } from '../core.js';
+import { Sparks, THREE, V3, __set_rnd, button, displaceGeo, envTex, flyStep, flyTarget, glassMat, group, infoBox, labLights, lerp, makeControls, mergeGeometries, mulberry, organMat, rand, randUnit, rnd, seg, taperTube, tissue, toggle } from '../core.js';
 
 
 /* =========================================================
@@ -6,10 +6,10 @@ import { Sparks, THREE, V3, __set_rnd, button, displaceGeo, envTex, flyStep, fly
    ========================================================= */
 const SPN_TRACTS = [
   // [номер, название, цвет, восходящий?]
-  [1, 'Fasciculus gracilis (Goll)', '#4FA3FF', 1], [2, 'Fasciculus cuneatus (Burdach)', '#6FC3FF', 1], [3, 'Posterior spinocerebellar', '#3FC1B0', 1],
-  [4, 'Anterior spinocerebellar', '#5CD48A', 1], [5, 'Anterior spinothalamic', '#9FE07A', 1], [6, 'Lateral spinothalamic', '#7FD6C8', 1],
-  [7, 'Lateral corticospinal (pyramidal)', '#FF6A5A', 0], [8, 'Anterior corticospinal (pyramidal)', '#FF8A6A', 0], [9, 'Vestibulospinal', '#F2A14E', 0],
-  [10, 'Reticulospinal', '#E9785F', 0], [11, 'Rubrospinal', '#FF7FB0', 0], [12, 'Olivospinal', '#F4C542', 0], [13, 'Tectospinal', '#C77DFF', 0],
+  [1, 'Тонкий пучок (Голля)', '#4FA3FF', 1], [2, 'Клиновидный пучок (Бурдаха)', '#6FC3FF', 1], [3, 'Задний спинно-мозжечковый', '#3FC1B0', 1],
+  [4, 'Передний спинно-мозжечковый', '#5CD48A', 1], [5, 'Передний спинно-таламический', '#9FE07A', 1], [6, 'Латеральный спинно-таламический', '#7FD6C8', 1],
+  [7, 'Латеральный пирамидный', '#FF6A5A', 0], [8, 'Передний пирамидный', '#FF8A6A', 0], [9, 'Вестибуло-спинальный', '#F2A14E', 0],
+  [10, 'Ретикуло-спинальный', '#E9785F', 0], [11, 'Рубро-спинальный', '#FF7FB0', 0], [12, 'Оливо-спинальный', '#F4C542', 0], [13, 'Текто-спинальный', '#C77DFF', 0],
 ];
 function spinalCanvas(mode) {
   const W = 1024, H = 768, c = document.createElement('canvas'); c.width = W; c.height = H;
@@ -249,14 +249,40 @@ function makeSpinal() {
   { const ft = new THREE.TubeGeometry(new THREE.CatmullRomCurve3([V3(0, segSpan.S[1], 0), V3(0, vt('S', 0).top - 1, 0.05), V3(0, vt('Co', 0).bot + 0.2, 0.05)]), 20, 0.03, 6); col.add(new THREE.Mesh(ft, mat(0xe0d8d0))); }
   const COL_POS = col.position.clone().add(V3(0, 12.2 * 0.62, 0));
 
+  /* ---------- периферический нерв в разрезе (Неттер, BP 12) ---------- */
+  const NV = new THREE.Group(); NV.position.set(40, 0, 0); NV.visible = false; scene.add(NV);
+  const NL = 5, NR = 1.0, nx = (g) => { g.rotateZ(-Math.PI / 2); return g; };
+  { const epi = nx(new THREE.CylinderGeometry(NR, NR, NL, 64, 1, true)); NV.add(new THREE.Mesh(epi, new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xf0e0c8).multiplyScalar(0.45), roughness: 0.6, transparent: true, opacity: 0.35, side: THREE.DoubleSide, depthWrite: false })));
+    const cap = nx(new THREE.CircleGeometry(NR, 64)); cap.rotateY(0); const capM = new THREE.Mesh(new THREE.CircleGeometry(NR, 64), new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xf2e4c8).multiplyScalar(0.5), roughness: 0.7, emissive: 0x2a2010, emissiveIntensity: 0.3 })); capM.rotation.y = Math.PI / 2; capM.position.x = NL / 2 - 0.001; NV.add(capM);
+    // жировые клетки эпиневрия
+    const fat = []; for (let i = 0; i < 26; i++) { const a = rnd() * Math.PI * 2, r = 0.72 + rnd() * 0.22; if ([0, 1, 2, 3, 4, 5].some((k) => Math.abs(((a - k * Math.PI / 3 + 9 * Math.PI) % (2 * Math.PI)) - Math.PI) > Math.PI - 0.35)) continue; const g = new THREE.SphereGeometry(0.07 + rnd() * 0.04, 10, 8); g.translate(NL / 2 - 0.02, Math.cos(a) * r, Math.sin(a) * r); fat.push(g); }
+    if (fat.length) NV.add(new THREE.Mesh(mergeGeometries(fat), organMat('#F2D890', 0.5, { transparent: true, opacity: 0.8 }))); }
+  const FASC = [[0, 0, 0.3], ...[0, 1, 2, 3, 4, 5].map((k) => [Math.cos(k * Math.PI / 3) * 0.6, Math.sin(k * Math.PI / 3) * 0.6, 0.25 + 0.04 * (k % 2)])];
+  const perM = new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xb8d8f0).multiplyScalar(0.55), roughness: 0.4, transparent: true, opacity: 0.55, side: THREE.DoubleSide, depthWrite: false, emissive: 0x18304a, emissiveIntensity: 0.3 });
+  const endM = new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xe8d8e8).multiplyScalar(0.4), roughness: 0.7, emissive: 0x201820, emissiveIntensity: 0.3 });
+  const MY = [], AX = [];
+  FASC.forEach(([y, z, r], fi) => { const len = NL - 0.3 - 0.25 * fi % 0.7, x0 = NL / 2 - len / 2 + 0.15 * (fi % 3);
+    const per = nx(new THREE.CylinderGeometry(r, r, len, 40, 1, true)); per.translate(x0, y, z); NV.add(new THREE.Mesh(per, perM));
+    const ec = new THREE.Mesh(new THREE.CircleGeometry(r - 0.01, 40), endM); ec.rotation.y = Math.PI / 2; ec.position.set(x0 + len / 2 - 0.02, y, z); NV.add(ec);
+    const pts = []; for (let i = 0; i < 400 && pts.length < Math.round(55 * r * r / 0.09); i++) { const a = rnd() * Math.PI * 2, rr = Math.sqrt(rnd()) * (r - 0.05), q = [y + Math.cos(a) * rr, z + Math.sin(a) * rr]; if (pts.every((o) => Math.hypot(o[0] - q[0], o[1] - q[1]) > 0.075)) pts.push(q); }
+    pts.forEach(([py, pz], i) => { const big = i % 3 !== 2, l2 = len - 0.04 + rand(0, 0.12); MY.push({ x: x0 + l2 / 2 - len / 2, y: py, z: pz, l: l2, r: big ? 0.032 : 0.02 }); AX.push({ x: x0 + l2 / 2 - len / 2 + 0.03, y: py, z: pz, l: l2, r: big ? 0.016 : 0.011 }); }); });
+  { const myI = new THREE.InstancedMesh(nx(new THREE.CylinderGeometry(1, 1, 1, 10)), new THREE.MeshPhysicalMaterial({ color: 0xf4efe6, roughness: 0.3, clearcoat: 0.8 }), MY.length), axI = new THREE.InstancedMesh(nx(new THREE.CylinderGeometry(1, 1, 1, 8)), new THREE.MeshPhysicalMaterial({ color: 0xe8b84a, roughness: 0.4, emissive: 0x4a3000, emissiveIntensity: 0.4 }), AX.length), m4 = new THREE.Matrix4();
+    MY.forEach((f, i) => { m4.makeScale(f.l, f.r, f.r).setPosition(f.x, f.y, f.z); myI.setMatrixAt(i, m4); }); AX.forEach((f, i) => { m4.makeScale(f.l, f.r, f.r).setPosition(f.x, f.y, f.z); axI.setMatrixAt(i, m4); }); NV.add(myI, axI); }
+  // продольные сосуды нерва (vasa nervorum) в эпиневрии
+  [[0.86, 0.3, '#E0505A'], [-0.84, -0.28, '#5C7CE8'], [0.1, -0.86, '#E0505A']].forEach(([y, z, c]) => { const g = nx(new THREE.CylinderGeometry(0.045, 0.045, NL + 0.1, 12)); g.translate(0.02, y, z); NV.add(new THREE.Mesh(g, organMat(c, 0.6))); });
+  const NERVE_VIEW = flyTarget(V3(40.2, -1.35, 1.2), V3(47.6, 1.4, 5.6));
+
   /* ---------- режимы ---------- */
   function setMode(m) {
     st.mode = m; refs.modeSeg && refs.modeSeg.sync();
     capMat.map = m === 'tracts' ? texT : texA; capMat.needsUpdate = true;
-    const seg2 = m === 'segments';
-    col.visible = seg2; cord.visible = dura.visible = !seg2; vert.visible = m === 'anat' && st.vert;
-    [muscle, skin, fibMesh, fx.obj, ...Object.values(somas)].forEach((o) => { o.visible = !seg2 && m !== 'tracts'; });
-    if (seg2) st.fly = flyTarget(COL_POS, COL_POS.clone().add(V3(13, 2.5, 25)));
+    const seg2 = m === 'segments', nv = m === 'nerve';
+    if (st.nvHidden) { st.nvHidden.forEach((o) => { o.visible = true; }); st.nvHidden = null; }
+    if (nv) { st.nvHidden = scene.children.filter((o) => o !== NV && o.visible && !o.isLight && o !== fx.obj); st.nvHidden.forEach((o) => { o.visible = false; }); }
+    NV.visible = nv; col.visible = seg2; cord.visible = dura.visible = !seg2 && !nv; vert.visible = m === 'anat' && st.vert;
+    [muscle, skin, fibMesh, fx.obj, ...Object.values(somas)].forEach((o) => { o.visible = !seg2 && !nv && m !== 'tracts'; });
+    if (nv) st.fly = NERVE_VIEW;
+    else if (seg2) st.fly = flyTarget(COL_POS, COL_POS.clone().add(V3(13, 2.5, 25)));
     else if (m === 'tracts') st.fly = flyTarget(V3(0, 0, 1.6), V3(1.3, 1.1, 7.2));
     else st.fly = HOME;
     st.msg = null; refs.setInfo && refs.setInfo();
@@ -281,39 +307,46 @@ function makeSpinal() {
     if (G[1].glow) { const g = Math.exp(-(t - G[1].glow) / 0.5); somas.pg.material.emissiveIntensity = Math.max(somas.pg.material.emissiveIntensity, g); }
   }
   const TXT = {
-    anat: 'A cross-section of the spinal cord (dorsal side up). The gray matter looks like a <b>butterfly</b>: the thin posterior horns almost reach the surface, the thick anterior horns do not, and the lateral horns lie between them. Around it is the white matter with its tracts. Sensory fibers enter through the <b>posterior root</b>, which carries a swelling, the <b>spinal (dorsal root) ganglion</b>, with pseudounipolar neurons. The axons of motor neurons and autonomic neurons leave through the <b>anterior root</b>. Below lies the <b>sympathetic trunk</b> with its white and gray rami.',
-    tracts: '<b>Tracts</b>, numbered on the section. Blue and green are ascending, sensory: 1 fasciculus gracilis (from the legs), 2 fasciculus cuneatus (from the arms), 3 and 4 spinocerebellar, 5 and 6 spinothalamic (pain, temperature). Red and orange are descending: 7 and 8 pyramidal (voluntary movement), 9–13 the ancient extrapyramidal system: the vestibulospinal, reticulospinal, rubrospinal, olivospinal and tectospinal tracts.',
-    knee: 'The <b>knee-jerk reflex</b> is a monosynaptic arc. The hammer suddenly stretches the quadriceps, and the <b>muscle spindle</b> fires. The impulse runs along the sensory fiber, through the ganglion and the posterior root, straight to a <b>motor neuron</b> in the anterior horn: just one synapse. The motor neuron responds and the muscle contracts. This is the fastest reflex: it maintains posture when a load suddenly stretches a muscle.',
-    withdraw: 'The <b>withdrawal reflex</b> is polysynaptic. Prick → pain ending → ganglion → interneuron of the posterior horn → interneuron of the intermediate zone → flexor motor neurons of the same and neighboring segments. The stronger the pain, the more muscles are recruited. At the same time the signal crosses to the other side and ascends to the thalamus (red tail going up): that is how we become aware of the pain only after we have already pulled the hand away.',
-    inhib: '<b>The brain inhibits the reflex.</b> Axons from the brain (blue signal from above) reach the interneuron of the intermediate zone. If the brain manages to send an inhibitory signal in time, the hand is not pulled away: this is how we hold still while blood is taken from a finger. The knee-jerk reflex has no such interneuron, so it cannot be suppressed.',
-    veg: 'An <b>autonomic arc</b> of two neurons. A <b>preganglionic</b> neuron of the lateral horn sends its axon through the anterior root and the <b>white ramus</b> to a sympathetic ganglion. There a <b>postganglionic</b> neuron sends its axon along the <b>gray ramus</b> back into the nerve, to blood vessels, sweat glands and the muscles of the hair follicles. Sympathetic neurons are found only in the thoracic and upper lumbar segments.',
-    segments: '<b>31 segments</b> are the 31 “floors” of the body: 8 cervical, 12 thoracic, 5 lumbar, 5 sacral and one coccygeal. Each gives off a pair of nerves. The spine grows faster than the cord, so in an adult the spinal cord ends at the second lumbar vertebra, and below it the roots run downward as the <b>cauda equina</b>. The enlargements in the cervical and lumbar regions control the arms and legs. A lumbar puncture is done below the end of the cord, in the lumbar cistern.',
+    anat: 'Поперечный срез спинного мозга (спинная сторона сверху). Серое вещество похоже на <b>бабочку</b>: тонкие задние рога почти доходят до поверхности, толстые передние — нет, между ними боковые. Вокруг — белое вещество с проводящими путями. В <b>задний корешок</b> входят чувствительные волокна, на нём узел — <b>спинномозговой ганглий</b> с псевдоуниполярными нейронами. Из <b>переднего</b> выходят аксоны мотонейронов и вегетативных нейронов. Ниже — <b>симпатический ствол</b> с белой и серой ветвями.',
+    tracts: '<b>Проводящие пути</b>, номера на срезе. Синие и зелёные — восходящие, сенсорные: 1 тонкий пучок (от ног), 2 клиновидный (от рук), 3 и 4 спинно-мозжечковые, 5 и 6 спинно-таламические (боль, температура). Красные и оранжевые — нисходящие: 7 и 8 пирамидные (произвольные движения), 9–13 древняя экстрапирамидная система: вестибуло-, ретикуло-, рубро-, оливо- и текто-спинальный пути.',
+    knee: '<b>Коленный рефлекс</b> — моносинаптическая дуга. Молоточек резко растягивает четырёхглавую мышцу, срабатывает <b>мышечное веретено</b>. Импульс бежит по чувствительному волокну, через ганглий и задний корешок прямо на <b>мотонейрон</b> переднего рога — всего один синапс. Мотонейрон отвечает, мышца сокращается. Это самый быстрый рефлекс: он держит позу, когда нагрузка внезапно растягивает мышцу.',
+    withdraw: '<b>Отдёргивание</b> — полисинаптический рефлекс. Укол → болевое окончание → ганглий → вставочный нейрон заднего рога → вставочный нейрон промежуточной зоны → мотонейроны сгибателей своего и соседнего сегмента. Чем сильнее боль, тем больше мышц вовлекается. Одновременно сигнал переходит на другую сторону и поднимается к таламусу (красный хвост вверх): так мы узнаём о боли уже после того, как отдёрнули руку.',
+    inhib: '<b>Мозг тормозит рефлекс.</b> На вставочный нейрон промежуточной зоны приходят аксоны из головного мозга (голубой сигнал сверху). Если мозг успевает послать тормозной сигнал, рука не отдёргивается: так мы терпим, когда берут кровь из пальца. У коленного рефлекса такого вставочного нейрона нет, поэтому его не сдержать.',
+    veg: '<b>Вегетативная дуга</b> из двух нейронов. <b>Преганглионарный</b> нейрон бокового рога посылает аксон через передний корешок и <b>белую ветвь</b> в симпатический ганглий. Там <b>постганглионарный</b> нейрон отправляет аксон по <b>серой ветви</b> обратно в нерв — к сосудам, потовым железам, мышцам волос. Симпатические нейроны есть только в грудных и верхних поясничных сегментах.',
+    nerve: '<b>Периферический нерв в разрезе.</b> Нерв — это кабель из тысяч аксонов. Каждое волокно окружено тонким <b>эндоневрием</b>; волокна собраны в пучки, одетые <b>периневрием</b> — плотным слоем клеток, который служит барьером между кровью и нервом. Снаружи всё обёрнуто <b>эпиневрием</b> из плотной соединительной ткани с жиром и собственными сосудами. Белые муфты — миелин шванновских клеток. При травме хирург сшивает нерв за эпиневрий или за периневрий пучков; аксоны отрастают примерно на 1 мм в сутки.',
+    segments: '<b>31 сегмент</b> — 31 «этаж» тела: 8 шейных, 12 грудных, 5 поясничных, 5 крестцовых и копчиковый. От каждого отходит пара нервов. Позвоночник растёт быстрее мозга, поэтому у взрослого спинной мозг кончается у II поясничного позвонка, а ниже корешки идут вниз <b>конским хвостом</b>. Утолщения в шейном и поясничном отделах управляют руками и ногами. Спинномозговую пункцию делают ниже конца мозга, в поясничной цистерне.',
   };
   const labels = [
-    { text: 'posterior horn', pos: V3(0.42, 0.66, L / 2), color: '#c9a0c8', show: () => st.labels && st.mode === 'anat' },
-    { text: 'anterior horn', pos: V3(0.5, -0.36, L / 2), color: '#ff9a8a', show: () => st.labels && st.mode === 'anat' },
-    { text: 'lateral horn', pos: V3(0.55, -0.06, L / 2), color: '#ffb070', show: () => st.labels && st.mode === 'anat' },
-    { text: 'white matter', pos: V3(-0.8, 0.35, L / 2), color: '#efe8dc', show: () => st.labels && st.mode === 'anat' },
-    { text: 'central canal', pos: V3(0.02, 0.05, L / 2), color: '#9a92a6', show: () => st.labels && st.mode === 'tracts' },
-    { text: 'posterior root', pos: V3(-1.05, 0.72, 0.2), color: '#efe2c8', show: () => st.labels && st.mode === 'anat' },
-    { text: 'anterior root', pos: V3(-1.3, -0.75, -0.5), color: '#efe2c8', show: () => st.labels && st.mode === 'anat' },
-    { text: 'spinal ganglion', pos: V3(-1.95, 1.05, 0.2), color: '#e8c8a0', show: () => st.labels && st.mode === 'anat' },
-    { text: 'spinal nerve', pos: V3(-3.5, -0.05, 0), color: '#efe2c8', show: () => st.labels && st.mode === 'anat' },
-    { text: 'sympathetic trunk', pos: V3(-2.75, -2.0, 0.9), color: '#d8b890', show: () => st.labels && st.mode === 'anat' },
-    { text: 'white and gray rami', pos: V3(2.9, -0.9, 0.2), color: '#d8b890', show: () => st.labels && st.mode === 'anat' },
-    { text: 'dura mater', pos: V3(-1.15, -1.2, 1.2), color: '#e2ddd2', show: () => st.labels && st.mode === 'anat' },
-    { text: 'vertebra', pos: V3(0, -2.9, 0.8), color: '#e0d4ba', show: () => st.labels && st.mode === 'anat' && st.vert },
-    { text: 'muscle spindle', pos: SP.clone().add(V3(0, 0.3, 0)), color: '#f0c060', show: () => st.labels && st.mode === 'anat' },
-    { text: 'muscle', pos: muscle.position.clone().add(V3(0.4, -0.5, 0.6)), color: '#ff8a7a', show: () => st.labels && st.mode === 'anat' },
-    { text: 'skin', pos: skin.position.clone().add(V3(0.6, 0.2, 0.6)), color: '#e8c0a8', show: () => st.labels && st.mode === 'anat' },
-    { text: 'motor neuron', pos: MN.clone().add(V3(0.05, -0.12, 0.2)), color: '#ff8a6a', show: () => st.labels && st.mode === 'anat' && st.msRun },
-    { text: 'interneurons', pos: I2.clone().add(V3(-0.1, 0.1, 0.2)), color: '#e8a0ff', show: () => st.labels && st.mode === 'anat' && st.msRun },
-    { text: 'to the thalamus', pos: V3(-0.66, -0.3, -3.4), color: '#ff6a5a', show: () => st.labels && st.mode === 'anat' && st.msRun },
-    { text: 'cervical C1–C8', pos: V3(0, 0, 0), sg: 'C', color: '#5E8FEF', show: () => st.labels && st.mode === 'segments' },
-    { text: 'thoracic T1–T12', pos: V3(0, 0, 0), sg: 'T', color: '#5CC48A', show: () => st.labels && st.mode === 'segments' },
-    { text: 'lumbar L1–L5', pos: V3(0, 0, 0), sg: 'L', color: '#F2C14E', show: () => st.labels && st.mode === 'segments' },
-    { text: 'sacral S1–S5', pos: V3(0, 0, 0), sg: 'S', color: '#E9785F', show: () => st.labels && st.mode === 'segments' },
-    { text: 'cauda equina', pos: V3(0, 0, 0), sg: 'cauda', color: '#efe2c8', show: () => st.labels && st.mode === 'segments' },
+    { text: 'задний рог', pos: V3(0.42, 0.66, L / 2), color: '#c9a0c8', show: () => st.labels && st.mode === 'anat' },
+    { text: 'передний рог', pos: V3(0.5, -0.36, L / 2), color: '#ff9a8a', show: () => st.labels && st.mode === 'anat' },
+    { text: 'боковой рог', pos: V3(0.55, -0.06, L / 2), color: '#ffb070', show: () => st.labels && st.mode === 'anat' },
+    { text: 'белое вещество', pos: V3(-0.8, 0.35, L / 2), color: '#efe8dc', show: () => st.labels && st.mode === 'anat' },
+    { text: 'центральный канал', pos: V3(0.02, 0.05, L / 2), color: '#9a92a6', show: () => st.labels && st.mode === 'tracts' },
+    { text: 'задний корешок', pos: V3(-1.05, 0.72, 0.2), color: '#efe2c8', show: () => st.labels && st.mode === 'anat' },
+    { text: 'передний корешок', pos: V3(-1.3, -0.75, -0.5), color: '#efe2c8', show: () => st.labels && st.mode === 'anat' },
+    { text: 'спинномозговой ганглий', pos: V3(-1.95, 1.05, 0.2), color: '#e8c8a0', show: () => st.labels && st.mode === 'anat' },
+    { text: 'спинномозговой нерв', pos: V3(-3.5, -0.05, 0), color: '#efe2c8', show: () => st.labels && st.mode === 'anat' },
+    { text: 'симпатический ствол', pos: V3(-2.75, -2.0, 0.9), color: '#d8b890', show: () => st.labels && st.mode === 'anat' },
+    { text: 'белая и серая ветви', pos: V3(2.9, -0.9, 0.2), color: '#d8b890', show: () => st.labels && st.mode === 'anat' },
+    { text: 'твёрдая оболочка', pos: V3(-1.15, -1.2, 1.2), color: '#e2ddd2', show: () => st.labels && st.mode === 'anat' },
+    { text: 'позвонок', pos: V3(0, -2.9, 0.8), color: '#e0d4ba', show: () => st.labels && st.mode === 'anat' && st.vert },
+    { text: 'мышечное веретено', pos: SP.clone().add(V3(0, 0.3, 0)), color: '#f0c060', show: () => st.labels && st.mode === 'anat' },
+    { text: 'мышца', pos: muscle.position.clone().add(V3(0.4, -0.5, 0.6)), color: '#ff8a7a', show: () => st.labels && st.mode === 'anat' },
+    { text: 'кожа', pos: skin.position.clone().add(V3(0.6, 0.2, 0.6)), color: '#e8c0a8', show: () => st.labels && st.mode === 'anat' },
+    { text: 'мотонейрон', pos: MN.clone().add(V3(0.05, -0.12, 0.2)), color: '#ff8a6a', show: () => st.labels && st.mode === 'anat' && st.msRun },
+    { text: 'вставочные нейроны', pos: I2.clone().add(V3(-0.1, 0.1, 0.2)), color: '#e8a0ff', show: () => st.labels && st.mode === 'anat' && st.msRun },
+    { text: 'к таламусу', pos: V3(-0.66, -0.3, -3.4), color: '#ff6a5a', show: () => st.labels && st.mode === 'anat' && st.msRun },
+    { text: 'эпиневрий', pos: V3(40.6, 0.98, 0.25), color: '#F0E0C8', show: () => st.labels && st.mode === 'nerve' },
+    { text: 'периневрий', pos: V3(42.5, 0.6 + 0.26, 0.05), color: '#B8D8F0', show: () => st.labels && st.mode === 'nerve' },
+    { text: 'пучок волокон', pos: V3(42.55, -0.3, -0.52), color: '#E8D8E8', show: () => st.labels && st.mode === 'nerve' },
+    { text: 'миелиновое волокно', pos: V3(42.6, 0.05, 0.12), color: '#F4EFE6', show: () => st.labels && st.mode === 'nerve' },
+    { text: 'сосуды нерва', pos: V3(42.5, 0.86, 0.36), color: '#E0505A', show: () => st.labels && st.mode === 'nerve' },
+    { text: 'жир эпиневрия', pos: V3(42.5, -0.8, 0.45), color: '#F2D890', show: () => st.labels && st.mode === 'nerve' },
+    { text: 'шейные C1–C8', pos: V3(0, 0, 0), sg: 'C', color: '#5E8FEF', show: () => st.labels && st.mode === 'segments' },
+    { text: 'грудные T1–T12', pos: V3(0, 0, 0), sg: 'T', color: '#5CC48A', show: () => st.labels && st.mode === 'segments' },
+    { text: 'поясничные L1–L5', pos: V3(0, 0, 0), sg: 'L', color: '#F2C14E', show: () => st.labels && st.mode === 'segments' },
+    { text: 'крестцовые S1–S5', pos: V3(0, 0, 0), sg: 'S', color: '#E9785F', show: () => st.labels && st.mode === 'segments' },
+    { text: 'конский хвост', pos: V3(0, 0, 0), sg: 'cauda', color: '#efe2c8', show: () => st.labels && st.mode === 'segments' },
   ];
   // подписи путей: справа от среза столбиком, сегментов — сбоку от колонны
   { const TRP = { 1: [0.07, 0.5], 2: [0.2, 0.5], 3: [0.86, 0.22], 4: [0.88, -0.22], 5: [0.45, -0.56], 6: [0.62, -0.3], 7: [0.62, 0.06], 8: [0.1, -0.55], 9: [0.62, -0.55], 10: [0.4, -0.4], 11: [0.78, 0.0], 12: [0.8, -0.42], 13: [0.27, -0.66] };
@@ -325,40 +358,41 @@ function makeSpinal() {
   function ui(el) {
     const ib = infoBox('1 1 300px');
     refs.setInfo = () => { ib.info.innerHTML = st.msg || TXT[st.mode]; };
-    refs.modeSeg = seg([{ id: 'anat', label: 'Section and roots' }, { id: 'tracts', label: 'Tracts' }, { id: 'segments', label: 'Segments' }], () => st.mode, (v) => setMode(v));
-    const vb2 = toggle('Vertebra', () => st.vert, (v) => { st.vert = v; vert.visible = v && st.mode !== 'segments'; });
-    const inh = toggle('Brain inhibits', () => st.inhibit, (v) => { st.inhibit = v; });
-    const lab = toggle('Labels', () => st.labels, (v) => { st.labels = v; });
+    refs.modeSeg = seg([{ id: 'anat', label: 'Срез и корешки' }, { id: 'tracts', label: 'Проводящие пути' }, { id: 'segments', label: 'Сегменты' }, { id: 'nerve', label: 'Нерв в разрезе' }], () => st.mode, (v) => setMode(v));
+    const vb2 = toggle('Позвонок', () => st.vert, (v) => { st.vert = v; vert.visible = v && st.mode !== 'segments'; });
+    const inh = toggle('Мозг тормозит', () => st.inhibit, (v) => { st.inhibit = v; });
+    const lab = toggle('Подписи', () => st.labels, (v) => { st.labels = v; });
     Object.assign(refs, { vb2, inh, lab });
-    el.append(group('Mode', '1 · 2 · 3', refs.modeSeg), group('Reflexes', 'K · W · A', button('Knee-jerk', knee, true), button('Withdrawal', withdraw), inh, button('Autonomic', autonomic)), group('View', 'V · N', vb2, lab), ib.el);
+    el.append(group('Режим', '1–4', refs.modeSeg), group('Рефлексы', 'K · W · A', button('Коленный', knee, true), button('Отдёргивание', withdraw), inh, button('Вегетативный', autonomic)), group('Вид', 'V · N', vb2, lab), ib.el);
     refs.setInfo();
   }
   function onKey(e) {
     const k = e.key.toLowerCase();
-    if (k === '1') { setMode('anat'); return true; } if (k === '2') { setMode('tracts'); return true; } if (k === '3') { setMode('segments'); return true; }
+    if (k === '1') { setMode('anat'); return true; } if (k === '2') { setMode('tracts'); return true; } if (k === '3') { setMode('segments'); return true; } if (k === '4') { setMode('nerve'); return true; }
     if (k === 'k' || k === 'л') { knee(); return true; } if (k === 'w' || k === 'ц') { withdraw(); return true; } if (k === 'a' || k === 'ф') { autonomic(); return true; }
     if (k === 'v' || k === 'м') { refs.vb2.click(); return true; } if (k === 'n' || k === 'т') { refs.lab.click(); return true; }
     return false;
   }
   function stats() {
-    if (st.mode === 'segments') return [['Segments', 31, ''], ['Length', '42–45', 'cm'], ['Mass', '34–38', 'г']];
-    return [['Arc time', Math.round(st.ms), 'ms'], ['Synapses', st.syn, ''], ['Neurons', '13.5', 'million']];
+    if (st.mode === 'nerve') return [['Аксонов в седалищном нерве', '≈ 50 000', ''], ['Рост аксона', '≈ 1', 'мм/сут']];
+    if (st.mode === 'segments') return [['Сегментов', 31, ''], ['Длина', '42–45', 'см'], ['Масса', '34–38', 'г']];
+    return [['Время дуги', Math.round(st.ms), 'мс'], ['Синапсов', st.syn, ''], ['Нейронов', '13,5', 'млн']];
   }
   const self = {
     scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#FFB070',
-    kicker: 'Brain · spinal cord', title: 'Spinal cord',
-    lede: 'A tube of nervous tissue in the vertebral canal: 31 segments, reflex arcs and the tracts that link the body with the brain.',
+    kicker: 'Мозг · спинной мозг', title: 'Спинной мозг',
+    lede: 'Трубка из нервной ткани в позвоночном канале: 31 сегмент, рефлекторные дуги и проводящие пути между телом и головным мозгом.',
     notes: `
-      <div><h2>How the spinal cord is built</h2>
-        <p>It is 42–45 cm long and weighs 34–38 g, with a canal about 1 mm wide inside. It contains 13.5 million neurons, and only 3% of them are efferent (motor and autonomic neurons); the remaining 97% are interneurons. The posterior roots are the sensory inputs, the anterior roots the motor and autonomic outputs. The roots, ganglia and nerves belong to the peripheral nervous system.</p>
-        <h3>Gray matter</h3>
-        <p>Sensory signals are relayed in the posterior horns: the marginal zone, the spongy zone and the substantia gelatinosa (pain), the nucleus proprius, and Clarke’s thoracic nucleus (proprioception). The lateral horns hold the sympathetic centers of the thoracic and upper lumbar segments and the main “computing center”, the intermediomedial nucleus. The anterior horns hold the motor neurons: the lateral nuclei control distal muscles (the fingers), the medial nuclei the trunk. Bror Rexed divided the gray matter into 10 laminae.</p>
-        <h3>White matter</h3>
-        <p>The posterior columns carry skin and muscle sensation without a relay in the spinal cord: the first synapse is only in the medulla. The spinocerebellar tracts are even faster. Pain and temperature travel more slowly, along the spinothalamic tracts, which cross at their own segment. About 80% of the pyramidal tract crosses at the junction with the brain; the remaining 20% crosses at the level of its own segment.</p></div>
-      <div><h2>What is accurate here</h2><ul>
-        <li>The shape of the section: the posterior horns thinner and longer, the anterior horns thicker; the posterior sulcus and the deep anterior fissure.</li><li>The monosynaptic knee-jerk reflex and the polysynaptic withdrawal reflex with its ascending branch to the thalamus.</li><li>The two-neuron autonomic arc through the white and gray rami.</li><li>The compressed segments and the cauda equina below the second lumbar vertebra.</li></ul>
-        <h2 style="margin-top:22px">Simplifications</h2><ul><li>Time is slowed down about 80-fold: a real knee-jerk reflex takes about 20–25 ms.</li><li>The vertebra is simplified; the muscle and skin are moved close to the spinal cord.</li></ul></div>
-      <div class="keys"><h2>Keys</h2><ul><li><code>1</code>–<code>3</code> mode</li><li><code>K</code> knee-jerk reflex</li><li><code>W</code> withdrawal</li><li><code>A</code> autonomic</li><li><code>V</code> vertebra</li><li><code>N</code> labels</li></ul></div>`,
+      <div><h2>Как устроен спинной мозг</h2>
+        <p>Длина 42–45 см, масса 34–38 г, внутри — канал около 1 мм. В нём 13,5 млн нейронов, и только 3% из них — эфферентные (мотонейроны и вегетативные), остальные 97% — вставочные. Задние корешки — сенсорные входы, передние — двигательные и вегетативные выходы. Корешки, ганглии и нервы относятся к периферической нервной системе.</p>
+        <h3>Серое вещество</h3>
+        <p>В задних рогах переключается чувствительность: краевая зона, губчатая зона и студенистое вещество (боль), собственное ядро, грудное ядро Кларка (проприоцепция). В боковых — симпатические центры грудных и верхних поясничных сегментов и главный «вычислительный центр» — промежуточно-медиальное ядро. В передних — мотонейроны: латеральные ядра управляют дальними мышцами (пальцы), медиальные — туловищем. Брор Рексед разделил серое вещество на 10 пластин.</p>
+        <h3>Белое вещество</h3>
+        <p>Задние канатики проводят кожную и мышечную чувствительность без переключения в спинном мозге — первый синапс только в продолговатом. Спинно-мозжечковые пути ещё быстрее. Боль и температура идут медленнее, по спинно-таламическим путям с перекрёстом на своём сегменте. Пирамидный путь на 80% перекрещивается на границе с головным мозгом, остальные 20% — на уровне своего сегмента.</p></div>
+      <div><h2>Что здесь настоящее</h2><ul>
+        <li>Форма среза: задние рога тоньше и длиннее, передние толще; задняя борозда и глубокая передняя щель.</li><li>Моносинаптический коленный рефлекс и полисинаптическое отдёргивание с восходящей ветвью к таламусу.</li><li>Двухнейронная вегетативная дуга через белую и серую ветви.</li><li>Сжатые сегменты и конский хвост ниже II поясничного позвонка.</li></ul>
+        <h2 style="margin-top:22px">Условности</h2><ul><li>Время замедлено примерно в 80 раз: реальный коленный рефлекс длится около 20–25 мс.</li><li>Позвонок упрощён, мышца и кожа придвинуты к спинному мозгу.</li></ul></div>
+      <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>3</code> режим</li><li><code>K</code> коленный рефлекс</li><li><code>W</code> отдёргивание</li><li><code>A</code> вегетативный</li><li><code>V</code> позвонок</li><li><code>N</code> подписи</li></ul></div>`,
   };
   return self;
 }

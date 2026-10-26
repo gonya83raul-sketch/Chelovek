@@ -5,7 +5,7 @@ import { BODY, Sparks, THREE, V3, __set_rnd, bodyShell, button, clamp, dimOthers
    ТЕЛО · ЭНДОКРИННАЯ СИСТЕМА
    ========================================================= */
 const EN_GL = [
-  { id: 'hyp', name: 'Hypothalamus and pituitary', color: '#C77DFF', p: V3(0, 4.05, 0.08), text: 'The <b>hypothalamus</b> is the bridge between the nervous and endocrine systems: its neurons secrete releasing hormones. The <b>pituitary gland</b> (0.5 g) is the “master gland”: the anterior lobe releases tropic hormones (TSH, ACTH, FSH, LH), growth hormone and prolactin; the posterior lobe releases vasopressin and oxytocin.', hormones: 'TSH, ACTH, GH, FSH, LH, prolactin, ADH, oxytocin', targets: ['thy', 'adr', 'gon', 'liver', 'kid'] },
+  { id: 'hyp', name: 'Hypothalamus and pituitary', color: '#C77DFF', p: V3(0, 4.05, 0.08), text: '<b>The hypothalamus</b> links the nervous and endocrine systems: its neurons release releasing hormones. <b>The pituitary</b> (0.5 g) is the “master gland”: the anterior lobe releases tropic hormones (TSH, ACTH, FSH, LH), growth hormone and prolactin; the posterior lobe only stores and releases vasopressin and oxytocin made by hypothalamic neurons.', hormones: 'TSH, ACTH, GH, FSH, LH, prolactin, ADH, oxytocin', targets: ['thy', 'adr', 'gon', 'liver', 'kid'] },
   { id: 'pin', name: 'Pineal gland', color: '#9FA8FF', p: V3(0, 4.2, -0.12), text: 'The <b>pineal gland</b> (epiphysis) secretes melatonin at night, in the dark — a “time to sleep” signal for the whole body. Light, especially blue light, suppresses its production.', hormones: 'melatonin', targets: ['hyp'] },
   { id: 'thy', name: 'Thyroid gland', color: '#5CC48A', p: V3(0, 3.3, 0.22), text: 'The <b>thyroid gland</b> is butterfly-shaped and sits on the front of the neck. Its hormones thyroxine (T4) and triiodothyronine (T3) contain iodine and set the metabolic rate in almost every cell; in children they are essential for brain development. Calcitonin lowers blood calcium.', hormones: 'T4, T3, calcitonin', targets: ['heart', 'liver', 'mus'] },
   { id: 'para', name: 'Parathyroids', color: '#E8D86A', p: V3(0.09, 3.33, 0.14), text: 'The <b>parathyroid glands</b> are four “grains” on the back of the thyroid. Parathyroid hormone raises blood calcium: it draws calcium from the bones and retains it in the kidneys.', hormones: 'parathyroid hormone', targets: ['bone', 'kid'] },
@@ -13,6 +13,10 @@ const EN_GL = [
   { id: 'adr', name: 'Adrenal glands', color: '#F2C14E', p: V3(0.42, 1.38, -0.33), text: '<b>Adrenal glands.</b> The cortex secretes cortisol (stress, blood sugar, suppression of inflammation), aldosterone (sodium and water) and small amounts of sex hormones. The medulla secretes epinephrine and norepinephrine: the “fight or flight” response within seconds.', hormones: 'cortisol, aldosterone, epinephrine', targets: ['heart', 'liver', 'kid', 'mus'] },
   { id: 'panc', name: 'Pancreatic islets', color: '#FF8A5C', p: V3(0.18, 1.08, -0.12), text: 'The <b>islets of Langerhans</b> make up 1–2% of pancreatic tissue — about a million cell clusters. Beta cells secrete <b>insulin</b>, which opens cells to glucose; alpha cells secrete <b>glucagon</b>, which makes the liver release glucose. Insulin deficiency causes diabetes mellitus.', hormones: 'insulin, glucagon', targets: ['liver', 'mus'] },
   { id: 'gon', name: 'Gonads', color: '#FF7AB0', p: V3(0.3, -0.05, 0.05), text: 'The <b>gonads</b> are the ovaries in women (estrogens, progesterone) and the testes in men (testosterone). Their activity is controlled by pituitary FSH and LH. The hormones trigger puberty and secondary sex characteristics and affect bones, muscles and the brain.', hormones: 'estrogens, progesterone, testosterone', targets: ['bone', 'mus'] },
+  { id: 'hrt', name: 'Heart', color: '#FF7A7A', diffuse: true, p: V3(0.06, 2.24, 0.3), text: '<b>The heart</b> is an endocrine organ too. Atria stretched by excess blood release <b>natriuretic peptide</b>: the kidneys excrete more salt and water, vessels dilate and blood pressure falls. A test for the related peptide BNP helps detect heart failure.', hormones: 'natriuretic peptide', targets: ['kid'] },
+  { id: 'kidE', name: 'Kidneys', color: '#E89060', diffuse: true, p: V3(-0.45, 0.94, -0.26), text: '<b>The kidneys</b> release <b>erythropoietin</b> (when oxygen is short, bone marrow makes more red cells), <b>renin</b> (starts the renin–angiotensin–aldosterone system that raises blood pressure) and turn vitamin D into active <b>calcitriol</b>, which boosts calcium absorption.', hormones: 'erythropoietin, renin, calcitriol', targets: ['bone', 'adr'] },
+  { id: 'gut', name: 'Stomach and intestine', color: '#F2B070', diffuse: true, p: V3(0.2, 1.45, 0.25), text: '<b>The stomach and intestine</b> form the largest endocrine “gland”: cells scattered in the mucosa release <b>gastrin</b> (stomach acid), <b>secretin</b> and <b>cholecystokinin</b> (pancreatic juice and bile), <b>GIP and GLP-1</b> (boost insulin release after a meal — GLP-1 is the basis of modern drugs for diabetes and obesity) and <b>ghrelin</b>, the “hunger hormone”.', hormones: 'gastrin, secretin, CCK, GIP, GLP-1, ghrelin', targets: ['liver', 'hyp'] },
+  { id: 'fat', name: 'Adipose tissue', color: '#F2E08A', diffuse: true, p: V3(-0.25, 0.42, 0.42), text: '<b>Adipose tissue</b> releases <b>leptin</b>: the more fat, the more leptin and the more the hypothalamus damps appetite; in obesity the brain stops hearing this signal. <b>Adiponectin</b> raises insulin sensitivity. Fat also makes estrogens.', hormones: 'leptin, adiponectin', targets: ['hyp', 'liver', 'mus'] },
 ];
 function makeEndo() {
   __set_rnd(mulberry(1616));
@@ -38,6 +42,11 @@ function makeEndo() {
   add('panc', taperTube(PANC, (u) => 0.08 - 0.04 * u, 50, 14), { emissiveIntensity: 0.05 });
   const islets = []; for (let i = 0; i < 18; i++) islets.push(glowNucleus(scene, PANC.getPointAt(rnd()).add(randUnit().multiplyScalar(0.04)), '#FF8A5C', 0.012, 6));
   [1, -1].forEach((s) => add('gon', ell3(0.06, 0.04, 0.04, V3(0.3 * s, -0.05, 0.05))));
+  // диффузная эндокринная система: предсердия, юкстагломерулярный аппарат почек, клетки слизистой ЖКТ, жир
+  add('hrt', ell3(0.08, 0.07, 0.07, GL.hrt.p)); add('hrt', ell3(0.07, 0.06, 0.06, BODY.heart.clone().add(V3(0.15, 0.2, -0.08))));
+  [-0.45, 0.45].forEach((x) => add('kidE', ell3(0.035, 0.07, 0.03, V3(x * 0.82, x > 0 ? 1.0 : 0.94, -0.26))));
+  { const GUT = new THREE.CatmullRomCurve3([V3(0.35, 1.5, 0.2), V3(0.12, 1.38, 0.28), V3(-0.12, 1.3, 0.22), V3(-0.18, 1.15, 0.15)]); add('gut', taperTube(GUT, () => 0.035, 30, 8)); for (let i = 0; i < 10; i++) glowNucleus(scene, GUT.getPointAt(i / 9).add(randUnit().multiplyScalar(0.03)), '#F2B070', 0.01, 6); }
+  [[-0.25, 0.42, 0.42], [0.2, 0.38, 0.44], [0.0, 0.25, 0.46], [-0.4, 0.2, 0.36], [0.38, 0.22, 0.36]].forEach(([x, y, z]) => add('fat', ell3(0.09, 0.06, 0.04, V3(x, y, z)), { transparent: true, opacity: 0.8 }));
   // органы-мишени (призраки)
   const ghostMat = (c) => new THREE.MeshPhysicalMaterial({ color: new THREE.Color(c).multiplyScalar(0.35), roughness: 0.6, transparent: true, opacity: 0.22, depthWrite: false, emissive: new THREE.Color(c), emissiveIntensity: 0.05 });
   const TG = {
@@ -49,7 +58,7 @@ function makeEndo() {
   };
   TG.heart.m.position.copy(BODY.heart); TG.heart.m.rotation.z = 0.4;   // геометрия в нуле — пульсирует на месте, верхушка влево
   Object.values(TG).forEach((x) => scene.add(x.m));
-  TG.thy = { p: GL.thy.p }; TG.adr = { p: GL.adr.p }; TG.gon = { p: GL.gon.p }; TG.hyp = { p: GL.hyp.p };
+  TG.thy = { p: GL.thy.p }; TG.adr = { p: GL.adr.p }; TG.gon = { p: GL.gon.p }; TG.hyp = { p: GL.hyp.p }; TG.panc = { p: GL.panc.p };
   const arc = (a, b) => { const m = a.clone().lerp(b, 0.5); m.z += 0.35; m.x += (b.x - a.x) * 0.1; return new THREE.CatmullRomCurve3([a, m, b]); };
   const fx = new Sparks(2600, 0.065); scene.add(fx.obj);
   /* ---------- модели обратной связи ---------- */
@@ -105,7 +114,7 @@ function makeEndo() {
     { text: 'liver', pos: V3(-0.8, 1.6, 0.25), color: '#c88a70', show: () => st.labels && st.mode !== 'thy' },
     { text: 'muscles', pos: V3(-0.75, -1.0, 0.2), color: '#c86a6a', show: () => st.labels && (st.mode === 'sugar' || (st.mode === 'map' && st.sel)) },
     { text: 'bone', pos: V3(0.62, -1.0, 0.1), color: '#e8d8bb', show: () => st.labels && st.mode === 'map' && st.sel && GL[st.sel].targets.includes('bone') },
-    { text: 'heart', pos: BODY.heart.clone().add(V3(0.3, 0.0, 0.2)), color: '#FF8A7A', show: () => st.labels && (st.mode === 'stress' || (st.mode === 'map' && st.sel)) },
+    { text: 'heart', pos: BODY.heart.clone().add(V3(0.3, 0.0, 0.2)), color: '#FF8A7A', show: () => st.labels && (st.mode === 'stress' || (st.mode === 'map' && st.sel && st.sel !== 'hrt')) },
   ];
   const refs = {};
   function ui(el) {

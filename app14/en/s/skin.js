@@ -12,15 +12,15 @@ const SK_REC = [
   { id: 'free', short: 'Pain', name: 'Free nerve endings', color: '#FF6A5A', fast: false, text: '<b>Free nerve endings</b> reach even into the epidermis. They are nociceptors (pain), thermoreceptors (warmth and cold) and itch receptors. Pain is carried by two types of fibers: fast ones (sharp, well-localized pain) and slow ones (dull, aching pain).' },
 ];
 const SK_LAYERS = [
-  { id: 'epi', name: 'Epidermis', color: '#E8C8B0', text: '<b>The epidermis</b> (0.05–1.5 mm) is a stratified epithelium without blood vessels. In the basal layer cells divide constantly, move upward, fill with keratin and die; the top layer of dead scales (stratum corneum) flakes off and is completely renewed in ~4 weeks. Melanocytes produce the pigment melanin, which protects against ultraviolet light.' },
-  { id: 'der', name: 'Dermis', color: '#D89090', text: '<b>The dermis</b> (1–4 mm) is dense connective tissue made of collagen fibers (strength) and elastin (elasticity). It contains blood vessels, nerves and receptors, hair roots, and sebaceous and sweat glands. The dermal papillae form the ridge patterns of fingerprints.' },
-  { id: 'hyp', name: 'Hypodermis', color: '#F2D890', text: '<b>The subcutaneous fat</b> is an energy store, thermal insulation and a shock absorber. Its thickness varies greatly with the part of the body and from person to person.' },
+  { id: 'epi', name: 'Epidermis', color: '#E8C8B0', text: '<b>The epidermis</b> (0.05–1.5 mm) is a stratified epithelium without blood vessels. From the bottom up: the <b>basal</b> layer (cells divide), the <b>spinous</b> layer (cells held together by desmosome “spines”), the <b>granular</b> layer (keratohyalin granules; cells begin to die), on palms and soles also the <b>clear</b> layer, and the <b>horny</b> layer — dead flakes that are shed; the epidermis renews in about 4 weeks. <b>Melanocytes</b> sit in the basal layer: through their processes they hand the pigment melanin to neighbouring cells, where it shields the nuclei from ultraviolet. Everyone has roughly the same number of melanocytes; skin colour depends on how much melanin they make.' },
+  { id: 'der', name: 'Dermis', color: '#D89090', text: '<b>The dermis</b> (1–4 mm) is connective tissue of collagen fibers (strength) and elastin (elasticity). The thin <b>papillary</b> layer under the epidermis is loose and holds capillary loops and Meissner corpuscles; the thick <b>reticular</b> layer is dense, and its collagen holds the skin together. Vessels form two plexuses: a deep one at the border with the subcutis and a subpapillary one, from which loops rise into every papilla. The dermis contains vessels, nerves and receptors, hair roots, sebaceous and sweat glands. Dermal papillae form the ridges of fingerprints.' },
+  { id: 'hyp', name: 'Hypodermis', color: '#F2D890', text: '<b>Subcutaneous fat</b> is an energy store, insulation and a shock absorber. Its thickness varies greatly between body sites and between people. Fat lobules are separated by connective-tissue strands that tie the skin to the deep fascia; the subcutaneous artery and vein and the trunk of the cutaneous nerve run here, with twigs rising to the receptors.' },
 ];
 function makeSkin() {
   __set_rnd(mulberry(1919));
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x07060a); scene.environment = envTex;
   labLights(scene, 0xffb08a);
-  const HOME = flyTarget(V3(0.1, -0.85, 0), V3(4.3, 2.05, 8.4));
+  const HOME = flyTarget(V3(-0.35, -1.25, 0), V3(3.9, 1.75, 9.3));
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(HOME.pos);
   const controls = makeControls(camera, HOME.target); controls.minDistance = 1.5; controls.maxDistance = 16;
   const sk = new THREE.Group(); scene.add(sk);
@@ -45,19 +45,40 @@ function makeSkin() {
   // жировые дольки
   // дольки не выходят в дерму и не закрывают Пачини
   { const arr = []; for (let i = 0; i < 90 && arr.length < 64; i++) { const r = 0.11 + rnd() * 0.06, p = V3(rand(-W / 2 + 0.15, W / 2 - 0.15), rand(Y_BOT + 0.15, Y_DER - r - 0.02), rand(-D / 2 + 0.15, D / 2 - 0.15)); if (PAC.some((q) => q.distanceTo(p) < 0.35 + r)) continue; const g = new THREE.SphereGeometry(r, 12, 10); g.translate(p.x, p.y, p.z); arr.push(g); } sk.add(new THREE.Mesh(mergeGeometries(arr), organMat('#F2D890', 0.42, { transparent: true, opacity: 0.6 }))); }
+  // слои эпидермиса: базальный (с меланоцитами), шиповатый, зернистый; роговой — отдельная плита corn
+  const sheet = (fy, col, op) => { const g = new THREE.PlaneGeometry(W, D, 120, 80); g.rotateX(-Math.PI / 2); displaceGeo(g, (v) => { v.y = fy(v.x, v.z); }); const m = new THREE.Mesh(g, new THREE.MeshPhysicalMaterial({ color: new THREE.Color(col).multiplyScalar(0.5), roughness: 0.6, transparent: true, opacity: op, depthWrite: false, side: THREE.DoubleSide })); sk.add(m); return m; };
+  sheet((x, z) => Y_EPI + papH(x, z) + 0.03, '#8a5a40', 0.4);              // базальный
+  sheet((x, z) => Y_EPI + 0.6 * papH(x, z) + 0.11, '#e8c8b0', 0.18);        // шиповатый / зернистый
+  sheet((x, z) => Y_TOP - 0.05, '#c89a60', 0.35);                           // зернистый
+  sheet((x, z) => 0.7 + 0.3 * papH(x, z), '#f0b0b0', 0.16);                 // граница сосочкового и сетчатого слоёв дермы
+  { const arr = [], MEL = []; for (let i = 0; i < 8; i++) { const x = -1.4 + i * 0.4 + rand(-0.08, 0.08), z = rand(-0.8, 0.8), p = V3(x, Y_EPI + papH(x, z) + 0.035, z); MEL.push(p); arr.push(ell3(0.035, 0.02, 0.03, p, 12)); for (let k = 0; k < 4; k++) branchTree(arr, p, V3(rand(-1, 1), 0.5, rand(-1, 1)), 0.1, 0.006, 1, { segs: 4, rad: 3, spread: 1 }); }
+    sk.add(new THREE.Mesh(mergeGeometries(arr), organMat('#6a3a20', 0.6, { emissiveIntensity: 0.1 }))); var MEL0 = MEL[2]; }
+  // эластические волокна: тонкие извитые
+  { const arr = []; for (let i = 0; i < 40; i++) { const p0 = V3(rand(-W / 2 + 0.3, W / 2 - 0.3), rand(Y_DER + 0.1, 0.8), rand(-D / 2 + 0.3, D / 2 - 0.3)), d = randUnit().setY(rand(-0.3, 0.3)).normalize(), side = V3(0, 1, 0).cross(d).normalize(), pts = [];
+      for (let k = 0; k <= 6; k++) pts.push(p0.clone().addScaledVector(d, k * 0.08).addScaledVector(side, 0.025 * Math.sin(k * 2.2))); arr.push(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 16, 0.005, 3)); }
+    sk.add(new THREE.Mesh(mergeGeometries(arr), organMat('#F2E6A0', 0.6, { emissiveIntensity: 0.2 }))); }
+  // соединительнотканные тяжи гиподермы
+  { const arr = []; [-1.3, -0.85, -0.1, 0.75, 1.15, 1.45].forEach((x, i) => { const z = i % 2 ? -0.75 : 0.7; arr.push(tube([V3(x, Y_BOT, z), V3(x + 0.05, (Y_BOT + Y_DER) / 2, z + 0.04), V3(x - 0.03, Y_DER, z)], 0.012, 12, 4)); });
+    sk.add(new THREE.Mesh(mergeGeometries(arr), organMat('#f0e0d0', 0.4, { transparent: true, opacity: 0.6 }))); }
   // коллагеновые волокна
   { const arr = []; for (let i = 0; i < 60; i++) { const p0 = V3(rand(-W / 2 + 0.6, W / 2 - 0.6), rand(Y_DER + 0.1, Y_EPI - 0.15), rand(-D / 2 + 0.6, D / 2 - 0.6)), d = randUnit().setY(rand(-0.2, 0.2)).normalize(); arr.push(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([p0, p0.clone().addScaledVector(d, 0.3).add(randUnit().multiplyScalar(0.05)), p0.clone().addScaledVector(d, 0.6)]), 8, 0.012, 4)); } sk.add(new THREE.Mesh(mergeGeometries(arr), organMat('#f0e0d0', 0.35, { transparent: true, opacity: 0.6 }))); }
   // сосуды с петлями в сосочках
   const VESA = [], VESV = [];
-  { const a = [], v = []; const art = new THREE.CatmullRomCurve3([V3(-W / 2, -0.25, 0.4), V3(0, -0.2, 0.35), V3(W / 2, -0.28, 0.4)]), ven = new THREE.CatmullRomCurve3([V3(-W / 2, -0.3, -0.3), V3(0, -0.25, -0.35), V3(W / 2, -0.32, -0.3)]);
-    a.push(taperTube(art, () => 0.04, 40, 8)); v.push(taperTube(ven, () => 0.05, 40, 8));
-    for (let i = 0; i < 9; i++) { const x = -1.45 + i * 0.36, za = 0.38, zv = -0.32; const top = V3(x, Y_EPI - 0.02 + papH(x, 0.0), 0.02); const ca = new THREE.CatmullRomCurve3([V3(x, -0.22, za), V3(x + rand(-0.08, 0.08), 0.4, za * 0.5 + rand(-0.08, 0.08)), top]), cv = new THREE.CatmullRomCurve3([top, V3(x + 0.04 + rand(-0.08, 0.08), 0.4, zv * 0.5 + rand(-0.08, 0.08)), V3(x, -0.27, zv)]); a.push(new THREE.TubeGeometry(ca, 16, 0.014, 5)); v.push(new THREE.TubeGeometry(cv, 16, 0.014, 5)); VESA.push(ca); VESV.push(cv); }
+  // два сплетения (Неттер, BP 1): глубокое на границе дермы и клетчатки, подсосочковое под сосочками; подкожные артерия и вена снизу
+  { const a = [], v = []; const YD = Y_DER + 0.04, YS = 0.68, ZA = 0.1, ZV = -0.65, ZSA = 0.3, ZSV = -0.22;
+    const line = (y, z, w) => new THREE.CatmullRomCurve3([V3(-W / 2, y, z), V3(-0.5, y + 0.02, z + 0.03), V3(0.6, y - 0.01, z - 0.02), V3(W / 2, y, z)]);
+    a.push(taperTube(line(YD, ZA), () => 0.04, 40, 8), taperTube(line(YS, ZSA), () => 0.022, 40, 6)); v.push(taperTube(line(YD - 0.02, ZV), () => 0.05, 40, 8), taperTube(line(YS - 0.02, ZSV), () => 0.028, 40, 6));
+    [-1.25, -0.35, 0.5, 1.35].forEach((x, i) => { a.push(tube([V3(x, YD, ZA), V3(x + 0.05, (YD + YS) / 2, (ZA + ZSA) / 2 + 0.03), V3(x + 0.1, YS, ZSA)], 0.016, 14, 5)); v.push(tube([V3(x + 0.15, YD - 0.02, ZV), V3(x + 0.12, (YD + YS) / 2, (ZV + ZSV) / 2), V3(x + 0.1, YS - 0.02, ZSV)], 0.02, 14, 5)); });
+    a.push(tube([V3(-1.45, Y_BOT, 0.2), V3(-1.4, (Y_BOT + YD) / 2, 0.15), V3(-1.3, YD, ZA)], 0.045, 16, 8)); v.push(tube([V3(1.45, Y_BOT, -0.6), V3(1.42, (Y_BOT + YD) / 2, -0.62), V3(1.35, YD - 0.02, ZV)], 0.055, 16, 8));
+    for (let i = 0; i < 9; i++) { const x = -1.45 + i * 0.36; const top = V3(x, Y_EPI - 0.02 + papH(x, 0.0), 0.02); const ca = new THREE.CatmullRomCurve3([V3(x, YS, ZSA), V3(x + rand(-0.04, 0.04), (YS + top.y) / 2, 0.15), top]), cv = new THREE.CatmullRomCurve3([top, V3(x + 0.04 + rand(-0.04, 0.04), (YS + top.y) / 2, -0.1), V3(x, YS - 0.02, ZSV)]); a.push(new THREE.TubeGeometry(ca, 16, 0.012, 5)); v.push(new THREE.TubeGeometry(cv, 16, 0.012, 5)); VESA.push(ca); VESV.push(cv); }
     var artM = new THREE.MeshPhysicalMaterial({ color: 0xc0404a, emissive: 0x501018, emissiveIntensity: 0.2, roughness: 0.4 }), venM = new THREE.MeshPhysicalMaterial({ color: 0x5068c0, emissive: 0x101840, emissiveIntensity: 0.2, roughness: 0.4 });
     sk.add(new THREE.Mesh(mergeGeometries(a), artM), new THREE.Mesh(mergeGeometries(v), venM)); }
   // волосяной фолликул, сальная железа, мышца
   const FOLL = new THREE.CatmullRomCurve3([V3(-1.0, -0.75, -0.3), V3(-0.85, 0.0, -0.3), V3(-0.7, Y_TOP, -0.3)]);
   sk.add(new THREE.Mesh(taperTube(FOLL, (u) => 0.08 - 0.03 * u, 40, 12), organMat('#E8C0A8', 0.4, { transparent: true, opacity: 0.6 })));
-  sk.add(new THREE.Mesh(ell3(0.1, 0.09, 0.1, V3(-1.0, -0.78, -0.3)), organMat('#C89070', 0.45)));
+  sk.add(new THREE.Mesh(ell3(0.1, 0.09, 0.1, V3(-1.0, -0.78, -0.3)), organMat('#C89070', 0.45, { transparent: true, opacity: 0.45, depthWrite: false })));
+  sk.add(new THREE.Mesh(ell3(0.045, 0.06, 0.045, V3(-1.0, -0.83, -0.3)), organMat('#D89090', 0.55)));   // сосочек волоса: питает луковицу
+  sk.add(new THREE.Mesh(taperTube(FOLL, (u) => 0.055 - 0.02 * u, 40, 10), organMat('#F2D8B8', 0.45, { transparent: true, opacity: 0.35, depthWrite: false })));   // внутреннее корневое влагалище
   const hairPiv = new THREE.Group(); hairPiv.position.set(-0.7, Y_TOP, -0.3); sk.add(hairPiv);
   const hairDir = V3(0.15, 1, 0).normalize();
   const hair = new THREE.Mesh(tube([V3(-0.3, -1.95, 0), V3(-0.15, -0.9, 0), V3(0, 0, 0), V3(0.12, 0.6, 0.02), V3(0.3, 0.95, 0.05)], (u) => 0.03 * (1 - 0.6 * u), 50, 8), new THREE.MeshPhysicalMaterial({ color: 0x3a2618, roughness: 0.35, clearcoat: 0.8 })); hairPiv.add(hair);
@@ -74,7 +95,15 @@ function makeSkin() {
   const NERV = { meis: [], merk: [], pac: [], ruf: [], free: [] };
   const rmat = (id, o = {}) => { const m = organMat(REC[id].color, 0.5, { emissiveIntensity: 0.15, ...o }); REC[id].mats.push(m); return m; };
   const recMesh = (id, g, o) => { const m = new THREE.Mesh(g, rmat(id, o)); m.userData.pick = id; pick.push(m); sk.add(m); return m; };
-  const nerveTo = (id, p) => { const c = new THREE.CatmullRomCurve3([V3(p.x - 0.3, Y_DER - 0.2, p.z - 0.2), V3(p.x - 0.15, (p.y + Y_DER) / 2, p.z - 0.1), p]); sk.add(new THREE.Mesh(new THREE.TubeGeometry(c, 16, 0.012, 5), nerveMat)); NERV[id].push(c); return c; };
+  // кожный нерв: общий ствол в клетчатке, от него веточки к рецепторам
+  const NTRUNK = new THREE.CatmullRomCurve3([V3(-W / 2, Y_DER - 0.32, -0.15), V3(-0.6, Y_DER - 0.36, -0.05), V3(0.5, Y_DER - 0.3, -0.12), V3(W / 2, Y_DER - 0.34, -0.05)]);
+  sk.add(new THREE.Mesh(taperTube(NTRUNK, () => 0.035, 60, 8), nerveMat));
+  const trunkAt = (x) => NTRUNK.getPointAt(Math.min(0.98, Math.max(0.02, (x - 0.2 + W / 2) / W)));
+  const nerveTo = (id, p) => { const T = trunkAt(p.x); const c = new THREE.CatmullRomCurve3([T, V3((T.x + p.x) / 2, (T.y + p.y) / 2, (T.z + p.z) / 2 + 0.04), p]); sk.add(new THREE.Mesh(new THREE.TubeGeometry(c, 16, 0.012, 5), nerveMat)); NERV[id].push(c); return c; };
+  // симпатические веточки (тоньше, оранжевые): к мышце волоса и к потовой железе
+  { const sm = new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xf09040).multiplyScalar(0.5), emissive: 0x402000, emissiveIntensity: 0.2, roughness: 0.4 }), arr = [];
+    [ARR.getPointAt(0.3), V3(0.9, -0.3, 0.5)].forEach((p) => { const T = trunkAt(p.x); arr.push(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([T, V3((T.x + p.x) / 2 + 0.1, (T.y + p.y) / 2, (T.z + p.z) / 2), p]), 16, 0.008, 4)); });
+    sk.add(new THREE.Mesh(mergeGeometries(arr), sm)); }
   [-0.9, 0.0, 0.55, 1.25].forEach((x, i) => { const z = i % 2 ? 0.25 : -0.55; const p = V3(x, Y_EPI - 0.08 + papH(x, z), z); const g = new THREE.CapsuleGeometry(0.035, 0.12, 6, 12); const pos = g.attributes.position; for (let k = 0; k < pos.count; k++) { pos.setX(k, pos.getX(k) * (1 + 0.15 * Math.sin(pos.getY(k) * 60))); } g.computeVertexNormals(); g.translate(p.x, p.y, p.z); recMesh('meis', g); nerveTo('meis', p.clone().add(V3(0, -0.08, 0))); });
   [-0.3, 0.35, 1.0, -1.35].forEach((x, i) => { const z = i % 2 ? -0.2 : 0.55; const p = V3(x, Y_EPI + 0.02, z); const g = new THREE.CylinderGeometry(0.04, 0.04, 0.012, 16); g.translate(p.x, p.y, p.z); recMesh('merk', g); nerveTo('merk', p.clone().add(V3(0, -0.01, 0))); });
   PAC.forEach((p) => { for (let k = 0; k < 5; k++) { const g = ell3(0.08 + k * 0.035, 0.13 + k * 0.05, 0.08 + k * 0.035, p, 20); recMesh('pac', g, { transparent: true, opacity: 0.35 + (4 - k) * 0.04, depthWrite: false }); } nerveTo('pac', p.clone().add(V3(0, -0.15, 0))); });
@@ -95,7 +124,8 @@ function makeSkin() {
     heat: { name: 'Heat', text: '<b>Heat.</b> Skin blood vessels dilate (the skin reddens and gives off heat), and sweat glands secrete sweat — as it evaporates, it cools the body. In hot weather, several liters of sweat can be lost in a day.' },
   };
   function stim(k) { st.stim = k; st.stimT = st.t; st.msg = STIM[k].text; refs.setInfo(); refs.stSeg && refs.stSeg.sync(); }
-  function select(id) { st.sel = id === 'all' ? null : id; refs.seg && refs.seg.sync(); const all = [...SK_REC.map((r) => REC[r.id]), ...SK_LAYERS.map((l) => LAY[l.id])]; all.forEach((p) => p.mats.forEach((m) => { m.emissiveIntensity = st.sel === p.id ? 0.6 : (REC[p.id] ? 0.15 : 0); })); st.msg = null; refs.setInfo && refs.setInfo(); }
+  const LVIEW = { epi: [V3(1.15, 0.55, 1.0), 2.9], der: [V3(0.1, -0.4, 0.6), 6.4], hyp: [V3(0.2, -1.95, 0.6), 5.6] };
+  function select(id) { st.sel = id === 'all' ? null : id; refs.seg && refs.seg.sync(); { const lv = st.sel && LVIEW[st.sel], dir = HOME.pos.clone().sub(HOME.target).normalize(); st.fly = lv ? flyTarget(lv[0], lv[0].clone().addScaledVector(dir, lv[1])) : (LVIEW[id] === undefined && id !== 'all' ? st.fly : HOME); } const all = [...SK_REC.map((r) => REC[r.id]), ...SK_LAYERS.map((l) => LAY[l.id])]; all.forEach((p) => p.mats.forEach((m) => { m.emissiveIntensity = st.sel === p.id ? 0.6 : (REC[p.id] ? 0.15 : 0); })); st.msg = null; refs.setInfo && refs.setInfo(); }
   pickOn(() => self, camera, pick, (id) => select(id));
   const fire = (id, rate, dt) => { const n = rate * dt; if (rnd() < n) { REC[id].spikes.push(st.t); const c = NERV[id][Math.floor(rnd() * NERV[id].length)]; for (let u = 0; u < 1; u += 0.2) fx.spawn(c.getPointAt(1 - u), V3(0, 0, 0), new THREE.Color(REC[id].color), 0.3 + u * 0.4, 0, 1.4); REC[id].flash = 1; } };
   function update(dt) {
@@ -139,6 +169,18 @@ function makeSkin() {
   const labels = [
     { text: 'epidermis', pos: V3(-W / 2 - 0.05, (Y_TOP + Y_EPI) / 2, D / 2), color: '#E8C8B0', show: () => st.labels },
     { text: 'dermis', pos: V3(-W / 2 - 0.05, 0.25, D / 2), color: '#D89090', show: () => st.labels },
+    { text: 'corneum', pos: V3(W / 2 + 0.03, Y_TOP + 0.02, D / 2), color: '#F2E6D8', show: () => st.labels && st.sel === 'epi' },
+    { text: 'granulosum', pos: V3(W / 2 + 0.03, Y_TOP - 0.06, D / 2), color: '#D8B080', show: () => st.labels && st.sel === 'epi' },
+    { text: 'spinosum', pos: V3(W / 2 + 0.03, Y_EPI + 0.12, D / 2), color: '#E8C8B0', show: () => st.labels && st.sel === 'epi' },
+    { text: 'basale', pos: V3(W / 2 + 0.03, Y_EPI + 0.04, D / 2), color: '#C09070', show: () => st.labels && st.sel === 'epi' },
+    { text: 'papillary layer', pos: V3(W / 2 + 0.03, 0.82, D / 2), color: '#F0B0B0', show: () => st.labels && st.sel === 'der' },
+    { text: 'reticular layer', pos: V3(-W / 2 + 0.05, -0.05, D / 2), color: '#D89090', show: () => st.labels && st.sel === 'der' },
+    { text: 'melanocyte', pos: MEL0.clone().add(V3(0.04, 0.03, 0.04)), color: '#C08060', show: () => st.labels && st.sel === 'epi' },
+    { text: 'elastic fibers', pos: V3(-0.25, -0.15, 0.85), color: '#F2E6A0', show: () => st.labels && st.sel === 'der' },
+    { text: 'deep plexus', pos: V3(-1.6, Y_DER + 0.06, 0.12), color: '#E0605A', show: () => st.labels && st.sel === 'der' },
+    { text: 'subpapillary plexus', pos: V3(-1.6, 0.7, 0.32), color: '#E0605A', show: () => st.labels && st.sel === 'der' },
+    { text: 'cutaneous nerve', pos: V3(1.2, Y_DER - 0.3, -0.05), color: '#F4C542', show: () => st.labels && st.sel === 'hyp' },
+    { text: 'hair papilla', pos: V3(-0.95, -0.92, -0.25), color: '#D89090', show: () => st.labels && st.sel === 'hyp' },
     { text: 'subcutaneous fat', pos: V3(-W / 2 - 0.05, -1.0, D / 2), color: '#F2D890', show: () => st.labels },
     { text: 'hair', pos: V3(-0.42, Y_TOP + 0.85, -0.3), color: '#c8a080', show: () => st.labels },
     { text: 'sebaceous gland', pos: V3(-0.6, 0.18, -0.05), color: '#F2E08A', show: () => st.labels },
