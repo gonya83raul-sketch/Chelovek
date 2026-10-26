@@ -47,7 +47,9 @@
 - [Живая клетка](https://gonya83raul-sketch.github.io/Chelovek/#cell)
 
 ## Тело
+- [Плоскости, направления и полости](https://gonya83raul-sketch.github.io/Chelovek/#planes)
 - [Скелет, мышцы и сосуды](https://gonya83raul-sketch.github.io/Chelovek/#skeleton)
+- [Кости и суставы](https://gonya83raul-sketch.github.io/Chelovek/#joints)
 - [Сердце и кровообращение](https://gonya83raul-sketch.github.io/Chelovek/#heart)
 - [Дыхание](https://gonya83raul-sketch.github.io/Chelovek/#lungs)
 - [Пищеварение](https://gonya83raul-sketch.github.io/Chelovek/#digest)

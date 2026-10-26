@@ -1,4 +1,4 @@
-import { THREE, V3, __set_rnd, displaceGeo, envTex, flowTubeMat, labLights, mergeVertices, mulberry, noise3, organMat, rand, rnd, smooth } from '../core.js';
+import { THREE, V3, __set_rnd, displaceGeo, envTex, fetchModel, flowTubeMat, labLights, mergeVertices, mulberry, noise3, organMat, rand, rnd, smooth } from '../core.js';
 
 
 /* малые молекулы: координаты построены по формулам (SMILES) */
@@ -248,4 +248,27 @@ function pcaAxis(pts) {
 function molFit(m, R) { let r = 0; for (let i = 0; i < m.n; i++) r = Math.max(r, Math.hypot(m.xyz[i * 3], m.xyz[i * 3 + 1], m.xyz[i * 3 + 2])); return R / Math.max(r, 1); }
 /* одна молекула фосфатидилхолина (POPC) из реального бислоя */
 function lipidMol(k = 0) { const d = BIO_PDB.popc; const el = d.el.split(' '); const L = el.length; const all = dI16(d.xyz, 20); const xyz = all.slice(k * L * 3, (k + 1) * L * 3); const c = V3(0, 0, 0); for (let i = 0; i < L; i++) c.add(V3(xyz[i * 3], xyz[i * 3 + 1], xyz[i * 3 + 2])); c.multiplyScalar(1 / L); for (let i = 0; i < L; i++) { xyz[i * 3] -= c.x; xyz[i * 3 + 1] -= c.y; xyz[i * 3 + 2] -= c.z; } const b = dU16(d.b); return { id: 'popc', name: 'Phosphatidylcholine', el, xyz, b, o: new Array(b.length / 2).fill(1), n: L }; }
-export { BASECOL, BIO_MOL, BIO_PDB, CPK, CYL, MOL, PDB, RVDW, SPH, SPH_LO, atomMat, bin64, bioStage, blobGeo, caPoints, cartoon, dI16, flowArrow, lipidMol, molFade, molFit, molGlow, molMesh, nucTrace, pcaAxis, plotAxes, plotLine, protMat, proteinMesh, schemBilayer, smoothIco, surfaceMesh };
+
+// @scene planes makePlanes | Плоскости, направления и полости | @body ^Как устроено тело
+/* =========================================================
+   ТЕЛО · ОРИЕНТАЦИЯ: анатомическая позиция, плоскости (сагиттальная, фронтальная, поперечная) со срезом,
+   термины направлений, полости тела, области живота (9 областей и 4 квадранта)
+   по атласу Неттера (табл. 1–3, BP 3)
+   ========================================================= */
+/* общий загрузчик модели скелета (models/skeleton): меши в мировых координатах (рост ≈ 18 ед., 1 ед. ≈ 10 см) */
+function loadSkeletonStatic(group, mat, onDone) {
+  return fetchModel('skeleton').then((buf) => {
+    const dv = new DataView(buf); let o = 4; const n = dv.getUint32(0, true); const out = [];
+    for (let i = 0; i < n; i++) {
+      const nv = dv.getUint32(o + 4, true), ni = dv.getUint32(o + 8, true); o += 12;
+      const q = new Int16Array(buf, o, nv * 3); o += nv * 6; o += (4 - ((nv * 6) % 4)) % 4;
+      const lb = new Uint8Array(buf, o, nv); o += nv; o += (4 - (nv % 4)) % 4;
+      const ix = new Uint32Array(buf.slice(o, o + ni * 4)); o += ni * 4;
+      const pos = new Float32Array(nv * 3); for (let k = 0; k < nv * 3; k++) pos[k] = q[k] / 1000;
+      const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('aLabel', new THREE.BufferAttribute(Float32Array.from(lb), 1)); g.setIndex(new THREE.BufferAttribute(ix, 1)); g.computeVertexNormals();
+      const m = new THREE.Mesh(g, mat); group.add(m); out.push(m);
+    }
+    onDone && onDone(out); return out;
+  });
+}
+export { BASECOL, BIO_MOL, BIO_PDB, CPK, CYL, MOL, PDB, RVDW, SPH, SPH_LO, atomMat, bin64, bioStage, blobGeo, caPoints, cartoon, dI16, flowArrow, lipidMol, loadSkeletonStatic, molFade, molFit, molGlow, molMesh, nucTrace, pcaAxis, plotAxes, plotLine, protMat, proteinMesh, schemBilayer, smoothIco, surfaceMesh };
