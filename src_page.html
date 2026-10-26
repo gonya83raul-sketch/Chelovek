@@ -546,11 +546,16 @@ function makeNeuron() {
   const nodeU = []; for (let u = 0.09; u <= 0.97; u += 0.11) nodeU.push(u);
   const nodes = nodeU.map((u) => axon.getPointAt(u));
   const myelin = new THREE.Group(); scene.add(myelin);
+  const schwM = new THREE.MeshPhysicalMaterial({ color: 0x8a6ad0, roughness: 0.4, emissive: 0x2a1a50, emissiveIntensity: 0.5 }), SCHW = [];
   for (let i = 0; i < nodes.length - 1; i++) {
     const a = nodes[i], b = nodes[i + 1], dir = b.clone().sub(a), dist = dir.length(); dir.normalize();
     const inner = Math.max(0.05, dist - 0.24 - 0.52);
     const m = new THREE.Mesh(new THREE.CapsuleGeometry(0.26, inner, 10, 24), myelinMat);
     m.position.copy(a).add(b).multiplyScalar(0.5); m.quaternion.setFromUnitVectors(V3(0, 1, 0), dir); myelin.add(m);
+    // каждый сегмент миелина — одна шванновская клетка; её ядро прижато к наружной поверхности
+    const nrm = V3(0, 0.35, 1).addScaledVector(dir, -V3(0, 0.35, 1).dot(dir)).normalize(), sc = new THREE.Mesh(ell3(0.07, 0.22, 0.05, null, 16), schwM);
+    sc.quaternion.setFromUnitVectors(V3(0, 1, 0), dir); sc.position.copy(m.position).addScaledVector(nrm, 0.25); sc.lookAt(sc.position.clone().add(nrm)); sc.rotateZ(0); { const q = new THREE.Quaternion().setFromUnitVectors(V3(0, 1, 0), dir); sc.quaternion.copy(q); const lz = V3(0, 0, 1).applyQuaternion(q); sc.quaternion.premultiply(new THREE.Quaternion().setFromUnitVectors(lz, nrm)); }
+    myelin.add(sc); SCHW.push(sc.position.clone());
   }
   const ringMats = nodes.map(() => new THREE.MeshBasicMaterial({ color: 0x3a2a30 }));
   nodes.forEach((p, i) => {
@@ -679,6 +684,8 @@ function makeNeuron() {
     { text: 'аксонный холмик', pos: V3(1.4, -0.75, 0.3) },
     { text: 'миелин', pos: axon.getPointAt(0.33).add(V3(0, 0.6, 0.2)), show: () => st.myelin },
     { text: 'перехват Ранвье', pos: nodes[5].clone().add(V3(0, -0.55, 0)) },
+    { text: 'шванновская клетка', pos: SCHW[2].clone().add(V3(0, 0.12, 0.1)), show: () => st.myelin },
+    { text: 'начальный сегмент', pos: axon.getPointAt(0.05).add(V3(0, -0.18, 0.15)) },
     { text: 'электрод', pos: probeP.clone().add(V3(0.25, 3.6, 0.3)) },
     { text: 'лидокаин', pos: axon.getPointAt(0.565).add(V3(0, 1.3, 0)), show: () => st.lido },
     { text: 'окончания аксона', pos: V3(19.8, 1.9, 0.6) },
@@ -1758,13 +1765,31 @@ function makeVessels(J) {
   heart.add(new THREE.Mesh(hg, heartMat));
   [[-0.17, 0.25, 0.04], [0.15, 0.27, -0.06]].forEach(([x, y, z]) => { const a = new THREE.Mesh(new THREE.SphereGeometry(0.17, 24, 18), heartMat); a.position.set(x, y, z); heart.add(a); });
   const labels = [
-    { t: 'Сердце', p: HEART.clone().add(V3(0.3, -0.2, 0.25)) }, { t: 'Аорта', p: P(0.05, 13.72, 0.4) }, { t: 'Плечеголовной ствол', p: P(-0.32, 14.0, 0.62) }, { t: 'Чревный ствол', p: P(0.3, 11.75, 0.6) }, { t: 'Лёгочный ствол', p: P(0.12, 13.15, 0.95) },
-    { t: 'Сонная артерия', p: P(0.53, 14.8, 0.52) }, { t: 'Яремная вена', p: P(-0.41, 14.6, 0.59) }, { t: 'Синус твёрдой оболочки', p: P(0.08, 17.1, 0.22) }, { t: 'Поверхностная височная артерия', p: P(0.77, 16.7, 0.25) }, { t: 'Верхняя полая вена', p: P(-0.18, 13.35, 0.72) },
-    { t: 'Нижняя полая вена', p: P(-0.34, 11.2, 0.45) }, { t: 'Брюшная аорта', p: P(0.2, 10.6, 0.48) }, { t: 'Плечевая артерия', p: mid(J.shL, J.elL).add(V3(-0.12, 0, 0.12)) },
-    { t: 'Бедренная артерия', p: mid(J.hpL, J.knL).add(V3(-0.12, 0, 0.2)) }, { t: 'Большая подкожная вена', p: mid(J.hpR, J.knR).add(V3(0.3, 0, 0.12)) }, { t: 'Лёгкие: сосуды малого круга', p: P(-0.95, 12.4, 0.3) },
+    { t: 'Сердце', k: '', p: HEART.clone().add(V3(0.3, -0.2, 0.25)) }, { t: 'Аорта', p: P(0.05, 13.72, 0.4) }, { t: 'Плечеголовной ствол', p: P(-0.32, 14.0, 0.62) }, { t: 'Чревный ствол', p: P(0.3, 11.75, 0.6) }, { t: 'Лёгочный ствол', k: '', p: P(0.12, 13.15, 0.95) },
+    { t: 'Сонная артерия', p: P(0.53, 14.8, 0.52) }, { t: 'Яремная вена', k: 'v', p: P(-0.41, 14.6, 0.59) }, { t: 'Синус твёрдой оболочки', k: 'v', p: P(0.08, 17.1, 0.22) }, { t: 'Поверхностная височная артерия', p: P(0.77, 16.7, 0.25) }, { t: 'Верхняя полая вена', k: 'v', p: P(-0.18, 13.35, 0.72) },
+    { t: 'Нижняя полая вена', k: 'v', p: P(-0.34, 11.2, 0.45) }, { t: 'Брюшная аорта', p: P(0.2, 10.6, 0.48) }, { t: 'Плечевая артерия', p: mid(J.shL, J.elL).add(V3(-0.12, 0, 0.12)) },
+    { t: 'Бедренная артерия', p: mid(J.hpL, J.knL).add(V3(-0.12, 0, 0.2)) }, { t: 'Большая подкожная вена', k: 'v', p: mid(J.hpR, J.knR).add(V3(0.3, 0, 0.12)) }, { t: 'Лёгкие: сосуды малого круга', k: '', p: P(-0.95, 12.4, 0.3) },
     { t: 'Лучевая артерия', p: P(1.8, 9.85, 0.58) }, { t: 'Ладонная дуга', p: P(1.55, 8.47, 0.69) }, { t: 'Межрёберная артерия', p: P(-1.25, 12.16, 0.43) },
   ];
-  return { group, art, ven, heart, heartMat, labels };
+  // точки пульса (Неттер, табл. 4): артерия лежит неглубоко над костью или плотной тканью — её можно прижать пальцем
+  const SAMP = []; A.forEach((t) => { if (t.r0 < 0.012 || t.pts.length < 2) return; const c = new THREE.CatmullRomCurve3(t.pts); for (let i = 0; i <= 24; i++) SAMP.push(c.getPoint(i / 24)); });
+  const snap = (q) => { let b = null, bd = 1e9; SAMP.forEach((p) => { const d = p.distanceToSquared(q); if (d < bd) { bd = d; b = p; } }); return bd < 0.09 ? b.clone() : q; };
+  const PULSE_DEF = [
+    ['temp', 'Поверхностная височная артерия', [0.8, 16.297, 0.23], [-0.563, 16.288, 0.423]],
+    ['fac', 'Лицевая артерия', [0.48, 15.45, 0.67], [-0.15, 15.5, 0.72]],
+    ['car', 'Сонная артерия', [0.44, 14.6, 0.461], [-0.21, 14.6, 0.56]],
+    ['brach', 'Плечевая артерия', [1.62, 11.8, 0.4], [-1.25, 11.8, 0.95]],
+    ['rad', 'Лучевая артерия', [1.817, 9.007, 0.513], [-1.019, 9.023, 0.804]],
+    ['uln', 'Локтевая артерия', [1.631, 9.046, 0.575], [-1.072, 9.058, 0.492], -1],
+    ['fem', 'Бедренная артерия', (s, k) => J['hp' + k].clone().add(V3(-s * 0.05, -0.3, 0.38)), null, -1],
+    ['pop', 'Подколенная артерия', (s, k) => J['kn' + k].clone().add(V3(0, 0.2, -0.2))],
+    ['tib', 'Задняя большеберцовая артерия', (s, k) => J['an' + k].clone().add(V3(-s * 0.12, -0.05, -0.1)), null, -1],
+    ['dp', 'Тыльная артерия стопы', [0.634, 1.276, 0.152], [-0.55, 1.24, 0.2]],
+  ];
+  const pulse = [];
+  [1, -1].forEach((s) => PULSE_DEF.forEach(([id, t, f, fr, med]) => { const p = snap(typeof f === 'function' ? f(s, s === 1 ? 'L' : 'R') : P(...(s === 1 ? f : fr))); pulse.push({ id, t, s, p, med: med || 1, delay: p.distanceTo(A0) * 1.3 / 60 }); }));
+  labels.forEach((l) => { if (l.k === undefined) l.k = 'a'; });
+  return { group, art, ven, heart, heartMat, labels, pulse };
 }
 
 /* ---------- сердце в разрезе: панель с анимацией цикла ---------- */
@@ -1901,7 +1926,7 @@ function makeSkeleton() {
   const sun = new THREE.DirectionalLight(0xfff4e6, 1.5); sun.position.set(5, 22, 10); sun.castShadow = true;
   sun.shadow.mapSize.set(2048, 2048); Object.assign(sun.shadow.camera, { left: -6, right: 6, top: 20, bottom: -2, near: 1, far: 50 }); sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.02; scene.add(sun);
   const camera = new THREE.PerspectiveCamera(36, 1, 0.05, 200); camera.position.set(10, 12, 28);   // весь рост, с черепом
-  const controls = makeControls(camera, V3(0.15, 8.0, 0)); controls.minDistance = 2.5; controls.maxDistance = 45; controls.autoRotate = true; controls.autoRotateSpeed = 0.5;
+  const controls = makeControls(camera, V3(0.15, 8.0, 0)); controls.minDistance = 2.5; controls.maxDistance = 60; controls.autoRotate = true; controls.autoRotateSpeed = 0.5;
   const floor = new THREE.Mesh(new THREE.CircleGeometry(9, 72), new THREE.ShadowMaterial({ opacity: 0.42 })); floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
   const ring = new THREE.Mesh(new THREE.RingGeometry(5.9, 5.94, 128), new THREE.MeshBasicMaterial({ color: 0x3a3540, side: THREE.DoubleSide })); ring.rotation.x = -Math.PI / 2; ring.position.y = 0.01; scene.add(ring);
 
@@ -1941,8 +1966,10 @@ function makeSkeleton() {
   const anchors = {};
   Object.entries(ANCH).forEach(([id, [g, w]]) => { const o = new THREE.Object3D(); o.position.copy(V3(...SKEL_META.anchors[id])).sub(w); g.add(o); anchors[id] = o; });
   const VES = makeVessels(J); scene.add(VES.group);
+  const pulseG = new THREE.Group(); scene.add(pulseG);
+  VES.pulse.forEach((q) => { q.g = glowNucleus(pulseG, q.p, 0xffc04a, 0.06, 7); });
   const meshes = [];
-  const st = { ves: true, vlabels: false, vmode: 'all', pose: 'still', xray: false, rot: true, labels: true, sel: null, t: 0, focusT: 0, loaded: false, err: null, mus: false, musLoad: 0, musErr: null };
+  const st = { ves: true, vlabels: false, pulse: false, vmode: 'all', pose: 'still', xray: false, rot: true, labels: true, sel: null, t: 0, focusT: 0, loaded: false, err: null, mus: false, musLoad: 0, musErr: null };
 
   /* ---------- мышцы: экорше Diego Luján García (CC BY 4.0), масштабировано под рост этого скелета ---------- */
   const musGroup = new THREE.Group(); musGroup.visible = false; scene.add(musGroup);
@@ -2032,7 +2059,9 @@ function makeSkeleton() {
     if (st.focusT > 0 && st.focus) { st.focusT -= dt; const k = 1 - Math.exp(-dt * 3); controls.target.lerp(st.focus.target, k); const dir = camera.position.clone().sub(controls.target).normalize(); camera.position.lerp(controls.target.clone().addScaledVector(dir, st.focus.dist), k); }
     { const b = Math.exp(-((t * 1.2) % 1) * 6); VES.heart.scale.setScalar(1 + 0.07 * b); VES.heartMat.emissiveIntensity = 1 + 2 * b;
       [VES.art, VES.ven].forEach((m) => { m.material.uniforms.uTime.value = t; m.material.uniforms.uBeat.value = m === VES.ven ? 0.35 : 0.6 + 0.8 * b; });
-      VES.group.visible = st.ves && !st.mus; VES.art.visible = st.vmode !== 'ven'; VES.ven.visible = st.vmode !== 'art'; VES.heart.visible = true; }
+      VES.group.visible = st.ves && !st.mus; VES.art.visible = st.vmode !== 'ven'; VES.ven.visible = st.vmode !== 'art'; VES.heart.visible = true;
+      pulseG.visible = st.pulse && !st.mus;
+      if (pulseG.visible) VES.pulse.forEach((q) => { const ph = (((t - q.delay) * 1.2) % 1 + 1) % 1, e = Math.exp(-ph * 7); q.g.core.scale.setScalar(0.8 + 0.9 * e); q.g.spr.scale.setScalar(0.06 * (4 + 10 * e)); q.g.spr.material.opacity = 0.35 + 0.65 * e; }); }
     U.uPulse.value = st.sel ? 0.22 + 0.16 * Math.sin(t * 4) : 0;
   }
 
@@ -2053,14 +2082,16 @@ function makeSkeleton() {
   // подпись точки за телом (дальше оси тела по лучу зрения) приглушается — не «висит» на тазу
   const camD = V3(0, 0, 0), behind = (p) => { camD.copy(controls.target).sub(camera.position).normalize(); return (p.x - 0.15) * camD.x + p.z * camD.z > 0.6 ? 0.3 : 1; };
   const labels = [...MUSCLE_LABELS.map(([t, p]) => ({ text: t, pos: V3(...p), color: '#ff9f8a', show: () => st.labels && st.mus && st.musLoad === 2, fade() { return behind(this.pos); } })),
-    ...BONE_LABELS.map((b) => ({ text: b.t, pos: V3(...b.p), show: () => st.loaded && st.labels && !st.mus && (!st.sel || st.sel === b.g), fade() { return behind(this.pos); } })),
-    ...VES.labels.map((l) => ({ text: l.t, pos: l.p, color: '#ff8a7a', show: () => st.ves && st.vlabels && !st.sel && !st.mus }))];
+    ...BONE_LABELS.map((b) => ({ text: b.t, pos: V3(...b.p), show: () => st.loaded && st.labels && !st.mus && !((st.pulse || (st.vlabels && st.ves)) && !st.sel) && (!st.sel || st.sel === b.g), fade() { return behind(this.pos); } })),
+    ...VES.labels.map((l) => ({ text: l.t, pos: l.p, color: l.k === 'v' ? '#8aa6ff' : '#ff8a7a', show: () => st.ves && st.vlabels && !st.pulse && !st.sel && !st.mus && !(l.k === 'v' && st.vmode === 'art') && !(l.k === 'a' && st.vmode === 'ven') })),
+    ...VES.pulse.filter((q) => q.s === 1).map((q) => ({ text: q.t, pos: q.p.clone().add(q.med < 0 ? V3(0, 0.05, 0.16) : V3(0.12, 0.05, 0.1)), color: '#ffd27a', show: () => st.pulse && !st.sel && !st.mus, fade() { return behind(this.pos); } }))];
+  const PULSE_TEXT = 'Пульс прощупывают там, где артерия лежит неглубоко и её можно прижать к кости или плотной ткани. Удар сердца гонит по стенкам артерий волну давления (5–10 м/с), поэтому на стопе толчок приходит примерно на 0,2 с позже, чем на шее, — видно по вспышкам. Обычно считают пульс на лучевой артерии: в покое 60–90 ударов в минуту. Сонную артерию щупают только с одной стороны и не сдавливают.';
   const refs = {};
   function ui(el) {
     const info = h('div', { class: 'info' });
     refs.setInfo = () => {
       info.innerHTML = st.err ? `Не удалось загрузить модель скелета (${st.err}). Обновите страницу.` : !st.loaded ? 'Загружаю модель скелета (около 8 МБ)…' : st.sel ? BONES.find((b) => b.id === st.sel).text
-        : st.mus ? (st.musErr ? `Не удалось загрузить мышцы (${st.musErr}).` : st.musLoad < 2 ? 'Загружаю мышцы (около 9 МБ)…' : MUS_TEXT) : 'Нажмите на любую кость или выберите её в списке.';
+        : st.pulse && !st.mus ? PULSE_TEXT : st.mus ? (st.musErr ? `Не удалось загрузить мышцы (${st.musErr}).` : st.musLoad < 2 ? 'Загружаю мышцы (около 9 МБ)…' : MUS_TEXT) : 'Нажмите на любую кость или выберите её в списке.';
     };
     refs.seg = seg([{ id: 'all', label: 'Весь скелет' }, ...BONES.map((b) => ({ id: b.id, label: b.name }))], () => st.sel || 'all', (v) => select(v));
     const pose = seg([{ id: 'stand', label: 'Стоит' }, { id: 'walk', label: 'Идёт' }, { id: 'squat', label: 'Приседает' }], () => st.pose, (v) => { st.pose = v; });
@@ -2071,11 +2102,12 @@ function makeSkeleton() {
     const vt = toggle('Сосуды', () => st.ves, (v) => { st.ves = v; });
     const vm = seg([{ id: 'all', label: 'Все' }, { id: 'art', label: 'Артерии', color: '#ff3b30' }, { id: 'ven', label: 'Вены', color: '#3d6bff' }], () => st.vmode, (v) => { st.vmode = v; st.ves = true; vt.sync(); });
     const ms = toggle('Мышцы', () => st.mus, (v) => { st.mus = v; applyMus(); refs.setInfo(); });
+    const pl = toggle('Пульс', () => st.pulse, (v) => { st.pulse = v; if (v) { st.ves = true; vt.sync(); if (st.sel) select('all'); st.focus = window.matchMedia('(max-width:700px)').matches ? { target: V3(0.3, 8.6, 0), dist: 17 } : { target: V3(0.3, -0.4, 0), dist: 57 }; st.focusT = 1.8; } refs.setInfo(); });
     refs.ms = ms;
-    Object.assign(refs, { pose, xr, rot, lab, vt, vl });
+    Object.assign(refs, { pose, xr, rot, lab, vt, vl, pl });
     el.append(
       group('Слой', 'U', ms),
-      (refs.vesGrp = group('Кровоток', 'V · B · H', vt, vm, vl, button('Строение сердца', openHeartPanel))),
+      (refs.vesGrp = group('Кровоток', 'V · B · P · H', vt, vm, vl, pl, button('Строение сердца', openHeartPanel))),
       group('Вид', 'X · R · N', xr, rot, lab),
       (refs.boneGrp = h('div', { class: 'grp', style: 'flex:1 1 520px' }, h('div', { class: 'glabel' }, 'Кости', h('kbd', {}, 'клик по скелету')), h('div', { class: 'gctl' }, refs.seg))),
       h('div', { class: 'grp', style: 'flex:1 1 300px' }, h('div', { class: 'glabel' }, 'Что это'), info),
@@ -2088,6 +2120,7 @@ function makeSkeleton() {
     if (k === 'v' || k === 'м') { refs.vt.click(); return true; }
     if (k === 'b' || k === 'и') { refs.vl.click(); return true; }
     if (k === 'h' || k === 'р') { openHeartPanel(); return true; }
+    if (k === 'p' || k === 'з') { refs.pl.click(); return true; }
     if (k === 'x' || k === 'ч') { refs.xr.click(); return true; }
     if (k === 'r' || k === 'к') { refs.rot.click(); return true; }
     if (k === 'n' || k === 'т') { refs.lab.click(); return true; }
@@ -4659,14 +4692,40 @@ function makeSpinal() {
   { const ft = new THREE.TubeGeometry(new THREE.CatmullRomCurve3([V3(0, segSpan.S[1], 0), V3(0, vt('S', 0).top - 1, 0.05), V3(0, vt('Co', 0).bot + 0.2, 0.05)]), 20, 0.03, 6); col.add(new THREE.Mesh(ft, mat(0xe0d8d0))); }
   const COL_POS = col.position.clone().add(V3(0, 12.2 * 0.62, 0));
 
+  /* ---------- периферический нерв в разрезе (Неттер, BP 12) ---------- */
+  const NV = new THREE.Group(); NV.position.set(40, 0, 0); NV.visible = false; scene.add(NV);
+  const NL = 5, NR = 1.0, nx = (g) => { g.rotateZ(-Math.PI / 2); return g; };
+  { const epi = nx(new THREE.CylinderGeometry(NR, NR, NL, 64, 1, true)); NV.add(new THREE.Mesh(epi, new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xf0e0c8).multiplyScalar(0.45), roughness: 0.6, transparent: true, opacity: 0.35, side: THREE.DoubleSide, depthWrite: false })));
+    const cap = nx(new THREE.CircleGeometry(NR, 64)); cap.rotateY(0); const capM = new THREE.Mesh(new THREE.CircleGeometry(NR, 64), new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xf2e4c8).multiplyScalar(0.5), roughness: 0.7, emissive: 0x2a2010, emissiveIntensity: 0.3 })); capM.rotation.y = Math.PI / 2; capM.position.x = NL / 2 - 0.001; NV.add(capM);
+    // жировые клетки эпиневрия
+    const fat = []; for (let i = 0; i < 26; i++) { const a = rnd() * Math.PI * 2, r = 0.72 + rnd() * 0.22; if ([0, 1, 2, 3, 4, 5].some((k) => Math.abs(((a - k * Math.PI / 3 + 9 * Math.PI) % (2 * Math.PI)) - Math.PI) > Math.PI - 0.35)) continue; const g = new THREE.SphereGeometry(0.07 + rnd() * 0.04, 10, 8); g.translate(NL / 2 - 0.02, Math.cos(a) * r, Math.sin(a) * r); fat.push(g); }
+    if (fat.length) NV.add(new THREE.Mesh(mergeGeometries(fat), organMat('#F2D890', 0.5, { transparent: true, opacity: 0.8 }))); }
+  const FASC = [[0, 0, 0.3], ...[0, 1, 2, 3, 4, 5].map((k) => [Math.cos(k * Math.PI / 3) * 0.6, Math.sin(k * Math.PI / 3) * 0.6, 0.25 + 0.04 * (k % 2)])];
+  const perM = new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xb8d8f0).multiplyScalar(0.55), roughness: 0.4, transparent: true, opacity: 0.55, side: THREE.DoubleSide, depthWrite: false, emissive: 0x18304a, emissiveIntensity: 0.3 });
+  const endM = new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xe8d8e8).multiplyScalar(0.4), roughness: 0.7, emissive: 0x201820, emissiveIntensity: 0.3 });
+  const MY = [], AX = [];
+  FASC.forEach(([y, z, r], fi) => { const len = NL - 0.3 - 0.25 * fi % 0.7, x0 = NL / 2 - len / 2 + 0.15 * (fi % 3);
+    const per = nx(new THREE.CylinderGeometry(r, r, len, 40, 1, true)); per.translate(x0, y, z); NV.add(new THREE.Mesh(per, perM));
+    const ec = new THREE.Mesh(new THREE.CircleGeometry(r - 0.01, 40), endM); ec.rotation.y = Math.PI / 2; ec.position.set(x0 + len / 2 - 0.02, y, z); NV.add(ec);
+    const pts = []; for (let i = 0; i < 400 && pts.length < Math.round(55 * r * r / 0.09); i++) { const a = rnd() * Math.PI * 2, rr = Math.sqrt(rnd()) * (r - 0.05), q = [y + Math.cos(a) * rr, z + Math.sin(a) * rr]; if (pts.every((o) => Math.hypot(o[0] - q[0], o[1] - q[1]) > 0.075)) pts.push(q); }
+    pts.forEach(([py, pz], i) => { const big = i % 3 !== 2, l2 = len - 0.04 + rand(0, 0.12); MY.push({ x: x0 + l2 / 2 - len / 2, y: py, z: pz, l: l2, r: big ? 0.032 : 0.02 }); AX.push({ x: x0 + l2 / 2 - len / 2 + 0.03, y: py, z: pz, l: l2, r: big ? 0.016 : 0.011 }); }); });
+  { const myI = new THREE.InstancedMesh(nx(new THREE.CylinderGeometry(1, 1, 1, 10)), new THREE.MeshPhysicalMaterial({ color: 0xf4efe6, roughness: 0.3, clearcoat: 0.8 }), MY.length), axI = new THREE.InstancedMesh(nx(new THREE.CylinderGeometry(1, 1, 1, 8)), new THREE.MeshPhysicalMaterial({ color: 0xe8b84a, roughness: 0.4, emissive: 0x4a3000, emissiveIntensity: 0.4 }), AX.length), m4 = new THREE.Matrix4();
+    MY.forEach((f, i) => { m4.makeScale(f.l, f.r, f.r).setPosition(f.x, f.y, f.z); myI.setMatrixAt(i, m4); }); AX.forEach((f, i) => { m4.makeScale(f.l, f.r, f.r).setPosition(f.x, f.y, f.z); axI.setMatrixAt(i, m4); }); NV.add(myI, axI); }
+  // продольные сосуды нерва (vasa nervorum) в эпиневрии
+  [[0.86, 0.3, '#E0505A'], [-0.84, -0.28, '#5C7CE8'], [0.1, -0.86, '#E0505A']].forEach(([y, z, c]) => { const g = nx(new THREE.CylinderGeometry(0.045, 0.045, NL + 0.1, 12)); g.translate(0.02, y, z); NV.add(new THREE.Mesh(g, organMat(c, 0.6))); });
+  const NERVE_VIEW = flyTarget(V3(40.2, -1.35, 1.2), V3(47.6, 1.4, 5.6));
+
   /* ---------- режимы ---------- */
   function setMode(m) {
     st.mode = m; refs.modeSeg && refs.modeSeg.sync();
     capMat.map = m === 'tracts' ? texT : texA; capMat.needsUpdate = true;
-    const seg2 = m === 'segments';
-    col.visible = seg2; cord.visible = dura.visible = !seg2; vert.visible = m === 'anat' && st.vert;
-    [muscle, skin, fibMesh, fx.obj, ...Object.values(somas)].forEach((o) => { o.visible = !seg2 && m !== 'tracts'; });
-    if (seg2) st.fly = flyTarget(COL_POS, COL_POS.clone().add(V3(13, 2.5, 25)));
+    const seg2 = m === 'segments', nv = m === 'nerve';
+    if (st.nvHidden) { st.nvHidden.forEach((o) => { o.visible = true; }); st.nvHidden = null; }
+    if (nv) { st.nvHidden = scene.children.filter((o) => o !== NV && o.visible && !o.isLight && o !== fx.obj); st.nvHidden.forEach((o) => { o.visible = false; }); }
+    NV.visible = nv; col.visible = seg2; cord.visible = dura.visible = !seg2 && !nv; vert.visible = m === 'anat' && st.vert;
+    [muscle, skin, fibMesh, fx.obj, ...Object.values(somas)].forEach((o) => { o.visible = !seg2 && !nv && m !== 'tracts'; });
+    if (nv) st.fly = NERVE_VIEW;
+    else if (seg2) st.fly = flyTarget(COL_POS, COL_POS.clone().add(V3(13, 2.5, 25)));
     else if (m === 'tracts') st.fly = flyTarget(V3(0, 0, 1.6), V3(1.3, 1.1, 7.2));
     else st.fly = HOME;
     st.msg = null; refs.setInfo && refs.setInfo();
@@ -4697,6 +4756,7 @@ function makeSpinal() {
     withdraw: '<b>Отдёргивание</b> — полисинаптический рефлекс. Укол → болевое окончание → ганглий → вставочный нейрон заднего рога → вставочный нейрон промежуточной зоны → мотонейроны сгибателей своего и соседнего сегмента. Чем сильнее боль, тем больше мышц вовлекается. Одновременно сигнал переходит на другую сторону и поднимается к таламусу (красный хвост вверх): так мы узнаём о боли уже после того, как отдёрнули руку.',
     inhib: '<b>Мозг тормозит рефлекс.</b> На вставочный нейрон промежуточной зоны приходят аксоны из головного мозга (голубой сигнал сверху). Если мозг успевает послать тормозной сигнал, рука не отдёргивается: так мы терпим, когда берут кровь из пальца. У коленного рефлекса такого вставочного нейрона нет, поэтому его не сдержать.',
     veg: '<b>Вегетативная дуга</b> из двух нейронов. <b>Преганглионарный</b> нейрон бокового рога посылает аксон через передний корешок и <b>белую ветвь</b> в симпатический ганглий. Там <b>постганглионарный</b> нейрон отправляет аксон по <b>серой ветви</b> обратно в нерв — к сосудам, потовым железам, мышцам волос. Симпатические нейроны есть только в грудных и верхних поясничных сегментах.',
+    nerve: '<b>Периферический нерв в разрезе.</b> Нерв — это кабель из тысяч аксонов. Каждое волокно окружено тонким <b>эндоневрием</b>; волокна собраны в пучки, одетые <b>периневрием</b> — плотным слоем клеток, который служит барьером между кровью и нервом. Снаружи всё обёрнуто <b>эпиневрием</b> из плотной соединительной ткани с жиром и собственными сосудами. Белые муфты — миелин шванновских клеток. При травме хирург сшивает нерв за эпиневрий или за периневрий пучков; аксоны отрастают примерно на 1 мм в сутки.',
     segments: '<b>31 сегмент</b> — 31 «этаж» тела: 8 шейных, 12 грудных, 5 поясничных, 5 крестцовых и копчиковый. От каждого отходит пара нервов. Позвоночник растёт быстрее мозга, поэтому у взрослого спинной мозг кончается у II поясничного позвонка, а ниже корешки идут вниз <b>конским хвостом</b>. Утолщения в шейном и поясничном отделах управляют руками и ногами. Спинномозговую пункцию делают ниже конца мозга, в поясничной цистерне.',
   };
   const labels = [
@@ -4719,6 +4779,12 @@ function makeSpinal() {
     { text: 'мотонейрон', pos: MN.clone().add(V3(0.05, -0.12, 0.2)), color: '#ff8a6a', show: () => st.labels && st.mode === 'anat' && st.msRun },
     { text: 'вставочные нейроны', pos: I2.clone().add(V3(-0.1, 0.1, 0.2)), color: '#e8a0ff', show: () => st.labels && st.mode === 'anat' && st.msRun },
     { text: 'к таламусу', pos: V3(-0.66, -0.3, -3.4), color: '#ff6a5a', show: () => st.labels && st.mode === 'anat' && st.msRun },
+    { text: 'эпиневрий', pos: V3(40.6, 0.98, 0.25), color: '#F0E0C8', show: () => st.labels && st.mode === 'nerve' },
+    { text: 'периневрий', pos: V3(42.5, 0.6 + 0.26, 0.05), color: '#B8D8F0', show: () => st.labels && st.mode === 'nerve' },
+    { text: 'пучок волокон', pos: V3(42.55, -0.3, -0.52), color: '#E8D8E8', show: () => st.labels && st.mode === 'nerve' },
+    { text: 'миелиновое волокно', pos: V3(42.6, 0.05, 0.12), color: '#F4EFE6', show: () => st.labels && st.mode === 'nerve' },
+    { text: 'сосуды нерва', pos: V3(42.5, 0.86, 0.36), color: '#E0505A', show: () => st.labels && st.mode === 'nerve' },
+    { text: 'жир эпиневрия', pos: V3(42.5, -0.8, 0.45), color: '#F2D890', show: () => st.labels && st.mode === 'nerve' },
     { text: 'шейные C1–C8', pos: V3(0, 0, 0), sg: 'C', color: '#5E8FEF', show: () => st.labels && st.mode === 'segments' },
     { text: 'грудные T1–T12', pos: V3(0, 0, 0), sg: 'T', color: '#5CC48A', show: () => st.labels && st.mode === 'segments' },
     { text: 'поясничные L1–L5', pos: V3(0, 0, 0), sg: 'L', color: '#F2C14E', show: () => st.labels && st.mode === 'segments' },
@@ -4735,22 +4801,23 @@ function makeSpinal() {
   function ui(el) {
     const ib = infoBox('1 1 300px');
     refs.setInfo = () => { ib.info.innerHTML = st.msg || TXT[st.mode]; };
-    refs.modeSeg = seg([{ id: 'anat', label: 'Срез и корешки' }, { id: 'tracts', label: 'Проводящие пути' }, { id: 'segments', label: 'Сегменты' }], () => st.mode, (v) => setMode(v));
+    refs.modeSeg = seg([{ id: 'anat', label: 'Срез и корешки' }, { id: 'tracts', label: 'Проводящие пути' }, { id: 'segments', label: 'Сегменты' }, { id: 'nerve', label: 'Нерв в разрезе' }], () => st.mode, (v) => setMode(v));
     const vb2 = toggle('Позвонок', () => st.vert, (v) => { st.vert = v; vert.visible = v && st.mode !== 'segments'; });
     const inh = toggle('Мозг тормозит', () => st.inhibit, (v) => { st.inhibit = v; });
     const lab = toggle('Подписи', () => st.labels, (v) => { st.labels = v; });
     Object.assign(refs, { vb2, inh, lab });
-    el.append(group('Режим', '1 · 2 · 3', refs.modeSeg), group('Рефлексы', 'K · W · A', button('Коленный', knee, true), button('Отдёргивание', withdraw), inh, button('Вегетативный', autonomic)), group('Вид', 'V · N', vb2, lab), ib.el);
+    el.append(group('Режим', '1–4', refs.modeSeg), group('Рефлексы', 'K · W · A', button('Коленный', knee, true), button('Отдёргивание', withdraw), inh, button('Вегетативный', autonomic)), group('Вид', 'V · N', vb2, lab), ib.el);
     refs.setInfo();
   }
   function onKey(e) {
     const k = e.key.toLowerCase();
-    if (k === '1') { setMode('anat'); return true; } if (k === '2') { setMode('tracts'); return true; } if (k === '3') { setMode('segments'); return true; }
+    if (k === '1') { setMode('anat'); return true; } if (k === '2') { setMode('tracts'); return true; } if (k === '3') { setMode('segments'); return true; } if (k === '4') { setMode('nerve'); return true; }
     if (k === 'k' || k === 'л') { knee(); return true; } if (k === 'w' || k === 'ц') { withdraw(); return true; } if (k === 'a' || k === 'ф') { autonomic(); return true; }
     if (k === 'v' || k === 'м') { refs.vb2.click(); return true; } if (k === 'n' || k === 'т') { refs.lab.click(); return true; }
     return false;
   }
   function stats() {
+    if (st.mode === 'nerve') return [['Аксонов в седалищном нерве', '≈ 50 000', ''], ['Рост аксона', '≈ 1', 'мм/сут']];
     if (st.mode === 'segments') return [['Сегментов', 31, ''], ['Длина', '42–45', 'см'], ['Масса', '34–38', 'г']];
     return [['Время дуги', Math.round(st.ms), 'мс'], ['Синапсов', st.syn, ''], ['Нейронов', '13,5', 'млн']];
   }
@@ -6788,7 +6855,18 @@ function makeHeart() {
     fx.update(dt);
   }
   function drawScope(ctx, w, hgt) {
-    ctx.clearRect(0, 0, w, hgt); scopeShow(st.mode !== 'circ'); if (st.mode === 'circ') return;
+    ctx.clearRect(0, 0, w, hgt); scopeShow(true);
+    if (st.mode === 'circ') {   // Неттер, BP 14: доля минутного объёма (Q) и потребления кислорода по органам, %
+      const ORGQ = [['мозг', 13, 21], ['сердце', 4, 11], ['ЖКТ', 24, 23], ['почки', 20, 7], ['мышцы', 21, 27], ['кожа', 18, 11]];
+      ctx.font = '500 10px JetBrains Mono, monospace'; ctx.fillStyle = '#FF6A5A'; ctx.fillRect(8, 5, 8, 8); ctx.fillStyle = 'rgba(255,255,255,.75)'; ctx.fillText('кровоток, %', 20, 12);
+      const x2 = 30 + ctx.measureText('кровоток, %').width; ctx.fillStyle = '#7FD6FF'; ctx.fillRect(x2, 5, 8, 8); ctx.fillStyle = 'rgba(255,255,255,.75)'; ctx.fillText('кислород, %', x2 + 12, 12);
+      const top = 30, bh = hgt - top - 16, gw = (w - 16) / ORGQ.length, Y = (v) => top + bh * (1 - v / 28);
+      ORGQ.forEach(([n, q, o], i) => { const x = 8 + i * gw + gw * 0.16, bw = gw * 0.3;
+        ctx.fillStyle = '#FF6A5A'; ctx.fillRect(x, Y(q), bw, top + bh - Y(q)); ctx.fillStyle = '#7FD6FF'; ctx.fillRect(x + bw + 2, Y(o), bw, top + bh - Y(o));
+        ctx.fillStyle = 'rgba(255,255,255,.6)'; ctx.font = '500 9px JetBrains Mono, monospace'; ctx.fillText(String(q), x, Y(q) - 2); ctx.fillText(String(o), x + bw + 2, Y(o) - 2);
+        ctx.fillStyle = 'rgba(255,255,255,.75)'; ctx.font = '500 10px Inter, sans-serif'; const tw = ctx.measureText(n).width; ctx.fillText(n, x + bw - tw / 2, hgt - 3); });
+      return;
+    }
     const x = (tt) => 8 + (1 - (st.t - tt) / 4) * (w - 16), y0 = hgt * 0.62, sc = hgt * 0.42;
     ctx.lineWidth = 2; ctx.strokeStyle = '#7FE0A0'; ctx.beginPath(); st.ecg.forEach(([tt, v], i) => { const yy = y0 - v * sc; i ? ctx.lineTo(x(tt), yy) : ctx.moveTo(x(tt), yy); }); ctx.stroke();
     ctx.font = '500 10px JetBrains Mono, monospace'; ctx.fillStyle = '#7FE0A0'; ctx.fillText('ЭКГ · ' + st.hr + ' уд/мин', 10, 13);
@@ -7528,7 +7606,7 @@ function makeKidney() {
    ТЕЛО · ЭНДОКРИННАЯ СИСТЕМА
    ========================================================= */
 const EN_GL = [
-  { id: 'hyp', name: 'Гипоталамус и гипофиз', color: '#C77DFF', p: V3(0, 4.05, 0.08), text: '<b>Гипоталамус</b> — мост между нервной и эндокринной системами: его нейроны выделяют рилизинг-гормоны. <b>Гипофиз</b> (0,5 г) — «главная железа»: передняя доля выпускает тропные гормоны (ТТГ, АКТГ, ФСГ, ЛГ), гормон роста и пролактин; задняя — вазопрессин и окситоцин.', hormones: 'ТТГ, АКТГ, СТГ, ФСГ, ЛГ, пролактин, АДГ, окситоцин', targets: ['thy', 'adr', 'gon', 'liver', 'kid'] },
+  { id: 'hyp', name: 'Гипоталамус и гипофиз', color: '#C77DFF', p: V3(0, 4.05, 0.08), text: '<b>Гипоталамус</b> — мост между нервной и эндокринной системами: его нейроны выделяют рилизинг-гормоны. <b>Гипофиз</b> (0,5 г) — «главная железа»: передняя доля выпускает тропные гормоны (ТТГ, АКТГ, ФСГ, ЛГ), гормон роста и пролактин; задняя доля лишь хранит и выпускает вазопрессин и окситоцин, сделанные нейронами гипоталамуса.', hormones: 'ТТГ, АКТГ, СТГ, ФСГ, ЛГ, пролактин, АДГ, окситоцин', targets: ['thy', 'adr', 'gon', 'liver', 'kid'] },
   { id: 'pin', name: 'Эпифиз', color: '#9FA8FF', p: V3(0, 4.2, -0.12), text: '<b>Эпифиз</b> (шишковидная железа) ночью, в темноте выделяет мелатонин — сигнал «пора спать» для всего организма. Свет, особенно синий, подавляет его выработку.', hormones: 'мелатонин', targets: ['hyp'] },
   { id: 'thy', name: 'Щитовидная железа', color: '#5CC48A', p: V3(0, 3.3, 0.22), text: '<b>Щитовидная железа</b> в форме бабочки на передней стороне шеи. Её гормоны тироксин (T4) и трийодтиронин (T3) содержат йод и задают скорость обмена веществ почти во всех клетках, а у детей необходимы для развития мозга. Кальцитонин снижает кальций крови.', hormones: 'T4, T3, кальцитонин', targets: ['heart', 'liver', 'mus'] },
   { id: 'para', name: 'Паращитовидные', color: '#E8D86A', p: V3(0.09, 3.33, 0.14), text: '<b>Паращитовидные железы</b> — четыре «зёрнышка» на задней стороне щитовидной. Паратгормон повышает кальций в крови: забирает его из костей и удерживает в почках.', hormones: 'паратгормон', targets: ['bone', 'kid'] },
@@ -7536,6 +7614,10 @@ const EN_GL = [
   { id: 'adr', name: 'Надпочечники', color: '#F2C14E', p: V3(0.42, 1.38, -0.33), text: '<b>Надпочечники.</b> Кора выделяет кортизол (стресс, сахар крови, подавление воспаления), альдостерон (натрий и вода) и немного половых гормонов. Мозговое вещество — адреналин и норадреналин: реакция «бей или беги» за секунды.', hormones: 'кортизол, альдостерон, адреналин', targets: ['heart', 'liver', 'kid', 'mus'] },
   { id: 'panc', name: 'Островки поджелудочной', color: '#FF8A5C', p: V3(0.18, 1.08, -0.12), text: '<b>Островки Лангерганса</b> — 1–2% ткани поджелудочной железы, около миллиона скоплений клеток. Бета-клетки выделяют <b>инсулин</b>, открывающий клеткам вход для глюкозы, альфа-клетки — <b>глюкагон</b>, заставляющий печень выпускать глюкозу. Нехватка инсулина — сахарный диабет.', hormones: 'инсулин, глюкагон', targets: ['liver', 'mus'] },
   { id: 'gon', name: 'Половые железы', color: '#FF7AB0', p: V3(0.3, -0.05, 0.05), text: '<b>Половые железы</b> — яичники у женщин (эстрогены, прогестерон) и яички у мужчин (тестостерон). Их работой управляют ФСГ и ЛГ гипофиза. Гормоны запускают половое созревание, вторичные половые признаки, влияют на кости, мышцы и мозг.', hormones: 'эстрогены, прогестерон, тестостерон', targets: ['bone', 'mus'] },
+  { id: 'hrt', name: 'Сердце', color: '#FF7A7A', diffuse: true, p: V3(0.06, 2.24, 0.3), text: '<b>Сердце</b> — тоже эндокринный орган. Растянутые избытком крови предсердия выделяют <b>натрийуретический пептид</b>: почки выводят больше соли и воды, сосуды расширяются, давление снижается. Анализ на родственный пептид BNP помогает распознать сердечную недостаточность.', hormones: 'натрийуретический пептид', targets: ['kid'] },
+  { id: 'kidE', name: 'Почки', color: '#E89060', diffuse: true, p: V3(-0.45, 0.94, -0.26), text: '<b>Почки</b> выделяют <b>эритропоэтин</b> (при нехватке кислорода костный мозг делает больше эритроцитов), <b>ренин</b> (запускает систему ренин — ангиотензин — альдостерон, поднимающую давление) и превращают витамин D в активный <b>кальцитриол</b>, который усиливает всасывание кальция.', hormones: 'эритропоэтин, ренин, кальцитриол', targets: ['bone', 'adr'] },
+  { id: 'gut', name: 'Желудок и кишка', color: '#F2B070', diffuse: true, p: V3(0.2, 1.45, 0.25), text: '<b>Желудок и кишка</b> — самая большая эндокринная «железа»: рассеянные в слизистой клетки выделяют <b>гастрин</b> (кислота желудка), <b>секретин</b> и <b>холецистокинин</b> (сок поджелудочной и желчь), <b>ГИП и ГЛП-1</b> (усиливают выброс инсулина после еды — на ГЛП-1 основаны лекарства от диабета и ожирения) и <b>грелин</b> — «гормон голода».', hormones: 'гастрин, секретин, ХЦК, ГИП, ГЛП-1, грелин', targets: ['liver', 'hyp'] },
+  { id: 'fat', name: 'Жировая ткань', color: '#F2E08A', diffuse: true, p: V3(-0.25, 0.42, 0.42), text: '<b>Жировая ткань</b> выделяет <b>лептин</b>: чем больше жира, тем больше лептина и тем сильнее гипоталамус гасит аппетит; при ожирении мозг перестаёт слышать этот сигнал. <b>Адипонектин</b> повышает чувствительность к инсулину. В жире также образуются эстрогены.', hormones: 'лептин, адипонектин', targets: ['hyp', 'liver', 'mus'] },
 ];
 function makeEndo() {
   rnd = mulberry(1616);
@@ -7561,6 +7643,11 @@ function makeEndo() {
   add('panc', taperTube(PANC, (u) => 0.08 - 0.04 * u, 50, 14), { emissiveIntensity: 0.05 });
   const islets = []; for (let i = 0; i < 18; i++) islets.push(glowNucleus(scene, PANC.getPointAt(rnd()).add(randUnit().multiplyScalar(0.04)), '#FF8A5C', 0.012, 6));
   [1, -1].forEach((s) => add('gon', ell3(0.06, 0.04, 0.04, V3(0.3 * s, -0.05, 0.05))));
+  // диффузная эндокринная система: предсердия, юкстагломерулярный аппарат почек, клетки слизистой ЖКТ, жир
+  add('hrt', ell3(0.08, 0.07, 0.07, GL.hrt.p)); add('hrt', ell3(0.07, 0.06, 0.06, BODY.heart.clone().add(V3(0.15, 0.2, -0.08))));
+  [-0.45, 0.45].forEach((x) => add('kidE', ell3(0.035, 0.07, 0.03, V3(x * 0.82, x > 0 ? 1.0 : 0.94, -0.26))));
+  { const GUT = new THREE.CatmullRomCurve3([V3(0.35, 1.5, 0.2), V3(0.12, 1.38, 0.28), V3(-0.12, 1.3, 0.22), V3(-0.18, 1.15, 0.15)]); add('gut', taperTube(GUT, () => 0.035, 30, 8)); for (let i = 0; i < 10; i++) glowNucleus(scene, GUT.getPointAt(i / 9).add(randUnit().multiplyScalar(0.03)), '#F2B070', 0.01, 6); }
+  [[-0.25, 0.42, 0.42], [0.2, 0.38, 0.44], [0.0, 0.25, 0.46], [-0.4, 0.2, 0.36], [0.38, 0.22, 0.36]].forEach(([x, y, z]) => add('fat', ell3(0.09, 0.06, 0.04, V3(x, y, z)), { transparent: true, opacity: 0.8 }));
   // органы-мишени (призраки)
   const ghostMat = (c) => new THREE.MeshPhysicalMaterial({ color: new THREE.Color(c).multiplyScalar(0.35), roughness: 0.6, transparent: true, opacity: 0.22, depthWrite: false, emissive: new THREE.Color(c), emissiveIntensity: 0.05 });
   const TG = {
@@ -7572,7 +7659,7 @@ function makeEndo() {
   };
   TG.heart.m.position.copy(BODY.heart); TG.heart.m.rotation.z = 0.4;   // геометрия в нуле — пульсирует на месте, верхушка влево
   Object.values(TG).forEach((x) => scene.add(x.m));
-  TG.thy = { p: GL.thy.p }; TG.adr = { p: GL.adr.p }; TG.gon = { p: GL.gon.p }; TG.hyp = { p: GL.hyp.p };
+  TG.thy = { p: GL.thy.p }; TG.adr = { p: GL.adr.p }; TG.gon = { p: GL.gon.p }; TG.hyp = { p: GL.hyp.p }; TG.panc = { p: GL.panc.p };
   const arc = (a, b) => { const m = a.clone().lerp(b, 0.5); m.z += 0.35; m.x += (b.x - a.x) * 0.1; return new THREE.CatmullRomCurve3([a, m, b]); };
   const fx = new Sparks(2600, 0.065); scene.add(fx.obj);
   /* ---------- модели обратной связи ---------- */
@@ -7628,7 +7715,7 @@ function makeEndo() {
     { text: 'печень', pos: V3(-0.8, 1.6, 0.25), color: '#c88a70', show: () => st.labels && st.mode !== 'thy' },
     { text: 'мышцы', pos: V3(-0.75, -1.0, 0.2), color: '#c86a6a', show: () => st.labels && (st.mode === 'sugar' || (st.mode === 'map' && st.sel)) },
     { text: 'кость', pos: V3(0.62, -1.0, 0.1), color: '#e8d8bb', show: () => st.labels && st.mode === 'map' && st.sel && GL[st.sel].targets.includes('bone') },
-    { text: 'сердце', pos: BODY.heart.clone().add(V3(0.3, 0.0, 0.2)), color: '#FF8A7A', show: () => st.labels && (st.mode === 'stress' || (st.mode === 'map' && st.sel)) },
+    { text: 'сердце', pos: BODY.heart.clone().add(V3(0.3, 0.0, 0.2)), color: '#FF8A7A', show: () => st.labels && (st.mode === 'stress' || (st.mode === 'map' && st.sel && st.sel !== 'hrt')) },
   ];
   const refs = {};
   function ui(el) {
@@ -7677,6 +7764,7 @@ const IM_PARTS = [
   { id: 'spl', name: 'Селезёнка', color: '#B0506A', text: '<b>Селезёнка</b> (около 150 г) фильтрует кровь, а не лимфу: удаляет старые эритроциты, хранит запас тромбоцитов и моноцитов, в её белой пульпе встречаются лимфоциты и антигены из крови.' },
   { id: 'thym', name: 'Тимус', color: '#7FD6C8', text: '<b>Тимус</b> — центральный орган иммунитета: здесь T-лимфоциты «учатся». Выживают только те, что распознают чужое и не нападают на своё — до 95% погибают в отборе.' },
   { id: 'bm', name: 'Костный мозг', color: '#E06A6A', text: '<b>Красный костный мозг</b> (в плоских костях, позвонках, концах трубчатых костей) — фабрика всех клеток крови: эритроцитов, тромбоцитов и лейкоцитов. Здесь созревают B-лимфоциты.' },
+  { id: 'galt', name: 'Лимфоидная ткань кишки', color: '#E8C070', text: '<b>Лимфоидная ткань кишки</b> — самая большая часть иммунной системы: в стенке кишки живёт больше лимфоцитов, чем во всех лимфоузлах. Скопления фолликулов в подвздошной кишке называют <b>пейеровыми бляшками</b>: особые M-клетки над ними пропускают внутрь образцы содержимого кишки, и иммунитет учится отличать еду и полезные бактерии от возбудителей. Отсюда же выходят плазматические клетки, выделяющие в просвет кишки антитела IgA.' },
   { id: 'ton', name: 'Миндалины', color: '#F2A0B0', text: '<b>Миндалины</b> образуют кольцо вокруг входа в глотку и встречают микробов, приходящих с воздухом и пищей.' },
 ];
 function makeImmune() {
@@ -7687,7 +7775,14 @@ function makeImmune() {
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(VIEW.sys.pos);
   const controls = makeControls(camera, VIEW.sys.target); controls.minDistance = 1.5; controls.maxDistance = 22;
   const body = new THREE.Group(); scene.add(body);
-  bodyShell(body, { rim: 0.2 });
+  const shell = bodyShell(body, { rim: 0.2 });
+  // зоны оттока: правый лимфатический проток (правая половина головы, шеи, груди и правая рука) и грудной проток (всё остальное)
+  const zoneM = new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.13, depthWrite: false });
+  const zones = new THREE.Group(); zones.visible = false; body.add(zones);
+  const Z_R = new THREE.Color(0x4ab8ff), Z_T = new THREE.Color(0xffb040);
+  shell.meshes.filter((m, i) => i % 2 === 0).forEach((m) => { const g = m.geometry.clone(), P = g.attributes.position, col = new Float32Array(P.count * 3);
+    for (let i = 0; i < P.count; i++) { const x = P.getX(i), y = P.getY(i), c = x < 0 && (y > 1.5 || (x < -0.95 && y > 0.9)) ? Z_R : Z_T; col[i * 3] = c.r; col[i * 3 + 1] = c.g; col[i * 3 + 2] = c.b; }
+    g.setAttribute('color', new THREE.BufferAttribute(col, 3)); zones.add(new THREE.Mesh(g, zoneM)); });
   const PART = Object.fromEntries(IM_PARTS.map((p) => [p.id, { ...p, mats: [] }])), pick = [];
   const add = (id, g, o = {}, parent = body) => { const m = organMat(PART[id].color, o.k ?? 0.45, { emissiveIntensity: 0.1, ...(o.mat || {}) }); PART[id].mats.push(m); const me = new THREE.Mesh(g, m); me.userData.pick = id; pick.push(me); parent.add(me); return me; };
   /* ---------- лимфатическая сеть ---------- */
@@ -7703,16 +7798,28 @@ function makeImmune() {
   branch([V3(0.0, 0.75, 0.2), V3(0.0, 0.8, 0.0), V3(0.05, 0.9, -0.28)]);
   const lvG = []; LYM.forEach((c, i) => { lvG.push(taperTube(c, () => (i === 0 ? 0.03 : 0.018), 80, 6)); for (let k = 0; k < 6; k++) { const arr = []; branchTree(arr, c.getPointAt(0.1 + k * 0.14), randUnit(), 0.22, 0.008, 1, { segs: 6, rad: 4 }); lvG.push(...arr); } });
   add('lv', mergeGeometries(lvG), { k: 0.4, mat: { transparent: true, opacity: 0.75 } });
+  add('lv', ell3(0.055, 0.13, 0.05, V3(0.05, 0.98, -0.28)), { k: 0.5 });   // цистерна грудного протока (L1–L2)
+  // венозные углы: внутренняя яремная + подключичная → плечеголовная → верхняя полая вена
+  const VEN_ANG = (() => { const g = []; [1, -1].forEach((s) => { const ang = V3(0.33 * s, 2.86, 0.06);
+    g.push(tube([V3(0.24 * s, 3.5, 0.1), V3(0.27 * s, 3.15, 0.1), ang], 0.04, 16, 8), tube([V3(0.95 * s, 2.82, 0.0), V3(0.62 * s, 2.9, 0.04), ang], 0.035, 16, 8),
+      tube([ang, V3(0.12 * s - 0.02, 2.74, 0.12), V3(-0.1, 2.62, 0.14)], 0.045, 16, 8)); });
+    g.push(tube([V3(-0.1, 2.62, 0.14), V3(-0.1, 2.38, 0.14), V3(-0.08, 2.15, 0.1)], 0.055, 12, 8)); return mergeGeometries(g); })();
+  body.add(new THREE.Mesh(VEN_ANG, organMat('#5C7CE8', 0.5, { transparent: true, opacity: 0.8 })));
   const NODES = [];
   const cluster = (c, n, r) => { for (let i = 0; i < n; i++) { const p = c.clone().add(randUnit().multiplyScalar(r * rnd())); const g = ell3(0.035 + rnd() * 0.02, 0.025 + rnd() * 0.015, 0.03, p, 14); add('ln', g, { k: 0.5 }); NODES.push(p); } };
   [1, -1].forEach((s) => { cluster(V3(0.2 * s, 3.4, 0.08), 6, 0.12); cluster(V3(0.85 * s, 2.6, 0.0), 6, 0.12); cluster(V3(0.34 * s, -0.12, 0.2), 6, 0.1); });
   cluster(V3(0.0, 0.8, 0.1), 9, 0.18); cluster(V3(0.0, 2.35, -0.05), 5, 0.12);
+  [1, -1].forEach((s) => { cluster(V3(0.13 * s, 0.6, -0.2), 5, 0.1); cluster(V3(0.25 * s, 0.2, 0.0), 4, 0.08); });   // поясничные и подвздошные
+  // конец подвздошной кишки (призрак) с пейеровыми бляшками
+  const ILE = new THREE.CatmullRomCurve3([V3(0.15, 0.55, 0.32), V3(-0.05, 0.45, 0.36), V3(-0.2, 0.32, 0.34), V3(-0.33, 0.3, 0.3), V3(-0.42, 0.4, 0.26)]);
+  body.add(new THREE.Mesh(taperTube(ILE, () => 0.06, 40, 12), new THREE.MeshPhysicalMaterial({ color: 0xe8b0a0, roughness: 0.5, transparent: true, opacity: 0.16, depthWrite: false })));
+  for (let i = 0; i < 5; i++) { const u = 0.1 + i * 0.19, p = ILE.getPointAt(u), tg = ILE.getTangentAt(u), q = new THREE.Quaternion().setFromUnitVectors(V3(1, 0, 0), tg); const g = ell3(0.05, 0.03, 0.014); g.applyQuaternion(q); g.translate(p.x, p.y, p.z + 0.055); add('galt', g, { k: 0.5 }); }
   const splG = displaceGeo(new THREE.SphereGeometry(1, 32, 24), (v) => { v.set(v.x * 0.1, v.y * 0.18, v.z * 0.07); if (v.x < 0) v.x *= 0.5; }); splG.rotateZ(-0.4); splG.translate(0.68, 1.38, -0.18); add('spl', splG, { k: 0.45 });
   [1, -1].forEach((s) => add('thym', ell3(0.08, 0.16, 0.05, V3(0.06 * s, 2.72, 0.3))));
   [1, -1].forEach((s) => add('ton', ell3(0.03, 0.05, 0.025, V3(0.07 * s, 3.78, 0.1))));
   // красный костный мозг взрослого: плоские кости (таз, грудина, позвонки) и верхние концы бёдер
   [1, -1].forEach((s) => { add('bm', tube([V3(0.48 * s, -0.25, 0.0), V3(0.49 * s, -0.55, 0.01), V3(0.5 * s, -0.8, 0.02)], (u) => 0.055 * (1 - 0.5 * u), 12, 10), { k: 0.35, mat: { transparent: true, opacity: 0.5 } }); add('bm', ell3(0.08, 0.1, 0.08, V3(0.48 * s, -0.3, 0.0)), { k: 0.5 });
-    const wing = ell3(0.3, 0.22, 0.06); wing.rotateZ(0.3 * s); wing.translate(0.42 * s, 0.3, -0.12); add('bm', wing, { k: 0.35, mat: { transparent: true, opacity: 0.5 } }); });   // крылья подвздошных костей
+    const wing = ell3(0.28, 0.2, 0.025); wing.rotateZ(0.3 * s); wing.rotateY(-0.75 * s); wing.translate(0.42 * s, 0.3, -0.08); add('bm', wing, { k: 0.35, mat: { transparent: true, opacity: 0.22 } }); });   // крылья подвздошных костей
   const BMP = [V3(0.48, -0.4, 0), V3(-0.48, -0.4, 0), V3(0.42, 0.3, -0.12), V3(-0.42, 0.3, -0.12), V3(0, 2.5, 0.5), V3(0, 1.2, -0.48), V3(0, 2.2, -0.48)];   // где рождаются клетки крови
   add('bm', tube([V3(0, 2.85, 0.5), V3(0, 2.2, 0.52)], 0.04, 10, 8), { k: 0.35, mat: { transparent: true, opacity: 0.5 } });   // грудина
   add('bm', mergeGeometries(Array.from({ length: 14 }, (_, i) => { const g = new THREE.CylinderGeometry(0.05, 0.05, 0.12, 10); g.translate(0, 0.45 + i * 0.18, -0.48); return g; })), { k: 0.35, mat: { transparent: true, opacity: 0.45 } });   // тела позвонков
@@ -7743,7 +7850,7 @@ function makeImmune() {
   const fx = new Sparks(2400, 0.06); scene.add(fx.obj);
   /* ---------- состояние ---------- */
   const st = { t: 0, mode: 'sys', sel: null, labels: true, rot: false, fly: null, msg: null, infT: -99, mem: false, second: false, titre: [], days: 0, phase: '' };
-  function select(id) { st.sel = id === 'all' ? null : id; refs.seg && refs.seg.sync(); dimOthers(IM_PARTS.map((p) => PART[p.id]), st.sel); st.msg = null; refs.setInfo && refs.setInfo(); }
+  function select(id) { const was = st.sel; st.sel = id === 'all' ? null : id; refs.seg && refs.seg.sync(); dimOthers(IM_PARTS.map((p) => PART[p.id]), st.sel); st.msg = null; if (st.sel === 'galt') st.fly = flyTarget(V3(-0.2, 0.15, 0.35), V3(-0.75, 0.75, 3.6)); else if (was === 'galt') st.fly = VIEW.sys; refs.setInfo && refs.setInfo(); }
   function setMode(m) { st.mode = m; refs.modeSeg && refs.modeSeg.sync(); st.msg = null; body.visible = m === 'sys'; node.visible = m !== 'sys'; st.fly = VIEW[m]; refs.setInfo && refs.setInfo(); }
   function infect() { if (st.mode !== 'resp') setMode('resp'); st.second = st.mem; st.infT = st.t; st.titre = []; BAC.length = 0; AB.length = 0; for (let i = 0; i < 60; i++) BAC.push({ c: AFF[i % 4], u: -rnd() * 1.5, alive: 1, p: V3(0, 0, 0), q: new THREE.Quaternion().setFromAxisAngle(randUnit(), rnd() * 6) }); st.msg = st.second ? TXT.second : TXT.first; refs.setInfo(); }
   pickOn(() => self, camera, pick, (id) => { if (st.mode === 'sys') select(id); });
@@ -7794,6 +7901,7 @@ function makeImmune() {
     first: '<b>Первая встреча.</b> Бактерии (зелёные палочки) приносятся лимфой. Неспецифическая защита — макрофаги — уже работает, но микробов много.',
     present: '<b>Предъявление антигена.</b> Дендритная клетка (оранжевая звезда) захватила кусочки бактерий и принесла их в T-зону. T-хелперы, узнавшие антиген, активируют подходящие B-лимфоциты — в фолликулах вспыхивают герминативные центры.',
     ab: '<b>Антитела.</b> B-лимфоциты размножаются и превращаются в плазматические клетки, выпускающие тысячи антител в секунду (жёлтые Y). Антитела склеивают бактерии и метят их для макрофагов. При первой встрече на это уходит 1–2 недели — поэтому мы болеем. Часть клеток остаётся клетками памяти.',
+    zones: '<b>Куда стекает лимфа.</b> <span style="color:#4ab8ff">Правый лимфатический проток</span> — с правой половины головы, шеи, груди и правой руки. <span style="color:#ffb040">Грудной проток</span> — примерно с ¾ тела: начинается цистерной на уровне L1–L2 и впадает в левый венозный угол, где сливаются яремная и подключичная вены.',
     second: '<b>Повторная встреча (или после прививки).</b> Клетки памяти узнают тот же антиген сразу.',
     ab2: '<b>Вторичный ответ</b> — быстрее (2–4 дня) и в разы сильнее, антитела более точные (IgG). Микроб уничтожается раньше, чем успевает вызвать болезнь. На этом основаны прививки: вакцина знакомит иммунитет с безопасной частью возбудителя.',
   };
@@ -7807,6 +7915,13 @@ function makeImmune() {
     { text: 'тимус', pos: V3(0.2, 2.75, 0.35), color: '#7FD6C8', show: () => st.labels && st.mode === 'sys' },
     { text: 'миндалины', pos: V3(0.15, 3.82, 0.12), color: '#F2A0B0', show: () => st.labels && st.mode === 'sys' },
     { text: 'костный мозг', pos: V3(0.62, -0.6, 0.05), color: '#E06A6A', show: () => st.labels && st.mode === 'sys' },
+    { text: 'средостенные', pos: V3(0.2, 2.4, -0.05), color: '#7FD6FF', show: () => st.labels && st.mode === 'sys' },
+    { text: 'поясничные', pos: V3(-0.3, 0.62, -0.2), color: '#7FD6FF', show: () => st.labels && st.mode === 'sys' },
+    { text: 'подвздошные', pos: V3(-0.42, 0.18, 0.0), color: '#7FD6FF', show: () => st.labels && st.mode === 'sys' },
+    { text: 'цистерна протока', pos: V3(0.16, 0.98, -0.3), color: '#9FE8C0', show: () => st.labels && st.mode === 'sys' },
+    { text: 'левый венозный угол', pos: V3(0.42, 2.92, 0.08), color: '#8AA6FF', show: () => st.labels && st.mode === 'sys' },
+    { text: 'правый лимфатический проток', pos: V3(-0.55, 3.1, 0.1), color: '#9FE8C0', show: () => st.labels && st.mode === 'sys' && (!st.sel || st.sel === 'lv') },
+    { text: 'пейеровы бляшки', pos: V3(-0.25, 0.3, 0.42), color: '#E8C070', show: () => st.labels && st.mode === 'sys' && st.sel === 'galt' },
     { text: 'фолликул (B-клетки)', pos: V3(31.0, 0.8, 0.3), color: '#8FB8FF', show: () => st.labels && st.mode !== 'sys' },
     { text: 'T-зона', pos: V3(30.4, -0.1, 0.5), color: '#7FE0A0', show: () => st.labels && st.mode !== 'sys' },
     { text: 'приносящие сосуды', pos: AFF[0].getPointAt(0.4).add(V3(30.1, 0.1, 0)), color: '#9FE8C0', show: () => st.labels && st.mode !== 'sys' },
@@ -7822,15 +7937,18 @@ function makeImmune() {
     refs.seg = seg([{ id: 'all', label: 'Все' }, ...IM_PARTS.map((p) => ({ id: p.id, label: p.name, color: p.color }))], () => st.sel || 'all', (v) => { if (st.mode !== 'sys') setMode('sys'); select(v); });
     refs.rot = toggle('Вращение', () => st.rot, (v) => { st.rot = v; });
     const lab = toggle('Подписи', () => st.labels, (v) => { st.labels = v; });
-    Object.assign(refs, { lab });
+    const zt = toggle('Зоны оттока', () => zones.visible, (v) => { zones.visible = v; if (v && st.mode !== 'sys') setMode('sys'); st.msg = v ? TXT.zones : null; refs.setInfo(); });
+    Object.assign(refs, { lab, zt });
     el.append(group('Режим', '1–3', refs.modeSeg), h('div', { class: 'grp', style: 'flex:1 1 480px' }, h('div', { class: 'glabel' }, 'Органы', h('kbd', {}, 'клик')), h('div', { class: 'gctl' }, refs.seg)),
-      group('Опыт', 'I · M', button('Инфекция', infect, true), button('Сбросить память', () => { st.mem = false; st.msg = '<b>Память сброшена:</b> следующая инфекция снова вызовет первичный ответ.'; refs.setInfo(); })), group('Вид', 'R · N', refs.rot, lab), ib.el);
+      group('Опыт', 'I · M', button('Инфекция', infect, true), button('Сбросить память', () => { st.mem = false; st.msg = '<b>Память сброшена:</b> следующая инфекция снова вызовет первичный ответ.'; refs.setInfo(); })), group('Вид', 'Z · R · N', zt, refs.rot, lab), ib.el);
     refs.setInfo();
   }
   function onKey(e) {
     const k = e.key.toLowerCase(), n = parseInt(e.key, 10);
     if (n >= 1 && n <= 3) { setMode(['sys', 'node', 'resp'][n - 1]); return true; }
     if (k === 'i' || k === 'ш') { infect(); return true; }
+    if (k === 'z' || k === 'я') { refs.zt.click(); return true; }
+    if (k === 'm' || k === 'ь') { st.mem = false; st.msg = '<b>Память сброшена:</b> следующая инфекция снова вызовет первичный ответ.'; refs.setInfo(); return true; }
     if (k === 'r' || k === 'к') { refs.rot.click(); return true; } if (k === 'n' || k === 'т') { refs.lab.click(); return true; }
     if (e.key === 'Escape') { select('all'); return true; }
     return false;
@@ -7845,7 +7963,7 @@ function makeImmune() {
         <p><b>Врождённый иммунитет</b> работает сразу и одинаково против всех: кожа и слизистые, фагоциты (нейтрофилы, макрофаги), воспаление, интерфероны. <b>Приобретённый</b> — специфичный и с памятью: B-лимфоциты выпускают антитела, T-киллеры убивают заражённые клетки, T-хелперы координируют ответ.</p>
         <h3>Вакцинация</h3><p>Вакцина создаёт клетки памяти без болезни. Первую вакцину (от оспы) предложил Эдвард Дженнер в 1796 году, теорию фагоцитоза — И. И. Мечников (Нобелевская премия 1908 г.).</p></div>
       <div><h2>Условности</h2><ul><li>Узел увеличен примерно в 500 раз, бактерии и антитела — ещё сильнее.</li><li>Сутки сжаты до долей секунды; кривая антител — схема.</li></ul></div>
-      <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>3</code> режим</li><li>клик: орган</li><li><code>I</code> инфекция</li><li><code>R</code> · <code>N</code></li></ul></div>`,
+      <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>3</code> режим</li><li>клик: орган</li><li><code>I</code> инфекция · <code>M</code> сбросить память</li><li><code>Z</code> зоны оттока</li><li><code>R</code> вращение · <code>N</code> подписи</li></ul></div>`,
   };
   return self;
 }
@@ -8058,15 +8176,15 @@ const SK_REC = [
   { id: 'free', short: 'Боль', name: 'Свободные окончания', color: '#FF6A5A', fast: false, text: '<b>Свободные нервные окончания</b> проникают даже в эпидермис. Это ноцицепторы (боль), терморецепторы (тепло и холод) и рецепторы зуда. Боль проводится двумя типами волокон: быстрыми (острая, точная боль) и медленными (тупая, ноющая).' },
 ];
 const SK_LAYERS = [
-  { id: 'epi', name: 'Эпидермис', color: '#E8C8B0', text: '<b>Эпидермис</b> (0,05–1,5 мм) — многослойный эпителий без сосудов. В базальном слое клетки постоянно делятся, поднимаются вверх, наполняются кератином и погибают; верхний роговой слой из мёртвых чешуек слущивается и полностью обновляется за ~4 недели. Меланоциты дают пигмент меланин, защищающий от ультрафиолета.' },
-  { id: 'der', name: 'Дерма', color: '#D89090', text: '<b>Дерма</b> (1–4 мм) — плотная соединительная ткань из волокон коллагена (прочность) и эластина (упругость). В ней сосуды, нервы и рецепторы, корни волос, сальные и потовые железы. Сосочки дермы образуют папиллярные узоры — отпечатки пальцев.' },
-  { id: 'hyp', name: 'Гиподерма', color: '#F2D890', text: '<b>Подкожная жировая клетчатка</b> — запас энергии, теплоизоляция и амортизатор. Её толщина сильно зависит от места тела и от человека.' },
+  { id: 'epi', name: 'Эпидермис', color: '#E8C8B0', text: '<b>Эпидермис</b> (0,05–1,5 мм) — многослойный эпителий без сосудов. Снизу вверх: <b>базальный</b> слой (клетки делятся), <b>шиповатый</b> (клетки скреплены «шипами»-десмосомами), <b>зернистый</b> (зёрна кератогиалина, клетки начинают умирать), на ладонях и подошвах ещё <b>блестящий</b>, и <b>роговой</b> — мёртвые чешуйки, которые слущиваются; эпидермис обновляется за ~4 недели. В базальном слое сидят <b>меланоциты</b>: своими отростками они передают пигмент меланин соседним клеткам, и он закрывает их ядра от ультрафиолета. Число меланоцитов у людей примерно одинаковое, цвет кожи зависит от того, сколько меланина они делают.' },
+  { id: 'der', name: 'Дерма', color: '#D89090', text: '<b>Дерма</b> (1–4 мм) — соединительная ткань из волокон коллагена (прочность) и эластина (упругость). Тонкий <b>сосочковый</b> слой под эпидермисом рыхлый, в нём капиллярные петли и тельца Мейсснера; толстый <b>сетчатый</b> слой плотный, его коллаген держит кожу. Сосуды образуют два сплетения: глубокое на границе с клетчаткой и подсосочковое, от которого петли поднимаются в каждый сосочек. В ней сосуды, нервы и рецепторы, корни волос, сальные и потовые железы. Сосочки дермы образуют папиллярные узоры — отпечатки пальцев.' },
+  { id: 'hyp', name: 'Гиподерма', color: '#F2D890', text: '<b>Подкожная жировая клетчатка</b> — запас энергии, теплоизоляция и амортизатор. Её толщина сильно зависит от места тела и от человека. Жировые дольки разделены соединительнотканными тяжами, связывающими кожу с глубокой фасцией; здесь проходят подкожные артерия и вена и ствол кожного нерва, от которого веточки поднимаются к рецепторам.' },
 ];
 function makeSkin() {
   rnd = mulberry(1919);
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x07060a); scene.environment = envTex;
   labLights(scene, 0xffb08a);
-  const HOME = flyTarget(V3(0.1, -0.85, 0), V3(4.3, 2.05, 8.4));
+  const HOME = flyTarget(V3(-0.35, -1.25, 0), V3(3.9, 1.75, 9.3));
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(HOME.pos);
   const controls = makeControls(camera, HOME.target); controls.minDistance = 1.5; controls.maxDistance = 16;
   const sk = new THREE.Group(); scene.add(sk);
@@ -8091,19 +8209,40 @@ function makeSkin() {
   // жировые дольки
   // дольки не выходят в дерму и не закрывают Пачини
   { const arr = []; for (let i = 0; i < 90 && arr.length < 64; i++) { const r = 0.11 + rnd() * 0.06, p = V3(rand(-W / 2 + 0.15, W / 2 - 0.15), rand(Y_BOT + 0.15, Y_DER - r - 0.02), rand(-D / 2 + 0.15, D / 2 - 0.15)); if (PAC.some((q) => q.distanceTo(p) < 0.35 + r)) continue; const g = new THREE.SphereGeometry(r, 12, 10); g.translate(p.x, p.y, p.z); arr.push(g); } sk.add(new THREE.Mesh(mergeGeometries(arr), organMat('#F2D890', 0.42, { transparent: true, opacity: 0.6 }))); }
+  // слои эпидермиса: базальный (с меланоцитами), шиповатый, зернистый; роговой — отдельная плита corn
+  const sheet = (fy, col, op) => { const g = new THREE.PlaneGeometry(W, D, 120, 80); g.rotateX(-Math.PI / 2); displaceGeo(g, (v) => { v.y = fy(v.x, v.z); }); const m = new THREE.Mesh(g, new THREE.MeshPhysicalMaterial({ color: new THREE.Color(col).multiplyScalar(0.5), roughness: 0.6, transparent: true, opacity: op, depthWrite: false, side: THREE.DoubleSide })); sk.add(m); return m; };
+  sheet((x, z) => Y_EPI + papH(x, z) + 0.03, '#8a5a40', 0.4);              // базальный
+  sheet((x, z) => Y_EPI + 0.6 * papH(x, z) + 0.11, '#e8c8b0', 0.18);        // шиповатый / зернистый
+  sheet((x, z) => Y_TOP - 0.05, '#c89a60', 0.35);                           // зернистый
+  sheet((x, z) => 0.7 + 0.3 * papH(x, z), '#f0b0b0', 0.16);                 // граница сосочкового и сетчатого слоёв дермы
+  { const arr = [], MEL = []; for (let i = 0; i < 8; i++) { const x = -1.4 + i * 0.4 + rand(-0.08, 0.08), z = rand(-0.8, 0.8), p = V3(x, Y_EPI + papH(x, z) + 0.035, z); MEL.push(p); arr.push(ell3(0.035, 0.02, 0.03, p, 12)); for (let k = 0; k < 4; k++) branchTree(arr, p, V3(rand(-1, 1), 0.5, rand(-1, 1)), 0.1, 0.006, 1, { segs: 4, rad: 3, spread: 1 }); }
+    sk.add(new THREE.Mesh(mergeGeometries(arr), organMat('#6a3a20', 0.6, { emissiveIntensity: 0.1 }))); var MEL0 = MEL[2]; }
+  // эластические волокна: тонкие извитые
+  { const arr = []; for (let i = 0; i < 40; i++) { const p0 = V3(rand(-W / 2 + 0.3, W / 2 - 0.3), rand(Y_DER + 0.1, 0.8), rand(-D / 2 + 0.3, D / 2 - 0.3)), d = randUnit().setY(rand(-0.3, 0.3)).normalize(), side = V3(0, 1, 0).cross(d).normalize(), pts = [];
+      for (let k = 0; k <= 6; k++) pts.push(p0.clone().addScaledVector(d, k * 0.08).addScaledVector(side, 0.025 * Math.sin(k * 2.2))); arr.push(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 16, 0.005, 3)); }
+    sk.add(new THREE.Mesh(mergeGeometries(arr), organMat('#F2E6A0', 0.6, { emissiveIntensity: 0.2 }))); }
+  // соединительнотканные тяжи гиподермы
+  { const arr = []; [-1.3, -0.85, -0.1, 0.75, 1.15, 1.45].forEach((x, i) => { const z = i % 2 ? -0.75 : 0.7; arr.push(tube([V3(x, Y_BOT, z), V3(x + 0.05, (Y_BOT + Y_DER) / 2, z + 0.04), V3(x - 0.03, Y_DER, z)], 0.012, 12, 4)); });
+    sk.add(new THREE.Mesh(mergeGeometries(arr), organMat('#f0e0d0', 0.4, { transparent: true, opacity: 0.6 }))); }
   // коллагеновые волокна
   { const arr = []; for (let i = 0; i < 60; i++) { const p0 = V3(rand(-W / 2 + 0.6, W / 2 - 0.6), rand(Y_DER + 0.1, Y_EPI - 0.15), rand(-D / 2 + 0.6, D / 2 - 0.6)), d = randUnit().setY(rand(-0.2, 0.2)).normalize(); arr.push(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([p0, p0.clone().addScaledVector(d, 0.3).add(randUnit().multiplyScalar(0.05)), p0.clone().addScaledVector(d, 0.6)]), 8, 0.012, 4)); } sk.add(new THREE.Mesh(mergeGeometries(arr), organMat('#f0e0d0', 0.35, { transparent: true, opacity: 0.6 }))); }
   // сосуды с петлями в сосочках
   const VESA = [], VESV = [];
-  { const a = [], v = []; const art = new THREE.CatmullRomCurve3([V3(-W / 2, -0.25, 0.4), V3(0, -0.2, 0.35), V3(W / 2, -0.28, 0.4)]), ven = new THREE.CatmullRomCurve3([V3(-W / 2, -0.3, -0.3), V3(0, -0.25, -0.35), V3(W / 2, -0.32, -0.3)]);
-    a.push(taperTube(art, () => 0.04, 40, 8)); v.push(taperTube(ven, () => 0.05, 40, 8));
-    for (let i = 0; i < 9; i++) { const x = -1.45 + i * 0.36, za = 0.38, zv = -0.32; const top = V3(x, Y_EPI - 0.02 + papH(x, 0.0), 0.02); const ca = new THREE.CatmullRomCurve3([V3(x, -0.22, za), V3(x + rand(-0.08, 0.08), 0.4, za * 0.5 + rand(-0.08, 0.08)), top]), cv = new THREE.CatmullRomCurve3([top, V3(x + 0.04 + rand(-0.08, 0.08), 0.4, zv * 0.5 + rand(-0.08, 0.08)), V3(x, -0.27, zv)]); a.push(new THREE.TubeGeometry(ca, 16, 0.014, 5)); v.push(new THREE.TubeGeometry(cv, 16, 0.014, 5)); VESA.push(ca); VESV.push(cv); }
+  // два сплетения (Неттер, BP 1): глубокое на границе дермы и клетчатки, подсосочковое под сосочками; подкожные артерия и вена снизу
+  { const a = [], v = []; const YD = Y_DER + 0.04, YS = 0.68, ZA = 0.1, ZV = -0.65, ZSA = 0.3, ZSV = -0.22;
+    const line = (y, z, w) => new THREE.CatmullRomCurve3([V3(-W / 2, y, z), V3(-0.5, y + 0.02, z + 0.03), V3(0.6, y - 0.01, z - 0.02), V3(W / 2, y, z)]);
+    a.push(taperTube(line(YD, ZA), () => 0.04, 40, 8), taperTube(line(YS, ZSA), () => 0.022, 40, 6)); v.push(taperTube(line(YD - 0.02, ZV), () => 0.05, 40, 8), taperTube(line(YS - 0.02, ZSV), () => 0.028, 40, 6));
+    [-1.25, -0.35, 0.5, 1.35].forEach((x, i) => { a.push(tube([V3(x, YD, ZA), V3(x + 0.05, (YD + YS) / 2, (ZA + ZSA) / 2 + 0.03), V3(x + 0.1, YS, ZSA)], 0.016, 14, 5)); v.push(tube([V3(x + 0.15, YD - 0.02, ZV), V3(x + 0.12, (YD + YS) / 2, (ZV + ZSV) / 2), V3(x + 0.1, YS - 0.02, ZSV)], 0.02, 14, 5)); });
+    a.push(tube([V3(-1.45, Y_BOT, 0.2), V3(-1.4, (Y_BOT + YD) / 2, 0.15), V3(-1.3, YD, ZA)], 0.045, 16, 8)); v.push(tube([V3(1.45, Y_BOT, -0.6), V3(1.42, (Y_BOT + YD) / 2, -0.62), V3(1.35, YD - 0.02, ZV)], 0.055, 16, 8));
+    for (let i = 0; i < 9; i++) { const x = -1.45 + i * 0.36; const top = V3(x, Y_EPI - 0.02 + papH(x, 0.0), 0.02); const ca = new THREE.CatmullRomCurve3([V3(x, YS, ZSA), V3(x + rand(-0.04, 0.04), (YS + top.y) / 2, 0.15), top]), cv = new THREE.CatmullRomCurve3([top, V3(x + 0.04 + rand(-0.04, 0.04), (YS + top.y) / 2, -0.1), V3(x, YS - 0.02, ZSV)]); a.push(new THREE.TubeGeometry(ca, 16, 0.012, 5)); v.push(new THREE.TubeGeometry(cv, 16, 0.012, 5)); VESA.push(ca); VESV.push(cv); }
     var artM = new THREE.MeshPhysicalMaterial({ color: 0xc0404a, emissive: 0x501018, emissiveIntensity: 0.2, roughness: 0.4 }), venM = new THREE.MeshPhysicalMaterial({ color: 0x5068c0, emissive: 0x101840, emissiveIntensity: 0.2, roughness: 0.4 });
     sk.add(new THREE.Mesh(mergeGeometries(a), artM), new THREE.Mesh(mergeGeometries(v), venM)); }
   // волосяной фолликул, сальная железа, мышца
   const FOLL = new THREE.CatmullRomCurve3([V3(-1.0, -0.75, -0.3), V3(-0.85, 0.0, -0.3), V3(-0.7, Y_TOP, -0.3)]);
   sk.add(new THREE.Mesh(taperTube(FOLL, (u) => 0.08 - 0.03 * u, 40, 12), organMat('#E8C0A8', 0.4, { transparent: true, opacity: 0.6 })));
-  sk.add(new THREE.Mesh(ell3(0.1, 0.09, 0.1, V3(-1.0, -0.78, -0.3)), organMat('#C89070', 0.45)));
+  sk.add(new THREE.Mesh(ell3(0.1, 0.09, 0.1, V3(-1.0, -0.78, -0.3)), organMat('#C89070', 0.45, { transparent: true, opacity: 0.45, depthWrite: false })));
+  sk.add(new THREE.Mesh(ell3(0.045, 0.06, 0.045, V3(-1.0, -0.83, -0.3)), organMat('#D89090', 0.55)));   // сосочек волоса: питает луковицу
+  sk.add(new THREE.Mesh(taperTube(FOLL, (u) => 0.055 - 0.02 * u, 40, 10), organMat('#F2D8B8', 0.45, { transparent: true, opacity: 0.35, depthWrite: false })));   // внутреннее корневое влагалище
   const hairPiv = new THREE.Group(); hairPiv.position.set(-0.7, Y_TOP, -0.3); sk.add(hairPiv);
   const hairDir = V3(0.15, 1, 0).normalize();
   const hair = new THREE.Mesh(tube([V3(-0.3, -1.95, 0), V3(-0.15, -0.9, 0), V3(0, 0, 0), V3(0.12, 0.6, 0.02), V3(0.3, 0.95, 0.05)], (u) => 0.03 * (1 - 0.6 * u), 50, 8), new THREE.MeshPhysicalMaterial({ color: 0x3a2618, roughness: 0.35, clearcoat: 0.8 })); hairPiv.add(hair);
@@ -8120,7 +8259,15 @@ function makeSkin() {
   const NERV = { meis: [], merk: [], pac: [], ruf: [], free: [] };
   const rmat = (id, o = {}) => { const m = organMat(REC[id].color, 0.5, { emissiveIntensity: 0.15, ...o }); REC[id].mats.push(m); return m; };
   const recMesh = (id, g, o) => { const m = new THREE.Mesh(g, rmat(id, o)); m.userData.pick = id; pick.push(m); sk.add(m); return m; };
-  const nerveTo = (id, p) => { const c = new THREE.CatmullRomCurve3([V3(p.x - 0.3, Y_DER - 0.2, p.z - 0.2), V3(p.x - 0.15, (p.y + Y_DER) / 2, p.z - 0.1), p]); sk.add(new THREE.Mesh(new THREE.TubeGeometry(c, 16, 0.012, 5), nerveMat)); NERV[id].push(c); return c; };
+  // кожный нерв: общий ствол в клетчатке, от него веточки к рецепторам
+  const NTRUNK = new THREE.CatmullRomCurve3([V3(-W / 2, Y_DER - 0.32, -0.15), V3(-0.6, Y_DER - 0.36, -0.05), V3(0.5, Y_DER - 0.3, -0.12), V3(W / 2, Y_DER - 0.34, -0.05)]);
+  sk.add(new THREE.Mesh(taperTube(NTRUNK, () => 0.035, 60, 8), nerveMat));
+  const trunkAt = (x) => NTRUNK.getPointAt(Math.min(0.98, Math.max(0.02, (x - 0.2 + W / 2) / W)));
+  const nerveTo = (id, p) => { const T = trunkAt(p.x); const c = new THREE.CatmullRomCurve3([T, V3((T.x + p.x) / 2, (T.y + p.y) / 2, (T.z + p.z) / 2 + 0.04), p]); sk.add(new THREE.Mesh(new THREE.TubeGeometry(c, 16, 0.012, 5), nerveMat)); NERV[id].push(c); return c; };
+  // симпатические веточки (тоньше, оранжевые): к мышце волоса и к потовой железе
+  { const sm = new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xf09040).multiplyScalar(0.5), emissive: 0x402000, emissiveIntensity: 0.2, roughness: 0.4 }), arr = [];
+    [ARR.getPointAt(0.3), V3(0.9, -0.3, 0.5)].forEach((p) => { const T = trunkAt(p.x); arr.push(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([T, V3((T.x + p.x) / 2 + 0.1, (T.y + p.y) / 2, (T.z + p.z) / 2), p]), 16, 0.008, 4)); });
+    sk.add(new THREE.Mesh(mergeGeometries(arr), sm)); }
   [-0.9, 0.0, 0.55, 1.25].forEach((x, i) => { const z = i % 2 ? 0.25 : -0.55; const p = V3(x, Y_EPI - 0.08 + papH(x, z), z); const g = new THREE.CapsuleGeometry(0.035, 0.12, 6, 12); const pos = g.attributes.position; for (let k = 0; k < pos.count; k++) { pos.setX(k, pos.getX(k) * (1 + 0.15 * Math.sin(pos.getY(k) * 60))); } g.computeVertexNormals(); g.translate(p.x, p.y, p.z); recMesh('meis', g); nerveTo('meis', p.clone().add(V3(0, -0.08, 0))); });
   [-0.3, 0.35, 1.0, -1.35].forEach((x, i) => { const z = i % 2 ? -0.2 : 0.55; const p = V3(x, Y_EPI + 0.02, z); const g = new THREE.CylinderGeometry(0.04, 0.04, 0.012, 16); g.translate(p.x, p.y, p.z); recMesh('merk', g); nerveTo('merk', p.clone().add(V3(0, -0.01, 0))); });
   PAC.forEach((p) => { for (let k = 0; k < 5; k++) { const g = ell3(0.08 + k * 0.035, 0.13 + k * 0.05, 0.08 + k * 0.035, p, 20); recMesh('pac', g, { transparent: true, opacity: 0.35 + (4 - k) * 0.04, depthWrite: false }); } nerveTo('pac', p.clone().add(V3(0, -0.15, 0))); });
@@ -8141,7 +8288,8 @@ function makeSkin() {
     heat: { name: 'Жара', text: '<b>Жара.</b> Сосуды кожи расширяются (кожа краснеет и отдаёт тепло), потовые железы выделяют пот — испаряясь, он охлаждает тело. За сутки при жаре может выделиться несколько литров пота.' },
   };
   function stim(k) { st.stim = k; st.stimT = st.t; st.msg = STIM[k].text; refs.setInfo(); refs.stSeg && refs.stSeg.sync(); }
-  function select(id) { st.sel = id === 'all' ? null : id; refs.seg && refs.seg.sync(); const all = [...SK_REC.map((r) => REC[r.id]), ...SK_LAYERS.map((l) => LAY[l.id])]; all.forEach((p) => p.mats.forEach((m) => { m.emissiveIntensity = st.sel === p.id ? 0.6 : (REC[p.id] ? 0.15 : 0); })); st.msg = null; refs.setInfo && refs.setInfo(); }
+  const LVIEW = { epi: [V3(1.15, 0.55, 1.0), 2.9], der: [V3(0.1, -0.4, 0.6), 6.4], hyp: [V3(0.2, -1.95, 0.6), 5.6] };
+  function select(id) { st.sel = id === 'all' ? null : id; refs.seg && refs.seg.sync(); { const lv = st.sel && LVIEW[st.sel], dir = HOME.pos.clone().sub(HOME.target).normalize(); st.fly = lv ? flyTarget(lv[0], lv[0].clone().addScaledVector(dir, lv[1])) : (LVIEW[id] === undefined && id !== 'all' ? st.fly : HOME); } const all = [...SK_REC.map((r) => REC[r.id]), ...SK_LAYERS.map((l) => LAY[l.id])]; all.forEach((p) => p.mats.forEach((m) => { m.emissiveIntensity = st.sel === p.id ? 0.6 : (REC[p.id] ? 0.15 : 0); })); st.msg = null; refs.setInfo && refs.setInfo(); }
   pickOn(() => self, camera, pick, (id) => select(id));
   const fire = (id, rate, dt) => { const n = rate * dt; if (rnd() < n) { REC[id].spikes.push(st.t); const c = NERV[id][Math.floor(rnd() * NERV[id].length)]; for (let u = 0; u < 1; u += 0.2) fx.spawn(c.getPointAt(1 - u), V3(0, 0, 0), new THREE.Color(REC[id].color), 0.3 + u * 0.4, 0, 1.4); REC[id].flash = 1; } };
   function update(dt) {
@@ -8185,6 +8333,18 @@ function makeSkin() {
   const labels = [
     { text: 'эпидермис', pos: V3(-W / 2 - 0.05, (Y_TOP + Y_EPI) / 2, D / 2), color: '#E8C8B0', show: () => st.labels },
     { text: 'дерма', pos: V3(-W / 2 - 0.05, 0.25, D / 2), color: '#D89090', show: () => st.labels },
+    { text: 'роговой', pos: V3(W / 2 + 0.03, Y_TOP + 0.02, D / 2), color: '#F2E6D8', show: () => st.labels && st.sel === 'epi' },
+    { text: 'зернистый', pos: V3(W / 2 + 0.03, Y_TOP - 0.06, D / 2), color: '#D8B080', show: () => st.labels && st.sel === 'epi' },
+    { text: 'шиповатый', pos: V3(W / 2 + 0.03, Y_EPI + 0.12, D / 2), color: '#E8C8B0', show: () => st.labels && st.sel === 'epi' },
+    { text: 'базальный', pos: V3(W / 2 + 0.03, Y_EPI + 0.04, D / 2), color: '#C09070', show: () => st.labels && st.sel === 'epi' },
+    { text: 'сосочковый слой', pos: V3(W / 2 + 0.03, 0.82, D / 2), color: '#F0B0B0', show: () => st.labels && st.sel === 'der' },
+    { text: 'сетчатый слой', pos: V3(-W / 2 + 0.05, -0.05, D / 2), color: '#D89090', show: () => st.labels && st.sel === 'der' },
+    { text: 'меланоцит', pos: MEL0.clone().add(V3(0.04, 0.03, 0.04)), color: '#C08060', show: () => st.labels && st.sel === 'epi' },
+    { text: 'эластические волокна', pos: V3(-0.25, -0.15, 0.85), color: '#F2E6A0', show: () => st.labels && st.sel === 'der' },
+    { text: 'глубокое сплетение', pos: V3(-1.6, Y_DER + 0.06, 0.12), color: '#E0605A', show: () => st.labels && st.sel === 'der' },
+    { text: 'подсосочковое сплетение', pos: V3(-1.6, 0.7, 0.32), color: '#E0605A', show: () => st.labels && st.sel === 'der' },
+    { text: 'кожный нерв', pos: V3(1.2, Y_DER - 0.3, -0.05), color: '#F4C542', show: () => st.labels && st.sel === 'hyp' },
+    { text: 'сосочек волоса', pos: V3(-0.95, -0.92, -0.25), color: '#D89090', show: () => st.labels && st.sel === 'hyp' },
     { text: 'подкожная клетчатка', pos: V3(-W / 2 - 0.05, -1.0, D / 2), color: '#F2D890', show: () => st.labels },
     { text: 'волос', pos: V3(-0.42, Y_TOP + 0.85, -0.3), color: '#c8a080', show: () => st.labels },
     { text: 'сальная железа', pos: V3(-0.6, 0.18, -0.05), color: '#F2E08A', show: () => st.labels },
@@ -8235,16 +8395,16 @@ function makeSkin() {
    ========================================================= */
 const BL_CELLS = [
   { id: 'rbc', name: 'Эритроциты', color: '#E0505A', text: '<b>Эритроциты</b> — двояковогнутые диски 7–8 мкм без ядра, набитые гемоглобином. Переносят кислород от лёгких к тканям и часть CO₂ обратно. 4–5 млн в 1 мкл крови, живут ~120 дней, гибнут в селезёнке и печени; каждую секунду костный мозг выпускает ~2 млн новых. Гибкая форма позволяет протискиваться через капилляры уже самих себя.' },
-  { id: 'wbc', name: 'Лейкоциты', color: '#E8E8F8', text: '<b>Лейкоциты</b> — белые клетки с ядром, 4–9 тыс. в 1 мкл. <b>Нейтрофилы</b> (до 70%, ядро из сегментов) первыми приходят к инфекции и поедают бактерии. <b>Лимфоциты</b> (крупное круглое ядро) — B- и T-клетки иммунной памяти. <b>Моноциты</b> (ядро бобовидное) выходят в ткани и становятся макрофагами. <b>Эозинофилы</b> борются с паразитами и участвуют в аллергии, <b>базофилы</b> выделяют гистамин. Лейкоциты умеют выходить из сосуда сквозь стенку.' },
+  { id: 'wbc', name: 'Лейкоциты', color: '#E8E8F8', text: '<b>Лейкоциты</b> — белые клетки с ядром, 4–9 тыс. в 1 мкл. <b>Нейтрофилы</b> (до 70%, ядро из сегментов) первыми приходят к инфекции и поедают бактерии. <b>Лимфоциты</b> (крупное круглое ядро) — B- и T-клетки иммунной памяти. <b>Моноциты</b> (ядро бобовидное) выходят в ткани и становятся макрофагами. <b>Эозинофилы</b> (1–4%, ядро из двух долей и оранжевые гранулы) борются с паразитами и участвуют в аллергии, <b>базофилы</b> (меньше 1%, тёмно-фиолетовые гранулы закрывают ядро) выделяют гистамин. Лейкоцит в 1,5–2,5 раза крупнее эритроцита. Лейкоциты умеют выходить из сосуда сквозь стенку.' },
   { id: 'plt', name: 'Тромбоциты', color: '#F2C88A', text: '<b>Тромбоциты</b> — безъядерные пластинки 2–3 мкм, осколки гигантских клеток костного мозга. 150–400 тыс. в 1 мкл, живут 7–10 дней. При повреждении сосуда прилипают к ране, активируются (выпускают отростки) и склеиваются в пробку.' },
-  { id: 'plasma', name: 'Плазма', color: '#F2E08A', text: '<b>Плазма</b> — 55% объёма крови: на 90% вода, 7–8% белки (альбумины держат воду в сосудах, глобулины — антитела, фибриноген — для свёртывания), глюкоза, соли, гормоны, продукты обмена. У взрослого около 5 л крови — 7–8% массы тела.' },
+  { id: 'plasma', name: 'Плазма', color: '#F2E08A', text: '<b>Плазма</b> — 55% объёма крови: на 92% вода, 7% белки (альбумины — 60% белков — держат воду в сосудах, глобулины — 35%, среди них антитела, фибриноген — 4%, нужен для свёртывания), глюкоза, соли, гормоны, продукты обмена. У взрослого около 5 л крови — 7–8% массы тела.' },
 ];
 const BL_GROUPS = { O: { a: [], ab: ['A', 'B'] }, A: { a: ['A'], ab: ['B'] }, B: { a: ['B'], ab: ['A'] }, AB: { a: ['A', 'B'], ab: [] } };
 function makeBlood() {
   rnd = mulberry(2020);
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x0a0507); scene.environment = envTex;
   labLights(scene, 0xff7a7a);
-  const VIEW = { flow: flyTarget(V3(0, -1.1, 0), V3(2.6, 1.2, 11.8)), clot: flyTarget(V3(0.3, -0.4, 0), V3(1.4, 3.2, 7.4)), groups: flyTarget(V3(30, -0.9, 0), V3(30.6, 0.8, 7.2)) };
+  const VIEW = { flow: flyTarget(V3(-0.8, -1.2, 0), V3(1.9, 1.2, 12.9)), clot: flyTarget(V3(0.3, -0.4, 0), V3(1.4, 3.2, 7.4)), groups: flyTarget(V3(30, -0.9, 0), V3(30.6, 0.8, 7.2)), tube: flyTarget(V3(60.55, -0.55, 0), V3(61.7, 0.9, 12.4)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(VIEW.flow.pos);
   const controls = makeControls(camera, VIEW.flow.target); controls.minDistance = 1.5; controls.maxDistance = 18;
   const pick = [];
@@ -8256,8 +8416,23 @@ function makeBlood() {
   const endo = new THREE.Mesh(wallG, new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xe8a0a8).multiplyScalar(0.4), roughness: 0.35, clearcoat: 0.7, transparent: true, opacity: 0.2, side: THREE.DoubleSide, depthWrite: false, sheen: 0.3, sheenColor: new THREE.Color(0xffc0c8) }));
   const musc = new THREE.Mesh(wallG2, new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xb05050).multiplyScalar(0.4), roughness: 0.5, transparent: true, opacity: 0.18, side: THREE.DoubleSide, depthWrite: false }));
   ves.add(endo, musc);
+  // стенка артерии: интима (эндотелий + волнистая внутренняя эластическая мембрана), медия (гладкие мышцы), адвентиция (коллаген, vasa vasorum, нерв)
+  const TH0 = Math.PI * 0.15, TH1 = Math.PI * 1.7;
+  const ielG = displaceGeo(new THREE.CylinderGeometry(R + 0.03, R + 0.03, L, 400, 1, true, TH0, TH1), (v) => { const a = Math.atan2(v.x, v.z), k = 1 + 0.012 * Math.sin(a * 60); v.x *= k; v.z *= k; }); ielG.rotateZ(Math.PI / 2);
+  ves.add(new THREE.Mesh(ielG, new THREE.MeshPhysicalMaterial({ color: 0xf2e6a0, emissive: 0x4a4010, emissiveIntensity: 0.3, transparent: true, opacity: 0.12, side: THREE.DoubleSide, depthWrite: false })));
+  const advG = new THREE.CylinderGeometry(R + 0.38, R + 0.38, L, 64, 1, true, TH0, TH1); advG.rotateZ(Math.PI / 2);
+  ves.add(new THREE.Mesh(advG, new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xe0d0b0).multiplyScalar(0.3), roughness: 0.7, transparent: true, opacity: 0.08, side: THREE.DoubleSide, depthWrite: false })));
+  { const eel = new THREE.CylinderGeometry(R + 0.22, R + 0.22, L, 64, 1, true, TH0, TH1); eel.rotateZ(Math.PI / 2); ves.add(new THREE.Mesh(eel, new THREE.MeshPhysicalMaterial({ color: 0xf2e6a0, emissive: 0x4a4010, emissiveIntensity: 0.3, transparent: true, opacity: 0.08, side: THREE.DoubleSide, depthWrite: false }))); }   // наружная эластическая мембрана
+  { const NS = 260, smc = new THREE.InstancedMesh(ell3(0.16, 0.025, 0.03, null, 10), new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xc06060).multiplyScalar(0.5), roughness: 0.5, transparent: true, opacity: 0.3, depthWrite: false }), NS), mq = new THREE.Matrix4();
+    for (let i = 0; i < NS; i++) { const a = TH0 + 0.05 + rnd() * (TH1 - 0.1), rr = R + 0.07 + rnd() * 0.1, x = rand(-L / 2, L / 2), p = V3(x, Math.sin(a) * rr, Math.cos(a) * rr), tg = V3(0, Math.cos(a), -Math.sin(a)).add(V3(rand(-0.15, 0.15), 0, 0)).normalize();
+      mq.compose(p, new THREE.Quaternion().setFromUnitVectors(V3(1, 0, 0), tg), V3(1, 1, 1)); smc.setMatrixAt(i, mq); }
+    ves.add(smc); }
+  const VV = []; for (let i = 0; i < 3; i++) { const a = Math.PI * (0.55 + i * 0.45), rr = R + 0.29, pts = []; for (let j = 0; j <= 8; j++) { const aa = a + 0.08 * Math.sin(j * 1.3 + i); pts.push(V3(-L / 2 + j * L / 8, Math.sin(aa) * rr, Math.cos(aa) * rr)); } VV.push(tube(pts, 0.025, 60, 6)); }
+  ves.add(new THREE.Mesh(mergeGeometries(VV), organMat('#E0505A', 0.6)));
+  { const VN = []; for (let i = 0; i < 2; i++) { const a = Math.PI * (0.75 + i * 0.6), rr = R + 0.3, pts = []; for (let j = 0; j <= 8; j++) { const aa = a + 0.07 * Math.sin(j * 1.1 + i * 2); pts.push(V3(-L / 2 + j * L / 8, Math.sin(aa) * rr, Math.cos(aa) * rr)); } VN.push(tube(pts, 0.022, 60, 6)); } ves.add(new THREE.Mesh(mergeGeometries(VN), organMat('#5C7CE8', 0.6))); }   // венулы стенки
+  { const a = Math.PI * 1.25, rr = R + 0.3, pts = []; for (let j = 0; j <= 8; j++) pts.push(V3(-L / 2 + j * L / 8, Math.sin(a + 0.05 * Math.sin(j)) * rr, Math.cos(a + 0.05 * Math.sin(j)) * rr)); ves.add(new THREE.Mesh(tube(pts, 0.035, 60, 8), organMat('#F2D060', 0.6))); }
   // кромки разреза
-  [Math.PI * 0.15, Math.PI * 1.85].forEach((a) => { const g = new THREE.BoxGeometry(L, 0.18, 0.02); const m = new THREE.Mesh(g, organMat('#b05050', 0.4)); m.position.set(0, Math.sin(a) * (R + 0.09), Math.cos(a) * (R + 0.09)); m.rotation.x = Math.PI / 2 - a; ves.add(m); });
+  [Math.PI * 0.15, Math.PI * 1.85].forEach((a) => [[0, 0.04, '#e8a0a8', 1], [0.04, 0.22, '#b05050', 1], [0.22, 0.38, '#a89870', 0.45]].forEach(([r0, r1, c, o]) => { const m = new THREE.Mesh(new THREE.BoxGeometry(L, r1 - r0, 0.02), organMat(c, 0.4, o < 1 ? { transparent: true, opacity: o, depthWrite: false } : {})); const rc = R + (r0 + r1) / 2; m.position.set(0, Math.sin(a) * rc, Math.cos(a) * rc); m.rotation.x = Math.PI / 2 - a; ves.add(m); }));
   // эритроциты
   // двояковогнутый диск (профиль Эванса — Фунга): тонкий центр, толстый скруглённый валик;
   // профиль идёт снизу вверх — иначе у LatheGeometry грани вывернуты наизнанку
@@ -8279,13 +8454,31 @@ function makeBlood() {
   const WBC = [];
   const wbcMat = new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xe8e8f8).multiplyScalar(0.5), roughness: 0.3, transparent: true, opacity: 0.45, depthWrite: false, clearcoat: 0.6, sheen: 0.4 });
   const nucMat = new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0x8a5ad8).multiplyScalar(0.6), roughness: 0.4, emissive: 0x2a1050, emissiveIntensity: 0.6 });
-  const mkWBC = (kind, x, y, z) => { const g = new THREE.Group(); g.position.set(x, y, z); const cell = new THREE.Mesh(displaceGeo(new THREE.SphereGeometry(0.45, 32, 24), (v) => v.multiplyScalar(1 + 0.05 * noise3(v.x * 9, v.y * 9, v.z * 9))), wbcMat); cell.userData.pick = 'wbc'; pick.push(cell); g.add(cell);
-    if (kind === 'neu') [V3(-0.15, 0.05, 0), V3(0.0, -0.1, 0.08), V3(0.15, 0.06, -0.05), V3(0.05, 0.16, 0.1)].forEach((p) => { const n = new THREE.Mesh(new THREE.SphereGeometry(0.11, 16, 12), nucMat); n.position.copy(p); g.add(n); });
-    if (kind === 'lym') { const n = new THREE.Mesh(new THREE.SphereGeometry(0.33, 20, 16), nucMat); g.add(n); }
-    if (kind === 'mon') { const n = new THREE.Mesh(displaceGeo(new THREE.SphereGeometry(0.25, 20, 16), (v) => { if (v.x > 0) v.x *= 0.4; v.y *= 1.3; }), nucMat); g.add(n); }
-    if (kind === 'eos') { [-1, 1].forEach((s) => { const n = new THREE.Mesh(new THREE.SphereGeometry(0.14, 14, 10), nucMat); n.position.x = 0.12 * s; g.add(n); }); for (let i = 0; i < 30; i++) { const gr = new THREE.Mesh(new THREE.SphereGeometry(0.03, 6, 4), new THREE.MeshBasicMaterial({ color: 0xff7a4a })); gr.position.copy(randUnit().multiplyScalar(0.2 + rnd() * 0.18)); g.add(gr); } }
+  const WR = { lym: 0.5, neu: 0.62, eos: 0.65, mon: 0.8, bas: 0.58 };   // радиус относительно эритроцита (0.42): лимфоцит 7–10 мкм, нейтрофил 12–15, моноцит до 20
+  const mkWBC = (kind, x, y, z) => { const g = new THREE.Group(); g.position.set(x, y, z); const cell = new THREE.Mesh(displaceGeo(new THREE.SphereGeometry(WR[kind], 32, 24), (v) => v.multiplyScalar(1 + 0.05 * noise3(v.x * 9, v.y * 9, v.z * 9))), wbcMat); cell.userData.pick = 'wbc'; pick.push(cell); g.add(cell);
+    if (kind === 'neu') [V3(-0.2, 0.07, 0), V3(0.0, -0.13, 0.1), V3(0.2, 0.08, -0.06), V3(0.07, 0.21, 0.13)].forEach((p) => { const n = new THREE.Mesh(new THREE.SphereGeometry(0.14, 16, 12), nucMat); n.position.copy(p); g.add(n); });
+    if (kind === 'lym') { const n = new THREE.Mesh(new THREE.SphereGeometry(0.4, 20, 16), nucMat); g.add(n); }
+    if (kind === 'mon') { const n = new THREE.Mesh(displaceGeo(new THREE.SphereGeometry(0.42, 20, 16), (v) => { if (v.x > 0) v.x *= 0.4; v.y *= 1.3; }), nucMat); g.add(n); }
+    const gran = (n, col, r0, r1, sz) => { const gm = new THREE.MeshBasicMaterial({ color: col }); for (let i = 0; i < n; i++) { const gr = new THREE.Mesh(new THREE.SphereGeometry(sz, 6, 4), gm); gr.position.copy(randUnit().multiplyScalar(r0 + rnd() * (r1 - r0))); g.add(gr); } };
+    if (kind === 'eos') { [-1, 1].forEach((s) => { const n = new THREE.Mesh(new THREE.SphereGeometry(0.19, 14, 10), nucMat); n.position.x = 0.17 * s; g.add(n); }); gran(45, 0xff7a4a, 0.3, 0.58, 0.035); }
+    if (kind === 'bas') { [-1, 1].forEach((s) => { const n = new THREE.Mesh(new THREE.SphereGeometry(0.17, 14, 10), nucMat); n.position.set(0.12 * s, 0.05 * s, 0); g.add(n); }); gran(70, 0x4a2a8a, 0.05, 0.52, 0.05); }
     ves.add(g); WBC.push({ g, kind, x, y, z, ph: rnd() * 6 }); };
-  mkWBC('neu', -2.6, -0.65, 0.1); mkWBC('lym', 0.5, -0.7, -0.3); mkWBC('mon', 2.8, -0.6, 0.35); mkWBC('eos', -0.9, 0.55, -0.55);
+  mkWBC('neu', -2.6, -0.5, 0.15); mkWBC('lym', 0.4, -0.55, 0.3); mkWBC('mon', 2.6, -0.25, 0.2); mkWBC('eos', -0.9, 0.0, 0.3); mkWBC('bas', 1.4, 0.05, 0.35);
+  /* ---------- пробирка после центрифуги ---------- */
+  const tubeG = new THREE.Group(); tubeG.position.set(60, 0, 0); scene.add(tubeG); tubeG.visible = false;
+  { const prof = []; for (let i = 0; i <= 12; i++) { const a = -Math.PI / 2 + i / 12 * Math.PI / 2; prof.push(new THREE.Vector2(Math.cos(a) * 0.4, Math.sin(a) * 0.4)); } prof.push(new THREE.Vector2(0.4, 3.0), new THREE.Vector2(0.43, 3.05));
+    const tg = new THREE.LatheGeometry(prof, 48); tubeG.add(new THREE.Mesh(tg, glassMat(0xd8e8ff, { rim: 0.5, base: 0.02 })), new THREE.Mesh(tg, new THREE.MeshPhysicalMaterial({ color: 0xdde8ff, roughness: 0.05, clearcoat: 1, transparent: true, opacity: 0.05, depthWrite: false, side: THREE.BackSide })));
+    const lip = new THREE.Mesh(new THREE.TorusGeometry(0.42, 0.02, 8, 48), new THREE.MeshPhysicalMaterial({ color: 0xdde8ff, roughness: 0.1, transparent: true, opacity: 0.5 })); lip.rotation.x = Math.PI / 2; lip.position.y = 3.04; tubeG.add(lip); }
+  const TH = 2.4, TR = 0.36, HR = 0.45 * (TH + TR) - TR;   // жидкость до y=2.4; эритроциты — 45% объёма
+  const rbcLayM = new THREE.MeshPhysicalMaterial({ color: 0x8a1420, roughness: 0.3, clearcoat: 0.8, emissive: 0x300408, emissiveIntensity: 0.3 });
+  const botM = new THREE.Mesh(new THREE.SphereGeometry(TR, 32, 16, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2), rbcLayM); tubeG.add(botM);
+  const unitCyl = () => { const g = new THREE.CylinderGeometry(TR, TR, 1, 40); g.translate(0, 0.5, 0); return g; };
+  const rbcCol = new THREE.Mesh(unitCyl(), rbcLayM), buffy = new THREE.Mesh(unitCyl(), new THREE.MeshPhysicalMaterial({ color: 0xf4f0e8, roughness: 0.5, emissive: 0x404040, emissiveIntensity: 0.4, transparent: true }));
+  const plasmaM = new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xf2d870).multiplyScalar(0.8), roughness: 0.1, clearcoat: 1, transparent: true, opacity: 0.7, emissive: 0x3a3008, emissiveIntensity: 0.4, depthWrite: false }), plasma = new THREE.Mesh(unitCyl(), plasmaM);
+  tubeG.add(rbcCol, buffy, plasma);
+  function setTube(k) { const e = smooth(0, 1, k), hr = lerp(TH, HR, e), bh = 0.05 * smooth(0.6, 1, k); rbcCol.scale.y = hr; buffy.position.y = hr; buffy.scale.y = Math.max(0.001, bh); buffy.material.opacity = smooth(0.6, 1, k);
+    plasma.position.y = hr + bh; plasma.scale.y = Math.max(0.001, TH - hr - bh); rbcLayM.color.setHex(0x8a1420).lerp(new THREE.Color(0x5a0810), e); }
+  setTube(0);
   /* ---------- рана и фибрин ---------- */
   const WOUND = V3(0.3, R, 0.0);
   const hole = new THREE.Mesh(new THREE.CircleGeometry(0.42, 32), new THREE.MeshBasicMaterial({ color: 0x1a0306 })); hole.position.copy(WOUND).add(V3(0, 0.2, 0)); hole.rotation.x = -Math.PI / 2; hole.scale.set(1.6, 1, 0.01); hole.visible = false; ves.add(hole);
@@ -8305,11 +8498,12 @@ function makeBlood() {
   const AB = Array.from({ length: 80 }, () => ({ p: V3(rand(-1.6, 1.6), rand(-0.8, 0.8), rand(-1.3, 1.3)), r: randUnit(), a: rnd() * 6 }));
   const fx = new Sparks(2400, 0.06); scene.add(fx.obj);
   /* ---------- состояние ---------- */
-  const st = { t: 0, mode: 'flow', sel: null, labels: true, rot: false, fly: null, msg: null, cutT: -99, donor: 'A', recip: 'B', mixT: -99, agg: 0 };
+  const st = { t: 0, mode: 'flow', sel: null, labels: true, rot: false, fly: null, msg: null, cutT: -99, spinT: -99, spin: 0, donor: 'A', recip: 'B', mixT: -99, agg: 0 };
   const compatible = () => BL_GROUPS[st.donor].a.every((ag) => !BL_GROUPS[st.recip].ab.includes(ag));
   function select(id) { st.sel = id === 'all' ? null : id; refs.seg && refs.seg.sync(); rbcMat.emissiveIntensity = st.sel === 'rbc' ? 0.8 : 0.12; pltMat.emissiveIntensity = st.sel === 'plt' ? 1.4 : 0.4; nucMat.emissiveIntensity = st.sel === 'wbc' ? 1.4 : 0.6; st.msg = null; refs.setInfo && refs.setInfo(); }
-  function setMode(m) { st.mode = m; refs.modeSeg && refs.modeSeg.sync(); st.msg = null; ves.visible = m !== 'groups'; grp.visible = m === 'groups'; st.fly = VIEW[m]; if (m === 'groups') mix(); refs.setInfo && refs.setInfo(); }
+  function setMode(m) { st.mode = m; refs.modeSeg && refs.modeSeg.sync(); st.msg = null; ves.visible = m === 'flow' || m === 'clot'; grp.visible = m === 'groups'; tubeG.visible = m === 'tube'; st.fly = VIEW[m]; if (m === 'groups') mix(); if (m === 'tube') spin(); refs.setInfo && refs.setInfo(); }
   function cut() { if (st.mode !== 'clot') setMode('clot'); st.cutT = st.t; PLT.forEach((p) => { p.act = 0; p.tgt = null; }); RBC.forEach((r) => { r.stuck = 0; }); st.stage = -1; }
+  function spin() { if (st.mode !== 'tube') { setMode('tube'); return; } st.spinT = st.t + (st.fly ? 1.2 : 0); st.spin = 0; }
   function mix() { st.mixT = st.t; st.agg = 0; refs.setInfo && refs.setInfo(); }
   pickOn(() => self, camera, pick, (id) => { if (st.mode === 'flow') select(id); });
   const CLOT_STAGES = [
@@ -8347,7 +8541,9 @@ function makeBlood() {
     pltI.instanceMatrix.needsUpdate = true; pltAct.count = na; pltAct.instanceMatrix.needsUpdate = true;
     if (!wounded) PLT.forEach((p) => { p.tgt = null; p.act = 0; });
     // лейкоциты катятся у стенки
-    WBC.forEach((w) => { w.x += dt * 0.25 * flowK; if (w.x > L / 2) w.x -= L; w.g.position.set(w.x, w.y, w.z); w.g.rotation.z -= dt * 0.5; });
+    WBC.forEach((w) => { w.x += dt * 0.25 * flowK; if (w.x > L / 2) w.x -= L; w.g.position.set(w.x, w.y, w.z); w.g.rotation.z -= dt * 0.5; if (w.lab) w.lab.pos.set(w.x + 0.1, w.y + 0.15, w.z + WR[w.kind] + 0.12); });
+    // пробирка: 4 с центрифуги, потом слои
+    if (st.mode === 'tube') { const ks = (t - st.spinT) / 4; st.spin = Math.min(1, Math.max(0, ks)); setTube(st.spin); tubeG.rotation.y += dt * (st.spin < 1 ? 6 * (1 - st.spin) : 0.3); }
     if (wounded && k < 6) for (let j = 0; j < 4; j++) fx.spawn(WOUND.clone().add(V3(rand(-0.4, 0.4), 0.15, rand(-0.25, 0.25))), V3(rand(-0.3, 0.3), 0.8 + rnd() * 0.6, rand(-0.3, 0.3)).multiplyScalar(1 - smooth(1.5, 6, k)), C_R, 1.0, 0.8, 1.4);
     if (st.mode === 'flow' && rnd() < 0.6) fx.spawn(V3(-L / 2, rand(-R * 0.8, R * 0.8), rand(-R * 0.8, R * 0.8)), V3(1.5, 0, 0), C_P, 4, 0, 0.5);
     // группы крови
@@ -8365,19 +8561,37 @@ function makeBlood() {
     }
     fx.update(dt);
   }
+  // состав плазмы (Неттер, BP 15): вода/белки/прочее и доли белков
+  const PL_BARS = [['Плазма', [['вода', 92, '#7FB8E8'], ['белки', 7, '#F2D060'], ['прочее', 1, '#B0B0B0']]], ['Белки плазмы', [['альбумины', 60, '#F2D060'], ['глобулины', 35, '#E0A040'], ['фибриноген', 4, '#F8F0D8']]]];
+  function drawScope(ctx, w, hgt) {
+    ctx.clearRect(0, 0, w, hgt); const on = st.mode === 'tube' || (st.mode === 'flow' && st.sel === 'plasma'); scopeShow(on); if (!on) return;
+    const small = w < 330, fs = small ? 9 : 10; let y = 4;
+    PL_BARS.forEach(([title, parts]) => { ctx.fillStyle = 'rgba(255,255,255,.75)'; ctx.font = '600 ' + (fs + 1) + 'px Inter, sans-serif'; ctx.fillText(title, 10, y + 10);
+      let x = 10; const bw = w - 20, by = y + 15, bh = small ? 7 : 9;
+      parts.forEach(([, p, c]) => { const ww = bw * p / 100; ctx.fillStyle = c; ctx.fillRect(x, by, Math.max(1.5, ww - 1), bh); x += ww; });
+      ctx.font = '500 ' + fs + 'px JetBrains Mono, monospace'; let lx = 10, ly = by + bh + 11;
+      parts.forEach(([n, p, c]) => { const s2 = n + ' ' + p + '%', tw = ctx.measureText(s2).width + 10; if (lx + tw > w - 6) { lx = 10; ly += fs + 3; } ctx.fillStyle = c; ctx.fillRect(lx, ly - 7, 7, 7); ctx.fillStyle = 'rgba(255,255,255,.7)'; ctx.fillText(s2, lx + 10, ly); lx += tw + (small ? 8 : 12); });
+      y = ly + 6; });
+  }
   const TXT = {
-    flow: '<b>Кровь</b> — жидкая ткань: плазма (55%) и форменные элементы (45%). В сосуде клетки текут быстрее в центре и медленнее у стенки. Эритроциты переносят газы, лейкоциты защищают, тромбоциты останавливают кровотечение. Все они рождаются в красном костном мозге из стволовых клеток. Нажмите на клетку.',
+    tube: '<b>Кровь в пробирке.</b> Если пробирку с кровью покрутить в центрифуге, клетки осядут: внизу тяжёлые эритроциты (около 45% объёма — это <b>гематокрит</b>), над ними тонкая беловатая плёнка лейкоцитов и тромбоцитов (меньше 1%), сверху прозрачная жёлтая <b>плазма</b> (около 55%). Низкий гематокрит говорит об анемии, высокий — о сгущении крови (обезвоживание, жизнь в горах).',
+    flow: '<b>Кровь</b> — жидкая ткань: плазма (55%) и форменные элементы (45%). В артерии клетки текут быстрее в центре и медленнее у стенки. Стенка артерии трёхслойная: интима (эндотелий и эластическая мембрана), медия (гладкие мышцы) и наружная адвентиция с собственными сосудами и нервом. Эритроциты переносят газы, лейкоциты защищают, тромбоциты останавливают кровотечение. Все они рождаются в красном костном мозге из стволовых клеток. Нажмите на клетку.',
     clot: '<b>Свёртывание крови.</b> Нажмите «Порез», чтобы повредить стенку сосуда, и смотрите, как организм останавливает кровотечение.',
     groups: '<b>Группы крови AB0.</b> На эритроцитах могут быть антигены A (жёлтые шипики) и B (голубые). В плазме — антитела к тем антигенам, которых у человека нет (Y-образные). Если антитела реципиента встречают свои антигены на эритроцитах донора, клетки склеиваются — <b>агглютинация</b>, опасная для жизни. Выберите донора и реципиента.',
   };
   const grpTxt = () => { const ok = compatible(); return `<b>Донор ${st.donor} → реципиент ${st.recip}: ${ok ? 'совместимо' : 'несовместимо!'}</b> ${ok ? 'В плазме реципиента нет антител к антигенам донора — эритроциты свободно плавают.' : 'Антитела реципиента (' + BL_GROUPS[st.recip].ab.join(' и ') + ') связывают антигены донора — эритроциты склеиваются в комки.'} Группа 0 (I) — «универсальный донор» эритроцитов, AB (IV) — «универсальный реципиент». На практике переливают только одногруппную кровь и учитывают ещё резус-фактор (Rh).`; };
   const labels = [
     { text: 'эритроцит', pos: V3(-1.6, 0.4, 0.9), color: '#E0505A', show: () => st.labels && st.mode === 'flow' },
-    { text: 'нейтрофил', pos: V3(-2.6, -0.1, 0.5), color: '#E8E8F8', show: () => st.labels && st.mode === 'flow' },
-    { text: 'лимфоцит', pos: V3(0.5, -0.15, 0.2), color: '#E8E8F8', show: () => st.labels && st.mode === 'flow' },
-    { text: 'моноцит', pos: V3(2.8, -0.05, 0.75), color: '#E8E8F8', show: () => st.labels && st.mode === 'flow' },
-    { text: 'эозинофил', pos: V3(-0.9, 1.05, -0.3), color: '#FFB08A', show: () => st.labels && st.mode === 'flow' },
-    { text: 'стенка сосуда', pos: V3(3.6, R + 0.2, -0.5), color: '#E8A0A8', show: () => st.labels && st.mode !== 'groups' },
+    ...[['neu', 'нейтрофил · 50–70%', '#E8E8F8'], ['lym', 'лимфоцит · 20–30%', '#E8E8F8'], ['mon', 'моноцит · 2–8%', '#E8E8F8'], ['eos', 'эозинофил · 1–4%', '#FFB08A'], ['bas', 'базофил · <1%', '#B8A0F0']].map(([k, tx, c]) => { const w = WBC.find((q) => q.kind === k); w.lab = { text: tx, pos: V3(0, 0, 0), color: c, show: () => st.labels && st.mode === 'flow' }; return w.lab; }),
+    { text: 'интима', pos: V3(-3.6, Math.sin(Math.PI * 1.85) * R, Math.cos(Math.PI * 1.85) * R + 0.05), color: '#F2C0C8', show: () => st.labels && st.mode === 'flow' },
+    { text: 'медия: гладкие мышцы', pos: V3(-3.6, Math.sin(Math.PI * 1.85) * (R + 0.13), Math.cos(Math.PI * 1.85) * (R + 0.13) + 0.05), color: '#E08080', show: () => st.labels && st.mode === 'flow' },
+    { text: 'адвентиция', pos: V3(-3.6, Math.sin(Math.PI * 1.85) * (R + 0.3), Math.cos(Math.PI * 1.85) * (R + 0.3) + 0.05), color: '#E0D0A8', show: () => st.labels && st.mode === 'flow' },
+    { text: 'сосуды стенки', pos: V3(2.6, Math.sin(Math.PI * 0.55) * (R + 0.35), Math.cos(Math.PI * 0.55) * (R + 0.35)), color: '#E0505A', show: () => st.labels && st.mode === 'flow' },
+    { text: 'нерв стенки', pos: V3(-1.6, Math.sin(Math.PI * 1.25) * (R + 0.32), Math.cos(Math.PI * 1.25) * (R + 0.32)), color: '#F2D060', show: () => st.labels && st.mode === 'flow' },
+    { text: 'стенка сосуда', pos: V3(3.6, R + 0.2, -0.5), color: '#E8A0A8', show: () => st.labels && st.mode === 'clot' },
+    { text: 'плазма ≈ 55%', pos: V3(60.45, 1.9, 0.2), color: '#F2E08A', show: () => st.labels && st.mode === 'tube' && st.spin > 0.95 },
+    { text: 'лейкоциты и тромбоциты < 1%', pos: V3(60.45, HR + 0.03, 0.2), color: '#F4F0E8', show: () => st.labels && st.mode === 'tube' && st.spin > 0.95 },
+    { text: 'эритроциты ≈ 45% (гематокрит)', pos: V3(60.45, 0.35, 0.2), color: '#E0505A', show: () => st.labels && st.mode === 'tube' && st.spin > 0.95 },
     { text: 'рана', pos: WOUND.clone().add(V3(0.7, 0.3, 0.3)), color: '#ff6a5a', show: () => st.labels && st.mode === 'clot' && st.t > st.cutT },
     { text: 'нити фибрина', pos: WOUND.clone().add(V3(-0.9, 0.2, 0.4)), color: '#f8f0d8', show: () => st.labels && st.mode === 'clot' && st.t - st.cutT > 5 },
     { text: 'плазма реципиента', pos: V3(31.6, 0.9, 0.5), color: '#F2E08A', show: () => st.labels && st.mode === 'groups' },
@@ -8386,7 +8600,7 @@ function makeBlood() {
   function ui(el) {
     const ib = infoBox('1 1 340px');
     refs.setInfo = () => { ib.info.innerHTML = st.msg || (st.mode === 'groups' ? grpTxt() : st.mode === 'flow' && st.sel ? BL_CELLS.find((c) => c.id === st.sel).text : TXT[st.mode]); };
-    refs.modeSeg = seg([{ id: 'flow', label: 'Клетки крови' }, { id: 'clot', label: 'Свёртывание' }, { id: 'groups', label: 'Группы крови' }], () => st.mode, (v) => setMode(v));
+    refs.modeSeg = seg([{ id: 'flow', label: 'Клетки крови' }, { id: 'clot', label: 'Свёртывание' }, { id: 'groups', label: 'Группы крови' }, { id: 'tube', label: 'Пробирка' }], () => st.mode, (v) => setMode(v));
     refs.seg = seg([{ id: 'all', label: 'Все' }, ...BL_CELLS.map((c) => ({ id: c.id, label: c.name, color: c.color }))], () => st.sel || 'all', (v) => { if (st.mode !== 'flow') setMode('flow'); select(v); });
     const G4 = ['O', 'A', 'B', 'AB'].map((g) => ({ id: g, label: g === 'O' ? '0 (I)' : g === 'A' ? 'A (II)' : g === 'B' ? 'B (III)' : 'AB (IV)' }));
     refs.dSeg = seg(G4, () => st.donor, (v) => { st.donor = v; if (st.mode !== 'groups') setMode('groups'); else mix(); });
@@ -8394,20 +8608,21 @@ function makeBlood() {
     refs.rot = toggle('Вращение', () => st.rot, (v) => { st.rot = v; });
     const lab = toggle('Подписи', () => st.labels, (v) => { st.labels = v; });
     Object.assign(refs, { lab });
-    el.append(group('Режим', '1–3', refs.modeSeg), group('Состав', 'клик', refs.seg), group('Опыт', 'C', button('Порез', cut, true)), group('Донор', '', refs.dSeg), group('Реципиент', '', refs.rSeg), group('Вид', 'R · N', refs.rot, lab), ib.el);
+    el.append(group('Режим', '1–4', refs.modeSeg), group('Состав', 'клик', refs.seg), group('Опыт', 'C · S', button('Порез', cut, true), button('Центрифуга', spin)), group('Донор', '', refs.dSeg), group('Реципиент', '', refs.rSeg), group('Вид', 'R · N', refs.rot, lab), ib.el);
     refs.setInfo();
   }
   function onKey(e) {
     const k = e.key.toLowerCase(), n = parseInt(e.key, 10);
-    if (n >= 1 && n <= 3) { setMode(['flow', 'clot', 'groups'][n - 1]); return true; }
+    if (n >= 1 && n <= 4) { setMode(['flow', 'clot', 'groups', 'tube'][n - 1]); return true; }
     if (k === 'c' || k === 'с') { cut(); return true; }
+    if (k === 's' || k === 'ы') { spin(); return true; }
     if (k === 'r' || k === 'к') { refs.rot.click(); return true; } if (k === 'n' || k === 'т') { refs.lab.click(); return true; }
     if (e.key === 'Escape') { select('all'); return true; }
     return false;
   }
-  function stats() { return st.mode === 'groups' ? [['Совместимость', compatible() ? 'да' : 'нет', '']] : [['Эритроцитов', '4–5', 'млн/мкл'], ['Лейкоцитов', '4–9', 'тыс/мкл'], ['Тромбоцитов', '150–400', 'тыс/мкл']]; }
+  function stats() { return st.mode === 'tube' ? [['Гематокрит', '40–45', '%'], ['Плазма', '≈ 55', '%'], ['Белок плазмы', '65–80', 'г/л']] : st.mode === 'groups' ? [['Совместимость', compatible() ? 'да' : 'нет', '']] : [['Эритроцитов', '4–5', 'млн/мкл'], ['Лейкоцитов', '4–9', 'тыс/мкл'], ['Тромбоцитов', '150–400', 'тыс/мкл']]; }
   const self = {
-    scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#E0505A',
+    scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#E0505A',
     kicker: 'Тело · кровь', title: 'Кровь',
     lede: 'Пять литров жидкой ткани: 25 триллионов эритроцитов, армия лейкоцитов и тромбоциты, которые за минуты закрывают любую ранку.',
     notes: `
