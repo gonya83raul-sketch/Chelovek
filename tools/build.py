@@ -53,7 +53,7 @@ if body_sc:
             lst.insert(k, (i, name))
     page = page[:bm.start(1)] + ', '.join(f"['{a1}', '{b1}']" for a1, b1 in lst) + page[bm.end(1):]
 import json, shutil
-APP = 'app12'   # меняется при каждой публикации со старой структурой кэша
+APP = 'app13'   # меняется при каждой публикации со старой структурой кэша
 OUT = os.path.join(ROOT, 'out'); os.makedirs(OUT, exist_ok=True)
 i0 = page.index('<script type="module">') ; i1 = page.index('</script>', i0)
 mod = page[i0 + len('<script type="module">'):i1]
