@@ -8,7 +8,7 @@ import glob, os, re, subprocess, sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 src = open(os.path.join(ROOT, 'src_page.html'), encoding='utf8').read()
 MARK = '/* ---------- app shell ---------- */'
-files = sorted(glob.glob(os.path.join(ROOT, 'bio', '*.js')))
+files = sorted(glob.glob(os.path.join(ROOT, 'bio', '*.js'))) + sorted(glob.glob(os.path.join(ROOT, 'body', '*.js')))
 code, scenes = [], []
 for f in files:
     t = open(f, encoding='utf8').read()
@@ -28,8 +28,30 @@ for i, fn, name, grp in scenes:
     if grp != '-' and grp != last:
         items.append(f"['#', '{grp}']"); last = grp
     items.append(f"['{i}', '{name}']")
-if scenes:
+bio_sc = [sc for sc in scenes if not sc[3].startswith('@body')]
+body_sc = [sc for sc in scenes if sc[3].startswith('@body')]
+items, last = [], None
+for i, fn, name, grp in bio_sc:
+    if grp != '-' and grp != last:
+        items.append(f"['#', '{grp}']"); last = grp
+    items.append(f"['{i}', '{name}']")
+if bio_sc:
     page = page.replace(c0, c0 + "  { id: 'bio', name: 'Биохимия', scenes: [" + ', '.join(items) + '] },\n')
+# сцены раздела «Тело» из файлов: группа «@body Название группы» (в начало — «@body^Название»)
+if body_sc:
+    bm = re.search(r"  \{ id: 'body', name: 'Тело', scenes: \[(.*?)\] \},\n", page)
+    lst = re.findall(r"\['([^']*)', '([^']*)'\]", bm.group(1))
+    for i, fn, name, grp in body_sc:
+        g = grp[5:].strip(); front = g.startswith('^'); g = g.lstrip('^').strip()
+        hi = next((k for k, (a1, b1) in enumerate(lst) if a1 == '#' and b1 == g), None)
+        if hi is None:
+            if front: lst[0:0] = [('#', g), (i, name)]
+            else: lst += [('#', g), (i, name)]
+        else:
+            k = hi + 1
+            while k < len(lst) and lst[k][0] != '#': k += 1
+            lst.insert(k, (i, name))
+    page = page[:bm.start(1)] + ', '.join(f"['{a1}', '{b1}']" for a1, b1 in lst) + page[bm.end(1):]
 import json, shutil
 APP = 'app12'   # меняется при каждой публикации со старой структурой кэша
 OUT = os.path.join(ROOT, 'out'); os.makedirs(OUT, exist_ok=True)
