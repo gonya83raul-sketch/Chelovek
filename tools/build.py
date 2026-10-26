@@ -53,15 +53,25 @@ if body_sc:
             lst.insert(k, (i, name))
     page = page[:bm.start(1)] + ', '.join(f"['{a1}', '{b1}']" for a1, b1 in lst) + page[bm.end(1):]
 import json, shutil
-# подзаголовки тем (lede) для поиска: из объекта сцены «lede: '…'» в функции makeX
+# заголовки тем из объекта сцены (kicker, title, lede) — для поиска и для отдельных страниц тем (SEO)
+LIT = r"'(?:[^'\\\n]|\\.)*'"
 bm = re.search(r'const BUILDERS = \{(.*?)\};', page, re.S)
-ledes = []
+META = {}
 for tid, fn in re.findall(r'(\w+): (make\w+)', bm.group(1)):
     k = page.find('function ' + fn + '(')
     if k < 0: continue
     e = page.find('\nfunction make', k + 10); seg = page[k:e if e > 0 else len(page)]
-    m = re.search(r"\blede: ('(?:[^'\\\n]|\\.)*')", seg)
-    if m: ledes.append(f'{tid}: {m.group(1)}')
+    mm = {}
+    m = re.search(r'\bkicker: (' + LIT + r'), title: (' + LIT + r'),', seg)
+    if m: mm['kicker'], mm['title'] = m.group(1), m.group(2)
+    m = re.search(r'\blede: (' + LIT + r')', seg)
+    if m: mm['lede'] = m.group(1)
+    r1 = re.match(r"function \w+\(\) \{ return (make\w+)\('(\w+)'\); \}", seg)   # вариант сцены: makeMenses → makeRepro('cycle')
+    if r1:
+        m = re.search(r"initMode === '" + r1.group(2) + r"'\) \{ self\.kicker = (" + LIT + r"); self\.title = (" + LIT + r"); self\.lede = (" + LIT + r")", page)
+        if m: mm = {'kicker': m.group(1), 'title': m.group(2), 'lede': m.group(3)}
+    META[tid] = mm
+ledes = [f'{t}: {mm["lede"]}' for t, mm in META.items() if 'lede' in mm]
 L0 = 'const TOPIC_LEDE = {}; // заполняет tools/build.py'
 assert page.count(L0) == 1
 page = page.replace(L0, 'const TOPIC_LEDE = { ' + ', '.join(ledes) + ' };', 1)
@@ -97,8 +107,8 @@ for f in glob.glob(os.path.join(OUT, APP, '**', '*.js'), recursive=True):
 page_ru = page[:i0] + f'<script type="module" src="{APP}/core.js"></script>' + page[i1 + len('</script>'):]
 open(os.path.join(OUT, 'page.html'), 'w', encoding='utf8').write(page_ru)
 # сайт: язык из ?lang=, памяти или языка браузера
-LOADER = ('<script type="module">\nlet L = new URLSearchParams(location.search).get(\'lang\');\n'
-  'try { if (L) localStorage.setItem(\'lang\', L); else L = localStorage.getItem(\'lang\'); } catch (e) { /* без памяти */ }\n'
+LOADER = ('<script type="module">\nconst P = window.__PAGE; let L = P ? P.lang : new URLSearchParams(location.search).get(\'lang\');\n'
+  'if (!P) try { if (L) localStorage.setItem(\'lang\', L); else L = localStorage.getItem(\'lang\'); } catch (e) { /* без памяти */ }\n'
   'if (L !== \'en\' && L !== \'ru\') L = (navigator.languages || [navigator.language || \'\']).some((l) => /^(ru|uk|be|kk)/i.test(l)) ? \'ru\' : \'en\';\n'
   f'document.documentElement.lang = L;\nimport(L === \'en\' ? \'./{APP}/en/core.js\' : \'./{APP}/core.js\');\n</script>')
 page = page[:i0] + (LOADER if EN else f'<script type="module" src="{APP}/core.js"></script>') + page[i1 + len('</script>'):]
@@ -118,6 +128,22 @@ for m in re.finditer(r"\{ id: '(\w+)', name: '([^']+)', scenes: \[(.*?)\] \}", s
 secs.sort(key=lambda s: SEC_ORDER.get(s[0], 9))
 ntop = sum(1 for s in secs for i, _ in s[2] if i != '#')
 def esc(s): return s.replace('&', '&amp;').replace('<', '&lt;')
+EN = {}
+for f in sorted(glob.glob(os.path.join(ROOT, 'data', 'i18n', 'en', '*.json'))): EN.update(json.load(open(f, encoding='utf8')))
+tr = lambda x, lang: EN.get(x, x) if lang == 'en' else x
+purl = lambda i, lang: i + ('.en' if lang == 'en' else '') + '.html'
+def topics_html(lang, hashes=False):
+  bl = []
+  for sid, name, items in secs:
+    parts, li = [], []
+    def flush():
+        if li: parts.append('<ul>' + ''.join(li) + '</ul>'); li.clear()
+    for i, n in items:
+        if i == '#': flush(); parts.append(f'<h4>{esc(tr(n, lang))}</h4>')
+        else: li.append(f'<li data-id="{i}"><a href="{"#" + i if hashes else purl(i, lang)}">{esc(tr(n, lang))}</a></li>')
+    flush()
+    bl.append(f'<section><h3>{esc(tr(name, lang))}</h3>{"".join(parts)}</section>')
+  return f'<details class="alltopics"><summary>{esc(tr("Все темы атласа", lang))} ({ntop})</summary><div class="atgrid">{"".join(bl)}</div></details>'
 blocks = []
 for sid, name, items in secs:
     # подгруппы — заголовки <h4> со своими списками (не <li> вперемешку со ссылками)
@@ -137,10 +163,40 @@ SEO_HEAD = (f'<title>Кто мы? — от молекулы до мысли · 3
   f'<script type="application/ld+json">{JSONLD}</script>\n')
 # сайт-приложение (PWA) для своего хостинга: manifest, иконки, офлайн-кэш
 PWA_HEAD = '<meta name="theme-color" content="#08070A">\n<meta name="mobile-web-app-capable" content="yes">\n<link rel="manifest" href="manifest.webmanifest">\n<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">\n<link rel="apple-touch-icon" href="icons/apple-180.png">\n'
-site_html = full.replace('</head>', SEO_HEAD + PWA_HEAD + '</head>', 1).replace('<title>Кто мы? — от молекулы до мысли</title>\n', '', 1).replace('<!--TOPICS-->', TOPICS, 1)
-full = full.replace('<!--TOPICS-->', TOPICS, 1)
+PWA_HEAD += '<meta name="atlas-pages" content="1">\n'   # сайт с отдельными страницами тем: адреса вида krebs.html / krebs.en.html
+import ast, html as H
+def jsval(lit):
+    try: return ast.literal_eval(lit)
+    except Exception: return ''
+def prefill(doc, kicker, title, lede):
+    for a, b in ((f'<div class="kicker" id="kicker"></div>', f'<div class="kicker" id="kicker">{esc(kicker)}</div>'), ('<h2 id="title"></h2>', f'<h2 id="title">{esc(title)}</h2>'), ('<p id="lede"></p>', f'<p id="lede">{esc(lede)}</p>')):
+        assert doc.count(a) == 1, a; doc = doc.replace(a, b, 1)
+    return doc
+def topic_texts(i, lang):
+    mm = META.get(i, {}); name = next((n for _, _, it in secs for j, n in it if j == i), i)
+    k, t, l = jsval(mm.get('kicker', "''")), jsval(mm.get('title', "''")) or name, jsval(mm.get('lede', "''"))
+    return tr(k, lang), tr(t, lang), tr(l, lang), tr(name, lang)
+# главная: текст стартовой темы (скелет) виден сразу, до загрузки скриптов
+site_html = prefill(full.replace('</head>', SEO_HEAD + PWA_HEAD + '</head>', 1).replace('<title>Кто мы? — от молекулы до мысли</title>\n', '', 1).replace('<!--TOPICS-->', topics_html('ru'), 1), *topic_texts('skeleton', 'ru')[:3])
+PAGES = {}
+TAIL = {'ru': ' — Кто мы? 3D-атлас человека', 'en': ' — Who are we? 3D human atlas'}
+for _, _, it in secs:
+  for i, _ in it:
+    if i == '#' or i in [k for k, _ in PAGES]: continue
+    for lang in ('ru', 'en'):
+        k, t, l, nm = topic_texts(i, lang)
+        desc = l or (nm + '. ' + (DESC if lang == 'ru' else 'Free interactive 3D atlas of the human body, from molecule to mind.'))
+        u, uru, uen = BASE + purl(i, lang), BASE + purl(i, 'ru'), BASE + purl(i, 'en')
+        hd = (f'<title>{H.escape(t + TAIL[lang])}</title>\n<meta name="description" content="{H.escape(desc)}">\n<link rel="canonical" href="{u}">\n'
+              f'<link rel="alternate" hreflang="ru" href="{uru}">\n<link rel="alternate" hreflang="en" href="{uen}">\n<link rel="alternate" hreflang="x-default" href="{uru}">\n'
+              f'<meta property="og:type" content="article">\n<meta property="og:title" content="{H.escape(t + TAIL[lang])}">\n<meta property="og:description" content="{H.escape(desc)}">\n<meta property="og:url" content="{u}">\n<meta property="og:image" content="{BASE}icons/icon-512.png">\n'
+              f'<meta property="og:locale" content="{"ru_RU" if lang == "ru" else "en_US"}">\n<script>window.__PAGE = {{ id: {json.dumps(i)}, lang: {json.dumps(lang)} }};</script>\n')
+        doc = full.replace('<html lang="ru">', f'<html lang="{lang}">', 1).replace('</head>', hd + PWA_HEAD + '</head>', 1).replace('<title>Кто мы? — от молекулы до мысли</title>\n', '', 1).replace('<!--TOPICS-->', topics_html(lang), 1)
+        PAGES[(i, lang)] = prefill(doc, k, t, l)
+full = full.replace('<!--TOPICS-->', topics_html('ru', hashes=True), 1)
 SITE = os.path.join(OUT, 'site'); shutil.rmtree(SITE, ignore_errors=True); os.makedirs(SITE)
 open(os.path.join(SITE, 'index.html'), 'w', encoding='utf8').write(site_html)
+for (i, lang), doc in PAGES.items(): open(os.path.join(SITE, purl(i, lang)), 'w', encoding='utf8').write(doc)
 shutil.copytree(os.path.join(OUT, APP), os.path.join(SITE, APP)); shutil.copytree(os.path.join(OUT, 'models'), os.path.join(SITE, 'models'))
 shutil.copytree(os.path.join(ROOT, 'pwa', 'icons'), os.path.join(SITE, 'icons'))
 shutil.copy(os.path.join(ROOT, 'pwa', 'manifest.webmanifest'), SITE)
@@ -150,10 +206,13 @@ open(os.path.join(SITE, 'sw.js'), 'w', encoding='utf8').write(sw.replace('__APP_
 open(os.path.join(SITE, '.nojekyll'), 'w').write('')
 shutil.copytree(os.path.join(ROOT, 'pwa', 'img'), os.path.join(SITE, 'img'))
 open(os.path.join(SITE, 'robots.txt'), 'w').write(f'User-agent: *\nAllow: /\n\nSitemap: {BASE}sitemap.xml\n')
-open(os.path.join(SITE, 'sitemap.xml'), 'w').write(f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n<url><loc>{BASE}</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>\n<url><loc>{BASE}?lang=en</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>\n</urlset>\n')
-llms = ['# Кто мы? — от молекулы до мысли (Who are we? From molecule to mind)', '', '> ' + DESC, '', f'Сайт: {BASE} (английская версия: {BASE}?lang=en). Каждая тема открывается по адресу вида {BASE}#id. Обратная связь: https://t.me/KTOMY_ATLAS, gonya83raul@gmail.com.', '']
+SM = [f'<url><loc>{BASE}</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>', f'<url><loc>{BASE}?lang=en</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>']
+for (i, lang) in PAGES:
+    SM.append(f'<url><loc>{BASE}{purl(i, lang)}</loc><xhtml:link rel="alternate" hreflang="ru" href="{BASE}{purl(i, "ru")}"/><xhtml:link rel="alternate" hreflang="en" href="{BASE}{purl(i, "en")}"/><changefreq>monthly</changefreq><priority>{"0.7" if lang == "ru" else "0.6"}</priority></url>')
+open(os.path.join(SITE, 'sitemap.xml'), 'w').write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n' + '\n'.join(SM) + '\n</urlset>\n')
+llms = ['# Кто мы? — от молекулы до мысли (Who are we? From molecule to mind)', '', '> ' + DESC, '', f'Сайт: {BASE} (английская версия: {BASE}?lang=en). Каждая тема — отдельная страница: {BASE}krebs.html (английская: {BASE}krebs.en.html). Обратная связь: https://t.me/KTOMY_ATLAS, gonya83raul@gmail.com.', '']
 for sid, name, items in secs:
-    llms.append(f'## {name}'); llms += [f'- [{n}]({BASE}#{i})' for i, n in items if i != '#']; llms.append('')
+    llms.append(f'## {name}'); llms += [f'- [{n}]({BASE}{purl(i, "ru")}) · [EN]({BASE}{purl(i, "en")})' for i, n in items if i != '#']; llms.append('')
 open(os.path.join(SITE, 'llms.txt'), 'w', encoding='utf8').write('\n'.join(llms))
 # локальный тест (с PWA)
 LT = os.path.join(ROOT, 'lt')
@@ -161,7 +220,9 @@ full = site_html
 for f in ('sw.js', 'manifest.webmanifest'): shutil.copy(os.path.join(SITE, f), LT)
 shutil.rmtree(os.path.join(LT, 'icons'), ignore_errors=True); shutil.copytree(os.path.join(SITE, 'icons'), os.path.join(LT, 'icons'))
 shutil.rmtree(os.path.join(LT, 'img'), ignore_errors=True); shutil.copytree(os.path.join(SITE, 'img'), os.path.join(LT, 'img'))
-lt = full.replace("? 'ru' : 'en';", "? 'ru' : 'ru'; // тесты: по умолчанию русский").replace('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js', './three/build/three.module.js').replace('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/', './three/examples/jsm/')
+lt_tx = lambda d: d.replace("? 'ru' : 'en';", "? 'ru' : 'ru'; // тесты: по умолчанию русский").replace('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js', './three/build/three.module.js').replace('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/', './three/examples/jsm/')
+lt = lt_tx(full)
+for (i_, lang_), doc_ in PAGES.items(): open(os.path.join(LT, purl(i_, lang_)), 'w', encoding='utf8').write(lt_tx(doc_))
 open(os.path.join(LT, 'index.html'), 'w', encoding='utf8').write(lt)
 shutil.rmtree(os.path.join(LT, APP), ignore_errors=True); shutil.copytree(os.path.join(OUT, APP), os.path.join(LT, APP))
 for cf in [os.path.join(LT, APP, 'core.js')] + ([os.path.join(LT, APP, 'en', 'core.js')] if EN else []):

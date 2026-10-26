@@ -9613,7 +9613,7 @@ if (LANG !== 'ru') {
 /* переключатель языка: запоминается, ссылка ?lang=en|ru */
 { const lb = $('#lang'), other = LANG === 'ru' ? 'en' : 'ru';
   lb.textContent = other.toUpperCase(); lb.lang = other; lb.title = other === 'en' ? 'English' : 'Русский';
-  lb.addEventListener('click', () => { try { localStorage.setItem('lang', other); } catch (e) { /* без памяти — через ссылку */ } location.href = location.pathname + '?lang=' + other + location.hash; });
+  lb.addEventListener('click', () => { try { localStorage.setItem('lang', other); } catch (e) { /* без памяти — через ссылку */ } location.href = PAGES && curId ? pageUrl(curId, other) : location.pathname + '?lang=' + other + location.hash; });
 }
 { const dlg = $('#donatebox'), btn = $('#donate'), cp = $('#dcopy');
   btn.addEventListener('click', () => { if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', ''); });
@@ -9629,6 +9629,11 @@ if (LANG !== 'ru') {
 new ResizeObserver(layout).observe(stageEl);
 new ResizeObserver(placeScope).observe(consoleEl);
 
+/* адреса тем: на сайте у каждой темы своя страница (krebs.html, krebs.en.html — их делает tools/build.py), в офлайн-файле — #krebs */
+const PAGES = !!document.querySelector('meta[name="atlas-pages"]');
+const pageUrl = (id, lang = LANG) => id + (lang === 'en' ? '.en' : '') + '.html';
+const idFromUrl = () => { const hs = location.hash.slice(1); if (BUILDERS[hs]) return hs; const m = location.pathname.match(/\/([a-z0-9]+)(?:\.en)?\.html$/i); return m && BUILDERS[m[1]] ? m[1] : ''; };
+let navigated = false;
 /* темы и разделы: новая система человека = одна строка здесь */
 const TOPIC_LEDE = {}; // заполняет tools/build.py
 const SECTIONS = [
@@ -9651,7 +9656,7 @@ const secOf = (id) => SECTIONS.find((s) => s.scenes.some(([sid]) => sid === id))
     const g = at.querySelector('.atgrid'); g.innerHTML = '';
     [...SECTIONS].sort((a, b) => (ord[a.id] ?? 9) - (ord[b.id] ?? 9)).forEach((s) => {
       const sec = h('section', {}, h('h3', {}, s.name)); let ul = null;
-      s.scenes.forEach(([i, nm]) => { if (i === '#') { sec.append(h('h4', {}, nm)); ul = null; return; } if (!ul) { ul = h('ul'); sec.append(ul); } ul.append(h('li', { 'data-id': i }, h('a', { href: '#' + i }, nm))); });
+      s.scenes.forEach(([i, nm]) => { if (i === '#') { sec.append(h('h4', {}, nm)); ul = null; return; } if (!ul) { ul = h('ul'); sec.append(ul); } ul.append(h('li', { 'data-id': i }, h('a', { href: PAGES ? pageUrl(i) : '#' + i }, nm))); });
       g.append(sec);
     });
   }
@@ -9731,7 +9736,13 @@ function activate(id) {
   labelsEl.innerHTML = ''; labelEls = cur.labels.map((l) => { const e = h('div', { class: 'lbl' }, l.text); if (l.color) e.style.color = l.color; labelsEl.append(e); return e; });
   scopeEl.hidden = !cur.drawScope;
   accentSet(cur.accent);
-  try { if (location.hash.slice(1) !== id) (location.hash ? history.pushState : history.replaceState).call(history, null, '', '#' + id); } catch (e) { /* ignore */ }
+  try {
+    if (PAGES) {   // адрес страницы темы; главная остаётся главной, пока человек не перешёл на другую тему
+      const u = pageUrl(id), root = !/\.html$/.test(location.pathname) || /\/index\.html$/.test(location.pathname);
+      if ((!location.pathname.endsWith('/' + u) || location.hash) && !(root && !location.hash && !navigated)) (navigated ? history.pushState : history.replaceState).call(history, { id }, '', u);
+      navigated = true;
+    } else if (location.hash.slice(1) !== id) (location.hash ? history.pushState : history.replaceState).call(history, null, '', '#' + id);
+  } catch (e) { /* ignore */ }
   layout();
   evict();
   uxActivate(id);
@@ -9739,6 +9750,7 @@ function activate(id) {
 }
 /* кнопка «Назад» (в том числе на Android) возвращает к предыдущей теме */
 window.addEventListener('hashchange', () => { const id = location.hash.slice(1); if (BUILDERS[id] && id !== curId) show(id); });
+window.addEventListener('popstate', () => { const id = idFromUrl() || 'skeleton'; if (id !== curId) show(id); });
 window.addEventListener('keydown', (e) => {
   if (!cur || e.ctrlKey || e.metaKey || e.altKey) return;
   const t = e.target instanceof Element ? e.target : document.body;
@@ -9874,7 +9886,7 @@ let atProg = null, atReset = null, atFilter = null;
       none.hidden = n > 0;
       say(toks.length ? (n ? 'Найдено тем: ' + n : 'Ничего не нашлось. Попробуйте другое слово.') : '', 500);
     });
-    g.addEventListener('click', (e) => { const a = e.target.closest('a[href^="#"]'); if (!a || e.ctrlKey || e.metaKey || e.shiftKey || e.button) return; const id = a.getAttribute('href').slice(1); if (!BUILDERS[id]) return; e.preventDefault(); fgo(id); });
+    g.addEventListener('click', (e) => { const li = e.target.closest('a') && e.target.closest('li[data-id]'); if (!li || e.ctrlKey || e.metaKey || e.shiftKey || e.button) return; const id = li.dataset.id; if (!BUILDERS[id]) return; e.preventDefault(); fgo(id); });
   }
 }
 
@@ -9957,7 +9969,7 @@ function copyOld(txt) {
 }
 $('#share').addEventListener('click', async () => {
   if (!cur) return;
-  const url = location.origin + location.pathname + '?lang=' + LANG + '#' + curId, title = cur.title + ' — ' + BRAND;
+  const url = PAGES ? new URL(pageUrl(curId), location.href).href : location.origin + location.pathname + '?lang=' + LANG + '#' + curId, title = cur.title + ' — ' + BRAND;
   if (navigator.share && matchMedia('(pointer:coarse)').matches) { try { await navigator.share({ title, text: cur.lede, url }); } catch (e) { /* пользователь передумал */ } return; }
   copyText(url).then(() => toast('Ссылка на тему скопирована'), () => toast(url, 8000));
 });
@@ -9967,6 +9979,13 @@ let camFly = null;
 function uxActivate(id) {
   dwellId = id; dwell = 0;
   document.title = cur.title + ' — ' + BRAND;
+  if (PAGES && location.pathname.endsWith('/' + pageUrl(id))) {   // описание и адреса в <head> — под открытую тему
+    const abs = (l) => new URL(pageUrl(id, l), location.href).href, set = (sel, attr, v) => { const e = document.head.querySelector(sel); if (e) e.setAttribute(attr, v); };
+    const desc = TOPIC_LEDE[id] || cur.lede || '';
+    set('link[rel="canonical"]', 'href', abs(LANG)); set('link[hreflang="ru"]', 'href', abs('ru')); set('link[hreflang="en"]', 'href', abs('en')); set('link[hreflang="x-default"]', 'href', abs('ru'));
+    set('meta[name="description"]', 'content', desc); set('meta[property="og:description"]', 'content', desc);
+    set('meta[property="og:title"]', 'content', document.title); set('meta[property="og:url"]', 'content', abs(LANG));
+  }
   const sc = cur;
   if (!sc.__home) {
     const snap = () => { sc.__home = { p: sc.camera.position.clone(), t: sc.controls.target.clone() }; };
@@ -10073,7 +10092,7 @@ applyLook();
     }).catch(() => { /* без офлайна */ });
   }
 }
-const start = (location.hash || '').slice(1);
+const start = idFromUrl();
 show(BUILDERS[start] ? start : 'skeleton');
 requestAnimationFrame(frame);
 </script>
