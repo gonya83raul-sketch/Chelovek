@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Reaction rate and inhibitors — Who are we? 3D human atlas</title>
+<meta name="description" content="A live model of a solution: 14 enzyme molecules catch substrate. Change the concentration, temperature and pH, and add inhibitors — the Michaelis–Menten graph…">
+<link rel="canonical" href="https://gonya83raul-sketch.github.io/Chelovek/kinetics.en.html">
+<link rel="alternate" hreflang="ru" href="https://gonya83raul-sketch.github.io/Chelovek/kinetics.html">
+<link rel="alternate" hreflang="en" href="https://gonya83raul-sketch.github.io/Chelovek/kinetics.en.html">
+<link rel="alternate" hreflang="x-default" href="https://gonya83raul-sketch.github.io/Chelovek/kinetics.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Reaction rate and inhibitors — Who are we? 3D human atlas">
+<meta property="og:description" content="A live model of a solution: 14 enzyme molecules catch substrate. Change the concentration, temperature and pH, and add inhibitors — the Michaelis–Menten graph…">
+<meta property="og:url" content="https://gonya83raul-sketch.github.io/Chelovek/kinetics.en.html">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://gonya83raul-sketch.github.io/Chelovek/icons/icon-512.png">
+<meta property="og:site_name" content="Кто мы? 3D-атлас человека">
+<meta name="twitter:card" content="summary">
+<script>window.__PAGE = { id: "kinetics", lang: "en" };</script>
+<meta name="theme-color" content="#08070A">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-180.png">
+<meta name="atlas-pages" content="1">
+</head>
+<body>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400..700;1,7..72,400&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Атлас: шкала масштаба вместо вкладок, оглавление слева, сцена — тёмное окно, текст — книжный */
+:root{
+  --bg:#121117; --bg-2:#17161D; --stage:#07060A;
+  --panel:rgba(20,19,26,.78); --panel-solid:#1A1920;
+  --line:#2A2931; --line-2:#3A3842; --hover:rgba(255,255,255,.06);
+  --fg:#ECE7E2; --text:#D6D0D3; --mute:#A49FAA; --dim:#7D7886;
+  --accent:#FFB070;
+  --f-serif:'Literata',Georgia,'Times New Roman',serif;
+  --f-body:'Golos Text',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --side:268px; --stage-h:clamp(560px,calc(100svh - 132px),900px);
+  --ease:cubic-bezier(.2,.7,.2,1);
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{background:var(--bg);color:var(--fg);margin:0}
+body{font-family:var(--f-body);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button,select{font-family:inherit}
+.wrap{padding-inline:24px;padding-block:0 40px;max-width:1680px;margin:0 auto}
+
+/* шапка: название · шкала масштаба · действия */
+.top{display:flex;align-items:center;gap:16px 40px;padding-block:18px 20px}
+.brand{display:flex;flex-direction:column;gap:4px;flex:none;width:calc(var(--side) - 24px);margin:0;font-weight:inherit;color:inherit;text-decoration:none}
+.langnote{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 16px;padding:8px 10px 8px 14px;border:1px solid var(--line-2);border-radius:12px;font-size:14px;color:var(--text);background:var(--bg-2)}
+.langnote a{color:var(--accent)}
+.langnote button{margin-left:auto;background:none;border:0;color:var(--mute);font-size:16px;cursor:pointer;min-width:32px;min-height:32px}
+.brand .bt{font:600 30px/1 var(--f-serif);letter-spacing:-.015em;font-variation-settings:'opsz' 72}
+.brand .bs{font:400 13px/1.2 var(--f-body);color:var(--mute)}
+.acts{display:flex;align-items:center;gap:10px;flex:none;margin-left:auto}
+.knobs{display:flex;gap:8px;align-items:center}
+
+/* шкала: от 10⁻⁹ м до мысли */
+.tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) auto;flex:1 1 520px;max-width:720px;min-width:0}
+.tab{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:5px;padding:0 0 4px;margin:0;background:none;border:0;color:var(--mute);cursor:pointer;text-align:left;min-height:48px;transition:color .15s var(--ease)}
+/* отрезок шкалы до следующей точки, с делениями */
+.tab:not(:last-child)::before{content:"";position:absolute;left:13px;right:0;top:23px;height:1px;background:var(--line-2)}
+.tab:not(:last-child)::after{content:"";position:absolute;left:13px;right:0;top:19px;height:9px;opacity:.6;background:repeating-linear-gradient(90deg,transparent 0 21px,var(--line-2) 21px 22px);pointer-events:none}
+.tab>span{position:relative;z-index:1;padding-right:10px}
+.tab .tsc{height:12px;font:400 12px/12px var(--f-body);color:var(--dim);font-variant-numeric:tabular-nums;white-space:nowrap;transition:color .15s var(--ease)}
+.tab .tdot{padding:0!important;width:13px;height:13px;border-radius:50%;background:var(--bg);border:1.5px solid var(--line-2);transition:border-color .15s var(--ease),background-color .15s var(--ease),box-shadow .2s var(--ease)}
+.tab .tn{font:500 15px/1.15 var(--f-body)}
+.tab:hover{color:var(--fg)}
+.tab:hover .tdot{border-color:var(--mute)}
+.tab[aria-selected="true"]{color:var(--fg)}
+.tab[aria-selected="true"] .tn{font-weight:600}
+.tab[aria-selected="true"] .tsc{color:var(--accent)}
+.tab[aria-selected="true"] .tdot{background:var(--accent);border-color:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 22%,transparent)}
+
+/* кнопки шапки */
+.pill{display:inline-flex;align-items:center;gap:7px;font:500 13px/1 var(--f-body);color:var(--fg);background:transparent;border:1px solid var(--line-2);border-radius:999px;padding:0 14px;min-height:36px;cursor:pointer;transition:border-color .15s var(--ease),background-color .15s var(--ease)}
+.pill:hover{background:var(--hover);border-color:var(--dim)}
+.pill[hidden]{display:none}
+.pill.ghost{color:var(--mute)}
+.pill.ghost:hover{color:var(--fg)}
+.pill:disabled{opacity:.7;cursor:default}
+.pill svg{width:16px;height:16px;flex:none}
+.lang{font-weight:600;letter-spacing:.04em;min-width:44px;justify-content:center}
+.heart svg{color:#FF7A9A}
+.heart:hover{border-color:#B65A74}
+.cfg,.subsel{display:none}
+.cfg[hidden]{display:none!important}
+
+/* оглавление и сцена */
+.atlas{display:grid;grid-template-columns:var(--side) minmax(0,1fr);gap:0 24px;align-items:start}
+.subtabs{position:sticky;top:12px;max-height:var(--stage-h);overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;padding:2px 8px 16px 0;scrollbar-width:thin;scrollbar-color:var(--line-2) transparent}
+.subhead{flex:none;font:600 13px/1.3 var(--f-body);color:var(--dim);padding:16px 0 6px 14px}
+.subhead:first-child{padding-top:4px}
+.sub{flex:none;display:block;width:100%;text-align:left;font:400 14px/1.35 var(--f-body);color:var(--mute);background:none;border:0;border-left:2px solid var(--line);padding:7px 10px 7px 12px;cursor:pointer;min-height:34px;text-wrap:pretty;transition:color .15s var(--ease),background-color .15s var(--ease),border-color .15s var(--ease)}
+.sub:hover{color:var(--fg);background:var(--hover)}
+.sub[aria-selected="true"]{color:var(--fg);font-weight:500;border-left-color:var(--accent);background:color-mix(in srgb,var(--accent) 9%,transparent)}
+.main{min-width:0}
+:where(.tab,.sub,.btn,.pill,.cfg,.seg button,.subsel,input,summary,.ibtn,.fesc,.atreset):focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.stage{position:relative;height:var(--stage-h);border-radius:18px;overflow:hidden;background:var(--stage);box-shadow:0 0 0 1px #24222B,0 30px 60px -30px rgba(0,0,0,.7);touch-action:none}
+#gl{position:absolute;inset:0;width:100%;height:100%;display:block}
+.hud{position:absolute;left:24px;right:24px;top:20px;display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;pointer-events:none}
+.ttl{max-width:480px;min-width:0}
+.kicker{font:500 13px/1.3 var(--f-body);color:var(--mute)}
+.ttl h1{font:600 clamp(30px,3.3vw,46px)/1.04 var(--f-serif);font-variation-settings:'opsz' 72;letter-spacing:-.018em;margin:6px 0 10px;text-wrap:balance}
+.ttl p{margin:0;color:var(--text);font-size:15px;line-height:1.5;max-width:430px;text-wrap:pretty;text-shadow:0 1px 8px var(--stage)}
+.kicker,.ttl h1,.stats{text-shadow:0 1px 10px var(--stage),0 0 3px var(--stage)}
+.stats{display:flex;gap:26px;flex-wrap:wrap;justify-content:flex-end}
+.stat{display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+.stat i{font:normal 500 12px/1.2 var(--f-body);color:var(--mute)}
+.stat b{font:500 25px/1.1 var(--f-body);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.stat b small{font-size:13px;color:var(--mute);font-weight:400;margin-left:3px}
+#scope{position:absolute;right:24px;width:300px;height:120px;border-radius:12px;background:rgba(10,9,13,.74);border:1px solid var(--line);pointer-events:none}
+.labels{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.lbl{position:absolute;left:0;top:0;font:500 12px/1.2 var(--f-body);letter-spacing:.005em;color:#E2DCE0;white-space:nowrap;display:flex;align-items:center;gap:6px;text-shadow:0 1px 6px #000,0 0 2px #000;will-change:transform}
+.lbl::before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor;flex:none}
+
+/* консоль управления */
+.console{position:absolute;left:16px;right:16px;bottom:16px;background:var(--panel);backdrop-filter:blur(14px) saturate(1.2);-webkit-backdrop-filter:blur(14px) saturate(1.2);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:14px 18px;display:flex;flex-wrap:wrap;gap:14px 28px;align-items:flex-start}
+.grp{display:flex;flex-direction:column;gap:8px;min-width:0}
+.glabel{display:flex;align-items:center;gap:8px;font:500 12px/1.2 var(--f-body);color:var(--mute)}
+.glabel kbd{font:500 11px/1 var(--f-body);color:var(--dim);border:1px solid var(--line-2);border-bottom-width:2px;border-radius:4px;padding:2px 5px}
+.gctl{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.btn{font:500 14px/1.2 var(--f-body);color:var(--fg);background:rgba(255,255,255,.035);border:1px solid var(--line-2);border-radius:9px;padding:7px 13px;cursor:pointer;min-height:36px;display:inline-flex;align-items:center;gap:7px;transition:background-color .15s var(--ease),border-color .15s var(--ease)}
+.btn:hover{background:rgba(255,255,255,.08);border-color:var(--dim)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#120F0B}
+.btn.primary:hover{background:color-mix(in srgb,var(--accent) 86%,#fff)}
+.btn[aria-pressed="true"]{background:color-mix(in srgb,var(--accent) 16%,transparent);border-color:color-mix(in srgb,var(--accent) 70%,transparent);color:var(--fg)}
+.btn[aria-pressed="true"]::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--accent)}
+.seg{display:flex;flex-wrap:wrap;background:rgba(255,255,255,.03);border:1px solid var(--line-2);border-radius:10px;padding:3px;gap:2px}
+.seg button{font:500 13px/1.2 var(--f-body);color:var(--mute);background:transparent;border:0;border-radius:7px;padding:6px 10px;cursor:pointer;min-height:30px;display:inline-flex;align-items:center;gap:6px;transition:background-color .15s var(--ease),color .15s var(--ease)}
+.seg button:hover{color:var(--fg);background:var(--hover)}
+.seg button[aria-pressed="true"]{background:rgba(255,255,255,.1);color:var(--fg);box-shadow:inset 0 -2px 0 var(--accent)}
+.seg .dot{width:8px;height:8px;border-radius:50%}
+.rng{display:flex;align-items:center;gap:10px}
+.rng input{width:140px;accent-color:var(--accent)}
+.rng output{font:500 13px var(--f-body);color:var(--fg);min-width:52px;font-variant-numeric:tabular-nums}
+.info{font-size:14px;line-height:1.5;color:var(--text);max-width:460px;min-height:20px;text-wrap:pretty}
+.info b{color:var(--fg);font-weight:600}
+/* на компьютере пульт лежит поверх сцены: длинный текст «Что видно» прокручивается, чтобы пульт не закрывал сцену */
+@media (min-width:701px){ .console:not(.out) .info{max-height:9em;overflow-y:auto;scrollbar-width:thin;padding-right:6px} }
+.loading{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);z-index:6;padding:12px 18px;border-radius:12px;background:rgba(18,17,23,.9);border:1px solid var(--line-2);color:var(--fg);font:500 14px/1.4 var(--f-body);max-width:min(440px,calc(100% - 32px));text-align:center}
+.loading[hidden]{display:none}
+.fallback{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;color:var(--mute)}
+
+/* текст под сценой — как страница учебника */
+.notes{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr) minmax(0,.8fr);gap:28px 48px;padding-block:44px 8px;max-width:1240px}
+.notes h2{font:600 21px/1.25 var(--f-serif);letter-spacing:-.005em;color:var(--fg);margin:0 0 12px}
+.notes h3{font:600 18px/1.3 var(--f-serif);margin:26px 0 8px;color:var(--fg)}
+.notes p,.notes ul{font:400 16px/1.65 var(--f-serif);color:var(--text);margin:0 0 12px;max-width:66ch}
+.notes b{color:var(--fg);font-weight:600}
+.notes ul{padding-left:20px}
+.notes li{margin-bottom:6px}
+.notes li::marker{color:var(--dim)}
+.notes .keys h2{font:600 14px/1.3 var(--f-body);color:var(--mute)}
+.notes .keys ul{font:400 14px/1.6 var(--f-body);list-style:none;padding:0}
+.keys code{font:500 12px var(--f-body);background:rgba(255,255,255,.04);border:1px solid var(--line-2);border-bottom-width:2px;border-radius:5px;padding:1px 6px;color:var(--fg)}
+.foot{color:var(--dim);font-size:13px;line-height:1.5;padding-top:40px;max-width:80ch}
+
+/* поддержка */
+dialog.donate{max-height:calc(100dvh - 32px);overflow-y:auto;max-width:min(520px,calc(100% - 32px));background:var(--panel-solid);color:var(--fg);border:1px solid var(--line-2);border-radius:18px;padding:24px 24px 20px;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+dialog.donate::backdrop{background:rgba(6,5,8,.72)}
+dialog.donate h2{font:600 24px/1.2 var(--f-serif);margin:0 40px 10px 0}
+dialog.donate p{color:var(--text);margin:0 0 14px}
+.dclose{position:absolute;right:14px;top:14px;margin:0}
+.dclose .pill{width:36px;padding:0;justify-content:center}
+.dnet{font:500 13px var(--f-body);color:var(--mute);margin-bottom:8px}
+.daddr{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.daddr code{font:500 13px 'JetBrains Mono',ui-monospace,monospace;background:rgba(255,255,255,.04);border:1px solid var(--line-2);border-radius:10px;padding:9px 11px;word-break:break-all;flex:1 1 260px;user-select:all}
+.dwarn{font-size:13px}
+.dopts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 14px}
+.dopt{display:flex;flex-direction:column;gap:4px;padding:12px 14px;border:1px solid var(--line-2);border-radius:12px;color:var(--fg);text-decoration:none;background:rgba(255,255,255,.03)}
+.dopt:hover{border-color:var(--accent)}
+.dopt b{font:600 17px var(--f-body)}
+.dopt .dsub{font-size:13px;color:var(--mute);line-height:1.35}
+.dopt img{width:120px;height:120px;border-radius:8px;margin-top:6px;background:#fff}
+.dcrypto{border:1px solid var(--line-2);border-radius:12px;padding:10px 14px;margin-bottom:14px}
+.dcrypto summary{cursor:pointer;font:500 14px var(--f-body);color:var(--fg)}
+.dcrypto[open] summary{margin-bottom:10px}
+.dqr img{width:150px;height:150px;border-radius:8px;display:block;margin:0 0 10px}
+.dh3{font:600 17px var(--f-body);margin:4px 0 8px}
+.dcontact{display:flex;gap:12px;align-items:center}
+.dcontact img{width:96px;height:auto;border-radius:10px;flex:none}
+.dctxt{font-size:14px;margin:0!important}
+.dctxt a,.fcontact a{color:var(--accent)}
+.fcontact{margin:0 0 8px;color:var(--mute)}
+.alltopics{margin-top:36px;border-top:1px solid var(--line);padding-top:16px;max-width:1240px}
+.alltopics summary{cursor:pointer;font:600 18px var(--f-serif);color:var(--fg)}
+.atgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px 28px;margin-top:14px}
+.atgrid h3{font:600 15px var(--f-body);margin:10px 0 6px;color:var(--fg)}
+.atgrid ul{list-style:none;margin:0;padding:0}
+.atgrid li{font-size:14px;line-height:1.5}
+.atgrid h4{font:400 12.5px/1.5 var(--f-body);color:var(--dim);margin:6px 0 0}
+.atgrid li.seen a::after,.fres .seen .fn::after{content:" ✓";color:var(--accent);opacity:.75;font-size:12px}
+.atbar{display:flex;gap:10px 16px;align-items:center;flex-wrap:wrap;margin-top:14px}
+.atfilter{flex:0 1 320px;min-width:0;background:var(--bg-2);border:1px solid var(--line-2);border-radius:10px;color:var(--fg);font:400 14px var(--f-body);padding:8px 12px;min-height:38px}
+.atfilter::placeholder,.fbar input::placeholder{color:var(--dim)}
+.atprog{color:var(--mute);font-size:13px}
+.atreset{background:none;border:0;padding:4px 0;min-height:32px;color:var(--mute);font:400 12.5px var(--f-body);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.atreset:hover{color:var(--fg)}
+.atnone{color:var(--mute);font-size:14px;margin:12px 0 0}
+/* изученные темы в оглавлении */
+.sub.seen::after{content:"✓";margin-left:6px;font-size:11px;color:var(--accent);opacity:.7}
+.subprog{flex:none;font:400 12px/1.4 var(--f-body);color:var(--mute);padding:14px 0 0 14px}
+.vh{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* заголовок темы: «поделиться» и «сбросить вид» */
+.ttl{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-areas:"k b" "t t" "l l";align-items:center;column-gap:12px}
+.ttl .kicker{grid-area:k;min-width:0}
+.ttl h1{grid-area:t}
+.ttl p{grid-area:l}
+.tbtns{grid-area:b;justify-self:start;display:flex;gap:6px;pointer-events:auto}
+.ibtn{width:30px;height:30px;display:grid;place-items:center;padding:0;border-radius:50%;border:1px solid var(--line-2);background:color-mix(in srgb,var(--stage) 55%,transparent);color:var(--mute);cursor:pointer;transition:color .15s var(--ease),border-color .15s var(--ease)}
+.ibtn:hover{color:var(--fg);border-color:var(--dim)}
+.ibtn svg{width:16px;height:16px}
+/* поиск по темам */
+.pill kbd,.fhint kbd{font:500 11px/1 var(--f-body);color:var(--dim);border:1px solid var(--line-2);border-radius:5px;padding:2px 5px}
+.srch{color:var(--mute)}
+.srch:hover{color:var(--fg)}
+dialog.finder{width:min(620px,calc(100% - 24px));max-height:min(640px,calc(100dvh - 48px));margin:min(12vh,96px) auto auto;padding:0;background:var(--panel-solid);color:var(--fg);border:1px solid var(--line-2);border-radius:16px;box-shadow:0 30px 80px rgba(0,0,0,.6);flex-direction:column;overflow:hidden}
+dialog.finder[open]{display:flex}
+dialog.finder::backdrop{background:rgba(6,5,8,.72)}
+.fbar{display:flex;align-items:center;gap:10px;padding:10px 12px 10px 16px;border-bottom:1px solid var(--line)}
+.fbar>svg{width:18px;height:18px;color:var(--mute);flex:none}
+.fbar input{flex:1;min-width:0;background:transparent;border:0;color:var(--fg);font:400 17px var(--f-body);padding:8px 0;outline:none}
+.fbar input::-webkit-search-cancel-button{display:none}
+.fbar form{margin:0}
+.fesc{font:500 11px var(--f-body);color:var(--dim);background:none;border:1px solid var(--line-2);border-radius:6px;padding:5px 8px;cursor:pointer}
+.fres{list-style:none;margin:0;padding:6px;overflow-y:auto;overscroll-behavior:contain;flex:1 1 auto;min-height:0}
+.fres [role=option]{display:block;padding:8px 10px;border-radius:10px;cursor:pointer}
+.fres [role=option][aria-selected=true]{background:color-mix(in srgb,var(--accent) 13%,transparent)}
+.fres .fn{display:block;font:500 15px/1.35 var(--f-body);color:var(--fg)}
+.fres .fm{display:block;font-size:12.5px;line-height:1.4;color:var(--mute);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fres mark{background:none;color:var(--accent)}
+.fres .fh{font:600 12px/1.3 var(--f-body);color:var(--mute);padding:12px 10px 4px}
+.fres .fempty{color:var(--mute);padding:16px 10px}
+.fhint{display:flex;justify-content:space-between;gap:12px;margin:0;padding:9px 16px;border-top:1px solid var(--line);font-size:12.5px;color:var(--mute)}
+.gtoast{max-width:min(92vw,560px);text-align:center;overflow-wrap:anywhere;transition:opacity .2s var(--ease)}
+.gtoast:empty{opacity:0;pointer-events:none}
+.fesc .kx{display:none}
+.fbar:focus-within{box-shadow:inset 0 -2px var(--accent)}
+.atgrid li.seen a::after,.fres .seen .fn::after{content:" ✓" / ""}
+.sub.seen::after{content:"✓" / ""}
+@media (pointer:coarse){ .fkeys,.srch kbd,.fesc .kesc{display:none} .fesc .kx{display:inline} .fesc{font-size:15px;min-width:40px;min-height:40px} .ibtn{width:40px;height:40px} .atfilter{font-size:16px} .atgrid li a{display:inline-block;padding:3px 0} }
+.atgrid a{color:var(--text);text-decoration:none}
+.atgrid a:hover{color:var(--accent);text-decoration:underline}
+.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:var(--fg);color:#111;font:600 14px var(--f-body);padding:10px 18px;border-radius:999px;box-shadow:0 10px 30px rgba(0,0,0,.5);z-index:20}
+.toast[hidden]{display:none}
+@media (max-width:520px){ .dopts{grid-template-columns:1fr} }
+
+/* планшет: оглавление сворачивается в список */
+@media (max-width:1100px){
+  :root{--stage-h:clamp(560px,78vh,860px)}
+  .wrap{padding-inline:16px}
+  .top{flex-wrap:wrap;gap:14px 24px}
+  .brand{width:auto}
+  .tabs{order:3;flex:1 1 100%;max-width:none}
+  .atlas{display:block}
+  .subtabs{position:static;max-height:none;overflow:visible;padding:0 0 12px}
+  .subtabs .sub,.subtabs .subhead,.subtabs .subprog{display:none}
+  .subsel{display:block;width:100%;max-width:560px;font:500 15px var(--f-body);color:var(--fg);background:var(--bg-2);border:1px solid var(--line-2);border-radius:12px;padding:10px 12px;min-height:46px}
+  #scope{width:220px;height:90px}
+  .notes{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .notes>div:first-child{grid-column:1/-1}
+  .rng input{width:110px}
+  .console{gap:10px 18px;padding:12px 14px}
+}
+/* телефон */
+@media (max-width:700px){
+  .wrap{padding-inline:12px;padding-block:0 28px}
+  .top{gap:12px 8px;padding-block:12px 14px}
+  .brand .bt{font-size:26px}
+  .brand .bs{font-size:12px}
+  .acts{display:contents}
+  .heart{order:1;margin-left:auto;width:44px;min-height:44px;padding:0;justify-content:center}
+  .heart .dtxt{display:none}
+  .inst{order:1}
+  .lang{order:1;margin-left:auto;min-height:44px}
+  .lang + .heart{margin-left:0}
+  .srch{order:1;margin-left:auto;width:44px;min-height:44px;padding:0;justify-content:center}
+  .srch .stxt,.srch kbd{display:none}
+  .srch + .lang{margin-left:0}
+  .ttl{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"k k" "t b" "l l";align-items:start}
+  .tbtns{margin-top:4px}
+  .ibtn{width:40px;height:40px}
+  dialog.finder{margin-top:12px;max-height:calc(100dvh - 24px)}
+  .cfg{order:2;display:inline-flex;align-items:center;font:500 13px var(--f-body);color:var(--mute);background:transparent;border:1px solid var(--line-2);border-radius:999px;padding:0 14px;min-height:44px;cursor:pointer}
+  .cfg[aria-expanded="true"]{color:var(--fg);border-color:var(--accent)}
+  .tabs{order:3}
+  .tab .tn{font-size:14px}
+  .tab .tsc{font-size:11px}
+  .knobs{display:none;order:4;width:100%;margin:0;padding:0}
+  .top.open .knobs{display:flex}
+  .subsel{max-width:none;font-size:16px}
+  .stage{height:60svh;min-height:360px;max-height:640px;border-radius:14px}
+  .hud{left:12px;right:12px;top:10px;gap:8px}
+  .kicker{font-size:11px}
+  .ttl h1{font-size:22px;margin:3px 0 0}
+  .ttl p{display:none}
+  .stats{gap:14px}
+  .stat i{font-size:10px}
+  .stat b{font-size:17px}
+  .stat b small{font-size:11px}
+  .lbl{font-size:10px;letter-spacing:0}
+  #scope{width:min(220px,58%);height:78px;right:10px}
+  .console.out{position:static;margin-top:10px;background:var(--panel-solid);backdrop-filter:none;-webkit-backdrop-filter:none;padding:14px 12px;gap:14px 16px;border-color:var(--line)}
+  .console.out .grp{flex:1 1 100%}
+  .info{max-width:none;font-size:14px}
+  .rng input{width:120px}
+  .notes{grid-template-columns:minmax(0,1fr);padding-block:28px 4px;gap:24px}
+  .notes p,.notes ul{font-size:16px}
+}
+@media (pointer:coarse){ .glabel kbd,.keys{display:none} .seg button{min-height:40px;padding:8px 11px} .btn{min-height:44px} .pill{min-height:44px} .sub{min-height:44px} }
+@media (prefers-reduced-motion:reduce){ *,*::before,*::after{transition:none!important;scroll-behavior:auto!important} }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <a class="brand" href="index.en.html"><span class="bt">Who are we?</span> <span class="bs">from molecule to mind</span></a>
+    <nav class="tabs" id="sections" role="tablist" aria-label="Atlas sections by scale"></nav>
+    <div class="acts">
+      <div class="knobs" id="knobs"></div>
+      <button class="pill inst" id="inst" type="button" hidden>Install</button>
+      <button class="pill srch" id="srch" type="button" aria-haspopup="dialog" aria-keyshortcuts="/" title="Search topics (/)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg><span class="stxt">Search</span><kbd>/</kbd></button>
+      <button class="pill lang" id="lang" type="button" lang="en" title="English">EN</button>
+      <button class="pill heart" id="donate" type="button" aria-haspopup="dialog" aria-label="Support the project"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.5 8.2 3.3 4.5 7 4.5c2.1 0 3.6 1.2 5 3 1.4-1.8 2.9-3 5-3 3.7 0 5.5 3.7 4.3 6.8-1.8 4.6-9.3 9.2-9.3 9.2z"/></svg><span class="dtxt">Support</span></button>
+      <button class="cfg" id="cfg" hidden type="button" aria-expanded="false" aria-controls="knobs">Settings</button>
+    </div>
+  </header>
+
+  <div class="atlas">
+    <nav class="subtabs" id="subtabs" role="tablist" aria-label="Section topics"></nav>
+    <div class="main">
+      <section class="stage" id="stage" aria-label="3D scene">
+        <canvas id="gl"></canvas>
+        <div class="labels" id="labels"></div>
+        <canvas id="scope" aria-hidden="true"></canvas>
+        <div class="hud">
+          <div class="ttl">
+            <div class="kicker" id="kicker">Biochemistry · kinetics</div>
+            <h1 id="title">Reaction rate and inhibitors</h1><span class="tbtns"><button class="ibtn" id="share" type="button" aria-label="Share this topic" title="Share this topic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3.5M7.5 8 12 3.5 16.5 8"/><path d="M5 12.5V19a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 19v-6.5"/></svg></button><button class="ibtn" id="recam" type="button" aria-label="Reset camera view" aria-keyshortcuts="Home" title="Reset camera view (Home)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3"/><path d="M4 3.5v4.2h4.2"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg></button></span>
+            <p id="lede">A live model of a solution: 14 enzyme molecules catch substrate. Change the concentration, temperature and pH, and add inhibitors — the Michaelis–Menten graph changes along with the model.</p>
+          </div>
+          <div class="stats" id="stats"></div>
+        </div>
+        <div class="console" id="console"></div>
+      </section>
+      <section class="notes" id="notes">
+      <div><h2>What the rate depends on</h2>
+        <p><b>Substrate concentration.</b> At low [S] the rate rises almost linearly; at high [S] it levels off at <b>Vmax</b>: all enzymes are occupied (saturation). <b>Km</b> equals the [S] at which v = ½ Vmax; it is inversely related to the enzyme’s affinity for the substrate.</p>
+        <p><b>Temperature.</b> Up to the optimum (~37–40 °C) the rate roughly doubles for every 10 °C; above 45–50 °C the protein denatures (thermolability).</p>
+        <p><b>pH.</b> Each enzyme has its own optimum: pepsin works in the acidic stomach (pH 1.5–2), trypsin in the slightly alkaline intestine (~8). When gastric juice is not acidic enough, pepsin digests proteins poorly.</p>
+        <p><b>Enzyme concentration</b> — the rate is directly proportional to it. Units of activity: 1 IU = 1 µmol of substrate per 1 min; 1 katal = 1 mol per 1 s.</p>
+        <h3>Inhibitors</h3>
+        <p><b>Reversible</b> inhibitors bind by weak bonds: <b>competitive</b> (substrate analogs, ↑Km) and <b>noncompetitive</b> (bind elsewhere, ↓Vmax). <b>Irreversible</b> inhibitors form a covalent bond — they are often poisons. In <b>Lineweaver–Burk</b> coordinates (1/v vs 1/[S]) the curve becomes a straight line: a competitive inhibitor changes its slope but not its intercept on the 1/v axis, while a noncompetitive inhibitor raises that intercept.</p></div>
+      <div><h2>Simplifications</h2><ul><li>The model is qualitative: time is slowed down millions of times, and water is not shown.</li><li>All 14 enzymes are copies of one structure (lysozyme, PDB 1AKI); the “enzyme and pH” buttons change only the pH optimum.</li><li>After a few seconds the products turn back into substrate — this keeps the concentration constant.</li></ul></div>
+      <div class="keys"><h2>Keys</h2><ul><li><code>1</code>–<code>4</code> inhibitor</li><li><code>L</code> Lineweaver–Burk plot</li><li><code>R</code> · <code>N</code></li></ul></div></section>
+      <details class="alltopics"><summary>All topics of the atlas (74)</summary><div class="atgrid"><section><h3>Biochemistry</h3><h4>Enzymes</h4><ul><li data-id="enzyme"><a href="enzyme.en.html">How an enzyme works</a></li><li data-id="kinetics"><a href="kinetics.en.html">Reaction rate and inhibitors</a></li><li data-id="enzmed"><a href="enzmed.en.html">Enzyme regulation and enzymes in medicine</a></li></ul><h4>Vitamins</h4><ul><li data-id="vitamins"><a href="vitamins.en.html">Vitamins and coenzymes</a></li></ul><h4>Energy</h4><ul><li data-id="atp"><a href="atp.en.html">ATP and the stages of catabolism</a></li><li data-id="krebs"><a href="krebs.en.html">Pyruvate dehydrogenase and the Krebs cycle</a></li><li data-id="etc"><a href="etc.en.html">Respiratory chain and ATP synthase</a></li><li data-id="radicals"><a href="radicals.en.html">Free radicals and antioxidants</a></li></ul><h4>Carbohydrates</h4><ul><li data-id="glycolysis"><a href="glycolysis.en.html">Glycolysis, gluconeogenesis, PPP</a></li><li data-id="glycogen"><a href="glycogen.en.html">Glycogen and blood sugar</a></li><li data-id="carbdig"><a href="carbdig.en.html">Sugar digestion, lactose, fructose</a></li></ul><h4>Lipids</h4><ul><li data-id="membrane"><a href="membrane.en.html">Lipids and membranes</a></li><li data-id="betaox"><a href="betaox.en.html">Fat oxidation and ketone bodies</a></li><li data-id="lipoprot"><a href="lipoprot.en.html">Cholesterol and lipoproteins</a></li><li data-id="lipogen"><a href="lipogen.en.html">Fat synthesis, phospholipids, obesity</a></li><li data-id="eicosanoids"><a href="eicosanoids.en.html">Eicosanoids and painkillers</a></li></ul><h4>Proteins and amino acids</h4><ul><li data-id="protein"><a href="protein.en.html">Proteins: amino acids and folding</a></li><li data-id="aminoacid"><a href="aminoacid.en.html">Amino acid metabolism and urea</a></li><li data-id="amines"><a href="amines.en.html">Biogenic amines, glycine and serine</a></li></ul><h4>Nucleotides and genes</h4><ul><li data-id="dna"><a href="dna.en.html">DNA: structure, replication, repair</a></li><li data-id="express"><a href="express.en.html">Transcription and translation</a></li><li data-id="purine"><a href="purine.en.html">Nucleotides and gout</a></li><li data-id="antibiotics"><a href="antibiotics.en.html">Antibiotics and protein synthesis</a></li><li data-id="mutations"><a href="mutations.en.html">Mutations and protein modification</a></li></ul><h4>Hormones</h4><ul><li data-id="hormsig"><a href="hormsig.en.html">How hormones act on the cell</a></li><li data-id="fedfast"><a href="fedfast.en.html">Metabolism: fed and fasting</a></li><li data-id="thyroid"><a href="thyroid.en.html">Thyroid hormones</a></li><li data-id="adrenal"><a href="adrenal.en.html">Adrenal glands: steroids and stress</a></li><li data-id="calcium"><a href="calcium.en.html">Calcium: parathyroid hormone and vitamin D</a></li><li data-id="pituitary"><a href="pituitary.en.html">Hypothalamus and pituitary</a></li><li data-id="diabetes"><a href="diabetes.en.html">Insulin and diabetes mellitus</a></li><li data-id="sexhorm"><a href="sexhorm.en.html">Sex hormones and pregnancy</a></li></ul><h4>Blood and liver</h4><ul><li data-id="hemoglobin"><a href="hemoglobin.en.html">Hemoglobin and oxygen transport</a></li><li data-id="heme"><a href="heme.en.html">Heme metabolism and jaundice</a></li><li data-id="bloodchem"><a href="bloodchem.en.html">Blood: pH, plasma proteins, clotting</a></li><li data-id="liver"><a href="liver.en.html">Liver: detoxification, alcohol, paracetamol</a></li><li data-id="nitrogen"><a href="nitrogen.en.html">Blood nitrogen, buffers and acid–base balance</a></li></ul></section><section><h3>Cell</h3><ul><li data-id="cell"><a href="cell.en.html">Living cell</a></li></ul></section><section><h3>Cell body</h3><h4>How the body is built</h4><ul><li data-id="planes"><a href="planes.en.html">Planes, directions and cavities</a></li><li data-id="referred"><a href="referred.en.html">Referred pain</a></li></ul><h4>Support and movement</h4><ul><li data-id="skeleton"><a href="skeleton.en.html">Skeleton, muscles and vessels</a></li><li data-id="joints"><a href="joints.en.html">Bones and joints</a></li></ul><h4>Organ systems</h4><ul><li data-id="heart"><a href="heart.en.html">Heart and circulation</a></li><li data-id="lungs"><a href="lungs.en.html">Breathing</a></li><li data-id="digest"><a href="digest.en.html">Digestion</a></li><li data-id="kidney"><a href="kidney.en.html">Kidneys</a></li><li data-id="blood"><a href="blood.en.html">Blood</a></li><li data-id="endo"><a href="endo.en.html">Endocrine system</a></li><li data-id="immune"><a href="immune.en.html">Lymph and immunity</a></li><li data-id="repro"><a href="repro.en.html">Reproduction and development</a></li><li data-id="menses"><a href="menses.en.html">Menstrual cycle</a></li><li data-id="shealth"><a href="shealth.en.html">Desire and sexual health</a></li><li data-id="sresp"><a href="sresp.en.html">Sexual response cycle</a></li><li data-id="chest"><a href="chest.en.html">Thorax and breast</a></li></ul></section><section><h3>Brain</h3><h4>Neurons</h4><ul><li data-id="soma"><a href="soma.en.html">Neuron structure</a></li><li data-id="types"><a href="types.en.html">Neuron types</a></li><li data-id="neuron"><a href="neuron.en.html">Neuron and impulse</a></li><li data-id="synapse"><a href="synapse.en.html">Synapse and neurotransmitters</a></li><li data-id="glia"><a href="glia.en.html">Neuroglia</a></li></ul><h4>Structure</h4><ul><li data-id="develop"><a href="develop.en.html">Brain development</a></li><li data-id="ventricles"><a href="ventricles.en.html">Ventricles and meninges</a></li><li data-id="spinal"><a href="spinal.en.html">Spinal cord</a></li><li data-id="cranial"><a href="cranial.en.html">Cranial nerves</a></li><li data-id="stem"><a href="stem.en.html">Brainstem</a></li><li data-id="dien"><a href="dien.en.html">Thalamus and hypothalamus</a></li><li data-id="hemis"><a href="hemis.en.html">Hemispheres and basal ganglia</a></li><li data-id="cortex"><a href="cortex.en.html">Cortex</a></li><li data-id="hippo"><a href="hippo.en.html">Hippocampus and memory</a></li><li data-id="cereb"><a href="cereb.en.html">Cerebellum</a></li></ul><h4>Chemistry</h4><ul><li data-id="brain"><a href="brain.en.html">Neurotransmitter systems</a></li></ul><h4>Sense organs</h4><ul><li data-id="vision"><a href="vision.en.html">Vision</a></li><li data-id="ear"><a href="ear.en.html">Hearing and balance</a></li><li data-id="skin"><a href="skin.en.html">Skin and touch</a></li><li data-id="chemo"><a href="chemo.en.html">Smell and taste</a></li></ul></section></div></details>
+      <div class="foot"><p class="fcontact">Feedback: Telegram channel <a href="https://t.me/KTOMY_ATLAS" target="_blank" rel="noopener">@KTOMY_ATLAS</a> · e-mail <a href="mailto:gonya83raul@gmail.com">gonya83raul@gmail.com</a> · <a href="https://boosty.to/chelovek3d/donate" target="_blank" rel="noopener">support on Boosty</a></p><span class="fcredit">3D models: visual system — Sergey Burov, muscles — Diego Luján García, pelvic and digestive organs — Education Resource Fund (Sketchfab, CC BY 4.0 license).</span></div>
+    </div>
+  </div>
+
+  <dialog class="donate" id="donatebox" aria-labelledby="donateTitle">
+    <form method="dialog" class="dclose"><button class="pill ghost" type="submit" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></form>
+    <h2 id="donateTitle">Support the project</h2>
+    <p class="dlead">“Who are we?” is free and ad-free. New topics, 3D models and the app are built by enthusiasts — if the atlas is useful to you, you can help it grow.</p>
+    <div class="dopts">
+      <a class="dopt" href="https://boosty.to/chelovek3d/donate" target="_blank" rel="noopener"><b>Boosty</b><span class="dsub">by card or SBP (Russian Faster Payments), one-time or as a subscription</span></a>
+      <a class="dopt" href="https://tips.tips/000489706" target="_blank" rel="noopener"><b>tips.tips</b><span class="dsub">tips by card — via link or QR code</span><img src="img/qr-tips.svg" alt="tips.tips QR code" width="120" height="120" loading="lazy"></a>
+    </div>
+    <details class="dcrypto"><summary>Cryptocurrency: USDT (TRC-20)</summary>
+      <div class="dqr"><img src="img/qr-usdt.svg" alt="USDT address QR code" width="150" height="150" loading="lazy"></div>
+      <div class="daddr"><code id="daddr">TU5THz3NcJ2DKGvhtYVDCV1PCrDn7x41Ap</code><button class="btn primary" type="button" id="dcopy">Copy address</button></div>
+      <p class="dwarn">Send only <b>USDT on the TRON network (TRC-20)</b>. Any other coin or network will be lost.</p>
+    </details>
+    <h3 class="dh3">Feedback</h3>
+    <div class="dcontact"><a href="https://t.me/KTOMY_ATLAS" target="_blank" rel="noopener"><img src="img/qr-telegram.png" alt="Telegram channel QR code" width="96" height="103" loading="lazy"></a>
+      <p class="dctxt">News, new topics and discussion — in the Telegram channel <a href="https://t.me/KTOMY_ATLAS" target="_blank" rel="noopener">@KTOMY_ATLAS</a>. Send bug reports and suggestions to <a href="mailto:gonya83raul@gmail.com">gonya83raul@gmail.com</a>.</p></div>
+    <div class="toast" id="toast" role="status" aria-live="polite" hidden>Copied!</div>
+  </dialog>
+  <dialog class="finder" id="finder" aria-label="Search topics">
+    <div class="fbar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg><input id="fq" type="search" role="combobox" aria-expanded="true" aria-controls="fres" aria-autocomplete="list" autocomplete="off" spellcheck="false" placeholder="Find a topic…" aria-label="Find a topic"><form method="dialog"><button class="fesc" type="submit"><span class="kesc" aria-hidden="true">Esc</span><span class="kx" aria-hidden="true">✕</span><span class="vh">Close search</span></button></form></div>
+    <ul class="fres" id="fres" role="listbox" aria-label="Topics" tabindex="-1"></ul>
+    <p class="fhint"><span id="fprog"></span><span class="fkeys"><kbd>↑</kbd><kbd>↓</kbd> select · <kbd>Enter</kbd> open</span></p>
+  </dialog>
+  <div class="toast gtoast" id="gtoast" role="status" aria-live="polite"></div>
+  <div class="vh" id="srlive" role="status" aria-live="polite"></div>
+</div>
+
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+<script type="module">
+const P = window.__PAGE; let L = P ? P.lang : 'ru', go = null;
+if (!P) { const q = new URLSearchParams(location.search).get('lang'); let m = null;
+  try { if (q === 'ru' || q === 'en') localStorage.setItem('lang', q); m = localStorage.getItem('lang'); } catch (e) { /* без памяти */ }
+  const want = q || m;
+  if (want === 'en') go = 'index.en.html' + location.hash;
+  else if (!want && !(navigator.languages || [navigator.language || '']).some((l) => /^(ru|uk|be|kk)/i.test(l))) window.__LANGNOTE = 1; }
+if (go) location.replace(go); else { document.documentElement.lang = L; import(L === 'en' ? './app16/en/core.js' : './app16/core.js'); }
+</script>
+</body>
+</html>

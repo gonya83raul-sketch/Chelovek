@@ -14,11 +14,11 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 const MODEL_EXT = 'txt';
 function fetchModel(name) {
   return fetch('models/' + name + '.' + MODEL_EXT).then((r) => { if (!r.ok) throw new Error('HTTP ' + r.status); return MODEL_EXT === 'txt' ? r.text().then((t) => { const b = atob(t.trim()); const u = new Uint8Array(b.length); for (let i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return new Blob([u]); }) : r.blob(); })
-    .then((blob) => { if (typeof DecompressionStream === 'undefined') throw new Error('браузер слишком старый для распаковки модели'); return new Response(blob.stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer(); });
+    .then((blob) => { if (typeof DecompressionStream === 'undefined') throw new Error('browser too old to unpack the model'); return new Response(blob.stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer(); });
 }
 const $ = (s) => document.querySelector(s);
 /* язык сборки: английская сборка (tools/i18n.mjs) меняет 'ru' на 'en' и все русские строки — по словарю data/i18n/en.json */
-const LANG = 'ru';
+const LANG = 'en';
 function h(tag, attrs = {}, ...kids) {
   const el = document.createElement(tag);
   for (const [k, v] of Object.entries(attrs)) {
@@ -59,7 +59,7 @@ let renderer;
 try {
   renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
 } catch (e) {
-  stageEl.append(h('div', { class: 'fallback' }, 'Этому браузеру не удалось запустить 3D-графику (WebGL). Попробуйте открыть страницу в свежем Chrome, Safari или Firefox.'));
+  stageEl.append(h('div', { class: 'fallback' }, 'This browser could not start 3D graphics (WebGL). Try opening the page in an up-to-date Chrome, Safari or Firefox.'));
   throw e;
 }
 renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, matchMedia('(pointer:coarse)').matches ? 1.5 : 2));
@@ -213,11 +213,11 @@ const SKEL_META = {"joints": {"C1": [0.04, 15.01, 0.03], "shR": [-1.46, 14.09, 0
    x — вперёд (лоб), y — вверх, z — вбок (правая тройка: z>0 — ПРАВОЕ полушарие, hemi[0]; z<0 — левое, hemi[1])
    ========================================================= */
 const LOBES = [
-  { id: 'front', name: 'Лобная', color: '#E9785F' },
-  { id: 'par', name: 'Теменная', color: '#5E8FEF' },
-  { id: 'temp', name: 'Височная', color: '#5CC48A' },
-  { id: 'occ', name: 'Затылочная', color: '#F2C14E' },
-  { id: 'limb', name: 'Лимбическая', color: '#E58FC4' },
+  { id: 'front', name: 'Frontal', color: '#E9785F' },
+  { id: 'par', name: 'Parietal', color: '#5E8FEF' },
+  { id: 'temp', name: 'Temporal', color: '#5CC48A' },
+  { id: 'occ', name: 'Occipital', color: '#F2C14E' },
+  { id: 'limb', name: 'Limbic', color: '#E58FC4' },
 ];
 const BKP = {   // опорные точки глубоких структур (в координатах модели)
   thal: [V3(0.0, -0.05, 0.2), V3(0.0, -0.05, -0.2)], thalR: V3(0.32, 0.2, 0.2),
@@ -339,7 +339,7 @@ function flyStep(st, camera, controls, dt, rate = 2.6, dur = 2.4) {
 }
 const flyTarget = (target, pos) => ({ target: target.clone(), pos: pos.clone(), t: 0 });
 /* «Что видно» + кнопки: стандартная панель сцены */
-function infoBox(flex = '1 1 320px') { const info = h('div', { class: 'info' }); return { info, el: h('div', { class: 'grp', style: `flex:${flex}` }, h('div', { class: 'glabel' }, 'Что видно'), info) }; }
+function infoBox(flex = '1 1 320px') { const info = h('div', { class: 'info' }); return { info, el: h('div', { class: 'grp', style: `flex:${flex}` }, h('div', { class: 'glabel' }, 'What you see'), info) }; }
 /* клик по объектам сцены */
 function pickOn(selfRef, camera, objects, onHit) {
   const ray = new THREE.Raycaster(), ndc = new THREE.Vector2(); let down = null;
@@ -461,30 +461,36 @@ mqMob.addEventListener('change', placeConsole); placeConsole();
 if (LANG !== 'ru') {
   document.documentElement.lang = LANG;
   const T = (sel, txt, attr) => { const e = $(sel); if (!e) return; if (attr) e.setAttribute(attr, txt); else e.innerHTML = txt; };
-  document.title = 'Кто мы? — от молекулы до мысли';
-  T('.brand .bt', 'Кто мы?'); T('.brand .bs', 'от молекулы до мысли');
-  T('#sections', 'Разделы атласа по масштабу', 'aria-label'); T('#subtabs', 'Темы раздела', 'aria-label'); T('#stage', 'Трёхмерная сцена', 'aria-label');
-  T('#inst', 'Установить'); T('#donate', 'Поддержать проект', 'aria-label'); T('#donate .dtxt', 'Поддержать'); T('#cfg', 'Настройки');
-  T('.dclose button', 'Закрыть', 'aria-label'); T('#donateTitle', 'Поддержать проект');
-  T('.dlead', '«Кто мы?» бесплатный и без рекламы. Новые темы, 3D-модели и приложение делаются на энтузиазме — если атлас вам полезен, вы можете помочь его развитию.');
-  T('#dcopy', 'Скопировать адрес'); T('#toast', 'Скопировано!'); T('.dcrypto summary', 'Криптовалюта: USDT (TRC-20)');
-  T('.dopt:nth-child(1) .dsub', 'картой или по СБП, разово или подпиской'); T('.dopt:nth-child(2) .dsub', 'чаевые картой — по ссылке или QR-коду');
-  T('.dh3', 'Обратная связь');
-  T('.dopt img', 'QR-код tips.tips', 'alt'); T('.dqr img', 'QR-код адреса USDT', 'alt'); T('.dcontact img', 'QR-код Telegram-канала', 'alt');
-  T('#srch', 'Поиск по темам (/)', 'title'); T('#srch .stxt', 'Поиск');
-  T('#share', 'Поделиться темой', 'aria-label'); T('#share', 'Поделиться темой', 'title');
-  T('#recam', 'Сбросить вид камеры', 'aria-label'); T('#recam', 'Сбросить вид камеры (Home)', 'title');
-  T('#finder', 'Поиск по темам', 'aria-label'); T('#fq', 'Найти тему…', 'placeholder'); T('#fq', 'Найти тему', 'aria-label');
-  T('.fesc .vh', 'Закрыть поиск'); T('#fres', 'Темы', 'aria-label'); T('.fkeys', '<kbd>↑</kbd><kbd>↓</kbd> выбрать · <kbd>Enter</kbd> открыть');
-  T('.dctxt', 'Новости, новые темы и обсуждение — в Telegram-канале <a href="https://t.me/KTOMY_ATLAS" target="_blank" rel="noopener">@KTOMY_ATLAS</a>. Ошибки и предложения пишите на <a href="mailto:gonya83raul@gmail.com">gonya83raul@gmail.com</a>.');
-  T('.fcontact', 'Обратная связь: Telegram-канал <a href="https://t.me/KTOMY_ATLAS" target="_blank" rel="noopener">@KTOMY_ATLAS</a> · почта <a href="mailto:gonya83raul@gmail.com">gonya83raul@gmail.com</a> · <a href="https://boosty.to/chelovek3d/donate" target="_blank" rel="noopener">поддержать на Boosty</a>');
-  T('.dwarn', 'Отправляйте только <b>USDT в сети TRON (TRC-20)</b>. Перевод другой монеты или в другой сети потеряется.');
-  T('.foot .fcredit', '3D-модели: зрительная система — Sergey Burov, мышцы — Diego Luján García, органы малого таза и пищеварения — Education Resource Fund (Sketchfab, лицензия CC BY 4.0).');
+  document.title = 'Who are we? From molecule to mind';
+  T('.brand .bt', 'Who are we?'); T('.brand .bs', 'from molecule to mind');
+  T('#sections', 'Atlas sections by scale', 'aria-label'); T('#subtabs', 'Section topics', 'aria-label'); T('#stage', '3D scene', 'aria-label');
+  T('#inst', 'Install'); T('#donate', 'Support the project', 'aria-label'); T('#donate .dtxt', 'Support'); T('#cfg', 'Settings');
+  T('.dclose button', 'Close', 'aria-label'); T('#donateTitle', 'Support the project');
+  T('.dlead', '“Who are we?” is free and ad-free. New topics, 3D models and the app are built by enthusiasts — if the atlas is useful to you, you can help it grow.');
+  T('#dcopy', 'Copy address'); T('#toast', 'Copied!'); T('.dcrypto summary', 'Cryptocurrency: USDT (TRC-20)');
+  T('.dopt:nth-child(1) .dsub', 'by card or SBP (Russian Faster Payments), one-time or as a subscription'); T('.dopt:nth-child(2) .dsub', 'tips by card — via link or QR code');
+  T('.dh3', 'Feedback');
+  T('.dopt img', 'tips.tips QR code', 'alt'); T('.dqr img', 'USDT address QR code', 'alt'); T('.dcontact img', 'Telegram channel QR code', 'alt');
+  T('#srch', 'Search topics (/)', 'title'); T('#srch .stxt', 'Search');
+  T('#share', 'Share this topic', 'aria-label'); T('#share', 'Share this topic', 'title');
+  T('#recam', 'Reset camera view', 'aria-label'); T('#recam', 'Reset camera view (Home)', 'title');
+  T('#finder', 'Search topics', 'aria-label'); T('#fq', 'Find a topic…', 'placeholder'); T('#fq', 'Find a topic', 'aria-label');
+  T('.fesc .vh', 'Close search'); T('#fres', 'Topics', 'aria-label'); T('.fkeys', '<kbd>↑</kbd><kbd>↓</kbd> select · <kbd>Enter</kbd> open');
+  T('.dctxt', 'News, new topics and discussion — in the Telegram channel <a href="https://t.me/KTOMY_ATLAS" target="_blank" rel="noopener">@KTOMY_ATLAS</a>. Send bug reports and suggestions to <a href="mailto:gonya83raul@gmail.com">gonya83raul@gmail.com</a>.');
+  T('.fcontact', 'Feedback: Telegram channel <a href="https://t.me/KTOMY_ATLAS" target="_blank" rel="noopener">@KTOMY_ATLAS</a> · e-mail <a href="mailto:gonya83raul@gmail.com">gonya83raul@gmail.com</a> · <a href="https://boosty.to/chelovek3d/donate" target="_blank" rel="noopener">support on Boosty</a>');
+  T('.dwarn', 'Send only <b>USDT on the TRON network (TRC-20)</b>. Any other coin or network will be lost.');
+  T('.foot .fcredit', '3D models: visual system — Sergey Burov, muscles — Diego Luján García, pelvic and digestive organs — Education Resource Fund (Sketchfab, CC BY 4.0 license).');
 }
+/* логотип ведёт на главную своего языка; посетителю с нерусским браузером на русской главной — ненавязчивое предложение английской версии */
+if (LANG === 'en') $('.brand').setAttribute('href', 'index.en.html');
+if (window.__LANGNOTE && LANG === 'ru') { let off = false; try { off = localStorage.getItem('langnote') === '0'; } catch (e) { /* без памяти */ }
+  if (!off) { const n = h('div', { class: 'langnote', lang: 'en', role: 'note' }, 'This atlas is also available in English. ', h('a', { href: 'index.en.html' }, 'Open the English version'),
+      h('button', { type: 'button', 'aria-label': 'Dismiss', onclick: () => { n.remove(); try { localStorage.setItem('langnote', '0'); } catch (e) { /* без памяти */ } } }, '✕'));
+    $('.top').after(n); } }
 /* переключатель языка: запоминается, ссылка ?lang=en|ru */
 { const lb = $('#lang'), other = LANG === 'ru' ? 'en' : 'ru';
   lb.textContent = other.toUpperCase(); lb.lang = other; lb.title = other === 'en' ? 'English' : 'Русский';
-  lb.addEventListener('click', () => { try { localStorage.setItem('lang', other); } catch (e) { /* без памяти — через ссылку */ } location.href = location.pathname + '?lang=' + other + location.hash; });
+  lb.addEventListener('click', () => { try { localStorage.setItem('lang', other); } catch (e) { /* без памяти — через ссылку */ } location.href = PAGES && curId ? (isRootUrl() ? (other === 'en' ? 'index.en.html' : './?lang=ru') : pageUrl(curId, other)) : location.pathname + '?lang=' + other + location.hash; });
 }
 { const dlg = $('#donatebox'), btn = $('#donate'), cp = $('#dcopy');
   btn.addEventListener('click', () => { if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', ''); });
@@ -500,18 +506,25 @@ if (LANG !== 'ru') {
 new ResizeObserver(layout).observe(stageEl);
 new ResizeObserver(placeScope).observe(consoleEl);
 
+/* адреса тем: на сайте у каждой темы своя страница (krebs.html, krebs.en.html — их делает tools/build.py), в офлайн-файле — #krebs */
+const PAGES = !!document.querySelector('meta[name="atlas-pages"]');
+const pageUrl = (id, lang = LANG) => id + (lang === 'en' ? '.en' : '') + '.html';
+const isRootUrl = () => !/\.html$/.test(location.pathname) || /\/index(\.en)?\.html$/.test(location.pathname);
+let fromPop = false;
+const idFromUrl = () => { const hs = location.hash.slice(1); if (BUILDERS[hs]) return hs; const m = location.pathname.match(/\/([a-z0-9]+)(?:\.en)?\.html$/i); return m && BUILDERS[m[1]] ? m[1] : ''; };
+let navigated = false;
 /* темы и разделы: новая система человека = одна строка здесь */
-const TOPIC_LEDE = { cell: 'Ядро, ЭПС, Гольджи, митохондрии и цитоскелет в разрезе. Пузырьки везут белки к мембране, по микротрубочкам едут грузы, митохондрии выдают АТФ.', skeleton: 'Трёхмерный скан настоящего скелета с кровеносной системой поверх него. Вращайте его, приближайте и нажимайте на кости; в рентгене видно, как они соединяются в суставах.', neuron: 'Дендриты собирают сигналы, у аксонного холмика рождается потенциал действия, и импульс скачками бежит по миелину к окончаниям.', synapse: 'Импульс открывает кальциевые каналы, пузырьки выплёскивают медиатор, молекулы находят рецепторы, и сигнал выключают ферменты или переносчики.', brain: 'Маленькие ядра в стволе и основании мозга раскидывают отростки по огромной территории. Поэтому одно вещество меняет состояние всего мозга сразу.', types: 'Семь форм нервных клеток и маленькая нейросеть. Можно покрасить их так, как это делали Гольджи и Ниссль, или раскрасить методом Brainbow.', glia: 'Glia по-гречески «клей». Глия упаковывает нейроны, изолирует их, охраняет вход из крови и убирает мусор.', develop: 'От плоской нервной пластинки к трубке, пузырям и полушариям. Перетащите срок или запустите развитие целиком.', vision: 'Путь сигнала от сетчатки до затылочной коры и оптика глаза. Выберите повреждение и посмотрите, какая часть поля зрения пропадёт.', soma: 'Тело нейрона в разрезе: ядро, субстанция Ниссля, аппарат Гольджи, митохондрии и нити цитоскелета. Сигналы с синапсов сходятся к аксонному холмику, где решается, будет ли импульс.', ventricles: 'Внутри мозга — система полостей с ликвором, снаружи — три оболочки. Они питают, защищают и служат удобными ориентирами в анатомии.', spinal: 'Трубка из нервной ткани в позвоночном канале: 31 сегмент, рефлекторные дуги и проводящие пути между телом и головным мозгом.', cranial: 'Двенадцать пар нервов головного мозга. Каждый уникален: одни только чувствуют, другие только управляют мышцами, третьи делают и то и другое.', stem: 'Продолговатый мозг, мост и средний мозг — древние отделы, общие для всех позвоночных. Здесь центры дыхания и сердца, сна и бодрствования, и все пути между мозгом и телом.', dien: 'Таламус решает, какая информация попадёт в кору. Гипоталамус следит за потребностями тела и через гипофиз управляет гормонами.', hemis: 'Под корой — белое вещество и ядра базальных ганглиев. Они собирают отдельные движения в программы и вместе с лимбической системой решают, что нам нужно.', cortex: 'Пять долей, 52 поля Бродмана, шесть слоёв и колонки-процессоры. Посмотрите, где говорит, видит и двигается кора и как сигнал проходит через её слои.', hippo: 'Гиппокамп держит память текущего дня: сигнал бегает по кругу Пейпеза и по трисинаптической петле, а частая стимуляция усиливает синапсы — так рождается память.', cereb: 'Больше половины нейронов мозга — в мозжечке. На дендритах клеток Пуркинье записывается двигательная память: как быстро и точно сделать каждое движение.', heart: 'Четыре камеры, четыре клапана и собственный водитель ритма. За жизнь сердце сокращается около 3 миллиардов раз и перекачивает 5 литров крови каждую минуту.', lungs: 'Около 20 000 вдохов в сутки. Воздух проходит по ветвящемуся дереву бронхов к сотням миллионов альвеол, где кислород за доли секунды переходит в кровь.', digest: 'От бутерброда до глюкозы в крови — около суток пути по трубке длиной 8–10 метров, с кислотой, ферментами, желчью и триллионами бактерий.', kidney: 'Каждые сутки почки пропускают через себя всю кровь около 300 раз, отфильтровывают 180 литров жидкости и возвращают обратно в кровь 99% её.', endo: 'Крошечные железы управляют ростом, обменом веществ, сном, стрессом и сахаром крови, рассылая по кровотоку химические письма — гормоны.', immune: 'Сеть сосудов и узлов, где триллион лимфоцитов патрулирует тело, узнаёт чужое и запоминает его на годы вперёд.', ear: 'Три крошечные косточки, улитка с жидкостью и 15 000 волосковых клеток превращают колебания воздуха в звуки, а соседние каналы следят за каждым поворотом головы.', skin: 'Кусочек кожи в разрезе: три слоя, волос, железы, сосуды и пять видов рецепторов, каждый из которых отвечает на своё — касание, давление, вибрацию, растяжение или боль.', blood: 'Пять литров жидкой ткани: 25 триллионов эритроцитов, армия лейкоцитов и тромбоциты, которые за минуты закрывают любую ранку.', repro: 'Как устроены половые системы, как гормоны гипофиза и яичников задают 28-дневный цикл и что происходит с новой жизнью в первую неделю.', chemo: 'Два химических чувства: нос различает тысячи запахов по узору сотен рецепторов, язык — пять базовых вкусов. Вместе они дают то, что мы называем вкусом еды.', chest: 'Костный каркас, который защищает сердце и лёгкие и помогает дышать, и устройство молочной железы — от долек до протоков и гормонов кормления.', sresp: 'Как мозг, вегетативная нервная система, сосуды и гормоны согласованно проводят тело через четыре фазы полового ответа — от возбуждения до разрешения.', shealth: 'Откуда берётся половое влечение, какие системы мозга и гормоны им управляют, и как сделать сексуальные контакты безопасными: инфекции, контрацепция и согласие.', enzyme: 'Белок-катализатор узнаёт свою молекулу, обнимает её активным центром и ускоряет реакцию в миллионы раз. Модели построены по реальным атомным структурам.', kinetics: 'Живая модель раствора: 14 молекул фермента ловят субстрат. Меняйте концентрацию, температуру, pH и добавляйте ингибиторы — график Михаэлиса — Ментен меняется вместе с моделью.', enzmed: 'Как клетка включает и выключает ферменты — эффекторами, фосфатом, отрезанием куска цепи — и как врачи используют ферменты для диагностики и лечения.', vitamins: 'Тринадцать веществ, которые организм не умеет делать сам. Большинство из них — детали ферментов: без витамина фермент не работает.', atp: 'Клетка не может напрямую «сжечь» сахар для работы: энергия пищи сначала переводится в универсальную валюту — АТФ. Человек за сутки синтезирует и тратит её примерно столько, сколько весит сам.', krebs: 'Восемь реакций в матриксе митохондрии разбирают «активную уксусную кислоту» на два CO₂ и снимают с неё водород для дыхательной цепи.', etc: 'Внутренняя мембрана митохондрии: электроны бегут к кислороду, протоны выкачиваются наружу, а потом крутят молекулярную турбину, собирающую АТФ.', radicals: 'Кислород даёт клетке энергию, но один неспаренный электрон превращает его в радикал, способный разрушать мембраны, белки и ДНК. Против этого у клетки целая система защиты.', glycolysis: 'Десять реакций цитоплазмы разрезают глюкозу на два пирувата. Дальше — лактат, спирт или митохондрия; а печень умеет пройти этот путь обратно.', glycogen: 'Глюкоза — быстрое топливо, но хранить её в свободном виде нельзя: вода хлынула бы в клетку. Поэтому печень и мышцы запасают её в ветвистых гранулах гликогена.', carbdig: 'Хлеб, сахар и молоко превращаются в три простых сахара — глюкозу, фруктозу и галактозу. Как они проходят через стенку кишки и что бывает, когда одного фермента не хватает.', membrane: 'Жиры — самый плотный запас энергии и основа всех клеточных мембран. Их объединяет одно: они не дружат с водой.', betaox: 'Как жир из жировой клетки превращается в энергию: липолиз, челнок карнитина, спираль β-окисления — и запасной «бензин» для мозга при голоде.', lipoprot: 'Жир и холестерин не растворяются в крови, поэтому путешествуют в белково-липидных частицах. От их баланса зависит здоровье артерий.', lipogen: 'Как из глюкозы и жирных кислот собирается жир и фосфолипиды мембран, почему печень может «ожиреть» и что происходит с жировой тканью, когда калорий слишком много.', eicosanoids: 'Из одной жирной кислоты мембраны клетка за секунды делает сигналы боли, жара, тромба и спазма — а аспирин и ибупрофен выключают один фермент на этом пути.', protein: 'Цепочка из двадцати видов «бусин» сама сворачивается в точную трёхмерную машину. Здесь — аминокислоты, четыре уровня структуры гемоглобина и шаперон, который помогает белкам укладываться.', aminoacid: 'Белки пищи разбираются на аминокислоты; их азот снимается, превращается в ядовитый аммиак — и печень упаковывает его в безопасную мочевину.', amines: 'Отщепив всего одну молекулу CO₂, клетка превращает обычную аминокислоту в мощный сигнал: гистамин, серотонин, дофамин, адреналин, ГАМК.', dna: 'Два метра ДНК в каждой клетке хранят инструкцию для всего организма. Как она устроена, как копируется перед делением и как чинится.', express: 'Центральная догма: ДНК → РНК → белок. Ген переписывается в мРНК, мРНК созревает и уходит к рибосоме, где кодоны превращаются в аминокислоты.', purine: 'Из чего строятся буквы генетического кода, во что они превращаются при распаде и почему избыток мочевой кислоты оборачивается болью в суставах.', antibiotics: 'Рибосома бактерий чуть отличается от нашей — и этого хватает, чтобы маленькая молекула остановила микроба, не тронув человека.', mutations: 'Одна буква в ДНК может ничего не изменить — или превратить эритроцит в серп. А после сборки белок ещё дорабатывают: метят, режут и отправляют на уничтожение.', hormsig: 'Гормон — это письмо, а не работник: он лишь передаёт команду. Как клетка читает это письмо через рецептор на мембране или в ядре и многократно усиливает его.', fedfast: 'Органы делят топливо как слаженная команда: после еды — запасают, натощак — делятся, при голоде — перестраиваются так, чтобы мозг не остался без питания.', thyroid: 'Два гормона из аминокислоты тирозина и йода задают скорость обмена веществ во всех клетках тела — от сердца до растущего мозга.', adrenal: 'Две железы в одной: кора из холестерина делает стероиды — альдостерон, кортизол, андрогены, а мозговое вещество выбрасывает адреналин за секунды.', calcium: 'Килограмм кальция лежит в костях, а в крови — меньше грамма. Паратгормон и витамин D следят, чтобы этот грамм не сдвинулся больше чем на несколько процентов.', pituitary: 'Участок мозга размером с ноготь и железа с горошину управляют ростом, водой, стрессом, обменом веществ, размножением и молоком.', diabetes: 'Одна клетка поджелудочной меряет сахар крови с точностью до долей миллимоля — и полмиллиарда людей живут с диабетом, когда этот датчик ломается.', sexhorm: 'Тестостерон и эстрадиол отличаются всего одним углеродом и кольцом — но определяют, как растёт тело; а несколько миллиардов молекул ХГЧ в капле мочи дают вторую полоску на тесте.', hemoglobin: 'Около 270 миллионов молекул гемоглобина в каждом эритроците. Как этот белок забирает кислород в лёгких и вовремя отдаёт его тканям.', heme: 'Как клетка собирает гем из глицина и сукцинил-КоА — и во что он превращается, когда эритроцит отслужил свои 120 дней.', bloodchem: 'Как кровь держит pH с точностью до сотых, что переносят белки плазмы и как за минуты затягивается рана.', liver: 'Главная химическая фабрика тела: всё, что всосалось в кишечнике, сначала проходит через неё — и лекарства, и алкоголь, и яды.', nitrogen: 'По нескольким числам из пробирки — мочевине, креатинину, pH и CO₂ — врач видит, как работают почки, печень и лёгкие.', planes: 'Прежде чем изучать органы, анатомы договорились, как описывать их положение: из какой позы смотреть, как резать и куда показывать.', joints: 'Кость — живая ткань прочнее бетона на сжатие и легче стали, а сустав скользит с трением меньше, чем лёд по льду.', referred: 'Почему при инфаркте болит левая рука, а при аппендиците сначала живот вокруг пупка: органы «жалуются» на коже своих сегментов спинного мозга.' };
+const TOPIC_LEDE = { cell: 'Nucleus, ER, Golgi, mitochondria and cytoskeleton in cutaway. Vesicles carry proteins to the membrane, cargo travels along microtubules, mitochondria produce ATP.', skeleton: 'A 3D scan of a real skeleton with the circulatory system on top. Rotate it, zoom in and click the bones; in X-ray mode you can see how they meet at the joints.', neuron: 'Dendrites collect signals, an action potential is born at the axon hillock, and the impulse leaps along the myelin to the terminals.', synapse: 'An impulse opens calcium channels, vesicles release the neurotransmitter, molecules find their receptors, and the signal is switched off by enzymes or transporters.', brain: 'Small nuclei in the brainstem and at the base of the brain send projections across a vast territory. That is why a single substance changes the state of the whole brain at once.', types: 'Seven shapes of nerve cells and a small neural network. You can stain them the way Golgi and Nissl did, or color them with the Brainbow method.', glia: 'Glia is Greek for “glue”. Glia pack neurons, insulate them, guard the entry from the blood and clear away debris.', develop: 'From a flat neural plate to a tube, vesicles and hemispheres. Drag the age slider or play the whole development.', vision: 'The signal pathway from the retina to the occipital cortex, and the optics of the eye. Choose a lesion and see which part of the visual field disappears.', soma: 'The neuron cell body in section: nucleus, Nissl substance, Golgi apparatus, mitochondria and cytoskeletal filaments. Signals from synapses converge on the axon hillock, where it is decided whether an impulse will fire.', ventricles: 'Inside the brain is a system of cavities filled with CSF; outside are three membranes. They nourish and protect the brain and serve as convenient landmarks in anatomy.', spinal: 'A tube of nervous tissue in the vertebral canal: 31 segments, reflex arcs and the tracts that link the body with the brain.', cranial: 'Twelve pairs of nerves of the brain. Each is unique: some only sense, others only control muscles, still others do both.', stem: 'The medulla oblongata, pons and midbrain are ancient parts of the brain shared by all vertebrates. They hold the centers of breathing and heartbeat, sleep and wakefulness, and all the pathways between the brain and the body.', dien: 'The thalamus decides which information reaches the cortex. The hypothalamus monitors the body’s needs and controls hormones through the pituitary gland.', hemis: 'Beneath the cortex lie the white matter and the nuclei of the basal ganglia. They assemble individual movements into programs and, together with the limbic system, decide what we need.', cortex: 'Five lobes, 52 Brodmann areas, six layers and processor columns. See where the cortex speaks, sees and moves, and how a signal passes through its layers.', hippo: 'The hippocampus holds the memory of the current day: the signal runs around the Papez circuit and the trisynaptic loop, and high-frequency stimulation strengthens synapses — this is how memory is born.', cereb: 'More than half of the brain’s neurons are in the cerebellum. Motor memory is written onto the dendrites of Purkinje cells: how to make each movement quickly and accurately.', heart: 'Four chambers, four valves and a pacemaker of its own. Over a lifetime the heart beats about 3 billion times, pumping 5 liters of blood every minute.', lungs: 'About 20,000 breaths a day. Air travels down the branching bronchial tree to hundreds of millions of alveoli, where oxygen passes into the blood in a fraction of a second.', digest: 'From a sandwich to glucose in the blood takes about a day — a journey through a tube 8–10 meters long, with acid, enzymes, bile and trillions of bacteria.', kidney: 'Every day the kidneys pass all of the blood through themselves about 300 times, filter out 180 liters of fluid and return 99% of it to the blood.', endo: 'Tiny glands control growth, metabolism, sleep, stress and blood sugar by sending chemical letters — hormones — through the bloodstream.', immune: 'A network of vessels and nodes where a trillion lymphocytes patrol the body, recognize what is foreign and remember it for years to come.', ear: 'Three tiny bones, a fluid-filled cochlea and 15,000 hair cells turn vibrations of the air into sounds, while the neighboring canals track every turn of the head.', skin: 'A cross-section of skin: three layers, a hair, glands, blood vessels and five kinds of receptors, each responding to its own stimulus — touch, pressure, vibration, stretch or pain.', blood: 'Five liters of liquid tissue: 25 trillion red blood cells, an army of white blood cells, and platelets that seal any small wound within minutes.', repro: 'How the reproductive systems are built, how pituitary and ovarian hormones set the 28-day cycle, and what happens to a new life in its first week.', chemo: 'Two chemical senses: the nose tells thousands of smells apart by the pattern of hundreds of receptors, and the tongue senses five basic tastes. Together they give what we call the flavor of food.', chest: 'The bony frame that protects the heart and lungs and helps us breathe, and how the breast is built — from lobules to ducts and the hormones of breastfeeding.', sresp: 'How the brain, the autonomic nervous system, blood vessels and hormones work together to carry the body through the four phases of the sexual response — from excitement to resolution.', menses: 'The roughly 28 days during which the pituitary and ovaries prepare an egg and the uterine lining for a possible pregnancy — day by day, with hormones, the follicle and the endometrium.', shealth: 'Where sexual desire comes from, which brain systems and hormones control it, and how to make sexual contact safe: infections, contraception and consent.', enzyme: 'A protein catalyst recognizes its molecule, embraces it with its active site and speeds up the reaction millions of times. The models are built from real atomic structures.', kinetics: 'A live model of a solution: 14 enzyme molecules catch substrate. Change the concentration, temperature and pH, and add inhibitors — the Michaelis–Menten graph changes along with the model.', enzmed: 'How a cell switches enzymes on and off — with effectors, with phosphate, by cutting off part of the chain — and how doctors use enzymes for diagnosis and treatment.', vitamins: 'Thirteen substances the body cannot make on its own. Most of them are parts of enzymes: without the vitamin, the enzyme does not work.', atp: 'A cell cannot “burn” sugar directly to do work: the energy of food is first converted into a universal currency — ATP. In a day, a person makes and spends roughly their own body weight of it.', krebs: 'Eight reactions in the mitochondrial matrix break down “active acetate” into two CO₂ and strip off its hydrogen for the respiratory chain.', etc: 'The inner mitochondrial membrane: electrons race toward oxygen, protons are pumped out, and then they spin a molecular turbine that assembles ATP.', radicals: 'Oxygen gives the cell energy, but a single unpaired electron turns it into a radical that can destroy membranes, proteins and DNA. The cell has a whole defense system against this.', glycolysis: 'Ten reactions in the cytoplasm split glucose into two pyruvates. Next comes lactate, alcohol or the mitochondrion — and the liver can run this pathway in reverse.', glycogen: 'Glucose is a fast fuel, but it cannot be stored in free form: water would rush into the cell. So the liver and muscles store it in branched glycogen granules.', carbdig: 'Bread, sugar and milk are turned into three simple sugars — glucose, fructose and galactose. How they cross the intestinal wall, and what happens when a single enzyme is missing.', membrane: 'Fats are the densest energy store and the basis of all cell membranes. They share one trait: they don’t get along with water.', betaox: 'How fat from a fat cell becomes energy: lipolysis, the carnitine shuttle, the β-oxidation spiral — and the brain’s reserve “fuel” during fasting.', lipoprot: 'Fat and cholesterol do not dissolve in blood, so they travel in protein–lipid particles. The health of our arteries depends on their balance.', lipogen: 'How fat and membrane phospholipids are assembled from glucose and fatty acids, why the liver can become “fatty”, and what happens to adipose tissue when there are too many calories.', eicosanoids: 'From a single fatty acid of the membrane, a cell makes signals for pain, fever, clotting and spasm within seconds — and aspirin and ibuprofen switch off one enzyme on this pathway.', protein: 'A chain of twenty kinds of “beads” folds by itself into a precise three-dimensional machine. Here you will find the amino acids, the four levels of hemoglobin structure, and a chaperone that helps proteins fold.', aminoacid: 'Dietary proteins are broken down into amino acids; their nitrogen is removed and turned into toxic ammonia — and the liver packages it into harmless urea.', amines: 'By removing just one molecule of CO₂, a cell turns an ordinary amino acid into a powerful signal: histamine, serotonin, dopamine, epinephrine, GABA.', dna: 'Two meters of DNA in every cell hold the instructions for the whole organism. How it is built, how it is copied before division and how it is repaired.', express: 'The central dogma: DNA → RNA → protein. A gene is copied into mRNA, the mRNA matures and travels to the ribosome, where codons are turned into amino acids.', purine: 'What the letters of the genetic code are built from, what they turn into when broken down, and why excess uric acid ends up as joint pain.', antibiotics: 'The bacterial ribosome differs slightly from ours — and that is enough for a small molecule to stop a microbe without harming the person.', mutations: 'A single letter in DNA may change nothing — or turn a red blood cell into a sickle. And once a protein is assembled, it is still being finished: tagged, cut and sent for destruction.', hormsig: 'A hormone is a letter, not a worker: it only delivers a command. How the cell reads that letter through a receptor in the membrane or in the nucleus, and amplifies it many times over.', fedfast: 'Organs share fuel like a well-coordinated team: after a meal they store it, when fasting they share it, and in starvation they adapt so that the brain is never left without food.', thyroid: 'Two hormones made from the amino acid tyrosine and iodine set the metabolic rate of every cell in the body — from the heart to the growing brain.', adrenal: 'Two glands in one: the cortex makes steroids from cholesterol — aldosterone, cortisol, androgens — while the medulla releases epinephrine within seconds.', calcium: 'There is a kilogram of calcium in the bones, but less than a gram in the blood. Parathyroid hormone and vitamin D make sure that gram does not shift by more than a few percent.', pituitary: 'A patch of brain the size of a fingernail and a pea-sized gland control growth, water, stress, metabolism, reproduction and milk.', diabetes: 'A single pancreatic cell measures blood sugar to a fraction of a millimole — and half a billion people live with diabetes when this sensor breaks.', sexhorm: 'Testosterone and estradiol differ by just one carbon and a ring — yet they shape how the body grows; and a few billion hCG molecules in a drop of urine make the second line on a test.', hemoglobin: 'About 270 million hemoglobin molecules in every red blood cell. How this protein picks up oxygen in the lungs and releases it to the tissues right when they need it.', heme: 'How the cell assembles heme from glycine and succinyl-CoA — and what it turns into once a red blood cell has served its 120 days.', bloodchem: 'How blood holds its pH to within hundredths, what plasma proteins carry, and how a wound seals within minutes.', liver: 'The body’s main chemical factory: everything absorbed in the intestine passes through it first — drugs, alcohol and poisons alike.', nitrogen: 'From a few numbers from a test tube — urea, creatinine, pH and CO₂ — a doctor can see how the kidneys, liver and lungs are working.', planes: 'Before studying the organs, anatomists agreed on how to describe their position: from which pose to look, how to cut and where to point.', joints: 'Bone is living tissue stronger than concrete in compression and lighter than steel, and a joint glides with less friction than ice on ice.', referred: 'Why a heart attack hurts in the left arm and appendicitis first around the navel: organs “complain” on the skin of their spinal cord segments.' };
 const SECTIONS = [
-  { id: 'body', name: 'Тело', scenes: [['#', 'Как устроено тело'], ['planes', 'Плоскости, направления и полости'], ['referred', 'Отражённая боль'], ['#', 'Опора и движение'], ['skeleton', 'Скелет, мышцы и сосуды'], ['joints', 'Кости и суставы'], ['#', 'Системы органов'], ['heart', 'Сердце и кровообращение'], ['lungs', 'Дыхание'], ['digest', 'Пищеварение'], ['kidney', 'Почки'], ['blood', 'Кровь'], ['endo', 'Эндокринная система'], ['immune', 'Лимфа и иммунитет'], ['repro', 'Размножение и развитие'], ['menses', 'Менструальный цикл'], ['shealth', 'Влечение и сексуальное здоровье'], ['sresp', 'Цикл полового ответа'], ['chest', 'Грудная клетка и грудь']] },
-  { id: 'cell', name: 'Клетка', scenes: [['cell', 'Живая клетка']] },
-  { id: 'bio', name: 'Биохимия', scenes: [['#', 'Ферменты'], ['enzyme', 'Как работает фермент'], ['kinetics', 'Скорость реакции и ингибиторы'], ['enzmed', 'Регуляция и ферменты в медицине'], ['#', 'Витамины'], ['vitamins', 'Витамины и коферменты'], ['#', 'Энергия'], ['atp', 'АТФ и стадии катаболизма'], ['krebs', 'Пируватдегидрогеназа и цикл Кребса'], ['etc', 'Дыхательная цепь и АТФ-синтаза'], ['radicals', 'Свободные радикалы и антиоксиданты'], ['#', 'Углеводы'], ['glycolysis', 'Гликолиз, глюконеогенез, ПФП'], ['glycogen', 'Гликоген и сахар крови'], ['carbdig', 'Переваривание сахаров, лактоза, фруктоза'], ['#', 'Липиды'], ['membrane', 'Липиды и мембраны'], ['betaox', 'Окисление жиров и кетоновые тела'], ['lipoprot', 'Холестерин и липопротеины'], ['lipogen', 'Синтез жиров, фосфолипиды, ожирение'], ['eicosanoids', 'Эйкозаноиды и обезболивающие'], ['#', 'Белки и аминокислоты'], ['protein', 'Белки: аминокислоты и укладка'], ['aminoacid', 'Обмен аминокислот и мочевина'], ['amines', 'Биогенные амины, глицин и серин'], ['#', 'Нуклеотиды и гены'], ['dna', 'ДНК: строение, репликация, репарация'], ['express', 'Транскрипция и трансляция'], ['purine', 'Нуклеотиды и подагра'], ['antibiotics', 'Антибиотики и синтез белка'], ['mutations', 'Мутации и модификация белков'], ['#', 'Гормоны'], ['hormsig', 'Как гормоны действуют на клетку'], ['fedfast', 'Обмен веществ: сытость и голод'], ['thyroid', 'Гормоны щитовидной железы'], ['adrenal', 'Надпочечники: стероиды и стресс'], ['calcium', 'Кальций: паратгормон и витамин D'], ['pituitary', 'Гипоталамус и гипофиз'], ['diabetes', 'Инсулин и сахарный диабет'], ['sexhorm', 'Половые гормоны и беременность'], ['#', 'Кровь и печень'], ['hemoglobin', 'Гемоглобин и перенос кислорода'], ['heme', 'Обмен гема и желтухи'], ['bloodchem', 'Кровь: pH, белки плазмы, свёртывание'], ['liver', 'Печень: обезвреживание, алкоголь, парацетамол'], ['nitrogen', 'Азот крови, буферы и кислотно-основное состояние']] },
-  { id: 'brain', name: 'Мозг', scenes: [
-    ['#', 'Нейроны'], ['soma', 'Строение нейрона'], ['types', 'Типы нейронов'], ['neuron', 'Нейрон и импульс'], ['synapse', 'Синапс и медиаторы'], ['glia', 'Нейроглия'],
-    ['#', 'Устройство'], ['develop', 'Развитие мозга'], ['ventricles', 'Желудочки и оболочки'], ['spinal', 'Спинной мозг'], ['cranial', 'Черепные нервы'], ['stem', 'Ствол мозга'], ['dien', 'Таламус и гипоталамус'],
-    ['hemis', 'Полушария и базальные ганглии'], ['cortex', 'Кора'], ['hippo', 'Гиппокамп и память'], ['cereb', 'Мозжечок'],
-    ['#', 'Химия'], ['brain', 'Системы медиаторов'],
-    ['#', 'Органы чувств'], ['vision', 'Зрение'], ['ear', 'Слух и равновесие'], ['skin', 'Кожа и осязание'], ['chemo', 'Обоняние и вкус'],
+  { id: 'body', name: 'Body', scenes: [['#', 'How the body is built'], ['planes', 'Planes, directions and cavities'], ['referred', 'Referred pain'], ['#', 'Support and movement'], ['skeleton', 'Skeleton, muscles and vessels'], ['joints', 'Bones and joints'], ['#', 'Organ systems'], ['heart', 'Heart and circulation'], ['lungs', 'Breathing'], ['digest', 'Digestion'], ['kidney', 'Kidneys'], ['blood', 'Blood'], ['endo', 'Endocrine system'], ['immune', 'Lymph and immunity'], ['repro', 'Reproduction and development'], ['menses', 'Menstrual cycle'], ['shealth', 'Desire and sexual health'], ['sresp', 'Sexual response cycle'], ['chest', 'Thorax and breast']] },
+  { id: 'cell', name: 'Cell', scenes: [['cell', 'Living cell']] },
+  { id: 'bio', name: 'Biochemistry', scenes: [['#', 'Enzymes'], ['enzyme', 'How an enzyme works'], ['kinetics', 'Reaction rate and inhibitors'], ['enzmed', 'Enzyme regulation and enzymes in medicine'], ['#', 'Vitamins'], ['vitamins', 'Vitamins and coenzymes'], ['#', 'Energy'], ['atp', 'ATP and the stages of catabolism'], ['krebs', 'Pyruvate dehydrogenase and the Krebs cycle'], ['etc', 'Respiratory chain and ATP synthase'], ['radicals', 'Free radicals and antioxidants'], ['#', 'Carbohydrates'], ['glycolysis', 'Glycolysis, gluconeogenesis, PPP'], ['glycogen', 'Glycogen and blood sugar'], ['carbdig', 'Sugar digestion, lactose, fructose'], ['#', 'Lipids'], ['membrane', 'Lipids and membranes'], ['betaox', 'Fat oxidation and ketone bodies'], ['lipoprot', 'Cholesterol and lipoproteins'], ['lipogen', 'Fat synthesis, phospholipids, obesity'], ['eicosanoids', 'Eicosanoids and painkillers'], ['#', 'Proteins and amino acids'], ['protein', 'Proteins: amino acids and folding'], ['aminoacid', 'Amino acid metabolism and urea'], ['amines', 'Biogenic amines, glycine and serine'], ['#', 'Nucleotides and genes'], ['dna', 'DNA: structure, replication, repair'], ['express', 'Transcription and translation'], ['purine', 'Nucleotides and gout'], ['antibiotics', 'Antibiotics and protein synthesis'], ['mutations', 'Mutations and protein modification'], ['#', 'Hormones'], ['hormsig', 'How hormones act on the cell'], ['fedfast', 'Metabolism: fed and fasting'], ['thyroid', 'Thyroid hormones'], ['adrenal', 'Adrenal glands: steroids and stress'], ['calcium', 'Calcium: parathyroid hormone and vitamin D'], ['pituitary', 'Hypothalamus and pituitary'], ['diabetes', 'Insulin and diabetes mellitus'], ['sexhorm', 'Sex hormones and pregnancy'], ['#', 'Blood and liver'], ['hemoglobin', 'Hemoglobin and oxygen transport'], ['heme', 'Heme metabolism and jaundice'], ['bloodchem', 'Blood: pH, plasma proteins, clotting'], ['liver', 'Liver: detoxification, alcohol, paracetamol'], ['nitrogen', 'Blood nitrogen, buffers and acid–base balance']] },
+  { id: 'brain', name: 'Brain', scenes: [
+    ['#', 'Neurons'], ['soma', 'Neuron structure'], ['types', 'Neuron types'], ['neuron', 'Neuron and impulse'], ['synapse', 'Synapse and neurotransmitters'], ['glia', 'Neuroglia'],
+    ['#', 'Structure'], ['develop', 'Brain development'], ['ventricles', 'Ventricles and meninges'], ['spinal', 'Spinal cord'], ['cranial', 'Cranial nerves'], ['stem', 'Brainstem'], ['dien', 'Thalamus and hypothalamus'],
+    ['hemis', 'Hemispheres and basal ganglia'], ['cortex', 'Cortex'], ['hippo', 'Hippocampus and memory'], ['cereb', 'Cerebellum'],
+    ['#', 'Chemistry'], ['brain', 'Neurotransmitter systems'],
+    ['#', 'Sense organs'], ['vision', 'Vision'], ['ear', 'Hearing and balance'], ['skin', 'Skin and touch'], ['chemo', 'Smell and taste'],
   ] },
 ].map((s) => ({ ...s, scenes: s.scenes.filter(([sid]) => sid === '#' || BUILDERS[sid]) }));
 const secOf = (id) => SECTIONS.find((s) => s.scenes.some(([sid]) => sid === id));
@@ -519,11 +532,11 @@ const secOf = (id) => SECTIONS.find((s) => s.scenes.some(([sid]) => sid === id))
 { const at = document.querySelector('.alltopics');
   if (at && LANG !== 'ru') {
     const ord = { bio: 0, cell: 1, body: 2, brain: 3 }, n = SECTIONS.reduce((k, s) => k + s.scenes.filter(([i]) => i !== '#').length, 0);
-    at.querySelector('summary').textContent = 'Все темы атласа' + ' (' + n + ')';
+    at.querySelector('summary').textContent = 'All topics of the atlas' + ' (' + n + ')';
     const g = at.querySelector('.atgrid'); g.innerHTML = '';
     [...SECTIONS].sort((a, b) => (ord[a.id] ?? 9) - (ord[b.id] ?? 9)).forEach((s) => {
       const sec = h('section', {}, h('h3', {}, s.name)); let ul = null;
-      s.scenes.forEach(([i, nm]) => { if (i === '#') { sec.append(h('h4', {}, nm)); ul = null; return; } if (!ul) { ul = h('ul'); sec.append(ul); } ul.append(h('li', { 'data-id': i }, h('a', { href: '#' + i }, nm))); });
+      s.scenes.forEach(([i, nm]) => { if (i === '#') { sec.append(h('h4', {}, nm)); ul = null; return; } if (!ul) { ul = h('ul'); sec.append(ul); } ul.append(h('li', { 'data-id': i }, h('a', { href: PAGES ? pageUrl(i) : '#' + i }, nm))); });
       g.append(sec);
     });
   }
@@ -531,11 +544,11 @@ const secOf = (id) => SECTIONS.find((s) => s.scenes.some(([sid]) => sid === id))
 const firstOf = (s) => s.scenes.find(([sid]) => sid !== '#')[0];
 const lastIn = {}, secNav = $('#sections'), subNav = $('#subtabs');
 // вкладки стоят на шкале масштаба — «от молекулы до мысли»
-const SCALE = { bio: ['10⁻⁹ м', 'молекулы, нанометры'], cell: ['10⁻⁵ м', 'клетки, микрометры'], body: ['1 м', 'органы и тело, метры'], brain: ['мысль', 'от нейрона до мысли'] };
+const SCALE = { bio: ['10⁻⁹ m', 'molecules, nanometers'], cell: ['10⁻⁵ m', 'cells, micrometers'], body: ['1 m', 'organs and body, meters'], brain: ['mind', 'from neuron to mind'] };
 const byScale = (s) => { const i = Object.keys(SCALE).indexOf(s.id); return i < 0 ? 99 : i; };
 [...SECTIONS].sort((a, b) => byScale(a) - byScale(b)).forEach((s) => {
   const sc = SCALE[s.id];
-  secNav.append(h('button', { class: 'tab', role: 'tab', type: 'button', 'data-sec': s.id, 'aria-selected': 'false', title: sc ? 'Масштаб: ' + sc[1] : null, onclick: () => show(lastIn[s.id] || firstOf(s)) },
+  secNav.append(h('button', { class: 'tab', role: 'tab', type: 'button', 'data-sec': s.id, 'aria-selected': 'false', title: sc ? 'Scale: ' + sc[1] : null, onclick: () => show(lastIn[s.id] || firstOf(s)) },
     h('span', { class: 'tsc', 'aria-hidden': 'true' }, sc ? sc[0] : ''), h('span', { class: 'tdot', 'aria-hidden': 'true' }), h('span', { class: 'tn' }, s.name)));
 });
 function renderNav(id) {
@@ -549,7 +562,7 @@ function renderNav(id) {
   const act = subNav.querySelector('.sub[aria-selected="true"]');
   if (act && subNav.scrollHeight > subNav.clientHeight && (act.offsetTop < st || act.offsetTop + act.offsetHeight > st + subNav.clientHeight)) subNav.scrollTop = act.offsetTop - subNav.clientHeight / 3;
   // на телефоне вместо длинного ряда — выпадающий список с группами
-  const sel = h('select', { class: 'subsel', 'aria-label': 'Тема раздела «' + s.name + '»', onchange: (e) => show(e.target.value) }); let og = sel;
+  const sel = h('select', { class: 'subsel', 'aria-label': 'Topics in “' + s.name + '”', onchange: (e) => show(e.target.value) }); let og = sel;
   s.scenes.forEach(([sid, name]) => { if (sid === '#') { og = h('optgroup', { label: name }); sel.append(og); } else { const o = h('option', { value: sid, 'data-n': name }, name); if (sid === id) o.selected = true; og.append(o); } });
   subNav.append(sel);
   if (typeof decorateNav === 'function') decorateNav();
@@ -581,13 +594,13 @@ function show(id) {
   if (built[id]) { activate(id); return; }
   renderNav(id);
   const item = (secOf(id) || { scenes: [] }).scenes.find(([s]) => s === id);
-  loadEl.textContent = 'Загружаю «' + (item ? item[1] : id) + '»…'; loadEl.hidden = false;
+  loadEl.textContent = 'Loading “' + (item ? item[1] : id) + '”…'; loadEl.hidden = false;
   loadBuilder(id).then((mk) => {
     if (seq !== showSeq) return;
     const L = []; building = L; let sc;
     try { sc = mk(); } finally { building = null; }
     sc.__listen = L; built[id] = sc; loadEl.hidden = true; activate(id);
-  }).catch((e) => { if (seq !== showSeq) return; loadEl.textContent = 'Не удалось загрузить раздел: ' + (e && e.message || e) + '. Обновите страницу.'; console.error(e); });
+  }).catch((e) => { if (seq !== showSeq) return; loadEl.textContent = 'Couldn’t load the section: ' + (e && e.message || e) + '. Please reload the page.'; console.error(e); });
 }
 function activate(id) {
   loadEl.hidden = true;
@@ -603,7 +616,14 @@ function activate(id) {
   labelsEl.innerHTML = ''; labelEls = cur.labels.map((l) => { const e = h('div', { class: 'lbl' }, l.text); if (l.color) e.style.color = l.color; labelsEl.append(e); return e; });
   scopeEl.hidden = !cur.drawScope;
   accentSet(cur.accent);
-  try { if (location.hash.slice(1) !== id) (location.hash ? history.pushState : history.replaceState).call(history, null, '', '#' + id); } catch (e) { /* ignore */ }
+  try {
+    if (PAGES) {   // адрес страницы темы; главная остаётся главной, пока человек не перешёл на другую тему
+      const u = pageUrl(id), root = isRootUrl();
+      if (!fromPop && (!location.pathname.endsWith('/' + u) || location.hash) && !(root && !location.hash && !navigated)) (navigated ? history.pushState : history.replaceState).call(history, { id }, '', u);
+      navigated = true;
+    } else if (location.hash.slice(1) !== id) (location.hash ? history.pushState : history.replaceState).call(history, null, '', '#' + id);
+  } catch (e) { /* ignore */ }
+  fromPop = false;
   layout();
   evict();
   uxActivate(id);
@@ -611,6 +631,8 @@ function activate(id) {
 }
 /* кнопка «Назад» (в том числе на Android) возвращает к предыдущей теме */
 window.addEventListener('hashchange', () => { const id = location.hash.slice(1); if (BUILDERS[id] && id !== curId) show(id); });
+// «Назад»/«Вперёд»: тема берётся из адреса, сам адрес не трогаем (на главной — стартовая тема)
+window.addEventListener('popstate', () => { const id = idFromUrl() || 'skeleton'; if (id === curId) return; fromPop = true; show(id); });
 window.addEventListener('keydown', (e) => {
   if (!cur || e.ctrlKey || e.metaKey || e.altKey) return;
   const t = e.target instanceof Element ? e.target : document.body;
@@ -621,18 +643,20 @@ window.addEventListener('keydown', (e) => {
 });
 
 /* ---------- навигация: поиск по темам, прогресс изучения, «поделиться», сброс камеры ---------- */
-const BRAND = 'Кто мы?';
+const BRAND = 'Who are we?', TITLE_TAIL = ' — ' + 'Who are we? 3D human atlas';
+const HEAD_SEL = [['link[rel="canonical"]', 'href'], ['link[hreflang="ru"]', 'href'], ['link[hreflang="en"]', 'href'], ['link[hreflang="x-default"]', 'href'], ['meta[name="description"]', 'content'], ['meta[property="og:description"]', 'content'], ['meta[property="og:title"]', 'content'], ['meta[property="og:url"]', 'content']];
+const HEAD0 = { title: document.title, v: HEAD_SEL.map(([q, a]) => { const e = document.head.querySelector(q); return e && e.getAttribute(a); }) };   // главная: вернуть при «Назад»
 // бытовые слова, по которым ищут тему (в английской сборке строки заменяются английскими по словарю)
 const TOPIC_ALIAS = {
-  lungs: 'лёгкие легкие вдох выдох альвеолы бронхи', ear: 'ухо уши улитка вестибулярный аппарат', vision: 'глаз глаза сетчатка хрусталик',
-  heart: 'ЭКГ пульс давление клапаны сосуды', skeleton: 'кости мышцы артерии вены пульс', kidney: 'почка моча нефрон',
-  digest: 'желудок кишечник кишка пищевод', diabetes: 'сахар глюкоза', glycogen: 'глюкоза', blood: 'эритроциты лейкоциты тромбоциты',
-  immune: 'иммунитет антитела лимфоциты лимфоузлы', cell: 'органоиды митохондрии ядро', cortex: 'мышление речь',
-  synapse: 'нейромедиаторы дофамин серотонин', brain: 'дофамин серотонин норадреналин ацетилхолин', skin: 'прикосновение боль температура',
-  chemo: 'нос запах язык', repro: 'беременность эмбрион плод сперматозоид яйцеклетка', menses: 'месячные овуляция', endo: 'гормоны железы',
-  dna: 'гены хромосомы', radicals: 'кислород окисление', eicosanoids: 'аспирин ибупрофен воспаление', lipoprot: 'атеросклероз ЛПНП',
-  referred: 'инфаркт аппендицит', spinal: 'рефлекс', cereb: 'координация равновесие', joints: 'сустав колено', chest: 'рёбра грудная железа',
-  etc: 'митохондрии кислород', develop: 'эмбрион нервная трубка',
+  lungs: 'lungs breathing inhale exhale alveoli bronchi', ear: 'ears cochlea vestibular inner ear', vision: 'eye eyes retina lens',
+  heart: 'ECG pulse blood pressure valves vessels', skeleton: 'bones muscles arteries veins pulse', kidney: 'kidneys urine nephron',
+  digest: 'stomach intestine gut bowel esophagus', diabetes: 'sugar glucose', glycogen: 'glucose', blood: 'red blood cells white blood cells platelets',
+  immune: 'immunity antibodies lymphocytes lymph nodes', cell: 'organelles mitochondria nucleus', cortex: 'thinking speech',
+  synapse: 'neurotransmitters dopamine serotonin', brain: 'dopamine serotonin norepinephrine acetylcholine', skin: 'touch pain temperature',
+  chemo: 'nose smell tongue taste', repro: 'pregnancy embryo fetus sperm egg', menses: 'period menstruation ovulation', endo: 'hormones glands',
+  dna: 'genes chromosomes', radicals: 'oxygen oxidation', eicosanoids: 'aspirin ibuprofen inflammation', lipoprot: 'atherosclerosis LDL',
+  referred: 'heart attack appendicitis', spinal: 'reflex', cereb: 'coordination balance', joints: 'joint knee', chest: 'ribs breast',
+  etc: 'mitochondria oxygen', develop: 'embryo neural tube',
 };
 const YO = new RegExp(String.fromCharCode(1105), 'g'), YE = String.fromCharCode(1077);   // ё → е (без однобуквенных строк: их не переводят)
 const normT = (t) => String(t).toLowerCase().replace(YO, YE);
@@ -678,11 +702,11 @@ function markSeen(id) {
   refreshSeen();
 }
 window.addEventListener('storage', (e) => { if (e.key === SEEN_KEY) { seen = readSeen() || new Set(); refreshSeen(); } });
-const progText = (k, n) => 'Изучено: ' + k + ' из ' + n;
+const progText = (k, n) => 'Explored: ' + k + ' of ' + n;
 function decorateNav() {
   subNav.querySelectorAll('.sub[data-id]').forEach((b) => {
     const on = seen.has(b.dataset.id); b.classList.toggle('seen', on);
-    const v = b.querySelector('.vh'); if (on && !v) b.append(h('span', { class: 'vh' }, ', изучено')); else if (!on && v) v.remove();
+    const v = b.querySelector('.vh'); if (on && !v) b.append(h('span', { class: 'vh' }, ', explored')); else if (!on && v) v.remove();
   });
   subNav.querySelectorAll('option[data-n]').forEach((o) => { o.textContent = (seen.has(o.value) ? '✓ ' : '') + o.dataset.n; });
   const s = curId && secOf(curId);
@@ -694,14 +718,14 @@ function refreshSeen() {
   decorateNav();
   document.querySelectorAll('.alltopics li[data-id]').forEach((li) => {
     const on = seen.has(li.dataset.id); li.classList.toggle('seen', on);
-    const a = li.querySelector('a'), v = a && a.querySelector('.vh'); if (a && on && !v) a.append(h('span', { class: 'vh' }, ', изучено')); else if (v && !on) v.remove();
+    const a = li.querySelector('a'), v = a && a.querySelector('.vh'); if (a && on && !v) a.append(h('span', { class: 'vh' }, ', explored')); else if (v && !on) v.remove();
   });
   if (atProg) atProg.textContent = progText(seen.size, TOPICS.length);
   if (atReset) { if (!seen.size && document.activeElement === atReset) atFilter.focus(); atReset.hidden = !seen.size; }
   if (fprog) fprog.textContent = progText(seen.size, TOPICS.length);
   secNav.querySelectorAll('.tab').forEach((b) => { const s = SECTIONS.find((x) => x.id === b.dataset.sec); if (!s) return;
     const ids = s.scenes.filter(([i]) => i !== '#').map(([i]) => i), sc = SCALE[s.id];
-    b.title = (sc ? 'Масштаб: ' + sc[1] + '. ' : '') + progText(ids.filter((i) => seen.has(i)).length, ids.length); });
+    b.title = (sc ? 'Scale: ' + sc[1] + '. ' : '') + progText(ids.filter((i) => seen.has(i)).length, ids.length); });
 }
 let dwellId = null, dwell = 0, engaged = false, stageVis = true;
 ['pointerdown', 'keydown', 'wheel'].forEach((t) => window.addEventListener(t, () => { engaged = true; }, { passive: true, capture: true }));
@@ -719,18 +743,18 @@ let atProg = null, atReset = null, atFilter = null;
 { const at = document.querySelector('.alltopics');
   if (at) {
     const g = at.querySelector('.atgrid');
-    atFilter = h('input', { class: 'atfilter', type: 'search', placeholder: 'Фильтр тем…', 'aria-label': 'Фильтр тем', autocomplete: 'off', spellcheck: 'false' });
+    atFilter = h('input', { class: 'atfilter', type: 'search', placeholder: 'Filter topics…', 'aria-label': 'Filter topics', autocomplete: 'off', spellcheck: 'false' });
     atProg = h('span', { class: 'atprog' });
-    atReset = h('button', { class: 'atreset', type: 'button' }, 'Сбросить прогресс');
-    const none = h('p', { class: 'atnone', hidden: '' }, 'Ничего не нашлось. Попробуйте другое слово.');
+    atReset = h('button', { class: 'atreset', type: 'button' }, 'Reset progress');
+    const none = h('p', { class: 'atnone', hidden: '' }, 'Nothing found. Try another word.');
     at.querySelector('summary').after(h('div', { class: 'atbar' }, atFilter, atProg, atReset));
     g.after(none);
     let armed = 0;
     atReset.addEventListener('click', () => {
-      if (Date.now() - armed > 3000) { armed = Date.now(); atReset.textContent = 'Точно сбросить? Нажмите ещё раз'; say('Точно сбросить? Нажмите ещё раз'); setTimeout(() => { atReset.textContent = 'Сбросить прогресс'; }, 3000); return; }
+      if (Date.now() - armed > 3000) { armed = Date.now(); atReset.textContent = 'Reset for sure? Click again'; say('Reset for sure? Click again'); setTimeout(() => { atReset.textContent = 'Reset progress'; }, 3000); return; }
       armed = 0; seen = new Set(); dwell = 0;
       try { localStorage.setItem(SEEN_KEY, '[]'); } catch (e) { /* без памяти */ }
-      atReset.textContent = 'Сбросить прогресс'; refreshSeen(); toast('Прогресс сброшен');
+      atReset.textContent = 'Reset progress'; refreshSeen(); toast('Progress reset');
     });
     atFilter.addEventListener('input', () => {
       const toks = tokensOf(atFilter.value); let n = 0;
@@ -744,9 +768,9 @@ let atProg = null, atReset = null, atFilter = null;
         sec.hidden = !secAny;
       });
       none.hidden = n > 0;
-      say(toks.length ? (n ? 'Найдено тем: ' + n : 'Ничего не нашлось. Попробуйте другое слово.') : '', 500);
+      say(toks.length ? (n ? 'Topics found: ' + n : 'Nothing found. Try another word.') : '', 500);
     });
-    g.addEventListener('click', (e) => { const a = e.target.closest('a[href^="#"]'); if (!a || e.ctrlKey || e.metaKey || e.shiftKey || e.button) return; const id = a.getAttribute('href').slice(1); if (!BUILDERS[id]) return; e.preventDefault(); fgo(id); });
+    g.addEventListener('click', (e) => { const li = e.target.closest('a') && e.target.closest('li[data-id]'); if (!li || e.ctrlKey || e.metaKey || e.shiftKey || e.button) return; const id = li.dataset.id; if (!BUILDERS[id]) return; e.preventDefault(); fgo(id); });
   }
 }
 
@@ -774,7 +798,7 @@ function frender() {
   const add = (t, meta) => {
     const on = seen.has(t.id);
     const li = h('li', { role: 'option', id: 'fo-' + t.id, 'aria-selected': 'false', class: on ? 'seen' : '' },
-      h('span', { class: 'fn' }, ...hiName(t.name, toks), on ? h('span', { class: 'vh' }, ', изучено') : ''), h('span', { class: 'fm' }, meta));
+      h('span', { class: 'fn' }, ...hiName(t.name, toks), on ? h('span', { class: 'vh' }, ', explored') : ''), h('span', { class: 'fm' }, meta));
     const k = fopts.length;
     li.addEventListener('click', () => fgo(t.id)); li.addEventListener('pointermove', () => { if (fact !== k) fsetAct(k, false); });
     fopts.push(li); fres.append(li);
@@ -785,10 +809,10 @@ function frender() {
     fsetAct(TOPICS.findIndex((t) => t.id === curId), true);
   } else {
     const r = TOPICS.map((t) => [scoreTopic(t, toks), t]).filter(([sc]) => sc >= 0).sort((a, b) => b[0] - a[0]);
-    if (!r.length) fres.append(h('li', { class: 'fempty', role: 'presentation' }, 'Ничего не нашлось. Попробуйте другое слово.'));
+    if (!r.length) fres.append(h('li', { class: 'fempty', role: 'presentation' }, 'Nothing found. Try another word.'));
     r.forEach(([sc, t]) => add(t, sc >= 3 * toks.length || !t.lede ? t.sec + (t.grp ? ' · ' + t.grp : '') : t.lede));
     fsetAct(r.length ? 0 : -1, true);
-    say(r.length ? 'Найдено тем: ' + r.length : 'Ничего не нашлось. Попробуйте другое слово.', 500);
+    say(r.length ? 'Topics found: ' + r.length : 'Nothing found. Try another word.', 500);
   }
 }
 const fitFinder = () => { if (window.visualViewport && finder.open) finder.style.maxHeight = Math.max(240, visualViewport.height - 24) + 'px'; };
@@ -805,7 +829,7 @@ function fgo(id) {
   if (id !== curId) show(id);
   const r = stageEl.getBoundingClientRect(); if (r.top < -r.height / 3 || r.top > innerHeight * 0.6) stageEl.scrollIntoView({ block: 'start', behavior: matchMedia('(prefers-reduced-motion:reduce)').matches ? 'auto' : 'smooth' });
   const tt = $('#title'); tt.tabIndex = -1; tt.focus({ preventScroll: true });
-  say('Открыта тема: ' + TOPIC[id].name, 400);
+  say('Opened topic: ' + TOPIC[id].name, 400);
 }
 fq.addEventListener('input', frender);
 fq.addEventListener('keydown', (e) => {
@@ -829,16 +853,24 @@ function copyOld(txt) {
 }
 $('#share').addEventListener('click', async () => {
   if (!cur) return;
-  const url = location.origin + location.pathname + '?lang=' + LANG + '#' + curId, title = cur.title + ' — ' + BRAND;
+  const url = PAGES ? new URL(pageUrl(curId), location.href).href : location.origin + location.pathname + '?lang=' + LANG + '#' + curId, title = cur.title + ' — ' + BRAND;
   if (navigator.share && matchMedia('(pointer:coarse)').matches) { try { await navigator.share({ title, text: cur.lede, url }); } catch (e) { /* пользователь передумал */ } return; }
-  copyText(url).then(() => toast('Ссылка на тему скопирована'), () => toast(url, 8000));
+  copyText(url).then(() => toast('Link to this topic copied'), () => toast(url, 8000));
 });
 
 /* «Сбросить вид»: камера плавно возвращается туда, откуда тема начиналась (через 2 с после открытия, если её ещё не трогали) */
 let camFly = null;
 function uxActivate(id) {
   dwellId = id; dwell = 0;
-  document.title = cur.title + ' — ' + BRAND;
+  if (PAGES && isRootUrl()) { document.title = HEAD0.title; HEAD_SEL.forEach(([q, a], k) => { const e = document.head.querySelector(q); if (e && HEAD0.v[k] != null) e.setAttribute(a, HEAD0.v[k]); }); }   // главная сохраняет свой заголовок и описание
+  else document.title = cur.title + TITLE_TAIL;
+  if (PAGES && location.pathname.endsWith('/' + pageUrl(id))) {   // описание и адреса в <head> — под открытую тему (как в статических страницах)
+    const abs = (l) => new URL(id === 'skeleton' ? (l === 'en' ? 'index.en.html' : './') : pageUrl(id, l), location.href).href, set = (sel, attr, v) => { const e = document.head.querySelector(sel); if (e) e.setAttribute(attr, v); };
+    const desc = TOPIC_LEDE[id] || cur.lede || '';
+    set('link[rel="canonical"]', 'href', abs(LANG)); set('link[hreflang="ru"]', 'href', abs('ru')); set('link[hreflang="en"]', 'href', abs('en')); set('link[hreflang="x-default"]', 'href', abs('ru'));
+    set('meta[name="description"]', 'content', desc); set('meta[property="og:description"]', 'content', desc);
+    set('meta[property="og:title"]', 'content', document.title); set('meta[property="og:url"]', 'content', abs(LANG));
+  }
   const sc = cur;
   if (!sc.__home) {
     const snap = () => { sc.__home = { p: sc.camera.position.clone(), t: sc.controls.target.clone() }; };
@@ -927,25 +959,25 @@ applyLook();
   window.addEventListener('appinstalled', () => { inst.hidden = true; });
   if ('serviceWorker' in navigator && document.querySelector('link[rel="manifest"]')) {
     navigator.serviceWorker.register('sw.js').then(() => {
-      const btn = h('button', { class: 'pill ghost', type: 'button', title: 'Скачать все темы и 3D-модели, чтобы атлас работал без интернета' }, 'Сохранить для офлайна');
+      const btn = h('button', { class: 'pill ghost', type: 'button', title: 'Download all topics and 3D models so the atlas works offline' }, 'Save for offline');
       btn.addEventListener('click', async () => {
         btn.disabled = true;
         try { if (navigator.storage && navigator.storage.persist) await navigator.storage.persist(); } catch (e) { /* не критично */ }
         const files = [...new Set(Object.values(BUILDERS).map(([f]) => f))], models = ['skeleton', 'muscles', 'vision', 'digest', 'repro'];
         const N = files.length + models.length; let n = 0, bad = 0;
-        const step = () => { btn.textContent = 'Сохраняю… ' + Math.round((++n / N) * 100) + '%'; };
+        const step = () => { btn.textContent = 'Saving… ' + Math.round((++n / N) * 100) + '%'; };
         // всё, что страница уже загрузила до установки кэша (three.js, шрифты, сама страница)
         const seen = [location.href.split('#')[0], ...performance.getEntriesByType('resource').map((e) => e.name)].filter((u) => /^https?:/.test(u) && !u.includes('/models/'));
         for (const u of new Set(seen)) { try { await fetch(u, { cache: 'reload' }); } catch (e) { /* шрифт может не скачаться — не страшно */ } }
         for (const f of files) { try { await (chunkP[f] ||= import('./s/' + f + '.js')); } catch (e) { bad++; } step(); }
         for (const m of models) { try { const r = await fetch('models/' + m + '.' + MODEL_EXT); if (!r.ok) throw 0; await r.blob(); } catch (e) { bad++; } step(); }
-        btn.textContent = bad ? 'Сохранено не всё — повторите' : 'Сохранено ✓'; btn.disabled = !bad;
+        btn.textContent = bad ? 'Not everything was saved — try again' : 'Saved ✓'; btn.disabled = !bad;
       });
       $('#knobs').append(btn); $('#cfg').hidden = false;
     }).catch(() => { /* без офлайна */ });
   }
 }
-const start = (location.hash || '').slice(1);
+const start = idFromUrl();
 show(BUILDERS[start] ? start : 'skeleton');
 requestAnimationFrame(frame);
 function __set_rnd(x) { return (rnd = x); }
