@@ -212,7 +212,7 @@ function makeNeuron() {
     if (k === 'a' || k === 'ф') { uiRefs.auto.click(); return true; }
     if (k === 'm' || k === 'ь') { uiRefs.mye.click(); return true; }
     if (k === 'l' || k === 'д') { uiRefs.lido.click(); return true; }
-    if (e.key === ',' || e.key === '.') { const s = [0.25, 0.5, 1]; let i = s.indexOf(st.speed); i = clamp(i + (e.key === '.' ? 1 : -1), 0, 2); st.speed = s[i]; uiRefs.sp.sync(); return true; }
+    if (e.code === 'Comma' || e.code === 'Period') { const s = [0.25, 0.5, 1]; let i = s.indexOf(st.speed); i = clamp(i + (e.code === 'Period' ? 1 : -1), 0, 2); st.speed = s[i]; uiRefs.sp.sync(); return true; }
     return false;
   }
   function stats() {

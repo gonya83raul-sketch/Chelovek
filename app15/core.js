@@ -470,6 +470,12 @@ if (LANG !== 'ru') {
   T('#dcopy', 'Скопировать адрес'); T('#toast', 'Скопировано!'); T('.dcrypto summary', 'Криптовалюта: USDT (TRC-20)');
   T('.dopt:nth-child(1) .dsub', 'картой или по СБП, разово или подпиской'); T('.dopt:nth-child(2) .dsub', 'чаевые картой — по ссылке или QR-коду');
   T('.dh3', 'Обратная связь');
+  T('.dopt img', 'QR-код tips.tips', 'alt'); T('.dqr img', 'QR-код адреса USDT', 'alt'); T('.dcontact img', 'QR-код Telegram-канала', 'alt');
+  T('#srch', 'Поиск по темам (/)', 'title'); T('#srch .stxt', 'Поиск');
+  T('#share', 'Поделиться темой', 'aria-label'); T('#share', 'Поделиться темой', 'title');
+  T('#recam', 'Сбросить вид камеры', 'aria-label'); T('#recam', 'Сбросить вид камеры (Home)', 'title');
+  T('#finder', 'Поиск по темам', 'aria-label'); T('#fq', 'Найти тему…', 'placeholder'); T('#fq', 'Найти тему', 'aria-label');
+  T('.fesc .vh', 'Закрыть поиск'); T('#fres', 'Темы', 'aria-label'); T('.fkeys', '<kbd>↑</kbd><kbd>↓</kbd> выбрать · <kbd>Enter</kbd> открыть');
   T('.dctxt', 'Новости, новые темы и обсуждение — в Telegram-канале <a href="https://t.me/KTOMY_ATLAS" target="_blank" rel="noopener">@KTOMY_ATLAS</a>. Ошибки и предложения пишите на <a href="mailto:gonya83raul@gmail.com">gonya83raul@gmail.com</a>.');
   T('.fcontact', 'Обратная связь: Telegram-канал <a href="https://t.me/KTOMY_ATLAS" target="_blank" rel="noopener">@KTOMY_ATLAS</a> · почта <a href="mailto:gonya83raul@gmail.com">gonya83raul@gmail.com</a> · <a href="https://boosty.to/chelovek3d/donate" target="_blank" rel="noopener">поддержать на Boosty</a>');
   T('.dwarn', 'Отправляйте только <b>USDT в сети TRON (TRC-20)</b>. Перевод другой монеты или в другой сети потеряется.');
@@ -495,6 +501,7 @@ new ResizeObserver(layout).observe(stageEl);
 new ResizeObserver(placeScope).observe(consoleEl);
 
 /* темы и разделы: новая система человека = одна строка здесь */
+const TOPIC_LEDE = { cell: 'Ядро, ЭПС, Гольджи, митохондрии и цитоскелет в разрезе. Пузырьки везут белки к мембране, по микротрубочкам едут грузы, митохондрии выдают АТФ.', skeleton: 'Трёхмерный скан настоящего скелета с кровеносной системой поверх него. Вращайте его, приближайте и нажимайте на кости; в рентгене видно, как они соединяются в суставах.', neuron: 'Дендриты собирают сигналы, у аксонного холмика рождается потенциал действия, и импульс скачками бежит по миелину к окончаниям.', synapse: 'Импульс открывает кальциевые каналы, пузырьки выплёскивают медиатор, молекулы находят рецепторы, и сигнал выключают ферменты или переносчики.', brain: 'Маленькие ядра в стволе и основании мозга раскидывают отростки по огромной территории. Поэтому одно вещество меняет состояние всего мозга сразу.', types: 'Семь форм нервных клеток и маленькая нейросеть. Можно покрасить их так, как это делали Гольджи и Ниссль, или раскрасить методом Brainbow.', glia: 'Glia по-гречески «клей». Глия упаковывает нейроны, изолирует их, охраняет вход из крови и убирает мусор.', develop: 'От плоской нервной пластинки к трубке, пузырям и полушариям. Перетащите срок или запустите развитие целиком.', vision: 'Путь сигнала от сетчатки до затылочной коры и оптика глаза. Выберите повреждение и посмотрите, какая часть поля зрения пропадёт.', soma: 'Тело нейрона в разрезе: ядро, субстанция Ниссля, аппарат Гольджи, митохондрии и нити цитоскелета. Сигналы с синапсов сходятся к аксонному холмику, где решается, будет ли импульс.', ventricles: 'Внутри мозга — система полостей с ликвором, снаружи — три оболочки. Они питают, защищают и служат удобными ориентирами в анатомии.', spinal: 'Трубка из нервной ткани в позвоночном канале: 31 сегмент, рефлекторные дуги и проводящие пути между телом и головным мозгом.', cranial: 'Двенадцать пар нервов головного мозга. Каждый уникален: одни только чувствуют, другие только управляют мышцами, третьи делают и то и другое.', stem: 'Продолговатый мозг, мост и средний мозг — древние отделы, общие для всех позвоночных. Здесь центры дыхания и сердца, сна и бодрствования, и все пути между мозгом и телом.', dien: 'Таламус решает, какая информация попадёт в кору. Гипоталамус следит за потребностями тела и через гипофиз управляет гормонами.', hemis: 'Под корой — белое вещество и ядра базальных ганглиев. Они собирают отдельные движения в программы и вместе с лимбической системой решают, что нам нужно.', cortex: 'Пять долей, 52 поля Бродмана, шесть слоёв и колонки-процессоры. Посмотрите, где говорит, видит и двигается кора и как сигнал проходит через её слои.', hippo: 'Гиппокамп держит память текущего дня: сигнал бегает по кругу Пейпеза и по трисинаптической петле, а частая стимуляция усиливает синапсы — так рождается память.', cereb: 'Больше половины нейронов мозга — в мозжечке. На дендритах клеток Пуркинье записывается двигательная память: как быстро и точно сделать каждое движение.', heart: 'Четыре камеры, четыре клапана и собственный водитель ритма. За жизнь сердце сокращается около 3 миллиардов раз и перекачивает 5 литров крови каждую минуту.', lungs: 'Около 20 000 вдохов в сутки. Воздух проходит по ветвящемуся дереву бронхов к сотням миллионов альвеол, где кислород за доли секунды переходит в кровь.', digest: 'От бутерброда до глюкозы в крови — около суток пути по трубке длиной 8–10 метров, с кислотой, ферментами, желчью и триллионами бактерий.', kidney: 'Каждые сутки почки пропускают через себя всю кровь около 300 раз, отфильтровывают 180 литров жидкости и возвращают обратно в кровь 99% её.', endo: 'Крошечные железы управляют ростом, обменом веществ, сном, стрессом и сахаром крови, рассылая по кровотоку химические письма — гормоны.', immune: 'Сеть сосудов и узлов, где триллион лимфоцитов патрулирует тело, узнаёт чужое и запоминает его на годы вперёд.', ear: 'Три крошечные косточки, улитка с жидкостью и 15 000 волосковых клеток превращают колебания воздуха в звуки, а соседние каналы следят за каждым поворотом головы.', skin: 'Кусочек кожи в разрезе: три слоя, волос, железы, сосуды и пять видов рецепторов, каждый из которых отвечает на своё — касание, давление, вибрацию, растяжение или боль.', blood: 'Пять литров жидкой ткани: 25 триллионов эритроцитов, армия лейкоцитов и тромбоциты, которые за минуты закрывают любую ранку.', repro: 'Как устроены половые системы, как гормоны гипофиза и яичников задают 28-дневный цикл и что происходит с новой жизнью в первую неделю.', chemo: 'Два химических чувства: нос различает тысячи запахов по узору сотен рецепторов, язык — пять базовых вкусов. Вместе они дают то, что мы называем вкусом еды.', chest: 'Костный каркас, который защищает сердце и лёгкие и помогает дышать, и устройство молочной железы — от долек до протоков и гормонов кормления.', sresp: 'Как мозг, вегетативная нервная система, сосуды и гормоны согласованно проводят тело через четыре фазы полового ответа — от возбуждения до разрешения.', shealth: 'Откуда берётся половое влечение, какие системы мозга и гормоны им управляют, и как сделать сексуальные контакты безопасными: инфекции, контрацепция и согласие.', enzyme: 'Белок-катализатор узнаёт свою молекулу, обнимает её активным центром и ускоряет реакцию в миллионы раз. Модели построены по реальным атомным структурам.', kinetics: 'Живая модель раствора: 14 молекул фермента ловят субстрат. Меняйте концентрацию, температуру, pH и добавляйте ингибиторы — график Михаэлиса — Ментен меняется вместе с моделью.', enzmed: 'Как клетка включает и выключает ферменты — эффекторами, фосфатом, отрезанием куска цепи — и как врачи используют ферменты для диагностики и лечения.', vitamins: 'Тринадцать веществ, которые организм не умеет делать сам. Большинство из них — детали ферментов: без витамина фермент не работает.', atp: 'Клетка не может напрямую «сжечь» сахар для работы: энергия пищи сначала переводится в универсальную валюту — АТФ. Человек за сутки синтезирует и тратит её примерно столько, сколько весит сам.', krebs: 'Восемь реакций в матриксе митохондрии разбирают «активную уксусную кислоту» на два CO₂ и снимают с неё водород для дыхательной цепи.', etc: 'Внутренняя мембрана митохондрии: электроны бегут к кислороду, протоны выкачиваются наружу, а потом крутят молекулярную турбину, собирающую АТФ.', radicals: 'Кислород даёт клетке энергию, но один неспаренный электрон превращает его в радикал, способный разрушать мембраны, белки и ДНК. Против этого у клетки целая система защиты.', glycolysis: 'Десять реакций цитоплазмы разрезают глюкозу на два пирувата. Дальше — лактат, спирт или митохондрия; а печень умеет пройти этот путь обратно.', glycogen: 'Глюкоза — быстрое топливо, но хранить её в свободном виде нельзя: вода хлынула бы в клетку. Поэтому печень и мышцы запасают её в ветвистых гранулах гликогена.', carbdig: 'Хлеб, сахар и молоко превращаются в три простых сахара — глюкозу, фруктозу и галактозу. Как они проходят через стенку кишки и что бывает, когда одного фермента не хватает.', membrane: 'Жиры — самый плотный запас энергии и основа всех клеточных мембран. Их объединяет одно: они не дружат с водой.', betaox: 'Как жир из жировой клетки превращается в энергию: липолиз, челнок карнитина, спираль β-окисления — и запасной «бензин» для мозга при голоде.', lipoprot: 'Жир и холестерин не растворяются в крови, поэтому путешествуют в белково-липидных частицах. От их баланса зависит здоровье артерий.', lipogen: 'Как из глюкозы и жирных кислот собирается жир и фосфолипиды мембран, почему печень может «ожиреть» и что происходит с жировой тканью, когда калорий слишком много.', eicosanoids: 'Из одной жирной кислоты мембраны клетка за секунды делает сигналы боли, жара, тромба и спазма — а аспирин и ибупрофен выключают один фермент на этом пути.', protein: 'Цепочка из двадцати видов «бусин» сама сворачивается в точную трёхмерную машину. Здесь — аминокислоты, четыре уровня структуры гемоглобина и шаперон, который помогает белкам укладываться.', aminoacid: 'Белки пищи разбираются на аминокислоты; их азот снимается, превращается в ядовитый аммиак — и печень упаковывает его в безопасную мочевину.', amines: 'Отщепив всего одну молекулу CO₂, клетка превращает обычную аминокислоту в мощный сигнал: гистамин, серотонин, дофамин, адреналин, ГАМК.', dna: 'Два метра ДНК в каждой клетке хранят инструкцию для всего организма. Как она устроена, как копируется перед делением и как чинится.', express: 'Центральная догма: ДНК → РНК → белок. Ген переписывается в мРНК, мРНК созревает и уходит к рибосоме, где кодоны превращаются в аминокислоты.', purine: 'Из чего строятся буквы генетического кода, во что они превращаются при распаде и почему избыток мочевой кислоты оборачивается болью в суставах.', antibiotics: 'Рибосома бактерий чуть отличается от нашей — и этого хватает, чтобы маленькая молекула остановила микроба, не тронув человека.', mutations: 'Одна буква в ДНК может ничего не изменить — или превратить эритроцит в серп. А после сборки белок ещё дорабатывают: метят, режут и отправляют на уничтожение.', hormsig: 'Гормон — это письмо, а не работник: он лишь передаёт команду. Как клетка читает это письмо через рецептор на мембране или в ядре и многократно усиливает его.', fedfast: 'Органы делят топливо как слаженная команда: после еды — запасают, натощак — делятся, при голоде — перестраиваются так, чтобы мозг не остался без питания.', thyroid: 'Два гормона из аминокислоты тирозина и йода задают скорость обмена веществ во всех клетках тела — от сердца до растущего мозга.', adrenal: 'Две железы в одной: кора из холестерина делает стероиды — альдостерон, кортизол, андрогены, а мозговое вещество выбрасывает адреналин за секунды.', calcium: 'Килограмм кальция лежит в костях, а в крови — меньше грамма. Паратгормон и витамин D следят, чтобы этот грамм не сдвинулся больше чем на несколько процентов.', pituitary: 'Участок мозга размером с ноготь и железа с горошину управляют ростом, водой, стрессом, обменом веществ, размножением и молоком.', diabetes: 'Одна клетка поджелудочной меряет сахар крови с точностью до долей миллимоля — и полмиллиарда людей живут с диабетом, когда этот датчик ломается.', sexhorm: 'Тестостерон и эстрадиол отличаются всего одним углеродом и кольцом — но определяют, как растёт тело; а несколько миллиардов молекул ХГЧ в капле мочи дают вторую полоску на тесте.', hemoglobin: 'Около 270 миллионов молекул гемоглобина в каждом эритроците. Как этот белок забирает кислород в лёгких и вовремя отдаёт его тканям.', heme: 'Как клетка собирает гем из глицина и сукцинил-КоА — и во что он превращается, когда эритроцит отслужил свои 120 дней.', bloodchem: 'Как кровь держит pH с точностью до сотых, что переносят белки плазмы и как за минуты затягивается рана.', liver: 'Главная химическая фабрика тела: всё, что всосалось в кишечнике, сначала проходит через неё — и лекарства, и алкоголь, и яды.', nitrogen: 'По нескольким числам из пробирки — мочевине, креатинину, pH и CO₂ — врач видит, как работают почки, печень и лёгкие.', planes: 'Прежде чем изучать органы, анатомы договорились, как описывать их положение: из какой позы смотреть, как резать и куда показывать.', joints: 'Кость — живая ткань прочнее бетона на сжатие и легче стали, а сустав скользит с трением меньше, чем лёд по льду.', referred: 'Почему при инфаркте болит левая рука, а при аппендиците сначала живот вокруг пупка: органы «жалуются» на коже своих сегментов спинного мозга.' };
 const SECTIONS = [
   { id: 'body', name: 'Тело', scenes: [['#', 'Как устроено тело'], ['planes', 'Плоскости, направления и полости'], ['referred', 'Отражённая боль'], ['#', 'Опора и движение'], ['skeleton', 'Скелет, мышцы и сосуды'], ['joints', 'Кости и суставы'], ['#', 'Системы органов'], ['heart', 'Сердце и кровообращение'], ['lungs', 'Дыхание'], ['digest', 'Пищеварение'], ['kidney', 'Почки'], ['blood', 'Кровь'], ['endo', 'Эндокринная система'], ['immune', 'Лимфа и иммунитет'], ['repro', 'Размножение и развитие'], ['menses', 'Менструальный цикл'], ['shealth', 'Влечение и сексуальное здоровье'], ['sresp', 'Цикл полового ответа'], ['chest', 'Грудная клетка и грудь']] },
   { id: 'cell', name: 'Клетка', scenes: [['cell', 'Живая клетка']] },
@@ -514,7 +521,11 @@ const secOf = (id) => SECTIONS.find((s) => s.scenes.some(([sid]) => sid === id))
     const ord = { bio: 0, cell: 1, body: 2, brain: 3 }, n = SECTIONS.reduce((k, s) => k + s.scenes.filter(([i]) => i !== '#').length, 0);
     at.querySelector('summary').textContent = 'Все темы атласа' + ' (' + n + ')';
     const g = at.querySelector('.atgrid'); g.innerHTML = '';
-    [...SECTIONS].sort((a, b) => (ord[a.id] ?? 9) - (ord[b.id] ?? 9)).forEach((s) => g.append(h('div', {}, h('h3', {}, s.name), h('ul', {}, ...s.scenes.map(([i, nm]) => i === '#' ? h('li', { class: 'sg' }, nm) : h('li', {}, h('a', { href: '#' + i }, nm)))))));
+    [...SECTIONS].sort((a, b) => (ord[a.id] ?? 9) - (ord[b.id] ?? 9)).forEach((s) => {
+      const sec = h('section', {}, h('h3', {}, s.name)); let ul = null;
+      s.scenes.forEach(([i, nm]) => { if (i === '#') { sec.append(h('h4', {}, nm)); ul = null; return; } if (!ul) { ul = h('ul'); sec.append(ul); } ul.append(h('li', { 'data-id': i }, h('a', { href: '#' + i }, nm))); });
+      g.append(sec);
+    });
   }
 }
 const firstOf = (s) => s.scenes.find(([sid]) => sid !== '#')[0];
@@ -530,16 +541,19 @@ const byScale = (s) => { const i = Object.keys(SCALE).indexOf(s.id); return i < 
 function renderNav(id) {
   const s = secOf(id); lastIn[s.id] = id;
   secNav.querySelectorAll('.tab').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.sec === s.id)));
+  const hadF = subNav.contains(document.activeElement);
   const st = subNav.scrollTop; subNav.innerHTML = '';
-  s.scenes.forEach(([sid, name]) => subNav.append(sid === '#' ? h('span', { class: 'subhead' }, name) : h('button', { class: 'sub', role: 'tab', type: 'button', 'aria-selected': String(sid === id), onclick: () => show(sid) }, name)));
+  s.scenes.forEach(([sid, name]) => subNav.append(sid === '#' ? h('span', { class: 'subhead' }, name) : h('button', { class: 'sub', role: 'tab', type: 'button', 'data-id': sid, 'aria-selected': String(sid === id), onclick: () => show(sid) }, name)));
   // оглавление слева прокручивается само, чтобы текущая тема была видна
   subNav.scrollTop = st;
   const act = subNav.querySelector('.sub[aria-selected="true"]');
   if (act && subNav.scrollHeight > subNav.clientHeight && (act.offsetTop < st || act.offsetTop + act.offsetHeight > st + subNav.clientHeight)) subNav.scrollTop = act.offsetTop - subNav.clientHeight / 3;
   // на телефоне вместо длинного ряда — выпадающий список с группами
   const sel = h('select', { class: 'subsel', 'aria-label': 'Тема раздела «' + s.name + '»', onchange: (e) => show(e.target.value) }); let og = sel;
-  s.scenes.forEach(([sid, name]) => { if (sid === '#') { og = h('optgroup', { label: name }); sel.append(og); } else { const o = h('option', { value: sid }, name); if (sid === id) o.selected = true; og.append(o); } });
+  s.scenes.forEach(([sid, name]) => { if (sid === '#') { og = h('optgroup', { label: name }); sel.append(og); } else { const o = h('option', { value: sid, 'data-n': name }, name); if (sid === id) o.selected = true; og.append(o); } });
   subNav.append(sel);
+  if (typeof decorateNav === 'function') decorateNav();
+  if (hadF) { const a = subNav.querySelector('.sub[aria-selected="true"]'); (a && a.offsetParent ? a : sel).focus({ preventScroll: true }); }
 }
 /* каждая вкладка — отдельный файл: грузится при первом открытии, старые сцены выгружаются */
 const chunkP = {};
@@ -592,14 +606,271 @@ function activate(id) {
   try { if (location.hash.slice(1) !== id) (location.hash ? history.pushState : history.replaceState).call(history, null, '', '#' + id); } catch (e) { /* ignore */ }
   layout();
   evict();
+  uxActivate(id);
   window.__ready = id;
 }
 /* кнопка «Назад» (в том числе на Android) возвращает к предыдущей теме */
 window.addEventListener('hashchange', () => { const id = location.hash.slice(1); if (BUILDERS[id] && id !== curId) show(id); });
 window.addEventListener('keydown', (e) => {
-  if (!cur || e.target.closest('input, textarea')) return;
+  if (!cur || e.ctrlKey || e.metaKey || e.altKey) return;
+  const t = e.target instanceof Element ? e.target : document.body;
+  if (t.closest('input, textarea, dialog[open]')) return;
+  // пробел и Enter на кнопке, выбранной с клавиатуры, нажимают её, а не уходят сцене
+  if ((e.key === ' ' || e.key === 'Enter') && t.closest('button, a, summary, select, [role=tab]') && t.matches(':focus-visible')) return;
   if (cur.onKey(e)) e.preventDefault();
 });
+
+/* ---------- навигация: поиск по темам, прогресс изучения, «поделиться», сброс камеры ---------- */
+const BRAND = 'Кто мы?';
+// бытовые слова, по которым ищут тему (в английской сборке строки заменяются английскими по словарю)
+const TOPIC_ALIAS = {
+  lungs: 'лёгкие легкие вдох выдох альвеолы бронхи', ear: 'ухо уши улитка вестибулярный аппарат', vision: 'глаз глаза сетчатка хрусталик',
+  heart: 'ЭКГ пульс давление клапаны сосуды', skeleton: 'кости мышцы артерии вены пульс', kidney: 'почка моча нефрон',
+  digest: 'желудок кишечник кишка пищевод', diabetes: 'сахар глюкоза', glycogen: 'глюкоза', blood: 'эритроциты лейкоциты тромбоциты',
+  immune: 'иммунитет антитела лимфоциты лимфоузлы', cell: 'органоиды митохондрии ядро', cortex: 'мышление речь',
+  synapse: 'нейромедиаторы дофамин серотонин', brain: 'дофамин серотонин норадреналин ацетилхолин', skin: 'прикосновение боль температура',
+  chemo: 'нос запах язык', repro: 'беременность эмбрион плод сперматозоид яйцеклетка', menses: 'месячные овуляция', endo: 'гормоны железы',
+  dna: 'гены хромосомы', radicals: 'кислород окисление', eicosanoids: 'аспирин ибупрофен воспаление', lipoprot: 'атеросклероз ЛПНП',
+  referred: 'инфаркт аппендицит', spinal: 'рефлекс', cereb: 'координация равновесие', joints: 'сустав колено', chest: 'рёбра грудная железа',
+  etc: 'митохондрии кислород', develop: 'эмбрион нервная трубка',
+};
+const YO = new RegExp(String.fromCharCode(1105), 'g'), YE = String.fromCharCode(1077);   // ё → е (без однобуквенных строк: их не переводят)
+const normT = (t) => String(t).toLowerCase().replace(YO, YE);
+const TOPICS = [];
+{ const have = new Set();
+  [...SECTIONS].sort((a, b) => byScale(a) - byScale(b)).forEach((s) => { let g = '';
+    s.scenes.forEach(([sid, nm]) => { if (sid === '#') { g = nm; return; } if (have.has(sid)) return; have.add(sid);
+      const lede = TOPIC_LEDE[sid] || '';
+      TOPICS.push({ id: sid, name: nm, grp: g, sec: s.name, lede, nN: normT(nm), nG: normT(g + ' ' + s.name), nA: normT(TOPIC_ALIAS[sid] || ''), nL: normT(lede) }); }); }); }
+const TOPIC = Object.fromEntries(TOPICS.map((t) => [t.id, t]));
+const LETTER = /[\p{L}\d]/u, CYR = new RegExp('[' + String.fromCharCode(1072) + '-' + String.fromCharCode(1103) + ']');
+const wordAt = (hay, v) => { let i = hay.indexOf(v); while (i >= 0) { if (i === 0 || !LETTER.test(hay[i - 1])) return i; i = hay.indexOf(v, i + 1); } return -1; };
+// оценка: начало названия > слово в названии > бытовое слово > группа > подзаголовок; -1 — не подходит.
+// Совпадение засчитывается только с начала слова. Русским словам прощаем окончание («сердца» найдёт «Сердце»).
+function scoreTopic(t, toks) {
+  let sum = 0;
+  for (const k of toks) {
+    let best = -1;
+    const vars = [k]; if (CYR.test(k)) { if (k.length >= 5) vars.push(k.slice(0, -1)); if (k.length >= 6) vars.push(k.slice(0, -2)); }
+    vars.forEach((v, j) => {
+      const pen = j ? 0.6 : 1, n = wordAt(t.nN, v);
+      let sc = n === 0 ? 8 : n > 0 ? 6 : wordAt(t.nA, v) >= 0 ? 5 : wordAt(t.nG, v) >= 0 ? 3 : wordAt(t.nL, v) >= 0 ? 1.5 : -1;
+      if (sc > 0) best = Math.max(best, sc * pen);
+    });
+    if (best < 0) return -1;
+    sum += best;
+  }
+  return sum;
+}
+const tokensOf = (q) => normT(q).split(/[\s,.;:!?«»"()]+/).filter(Boolean);
+const srlive = $('#srlive'); let srT = 0;
+const say = (msg, ms = 0) => { clearTimeout(srT); srT = setTimeout(() => { srlive.textContent = ''; setTimeout(() => { srlive.textContent = msg; }, 60); }, ms); };
+
+/* прогресс: тема изучена, если сцену смотрели 10 секунд (вкладка активна, сцена на экране, человек уже что-то нажимал или крутил),
+   нажали кнопку в её панели или, посмотрев сцену, дочитали до текста под ней */
+const SEEN_KEY = 'seen-topics';
+const readSeen = () => { try { return new Set((JSON.parse(localStorage.getItem(SEEN_KEY) || '[]') || []).filter((x) => TOPIC[x])); } catch (e) { return null; } };
+let seen = readSeen() || new Set();
+function markSeen(id) {
+  if (!id || !TOPIC[id] || seen.has(id)) return;
+  const s = readSeen() || seen; s.add(id); seen = s;   // другие вкладки тоже пишут — объединяем
+  try { localStorage.setItem(SEEN_KEY, JSON.stringify([...seen])); } catch (e) { /* без памяти браузера — прогресс только на эту вкладку */ }
+  refreshSeen();
+}
+window.addEventListener('storage', (e) => { if (e.key === SEEN_KEY) { seen = readSeen() || new Set(); refreshSeen(); } });
+const progText = (k, n) => 'Изучено: ' + k + ' из ' + n;
+function decorateNav() {
+  subNav.querySelectorAll('.sub[data-id]').forEach((b) => {
+    const on = seen.has(b.dataset.id); b.classList.toggle('seen', on);
+    const v = b.querySelector('.vh'); if (on && !v) b.append(h('span', { class: 'vh' }, ', изучено')); else if (!on && v) v.remove();
+  });
+  subNav.querySelectorAll('option[data-n]').forEach((o) => { o.textContent = (seen.has(o.value) ? '✓ ' : '') + o.dataset.n; });
+  const s = curId && secOf(curId);
+  if (s) { const ids = s.scenes.filter(([i]) => i !== '#').map(([i]) => i), k = ids.filter((i) => seen.has(i)).length;
+    let p = subNav.querySelector('.subprog'); if (!p) { p = h('div', { class: 'subprog', 'aria-hidden': 'true' }); subNav.append(p); }
+    p.textContent = k ? progText(k, ids.length) : ''; p.hidden = !k; }
+}
+function refreshSeen() {
+  decorateNav();
+  document.querySelectorAll('.alltopics li[data-id]').forEach((li) => {
+    const on = seen.has(li.dataset.id); li.classList.toggle('seen', on);
+    const a = li.querySelector('a'), v = a && a.querySelector('.vh'); if (a && on && !v) a.append(h('span', { class: 'vh' }, ', изучено')); else if (v && !on) v.remove();
+  });
+  if (atProg) atProg.textContent = progText(seen.size, TOPICS.length);
+  if (atReset) { if (!seen.size && document.activeElement === atReset) atFilter.focus(); atReset.hidden = !seen.size; }
+  if (fprog) fprog.textContent = progText(seen.size, TOPICS.length);
+  secNav.querySelectorAll('.tab').forEach((b) => { const s = SECTIONS.find((x) => x.id === b.dataset.sec); if (!s) return;
+    const ids = s.scenes.filter(([i]) => i !== '#').map(([i]) => i), sc = SCALE[s.id];
+    b.title = (sc ? 'Масштаб: ' + sc[1] + '. ' : '') + progText(ids.filter((i) => seen.has(i)).length, ids.length); });
+}
+let dwellId = null, dwell = 0, engaged = false, stageVis = true;
+['pointerdown', 'keydown', 'wheel'].forEach((t) => window.addEventListener(t, () => { engaged = true; }, { passive: true, capture: true }));
+if ('IntersectionObserver' in window) new IntersectionObserver((es) => { stageVis = es[es.length - 1].intersectionRatio >= 0.3; }, { threshold: [0, 0.3, 0.6] }).observe(stageEl);
+setInterval(() => {
+  if (document.hidden || !dwellId || dwellId !== curId || !stageVis || finder.open || !engaged || !document.hasFocus()) return;
+  if (++dwell >= 10) markSeen(dwellId);
+}, 1000);
+consoleEl.addEventListener('click', (e) => { if (e.target.closest('button, input, select, label')) markSeen(curId); });
+// дочитал до текста: считается, только если перед этим хотя бы 3 секунды смотрел саму сцену
+{ let sT = 0; window.addEventListener('scroll', () => { if (sT) return; sT = setTimeout(() => { sT = 0; if (dwell >= 3 && notesEl.getBoundingClientRect().top < innerHeight * 0.55) markSeen(curId); }, 300); }, { passive: true }); }
+
+/* список «Все темы атласа»: фильтр, счётчик, сброс прогресса; клик по теме — к сцене */
+let atProg = null, atReset = null, atFilter = null;
+{ const at = document.querySelector('.alltopics');
+  if (at) {
+    const g = at.querySelector('.atgrid');
+    atFilter = h('input', { class: 'atfilter', type: 'search', placeholder: 'Фильтр тем…', 'aria-label': 'Фильтр тем', autocomplete: 'off', spellcheck: 'false' });
+    atProg = h('span', { class: 'atprog' });
+    atReset = h('button', { class: 'atreset', type: 'button' }, 'Сбросить прогресс');
+    const none = h('p', { class: 'atnone', hidden: '' }, 'Ничего не нашлось. Попробуйте другое слово.');
+    at.querySelector('summary').after(h('div', { class: 'atbar' }, atFilter, atProg, atReset));
+    g.after(none);
+    let armed = 0;
+    atReset.addEventListener('click', () => {
+      if (Date.now() - armed > 3000) { armed = Date.now(); atReset.textContent = 'Точно сбросить? Нажмите ещё раз'; say('Точно сбросить? Нажмите ещё раз'); setTimeout(() => { atReset.textContent = 'Сбросить прогресс'; }, 3000); return; }
+      armed = 0; seen = new Set(); dwell = 0;
+      try { localStorage.setItem(SEEN_KEY, '[]'); } catch (e) { /* без памяти */ }
+      atReset.textContent = 'Сбросить прогресс'; refreshSeen(); toast('Прогресс сброшен');
+    });
+    atFilter.addEventListener('input', () => {
+      const toks = tokensOf(atFilter.value); let n = 0;
+      g.querySelectorAll('section').forEach((sec) => {
+        let secAny = false;
+        sec.querySelectorAll('ul').forEach((ul) => {
+          let ulAny = false;
+          ul.querySelectorAll('li[data-id]').forEach((li) => { const t = TOPIC[li.dataset.id]; const ok = !toks.length || (t && scoreTopic(t, toks) >= 0); li.hidden = !ok; if (ok) { ulAny = true; n++; } });
+          ul.hidden = !ulAny; const hd = ul.previousElementSibling; if (hd && hd.tagName === 'H4') hd.hidden = !ulAny; secAny ||= ulAny;
+        });
+        sec.hidden = !secAny;
+      });
+      none.hidden = n > 0;
+      say(toks.length ? (n ? 'Найдено тем: ' + n : 'Ничего не нашлось. Попробуйте другое слово.') : '', 500);
+    });
+    g.addEventListener('click', (e) => { const a = e.target.closest('a[href^="#"]'); if (!a || e.ctrlKey || e.metaKey || e.shiftKey || e.button) return; const id = a.getAttribute('href').slice(1); if (!BUILDERS[id]) return; e.preventDefault(); fgo(id); });
+  }
+}
+
+/* всплывающее уведомление (role="status" — его зачитывают экранные дикторы; область всегда на странице) */
+const gtoast = $('#gtoast'); let gtT = 0;
+function toast(msg, ms = 2400) { clearTimeout(gtT); gtoast.textContent = ''; setTimeout(() => { gtoast.textContent = msg; }, 60); gtT = setTimeout(() => { gtoast.textContent = ''; }, ms); }
+
+/* поиск: кнопка в шапке, клавиши «/» и Ctrl+K */
+const finder = $('#finder'), fq = $('#fq'), fres = $('#fres'), fprog = $('#fprog');
+let fopts = [], fact = -1;
+function fsetAct(i, scroll) {
+  if (fact >= 0 && fopts[fact]) fopts[fact].setAttribute('aria-selected', 'false');
+  fact = i;
+  if (i >= 0 && fopts[i]) { fopts[i].setAttribute('aria-selected', 'true'); fq.setAttribute('aria-activedescendant', fopts[i].id); if (scroll) fopts[i].scrollIntoView({ block: 'nearest' }); }
+  else fq.removeAttribute('aria-activedescendant');
+}
+function hiName(name, toks) {   // подсветка найденного в названии (с начала слова)
+  const n = normT(name); let best = null;
+  toks.forEach((k) => { [k, k.slice(0, -1), k.slice(0, -2)].filter((v, j) => !j || (CYR.test(k) && v.length >= 4)).some((v) => { const i = wordAt(n, v); if (i >= 0 && (!best || v.length > best[1])) { best = [i, v.length]; return true; } return false; }); });
+  if (!best) return [name];
+  return [name.slice(0, best[0]), h('mark', {}, name.slice(best[0], best[0] + best[1])), name.slice(best[0] + best[1])];
+}
+function frender() {
+  const toks = tokensOf(fq.value); fres.innerHTML = ''; fopts = []; fact = -1;
+  const add = (t, meta) => {
+    const on = seen.has(t.id);
+    const li = h('li', { role: 'option', id: 'fo-' + t.id, 'aria-selected': 'false', class: on ? 'seen' : '' },
+      h('span', { class: 'fn' }, ...hiName(t.name, toks), on ? h('span', { class: 'vh' }, ', изучено') : ''), h('span', { class: 'fm' }, meta));
+    const k = fopts.length;
+    li.addEventListener('click', () => fgo(t.id)); li.addEventListener('pointermove', () => { if (fact !== k) fsetAct(k, false); });
+    fopts.push(li); fres.append(li);
+  };
+  if (!toks.length) {
+    let last = null;
+    TOPICS.forEach((t) => { if (t.sec !== last) { last = t.sec; fres.append(h('li', { class: 'fh', role: 'presentation', 'aria-hidden': 'true' }, t.sec)); } add(t, t.grp || t.sec); });
+    fsetAct(TOPICS.findIndex((t) => t.id === curId), true);
+  } else {
+    const r = TOPICS.map((t) => [scoreTopic(t, toks), t]).filter(([sc]) => sc >= 0).sort((a, b) => b[0] - a[0]);
+    if (!r.length) fres.append(h('li', { class: 'fempty', role: 'presentation' }, 'Ничего не нашлось. Попробуйте другое слово.'));
+    r.forEach(([sc, t]) => add(t, sc >= 3 * toks.length || !t.lede ? t.sec + (t.grp ? ' · ' + t.grp : '') : t.lede));
+    fsetAct(r.length ? 0 : -1, true);
+    say(r.length ? 'Найдено тем: ' + r.length : 'Ничего не нашлось. Попробуйте другое слово.', 500);
+  }
+}
+const fitFinder = () => { if (window.visualViewport && finder.open) finder.style.maxHeight = Math.max(240, visualViewport.height - 24) + 'px'; };
+if (window.visualViewport) visualViewport.addEventListener('resize', fitFinder);
+function fopen() {
+  if (finder.open) return;
+  const dl = $('#donatebox'); if (dl && dl.open) return;
+  fq.value = ''; fprog.textContent = progText(seen.size, TOPICS.length);
+  if (finder.showModal) finder.showModal(); else finder.setAttribute('open', '');
+  fitFinder(); frender(); fq.focus();
+}
+function fgo(id) {
+  const wasOpen = finder.open; if (wasOpen) finder.close();
+  if (id !== curId) show(id);
+  const r = stageEl.getBoundingClientRect(); if (r.top < -r.height / 3 || r.top > innerHeight * 0.6) stageEl.scrollIntoView({ block: 'start', behavior: matchMedia('(prefers-reduced-motion:reduce)').matches ? 'auto' : 'smooth' });
+  const tt = $('#title'); tt.tabIndex = -1; tt.focus({ preventScroll: true });
+  say('Открыта тема: ' + TOPIC[id].name, 400);
+}
+fq.addEventListener('input', frender);
+fq.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); if (fopts.length) fsetAct((fact + (e.key === 'ArrowDown' ? 1 : -1) + fopts.length) % fopts.length, true); }
+  else if (e.key === 'Enter') { e.preventDefault(); if (fopts[fact]) fgo(fopts[fact].id.slice(3)); }
+});
+// Esc закрывает поиск с любого места диалога (и не стирает сначала текст поля)
+finder.addEventListener('keydown', (e) => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); finder.close(); } });
+finder.addEventListener('click', (e) => { if (e.target === finder) finder.close(); });
+$('#srch').addEventListener('click', fopen);
+
+/* «Поделиться»: на телефоне — системное меню, на компьютере — ссылка в буфер обмена */
+function copyText(txt) {
+  if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(txt).catch(() => copyOld(txt));
+  return copyOld(txt);
+}
+function copyOld(txt) {
+  const ta = h('textarea', { readonly: '', style: 'position:fixed;top:0;left:0;opacity:0' }); ta.value = txt; document.body.append(ta); ta.select();
+  let ok = false; try { ok = document.execCommand('copy'); } catch (e) { /* нет доступа */ }
+  ta.remove(); return ok ? Promise.resolve() : Promise.reject(new Error('copy'));
+}
+$('#share').addEventListener('click', async () => {
+  if (!cur) return;
+  const url = location.origin + location.pathname + '?lang=' + LANG + '#' + curId, title = cur.title + ' — ' + BRAND;
+  if (navigator.share && matchMedia('(pointer:coarse)').matches) { try { await navigator.share({ title, text: cur.lede, url }); } catch (e) { /* пользователь передумал */ } return; }
+  copyText(url).then(() => toast('Ссылка на тему скопирована'), () => toast(url, 8000));
+});
+
+/* «Сбросить вид»: камера плавно возвращается туда, откуда тема начиналась (через 2 с после открытия, если её ещё не трогали) */
+let camFly = null;
+function uxActivate(id) {
+  dwellId = id; dwell = 0;
+  document.title = cur.title + ' — ' + BRAND;
+  const sc = cur;
+  if (!sc.__home) {
+    const snap = () => { sc.__home = { p: sc.camera.position.clone(), t: sc.controls.target.clone() }; };
+    snap(); sc.controls.addEventListener('start', () => { sc.__touched = true; if (camFly && camFly.sc === sc) camFly = null; });
+    setTimeout(() => { if (!sc.__touched) snap(); }, 2000);
+  }
+  refreshSeen();
+}
+function resetCam() {
+  if (!cur || !cur.__home) return;
+  camFly = { sc: cur, p0: cur.camera.position.clone(), t0: cur.controls.target.clone(), k: matchMedia('(prefers-reduced-motion:reduce)').matches ? 0.999 : 0 };
+}
+function camStep(dt) {
+  if (!camFly) return;
+  if (camFly.sc !== cur) { camFly = null; return; }
+  camFly.k = Math.min(1, camFly.k + dt / 0.7); const e = 1 - Math.pow(1 - camFly.k, 3), hm = cur.__home;
+  cur.camera.position.lerpVectors(camFly.p0, hm.p, e); cur.controls.target.lerpVectors(camFly.t0, hm.t, e);
+  if (camFly.k >= 1) camFly = null;
+}
+$('#recam').addEventListener('click', resetCam);
+// клавиши поиска работают раньше сцены (capture); в полях ввода текста — нет
+window.addEventListener('keydown', (e) => {
+  if (e.altKey || finder.open) return;
+  const t = e.target instanceof Element ? e.target : document.body, typing = t.closest('input:not([type=range]):not([type=checkbox]):not([type=radio]):not([type=button]), textarea, [contenteditable]');
+  const anyDlg = document.querySelector('dialog[open]');
+  if ((e.ctrlKey || e.metaKey) && e.code === 'KeyK' && !e.shiftKey) { if (!anyDlg) { e.preventDefault(); e.stopPropagation(); fopen(); } return; }
+  if (typing || anyDlg || e.ctrlKey || e.metaKey) return;
+  if (e.key === '/' || (e.code === 'Slash' && !e.shiftKey)) { e.preventDefault(); e.stopPropagation(); fopen(); return; }
+  // Home — сброс камеры, только когда фокус не на элементе страницы и сцена видна (иначе Home листает страницу вверх)
+  if (e.key === 'Home' && !e.shiftKey && (t === document.body || t === canvas || t === stageEl) && stageVis) { e.preventDefault(); e.stopPropagation(); resetCam(); }
+}, true);
+refreshSeen();
 
 const tmp = new THREE.Vector3();
 function updateLabels() {
@@ -640,6 +911,7 @@ function frame(now) {
   if (!visible || !cur) return;
   const dt = Math.min(clock.getDelta(), 0.05);
   cur.update(dt);
+  camStep(dt);
   cur.controls.update();
   composer.render();
   updateLabels();
