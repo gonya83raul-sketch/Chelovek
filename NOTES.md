@@ -1,5 +1,6 @@
 # «Кто мы? — от молекулы до мысли» — заметки для продолжения работы
 
+Передача в Claude Code: см. HANDOFF.md.
 Сайт: https://gonya83raul-sketch.github.io/Chelovek/ (ветка `main` репозитория gonya83raul-sketch/Chelovek — только собранный сайт).
 Исходники: ветка `source` того же репозитория (эта папка). Артефакт Claude: https://claude.ai/artifact/LkivyA8NtFe5eabhraSy5R (последняя публикация — app3; сайт уже app6).
 
