@@ -53,7 +53,19 @@ if body_sc:
             lst.insert(k, (i, name))
     page = page[:bm.start(1)] + ', '.join(f"['{a1}', '{b1}']" for a1, b1 in lst) + page[bm.end(1):]
 import json, shutil
-APP = 'app14'   # меняется при каждой публикации со старой структурой кэша
+# подзаголовки тем (lede) для поиска: из объекта сцены «lede: '…'» в функции makeX
+bm = re.search(r'const BUILDERS = \{(.*?)\};', page, re.S)
+ledes = []
+for tid, fn in re.findall(r'(\w+): (make\w+)', bm.group(1)):
+    k = page.find('function ' + fn + '(')
+    if k < 0: continue
+    e = page.find('\nfunction make', k + 10); seg = page[k:e if e > 0 else len(page)]
+    m = re.search(r"\blede: ('(?:[^'\\\n]|\\.)*')", seg)
+    if m: ledes.append(f'{tid}: {m.group(1)}')
+L0 = 'const TOPIC_LEDE = {}; // заполняет tools/build.py'
+assert page.count(L0) == 1
+page = page.replace(L0, 'const TOPIC_LEDE = { ' + ', '.join(ledes) + ' };', 1)
+APP = 'app15'   # меняется при каждой публикации со старой структурой кэша
 OUT = os.path.join(ROOT, 'out'); os.makedirs(OUT, exist_ok=True)
 i0 = page.index('<script type="module">') ; i1 = page.index('</script>', i0)
 mod = page[i0 + len('<script type="module">'):i1]
@@ -108,10 +120,15 @@ ntop = sum(1 for s in secs for i, _ in s[2] if i != '#')
 def esc(s): return s.replace('&', '&amp;').replace('<', '&lt;')
 blocks = []
 for sid, name, items in secs:
-    li = []; 
+    # подгруппы — заголовки <h4> со своими списками (не <li> вперемешку со ссылками)
+    parts, li = [], []
+    def flush():
+        if li: parts.append('<ul>' + ''.join(li) + '</ul>'); li.clear()
     for i, n in items:
-        li.append(f'<li class="sg">{esc(n)}</li>' if i == '#' else f'<li><a href="#{i}">{esc(n)}</a></li>')
-    blocks.append(f'<div><h3>{esc(name)}</h3><ul>{"".join(li)}</ul></div>')
+        if i == '#': flush(); parts.append(f'<h4>{esc(n)}</h4>')
+        else: li.append(f'<li data-id="{i}"><a href="#{i}">{esc(n)}</a></li>')
+    flush()
+    blocks.append(f'<section><h3>{esc(name)}</h3>{"".join(parts)}</section>')
 TOPICS = f'<details class="alltopics"><summary>Все темы атласа ({ntop})</summary><div class="atgrid">{"".join(blocks)}</div></details>'
 JSONLD = json.dumps({'@context': 'https://schema.org', '@type': 'WebApplication', 'name': 'Кто мы? — от молекулы до мысли', 'alternateName': 'Who are we? From molecule to mind', 'url': BASE, 'description': DESC, 'applicationCategory': 'EducationalApplication', 'operatingSystem': 'Web', 'inLanguage': ['ru', 'en'], 'isAccessibleForFree': True, 'offers': {'@type': 'Offer', 'price': '0', 'priceCurrency': 'RUB'}, 'sameAs': ['https://t.me/KTOMY_ATLAS', 'https://boosty.to/chelovek3d']}, ensure_ascii=False)
 SEO_HEAD = (f'<title>Кто мы? — от молекулы до мысли · 3D-атлас человека</title>\n<meta name="description" content="{DESC}">\n<link rel="canonical" href="{BASE}">\n'
