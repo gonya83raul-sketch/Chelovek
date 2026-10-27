@@ -196,7 +196,7 @@ LOADER = ('<script type="module">\nconst P = window.__PAGE; let L = P ? P.lang :
   '  const want = q || m;\n'
   '  if (!/\\/(index\\.html)?$/.test(location.pathname)) L = /\\.en\\.html$/.test(location.pathname) ? \'en\' : \'ru\';\n'
   '  else if (want === \'en\') { let t = 0; try { t = +sessionStorage.getItem(\'redir\') || 0; sessionStorage.setItem(\'redir\', String(Date.now())); } catch (e) { /* без памяти */ }\n'
-  '    if (Date.now() - t > 10000) go = \'index.en.html\' + location.hash; else L = \'en\'; }\n'
+  '    if (Date.now() - t > 10000) go = \'index.en.html\' + (new URLSearchParams(location.search).has(\'rec\') ? \'?rec\' : \'\') + location.hash; else L = \'en\'; }\n'
   '  else if (!want && !(navigator.languages || [navigator.language || \'\']).some((l) => /^(ru|uk|be|kk)/i.test(l))) window.__LANGNOTE = 1; }\n'
   f'if (go) location.replace(go); else {{ document.documentElement.lang = L; import(L === \'en\' ? \'./{APP}/en/core.js\' : \'./{APP}/core.js\').catch((e) => {{\n'
   '  console.error(e); const st = document.getElementById(\'stage\'); if (!st || st.querySelector(\'.fallback\')) return;\n'
