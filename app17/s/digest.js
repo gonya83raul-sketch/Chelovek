@@ -1,4 +1,4 @@
-import { GLTFLoader, Sparks, THREE, V3, __set_rnd, bodyShell, button, dimOthers, displaceGeo, ell3, envTex, fetchModel, flyStep, flyTarget, glassMat, group, h, infoBox, labLights, makeControls, mergeGeometries, mulberry, noise3, organMat, pathRunner, pickOn, rand, randUnit, rnd, seg, smooth, taperTube, toggle, tube } from '../core.js';
+import { Sparks, THREE, V3, __set_rnd, bodyShell, button, dimOthers, displaceGeo, ell3, envTex, fetchModel, flyStep, flyTarget, glassMat, group, h, infoBox, labLights, makeControls, mergeGeometries, mulberry, noise3, organMat, parseGLB, pathRunner, pickOn, rand, randUnit, rnd, seg, smooth, taperTube, toggle, tube } from '../core.js';
 
 
 /* =========================================================
@@ -100,7 +100,7 @@ function makeDigest() {
   function loadReal() {
     if (st.realLoad) return; st.realLoad = 1; refs.setInfo && refs.setInfo();
     fetchModel('digest').then((buf) => {
-      new GLTFLoader().parse(buf, '', (gltf) => {
+      parseGLB(buf, (gltf) => {
         const root = gltf.scene; root.updateMatrixWorld(true);
         const box = new THREE.Box3().setFromObject(root), size = box.getSize(V3(0, 0, 0)), c = box.getCenter(V3(0, 0, 0));
         const k = 4.6 / size.y; root.scale.setScalar(k); root.position.set(-c.x * k, -0.6 - box.min.y * k, -c.z * k - 0.02); REAL.add(root); root.updateMatrixWorld(true);

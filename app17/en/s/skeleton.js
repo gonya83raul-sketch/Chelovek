@@ -476,8 +476,8 @@ function makeSkeleton() {
   function ui(el) {
     const info = h('div', { class: 'info' });
     refs.setInfo = () => {
-      info.innerHTML = st.err ? `Could not load the skeleton model (${st.err}). Please reload the page.` : !st.loaded ? 'Loading the skeleton model (about 8 MB)…' : st.sel ? BONES.find((b) => b.id === st.sel).text
-        : st.pulse && !st.mus ? PULSE_TEXT : st.mus ? (st.musErr ? `Could not load the muscles (${st.musErr}).` : st.musLoad < 2 ? 'Loading the muscles (about 9 MB)…' : MUS_TEXT) : 'Click any bone or pick it from the list.';
+      info.innerHTML = st.err ? `Could not load the skeleton model (${st.err}). Please reload the page.` : !st.loaded ? 'Loading the skeleton model (about 3 MB)…' : st.sel ? BONES.find((b) => b.id === st.sel).text
+        : st.pulse && !st.mus ? PULSE_TEXT : st.mus ? (st.musErr ? `Could not load the muscles (${st.musErr}).` : st.musLoad < 2 ? 'Loading the muscles (about 5 MB)…' : MUS_TEXT) : 'Click any bone or pick it from the list.';
     };
     refs.seg = seg([{ id: 'all', label: 'Whole skeleton' }, ...BONES.map((b) => ({ id: b.id, label: b.name }))], () => st.sel || 'all', (v) => select(v));
     const pose = seg([{ id: 'stand', label: 'Standing' }, { id: 'walk', label: 'Walking' }, { id: 'squat', label: 'Squatting' }], () => st.pose, (v) => { st.pose = v; });

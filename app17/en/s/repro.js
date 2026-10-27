@@ -1,4 +1,4 @@
-import { GLTFLoader, Sparks, THREE, V3, __set_rnd, bodyShell, button, clamp, dimOthers, displaceGeo, ell3, envTex, fetchModel, flyStep, flyTarget, glowNucleus, group, h, infoBox, labLights, makeControls, mergeGeometries, mulberry, organMat, pickOn, randUnit, range, rnd, scopeShow, seg, taperTube, toggle, tube } from '../core.js';
+import { Sparks, THREE, V3, __set_rnd, bodyShell, button, clamp, dimOthers, displaceGeo, ell3, envTex, fetchModel, flyStep, flyTarget, glowNucleus, group, h, infoBox, labLights, makeControls, mergeGeometries, mulberry, organMat, parseGLB, pickOn, randUnit, range, rnd, scopeShow, seg, taperTube, toggle, tube } from '../core.js';
 
 
 /* =========================================================
@@ -89,7 +89,7 @@ function makeRepro(initMode) {
   function loadReal() {
     if (st.realLoad) return; st.realLoad = 1; refs.setInfo && refs.setInfo();
     fetchModel('repro').then((buf) => {
-      new GLTFLoader().parse(buf, '', (gltf) => {
+      parseGLB(buf, (gltf) => {
         const root = gltf.scene; root.updateMatrixWorld(true);
         const pel = root.getObjectByName('Pelvis') || root; const box = new THREE.Box3().setFromObject(pel); const size = box.getSize(V3(0, 0, 0)), c = box.getCenter(V3(0, 0, 0));
         const k = REAL_W / size.x; root.scale.setScalar(k); root.position.copy(c).multiplyScalar(-k).add(REAL_AT); REAL.add(root); root.updateMatrixWorld(true);

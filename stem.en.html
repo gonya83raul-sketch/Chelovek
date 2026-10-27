@@ -405,7 +405,7 @@ if (!P) { const q = new URLSearchParams(location.search).get('lang'); let m = nu
   const want = q || m;
   if (want === 'en') go = 'index.en.html' + location.hash;
   else if (!want && !(navigator.languages || [navigator.language || '']).some((l) => /^(ru|uk|be|kk)/i.test(l))) window.__LANGNOTE = 1; }
-if (go) location.replace(go); else { document.documentElement.lang = L; import(L === 'en' ? './app16/en/core.js' : './app16/core.js'); }
+if (go) location.replace(go); else { document.documentElement.lang = L; import(L === 'en' ? './app17/en/core.js' : './app17/core.js'); }
 </script>
 </body>
 </html>

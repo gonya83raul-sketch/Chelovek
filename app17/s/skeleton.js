@@ -476,8 +476,8 @@ function makeSkeleton() {
   function ui(el) {
     const info = h('div', { class: 'info' });
     refs.setInfo = () => {
-      info.innerHTML = st.err ? `Не удалось загрузить модель скелета (${st.err}). Обновите страницу.` : !st.loaded ? 'Загружаю модель скелета (около 8 МБ)…' : st.sel ? BONES.find((b) => b.id === st.sel).text
-        : st.pulse && !st.mus ? PULSE_TEXT : st.mus ? (st.musErr ? `Не удалось загрузить мышцы (${st.musErr}).` : st.musLoad < 2 ? 'Загружаю мышцы (около 9 МБ)…' : MUS_TEXT) : 'Нажмите на любую кость или выберите её в списке.';
+      info.innerHTML = st.err ? `Не удалось загрузить модель скелета (${st.err}). Обновите страницу.` : !st.loaded ? 'Загружаю модель скелета (около 3 МБ)…' : st.sel ? BONES.find((b) => b.id === st.sel).text
+        : st.pulse && !st.mus ? PULSE_TEXT : st.mus ? (st.musErr ? `Не удалось загрузить мышцы (${st.musErr}).` : st.musLoad < 2 ? 'Загружаю мышцы (около 5 МБ)…' : MUS_TEXT) : 'Нажмите на любую кость или выберите её в списке.';
     };
     refs.seg = seg([{ id: 'all', label: 'Весь скелет' }, ...BONES.map((b) => ({ id: b.id, label: b.name }))], () => st.sel || 'all', (v) => select(v));
     const pose = seg([{ id: 'stand', label: 'Стоит' }, { id: 'walk', label: 'Идёт' }, { id: 'squat', label: 'Приседает' }], () => st.pose, (v) => { st.pose = v; });
