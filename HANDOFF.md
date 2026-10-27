@@ -19,6 +19,8 @@
 
 - **Планка качества (27.10): оценки рецензентов должны быть 4,5–5 из 5, а не 3,5.** Рецензент ставит оценку с половинками и для всего, что ниже 4,5, пишет конкретный список «что сделать до 5/5». Цикл «исправить → снять → переоценить» повторять, пока сцена не наберёт ≥ 4,5. Сводная таблица оценок — review/scores.md.
 
+- **Идёт сейчас (27.10, облачная сессия Claude Code):** доводка сцен до 4,5–5. Оценки по шкале — review/score-{body,brain,bio1,bio2}.md (средняя ≈3). Общие правки оболочки (сдвиг кадра от пульта DESK_SHIFT/deskShift, mobZoom, подписи обходят интерфейс) — в source (99168e0). Исправители работают в git worktree /home/user/wt-<группа> (ветки wt-<группа>, задание tools/fixer2_brief.md, словари b31–b38): fbody1 (joints kidney endo chest menses repro referred lungs digest), fbody2 (immune skin blood shealth cell planes skeleton heart sresp), fbrain1 (cortex chemo synapse glia soma stem dien cranial), fbrain2 (types brain develop vision spinal hemis cereb ear neuron ventricles hippo), fbio1 (glycogen atp etc glycolysis betaox aminoacid kinetics enzmed krebs), fbio2 (carbdig lipogen eicosanoids protein vitamins radicals membrane lipoprot enzyme), fbio3 (purine amines express adrenal dna mutations hormsig fedfast pituitary), fbio4 (sexhorm calcium bloodchem liver nitrogen antibiotics thyroid diabetes hemoglobin heme); техника сайта по review/site-tech.md — wt-tech (словарь b28). Запускать не больше 5 агентов одновременно (иначе быстро кончается лимит). Дальше: слить ветки wt-* в source → снимки tools/siteshots.py → переоценка (tools/visual_critic_brief.md) → второй круг для < 4,5 → APP=app18 → публикация.
+
 ## 3. Первый запуск на новой машине
 ```sh
 git clone https://github.com/gonya83raul-sketch/Chelovek.git chelovek-src
