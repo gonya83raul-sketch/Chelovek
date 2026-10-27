@@ -101,6 +101,11 @@ if EN:
     r = subprocess.run(['node', os.path.join(ROOT, 'tools', 'split.mjs'), os.path.join(OUT, '_merged_en.mjs'), os.path.join(OUT, APP, 'en'), os.path.join(OUT, '_bio.json')], capture_output=True, text=True)
     if r.returncode: print(r.stderr[:3000]); sys.exit(1)
     print('EN: строк без перевода', nmiss, '(out/_merged_en.mjs.missing.json)')
+    # американская орфография: британские написания в строках EN-сборки — предупреждение (правка — в data/i18n/en/*.json)
+    UK = re.compile(r'\b\w*(colour|centre|fibre|litre|metre|tumour|analogue|labelled|neighbour|towards|haemo|oesoph|anaem|paediatr|oestr|behaviour|favour|grey)\w*', re.I)
+    lits = re.findall(r"'(?:[^'\\\n]|\\.)*'|\"(?:[^\"\\\n]|\\.)*\"|`(?:[^`\\]|\\.)*`", men)
+    uk = sorted({m.group(0) for s in lits if not re.fullmatch(r'.[a-z0-9_]+.', s) for m in UK.finditer(s)})   # 'grey' и т. п. — id в коде, не текст
+    if uk: print('ВНИМАНИЕ: британские написания в EN (' + str(len(uk)) + '):', ', '.join(uk[:40]))
 for f in glob.glob(os.path.join(OUT, APP, '**', '*.js'), recursive=True):
     r = subprocess.run(['node', '--check', f], capture_output=True, text=True)
     if r.returncode: print(f, r.stderr[:2000]); sys.exit(1)
@@ -150,16 +155,17 @@ def topics_html(lang, hashes=False):
   return f'<details class="alltopics"><summary>{esc(tr("Все темы атласа", lang))} ({ntop})</summary><div class="atgrid">{"".join(bl)}</div></details>'
 JSONLD = json.dumps({'@context': 'https://schema.org', '@type': 'WebApplication', 'name': 'Кто мы? — от молекулы до мысли', 'alternateName': 'Who are we? From molecule to mind', 'url': BASE, 'description': DESC, 'applicationCategory': 'EducationalApplication', 'operatingSystem': 'Web', 'inLanguage': ['ru', 'en'], 'isAccessibleForFree': True, 'offers': {'@type': 'Offer', 'price': '0', 'priceCurrency': 'RUB'}, 'sameAs': ['https://t.me/KTOMY_ATLAS', 'https://boosty.to/chelovek3d']}, ensure_ascii=False)
 DESC_EN = 'Free interactive 3D atlas of the human body: anatomy, the cell, the brain and biochemistry, from molecule to mind. Rotate models, run processes, explore diseases and drugs.'
+JSONLD_EN = json.dumps({**json.loads(JSONLD), 'name': 'Who are we? From molecule to mind', 'alternateName': 'Кто мы? — от молекулы до мысли', 'url': BASE + 'index.en.html', 'description': DESC_EN, 'inLanguage': ['en', 'ru']}, ensure_ascii=False)
 import ast, html as H, datetime
 TODAY = datetime.date.today().isoformat()
-OG_COMMON = f'<meta property="og:image" content="{BASE}icons/icon-512.png">\n<meta property="og:site_name" content="Кто мы? 3D-атлас человека">\n<meta name="twitter:card" content="summary">\n'
+OG_COMMON = lambda lang: f'<meta property="og:image" content="{BASE}icons/icon-512.png">\n<meta property="og:site_name" content="{"Кто мы? 3D-атлас человека" if lang == "ru" else "Who are we? 3D human atlas"}">\n<meta name="twitter:card" content="summary">\n'
 def head_tags(title, desc, canon, ru, en, lang, ogtype, extra=''):
     return (f'<title>{H.escape(title)}</title>\n<meta name="description" content="{H.escape(desc)}">\n<link rel="canonical" href="{canon}">\n'
             f'<link rel="alternate" hreflang="ru" href="{ru}">\n<link rel="alternate" hreflang="en" href="{en}">\n<link rel="alternate" hreflang="x-default" href="{ru}">\n'
             f'<meta property="og:type" content="{ogtype}">\n<meta property="og:title" content="{H.escape(title)}">\n<meta property="og:description" content="{H.escape(desc)}">\n<meta property="og:url" content="{canon}">\n'
-            f'<meta property="og:locale" content="{"ru_RU" if lang == "ru" else "en_US"}">\n' + OG_COMMON + extra)
+            f'<meta property="og:locale" content="{"ru_RU" if lang == "ru" else "en_US"}">\n' + OG_COMMON(lang) + extra)
 SEO_HEAD = head_tags('Кто мы? — от молекулы до мысли · 3D-атлас человека', DESC, BASE, BASE, BASE + 'index.en.html', 'ru', 'website', f'<script type="application/ld+json">{JSONLD}</script>\n')
-SEO_HEAD_EN = head_tags('Who are we? From molecule to mind · 3D human atlas', DESC_EN, BASE + 'index.en.html', BASE, BASE + 'index.en.html', 'en', 'website', f'<script type="application/ld+json">{JSONLD}</script>\n<script>window.__PAGE = {{ id: "", lang: "en" }};</script>\n')
+SEO_HEAD_EN = head_tags('Who are we? From molecule to mind · 3D human atlas', DESC_EN, BASE + 'index.en.html', BASE, BASE + 'index.en.html', 'en', 'website', f'<script type="application/ld+json">{JSONLD_EN}</script>\n<script>window.__PAGE = {{ id: "", lang: "en" }};</script>\n')
 # сайт-приложение (PWA) для своего хостинга: manifest, иконки, офлайн-кэш
 PWA_HEAD = '<meta name="theme-color" content="#08070A">\n<meta name="mobile-web-app-capable" content="yes">\n<link rel="manifest" href="manifest.webmanifest">\n<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">\n<link rel="apple-touch-icon" href="icons/apple-180.png">\n'
 PWA_HEAD += '<meta name="atlas-pages" content="1">\n'   # сайт с отдельными страницами тем: адреса вида krebs.html / krebs.en.html
