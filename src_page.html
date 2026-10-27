@@ -378,12 +378,16 @@ const MODEL_EXT = 'bin';   // gzip-архив модели (раньше — bas
 /* GLB со сжатой геометрией (Draco): декодер three.js подгружается только когда нужна модель */
 const DRACO_PATH = (() => { try { return import.meta.resolve('three/addons/libs/draco/gltf/'); } catch (e) { return 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/libs/draco/gltf/'; } })();
 let dracoP = null;
+let dracoBusy = 0;
 function parseGLB(buf, onLoad, onErr) {
-  (dracoP ||= import('three/addons/loaders/DRACOLoader.js').then(({ DRACOLoader }) => { const d = new DRACOLoader(); d.setDecoderPath(DRACO_PATH); return d; }))
-    .then((d) => { const l = new GLTFLoader(); l.setDRACOLoader(d); l.parse(buf, '', onLoad, onErr); }, onErr);
+  // декодер: один поток; после разбора всех моделей он выгружается (воркер с wasm не висит в памяти); при сбое сети — повторная попытка в следующий раз
+  (dracoP ||= import('three/addons/loaders/DRACOLoader.js').then(({ DRACOLoader }) => { const d = new DRACOLoader(); d.setDecoderPath(DRACO_PATH); d.setWorkerLimit(1); return d; }).catch((e) => { dracoP = null; throw e; }))
+    .then((d) => new Promise((res, rej) => { dracoBusy++; const l = new GLTFLoader(); l.setDRACOLoader(d); l.parse(buf, '', res, rej); })
+      .finally(() => { if (--dracoBusy === 0) { d.dispose(); dracoP = null; } }))
+    .then(onLoad).catch(onErr);
 }
 function fetchModel(name) {
-  return fetch('models/' + name + '.' + MODEL_EXT).then((r) => { if (!r.ok) throw new Error('HTTP ' + r.status); return MODEL_EXT === 'txt' ? r.text().then((t) => { const b = atob(t.trim()); const u = new Uint8Array(b.length); for (let i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return new Blob([u]); }) : r.blob(); })
+  return fetch('models/' + name + '.' + MODEL_EXT).then((r) => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.blob(); })
     .then((blob) => { if (typeof DecompressionStream === 'undefined') throw new Error('браузер слишком старый для распаковки модели'); return new Response(blob.stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer(); });
 }
 const $ = (s) => document.querySelector(s);
@@ -2165,8 +2169,8 @@ function makeSkeleton() {
   function ui(el) {
     const info = h('div', { class: 'info' });
     refs.setInfo = () => {
-      info.innerHTML = st.err ? `Не удалось загрузить модель скелета (${st.err}). Обновите страницу.` : !st.loaded ? 'Загружаю модель скелета (около 8 МБ)…' : st.sel ? BONES.find((b) => b.id === st.sel).text
-        : st.pulse && !st.mus ? PULSE_TEXT : st.mus ? (st.musErr ? `Не удалось загрузить мышцы (${st.musErr}).` : st.musLoad < 2 ? 'Загружаю мышцы (около 9 МБ)…' : MUS_TEXT) : 'Нажмите на любую кость или выберите её в списке.';
+      info.innerHTML = st.err ? `Не удалось загрузить модель скелета (${st.err}). Обновите страницу.` : !st.loaded ? 'Загружаю модель скелета (около 3 МБ)…' : st.sel ? BONES.find((b) => b.id === st.sel).text
+        : st.pulse && !st.mus ? PULSE_TEXT : st.mus ? (st.musErr ? `Не удалось загрузить мышцы (${st.musErr}).` : st.musLoad < 2 ? 'Загружаю мышцы (около 5 МБ)…' : MUS_TEXT) : 'Нажмите на любую кость или выберите её в списке.';
     };
     refs.seg = seg([{ id: 'all', label: 'Весь скелет' }, ...BONES.map((b) => ({ id: b.id, label: b.name }))], () => st.sel || 'all', (v) => select(v));
     const pose = seg([{ id: 'stand', label: 'Стоит' }, { id: 'walk', label: 'Идёт' }, { id: 'squat', label: 'Приседает' }], () => st.pose, (v) => { st.pose = v; });
@@ -3641,7 +3645,7 @@ function makeVision() {
     const info = h('div', { class: 'info' });
     refs.setInfo = () => {
       if (st.err) { info.innerHTML = `Не удалось загрузить 3D-модель (${st.err}). Обновите страницу.`; return; }
-      if (!st.loaded) { info.innerHTML = 'Загружаю 3D-модель зрительной системы (около 12 МБ)…'; return; }
+      if (!st.loaded) { info.innerHTML = 'Загружаю 3D-модель зрительной системы (около 2 МБ)…'; return; }
       info.innerHTML = st.mode === 'path' ? LES[st.lesion].text + (st.lesion === 'none' ? ' Выберите повреждение и посмотрите на схему полей справа.' : '') : EYE[st.eye].text;
     };
     const modeSeg = seg([{ id: 'path', label: 'Путь сигнала' }, { id: 'eye', label: 'Глаз в разрезе' }], () => st.mode, (v) => setMode(v));
@@ -3854,7 +3858,8 @@ function pickOn(selfRef, camera, objects, onHit) {
     const r = canvas.getBoundingClientRect(); ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
     ray.setFromCamera(ndc, camera); ray.params.Line = { threshold: 0.05 };
     const list = typeof objects === 'function' ? objects() : objects;
-    const hit = ray.intersectObjects(list, false).find((hh) => hh.object.visible && hh.object.userData.pick !== undefined);
+    const vis = (o) => { for (; o; o = o.parent) if (!o.visible) return false; return true; };   // скрытая группа-родитель тоже скрывает
+    const hit = ray.intersectObjects(list, false).find((hh) => vis(hh.object) && hh.object.userData.pick !== undefined);
     if (hit) onHit(hit.object.userData.pick, hit);
   });
 }

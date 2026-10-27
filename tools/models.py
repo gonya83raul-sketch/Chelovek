@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""3D-модели сайта: out/models/<имя>.txt (base64 от gzip, старый формат) или <имя>.glb → out/models/<имя>.bin (gzip).
+"""3D-модели сайта: исходники models-src/<имя>.glb или <имя>.txt (base64 от gzip, старый формат) → out/models/<имя>.bin (gzip).
+Исходники в git не входят (большие): папка models-src/ в .gitignore; их копия — старые models/*.txt в истории ветки main (до app17).
 Для GLB: текстуры JPEG/PNG → WebP (EXT_texture_webp), геометрия → Draco (tools/glbdraco.mjs). Имена узлов и мешей не меняются.
 Скелет и мышцы — свой двоичный формат, они только перепаковываются без base64.
   python3 tools/models.py [имя ...]      (по умолчанию все пять)
@@ -8,7 +9,7 @@ import base64, gzip, io, json, os, struct, subprocess, sys, tempfile
 from PIL import Image
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-MD = os.path.join(ROOT, 'out', 'models')
+MD = os.path.join(ROOT, 'out', 'models'); SRC = os.path.join(ROOT, 'models-src'); os.makedirs(MD, exist_ok=True)
 NAMES = sys.argv[1:] or ['skeleton', 'muscles', 'vision', 'digest', 'repro']
 
 def read_glb(d):
@@ -31,12 +32,20 @@ def write_glb(J, views):   # views: список bytes по порядку buffe
 def to_webp(J, BIN):
     views = [BIN[bv.get('byteOffset', 0):bv.get('byteOffset', 0) + bv['byteLength']] for bv in J['bufferViews']]
     conv, b0, b1 = set(), 0, 0
+    # карты нормалей и шероховатости — почти без потерь (ошибка в них заметнее, чем в цвете)
+    tex_img = {ti: t.get('source') for ti, t in enumerate(J.get('textures', []))}
+    data_img = set()
+    for m in J.get('materials', []):
+        for k in ('normalTexture', 'occlusionTexture'):
+            if k in m: data_img.add(tex_img.get(m[k]['index']))
+        pbr = m.get('pbrMetallicRoughness', {})
+        if 'metallicRoughnessTexture' in pbr: data_img.add(tex_img.get(pbr['metallicRoughnessTexture']['index']))
     for ii, im in enumerate(J.get('images', [])):
         if 'bufferView' not in im: continue
         raw = views[im['bufferView']]; img = Image.open(io.BytesIO(raw)); img.load()
         alpha = img.mode in ('RGBA', 'LA', 'PA') or (img.mode == 'P' and 'transparency' in img.info)
         img = img.convert('RGBA' if alpha else 'RGB')
-        o = io.BytesIO(); img.save(o, 'WEBP', quality=88 if im.get('mimeType') == 'image/png' else 82, method=6)
+        o = io.BytesIO(); img.save(o, 'WEBP', quality=95 if ii in data_img else 88 if im.get('mimeType') == 'image/png' else 82, method=6)
         w = o.getvalue(); b0 += len(raw)
         if len(w) < len(raw) * 0.92:
             views[im['bufferView']] = w; im['mimeType'] = 'image/webp'; conv.add(ii); b1 += len(w)
@@ -52,7 +61,7 @@ def to_webp(J, BIN):
     return write_glb(J, views)
 
 for n in NAMES:
-    txt, glbp = os.path.join(MD, n + '.txt'), os.path.join(MD, n + '.glb')
+    txt, glbp = os.path.join(SRC, n + '.txt'), os.path.join(SRC, n + '.glb')
     if os.path.exists(glbp): d = open(glbp, 'rb').read()
     elif os.path.exists(txt): d = gzip.decompress(base64.b64decode(open(txt).read().strip()))
     else: print('нет', n); continue
@@ -71,5 +80,3 @@ for n in NAMES:
     g = gzip.compress(d, 9, mtime=0)
     open(os.path.join(MD, n + '.bin'), 'wb').write(g)
     print(f'  → {n}.bin {len(g) / 1048576:.2f} МБ')
-    for f in (txt, glbp):
-        if os.path.exists(f): os.remove(f)

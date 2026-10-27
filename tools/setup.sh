@@ -4,7 +4,12 @@ set -e
 # 1) 3D-модели лежат только в ветке main (собранный сайт) — кладём туда, где их ждёт build.py
 git fetch origin main
 mkdir -p out/models lt
-for m in skeleton muscles vision digest repro; do git show FETCH_HEAD:models/$m.bin > out/models/$m.bin; done   # gzip; tools/models.py делает их из GLB
+# сайт хранит models/<имя>.bin (gzip, сжатые tools/models.py); до app17 там были models/<имя>.txt — их кладём в models-src/ и пересжимаем
+mkdir -p models-src
+for m in skeleton muscles vision digest repro; do
+  git show FETCH_HEAD:models/$m.bin > out/models/$m.bin 2>/dev/null || { rm -f out/models/$m.bin; git show FETCH_HEAD:models/$m.txt > models-src/$m.txt; NEED=1; }
+done
+[ -z "$NEED" ] || python3 tools/models.py
 # 2) инструменты сборки (разбиение на файлы) и three.js для локальных тестов
 [ -d /opt/node-tools/node_modules/acorn ] || npm i --no-save acorn acorn-walk eslint-scope three@0.160.0
 [ -d node_modules/three ] || npm i --no-save three@0.160.0

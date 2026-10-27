@@ -11,7 +11,7 @@
 - `python3 tools/build.py` → out/page.html (артефакт), out/index.html (офлайн), out/site/ (сайт-PWA), lt/ (локальный тест). Константа `APP` в build.py — имя папки версии (app4, app5…), менять при каждой публикации.
 - Тесты: `python3 tools/sweep.py <ids…>` (все сцены без ошибок), `python3 tools/lt.py <id> key:2 "window.__adv(5)" shot:x` (скриншоты), `tools/mob.py` (телефон), `tools/navtest.py`, `tools/pwatest.py`.
 - Публикация на GitHub: клон в /home/claude/chelovek (ветка main): удалить старую appN, скопировать out/site/., commit, push.
-- Модели 3D (models/*.txt — base64 от gzip) не менять без нужды.
+- Модели 3D: на сайте models/<имя>.bin (gzip; WebP + Draco для GLB) — делает `python3 tools/models.py` из исходников models-src/ (в .gitignore; копия — models/*.txt в истории ветки main до app17). Подробнее — раздел app17.
 
 ## Сделано в этой серии
 - Деление на вкладки (каждая тема — свой файл), сжатые модели, выгрузка старых сцен, PWA (иконки, офлайн, «Сохранить для офлайна»), мобильная раскладка, выпадающий список тем на телефоне, «Назад» на Android.
@@ -144,3 +144,4 @@ C. Новые темы (п.1 ниже + сверить оглавление data
 - Инструменты: `python3 tools/models.py [имена]` (из out/models/<имя>.txt или .glb делает .bin; WebP через Pillow, Draco — `node tools/glbdraco.mjs` кодировщиком из three.js, без npm-пакетов — их установка запрещена политикой песочницы). tools/setup.sh берёт .bin из ветки main.
 - Загрузка: `parseGLB(buf, onLoad, onErr)` — GLTFLoader + DRACOLoader (декодер грузится только при первой модели, путь `import.meta.resolve('three/addons/libs/draco/gltf/')`). «Сохранить для офлайна» докачивает и декодер.
 - Рендер останавливается, когда сцена вне экрана (IntersectionObserver на #stage) или открыт любой `<dialog>`; вкладка в фоне — как раньше.
+- Правки по рецензии review/models-c.md: выбор кликом учитывает скрытые группы-родители (pickOn), подписи размеров моделей, DRACOLoader — один поток и выгрузка после разбора, повтор при сбое сети; карты нормалей/шероховатости — WebP q95 или остаются JPEG; исходники моделей не удаляются (models-src/). Не проверено из песочницы: загрузка декодера Draco с jsdelivr на опубликованном сайте.
