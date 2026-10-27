@@ -75,7 +75,34 @@ ledes = [f'{t}: {mm["lede"]}' for t, mm in META.items() if 'lede' in mm]
 L0 = 'const TOPIC_LEDE = {}; // заполняет tools/build.py'
 assert page.count(L0) == 1
 page = page.replace(L0, 'const TOPIC_LEDE = { ' + ', '.join(ledes) + ' };', 1)
-APP = 'app17'   # меняется при каждой публикации со старой структурой кэша
+APP = 'app18'   # меняется при каждой публикации со старой структурой кэша
+# модели: сайт грузит models/<имя>.bin; если есть только старые .txt — перепаковать, без .bin сборку не выпускать
+MODELS = ['skeleton', 'muscles', 'vision', 'digest', 'repro']
+MDIR = os.path.join(ROOT, 'out', 'models')
+miss = [m for m in MODELS if not os.path.exists(os.path.join(MDIR, m + '.bin'))]
+if miss: subprocess.run([sys.executable, os.path.join(ROOT, 'tools', 'models.py')] + miss)
+miss = [m for m in MODELS if not os.path.exists(os.path.join(MDIR, m + '.bin'))]
+if miss: print('НЕТ МОДЕЛЕЙ out/models/*.bin:', miss, '— запустите tools/models.py'); sys.exit(1)
+MSIZE = {m: os.path.getsize(os.path.join(MDIR, m + '.bin')) for m in MODELS}
+M0 = 'const MODEL_SIZE = {}; // размеры models/*.bin в байтах — заполняет tools/build.py'
+assert page.count(M0) == 1
+page = page.replace(M0, 'const MODEL_SIZE = ' + json.dumps(MSIZE) + ';', 1)
+# three.js со своего хоста (без стороннего CDN): минифицированная сборка той же версии и нужные аддоны — в <APP>/vendor/,
+# декодер Draco — в models/draco-r160/ (живёт в долгоживущем кэше моделей вместе с моделями)
+import hashlib
+THREE_DIR = os.path.join(ROOT, 'node_modules', 'three')
+if not os.path.exists(os.path.join(THREE_DIR, 'build', 'three.module.min.js')): print('нет node_modules/three — запустите tools/setup.sh (npm i three@0.160.0)'); sys.exit(1)
+THREE_VER = json.load(open(os.path.join(THREE_DIR, 'package.json')))['version']
+assert THREE_VER == '0.160.0', THREE_VER
+DRACO = 'models/draco-r160/'
+DRACO_FILES = ['draco_wasm_wrapper.js', 'draco_decoder.wasm', 'draco_decoder.js']
+IMPORTMAP_CDN = re.search(r'<script type="importmap">.*?</script>', page, re.S).group(0)
+IMPORTMAP_SITE = ('<script type="importmap">\n{ "imports": {\n  "three": "./' + APP + '/vendor/three.module.min.js",\n  "three/addons/": "./' + APP + '/vendor/jsm/",\n'
+                  '  "three/addons/libs/draco/gltf/": "./' + DRACO + '"\n} }\n</script>')
+h = hashlib.sha1()
+for m in MODELS: h.update(open(os.path.join(MDIR, m + '.bin'), 'rb').read())
+for f in DRACO_FILES: h.update(open(os.path.join(THREE_DIR, 'examples', 'jsm', 'libs', 'draco', 'gltf', f), 'rb').read())
+MODELS_HASH = h.hexdigest()[:10]   # имя долгоживущего кэша моделей меняется только вместе с моделями
 OUT = os.path.join(ROOT, 'out'); os.makedirs(OUT, exist_ok=True)
 i0 = page.index('<script type="module">') ; i1 = page.index('</script>', i0)
 mod = page[i0 + len('<script type="module">'):i1]
@@ -109,18 +136,75 @@ if EN:
 for f in glob.glob(os.path.join(OUT, APP, '**', '*.js'), recursive=True):
     r = subprocess.run(['node', '--check', f], capture_output=True, text=True)
     if r.returncode: print(f, r.stderr[:2000]); sys.exit(1)
+# подсказки «Загружаю … (около N МБ)» — по настоящему размеру models/*.bin (в обеих языковых сборках, после перевода)
+def mb(b, lang):
+    v = b / 1048576; s = f'{v:.1f}' if v < 10 else f'{v:.0f}'
+    return s.replace('.', ',') if lang == 'ru' else s
+HINTS = {'skeleton': ('модель скелета', 'the skeleton model'), 'muscles': ('мышцы', 'the muscles'), 'vision': ('3D-модель зрительной системы', 'the 3D model of the visual system')}
+for f in glob.glob(os.path.join(OUT, APP, '**', '*.js'), recursive=True):
+    t = open(f, encoding='utf8').read(); t0 = t
+    for m, (ru, en) in HINTS.items():
+        t = re.sub(r'(Загружаю ' + re.escape(ru) + r' \(около )[\d,.]+( МБ\))', lambda q: q.group(1) + mb(MSIZE[m], 'ru') + q.group(2), t)
+        t = re.sub(r'(Loading ' + re.escape(en) + r' \(about )[\d,.]+( MB\))', lambda q: q.group(1) + mb(MSIZE[m], 'en') + q.group(2), t)
+    if t != t0: open(f, 'w', encoding='utf8').write(t)
+# вендор: three.module.min.js + аддоны, которые импортирует код (статически и через import()), со всеми их зависимостями
+JSM = os.path.join(THREE_DIR, 'examples', 'jsm')
+SPEC = re.compile(r"""(?:\bfrom\s*|\bimport\s*\(\s*|\bimport\s+)['"]([^'"\n]+)['"]""")
+def addon_closure(roots_js, static_only=False):
+    spec = re.compile(r"""(?:\bfrom\s*|\bimport\s+)['"]([^'"\n]+)['"]""") if static_only else SPEC
+    todo, seen = [], set()
+    for f in roots_js:
+        for s in spec.findall(open(f, encoding='utf8').read()):
+            if s.startswith('three/addons/'): todo.append(os.path.normpath(os.path.join(JSM, s[len('three/addons/'):])))
+    while todo:
+        f = todo.pop()
+        if f in seen or not os.path.isfile(f) or f.endswith('/'): continue
+        seen.add(f)
+        for s in spec.findall(open(f, encoding='utf8').read()):
+            if s.startswith('./') or s.startswith('../'): todo.append(os.path.normpath(os.path.join(os.path.dirname(f), s)))
+            elif s.startswith('three/addons/'): todo.append(os.path.normpath(os.path.join(JSM, s[len('three/addons/'):])))
+    return sorted(seen)
+APPJS = [f for f in glob.glob(os.path.join(OUT, APP, '**', '*.js'), recursive=True)]
+VEND = os.path.join(OUT, APP, 'vendor')
+os.makedirs(os.path.join(VEND, 'jsm'))
+shutil.copy(os.path.join(THREE_DIR, 'build', 'three.module.min.js'), VEND)
+VENDOR_FILES = [f'{APP}/vendor/three.module.min.js']
+for f in addon_closure(APPJS):
+    rel = os.path.relpath(f, JSM); dst = os.path.join(VEND, 'jsm', rel)
+    os.makedirs(os.path.dirname(dst), exist_ok=True); shutil.copy(f, dst); VENDOR_FILES.append(f'{APP}/vendor/jsm/' + rel.replace(os.sep, '/'))
+# что качать заранее (modulepreload): three, аддоны из статических import ядра, ядро и чанк темы своего языка
+CORE_STATIC = [f'{APP}/vendor/jsm/' + os.path.relpath(f, JSM).replace(os.sep, '/') for f in addon_closure([os.path.join(OUT, APP, 'core.js')], static_only=True)]
+CHUNK = {}
+for k, v in re.findall(r"(\w+): \['(\w+)', 'make\w+'\]", open(os.path.join(OUT, APP, 'core.js'), encoding='utf8').read()): CHUNK[k] = v
+def preload_tags(i, lang):
+    base = f'{APP}/' + ('en/' if lang == 'en' and EN else '')
+    urls = [base + 'core.js', f'{APP}/vendor/three.module.min.js'] + CORE_STATIC
+    c = CHUNK.get(i or 'skeleton')
+    if c:
+        cf = os.path.join(OUT, base, 's', c + '.js'); urls.append(base + 's/' + c + '.js')
+        if os.path.exists(cf) and "from './kit.js'" in open(cf, encoding='utf8').read(): urls.append(base + 's/kit.js')
+    return ''.join(f'<link rel="modulepreload" href="{u}">\n' for u in urls)
 page_ru = page[:i0] + f'<script type="module" src="{APP}/core.js"></script>' + page[i1 + len('</script>'):]
 open(os.path.join(OUT, 'page.html'), 'w', encoding='utf8').write(page_ru)
 # сайт: главная «/» — русская, английская — index.en.html; у каждой темы свои страницы (window.__PAGE задаёт тему и язык).
 # ?lang=en или выбранный ранее английский (localStorage) ведут на английскую главную; язык браузера только предлагает её.
+# Офлайн-копия главной, отданная под адресом темы (sw.js), язык берёт из адреса и никуда не переходит; переход на английскую главную —
+# не чаще раза в 10 с (защита от петли перезагрузок). Ядро не загрузилось (нет сети, файлы недоступны) — сообщение и «Обновить».
 LOADER = ('<script type="module">\nconst P = window.__PAGE; let L = P ? P.lang : \'ru\', go = null;\n'
   'if (!P) { const q = new URLSearchParams(location.search).get(\'lang\'); let m = null;\n'
   '  try { if (q === \'ru\' || q === \'en\') localStorage.setItem(\'lang\', q); m = localStorage.getItem(\'lang\'); } catch (e) { /* без памяти */ }\n'
   '  const want = q || m;\n'
-  '  if (want === \'en\') go = \'index.en.html\' + location.hash;\n'
+  '  if (!/\\/(index\\.html)?$/.test(location.pathname)) L = /\\.en\\.html$/.test(location.pathname) ? \'en\' : \'ru\';\n'
+  '  else if (want === \'en\') { let t = 0; try { t = +sessionStorage.getItem(\'redir\') || 0; sessionStorage.setItem(\'redir\', String(Date.now())); } catch (e) { /* без памяти */ }\n'
+  '    if (Date.now() - t > 10000) go = \'index.en.html\' + location.hash; else L = \'en\'; }\n'
   '  else if (!want && !(navigator.languages || [navigator.language || \'\']).some((l) => /^(ru|uk|be|kk)/i.test(l))) window.__LANGNOTE = 1; }\n'
-  f'if (go) location.replace(go); else {{ document.documentElement.lang = L; import(L === \'en\' ? \'./{APP}/en/core.js\' : \'./{APP}/core.js\'); }}\n</script>')
+  f'if (go) location.replace(go); else {{ document.documentElement.lang = L; import(L === \'en\' ? \'./{APP}/en/core.js\' : \'./{APP}/core.js\').catch((e) => {{\n'
+  '  console.error(e); const st = document.getElementById(\'stage\'); if (!st || st.querySelector(\'.fallback\')) return;\n'
+  '  const d = document.createElement(\'div\'), p = document.createElement(\'p\'), b = document.createElement(\'button\'); d.className = \'fallback\'; d.setAttribute(\'role\', \'alert\');\n'
+  '  p.textContent = L === \'en\' ? \'Could not load the atlas: no connection, or the site files are unavailable. The topic text is below.\' : \'Не удалось загрузить атлас: нет сети или файлы сайта недоступны. Текст темы — ниже.\';\n'
+  '  b.type = \'button\'; b.className = \'btn primary\'; b.textContent = L === \'en\' ? \'Reload\' : \'Обновить\'; b.onclick = () => location.reload(); d.append(p, b); st.append(d); }); }\n</script>')
 page = page[:i0] + (LOADER if EN else f'<script type="module" src="{APP}/core.js"></script>') + page[i1 + len('</script>'):]
+page = page.replace(IMPORTMAP_CDN, IMPORTMAP_SITE, 1)   # сайт и офлайн-файл — three.js со своего хоста (артефакт page.html — с CDN)
 head = '<!doctype html>\n<html lang="ru">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">\n</head>\n<body>\n'
 full = head + page + '</body>\n</html>\n'
 open(os.path.join(OUT, 'index.html'), 'w', encoding='utf8').write(full)
@@ -167,8 +251,9 @@ def head_tags(title, desc, canon, ru, en, lang, ogtype, extra=''):
 SEO_HEAD = head_tags('Кто мы? — от молекулы до мысли · 3D-атлас человека', DESC, BASE, BASE, BASE + 'index.en.html', 'ru', 'website', f'<script type="application/ld+json">{JSONLD}</script>\n')
 SEO_HEAD_EN = head_tags('Who are we? From molecule to mind · 3D human atlas', DESC_EN, BASE + 'index.en.html', BASE, BASE + 'index.en.html', 'en', 'website', f'<script type="application/ld+json">{JSONLD_EN}</script>\n<script>window.__PAGE = {{ id: "", lang: "en" }};</script>\n')
 # сайт-приложение (PWA) для своего хостинга: manifest, иконки, офлайн-кэш
-PWA_HEAD = '<meta name="theme-color" content="#08070A">\n<meta name="mobile-web-app-capable" content="yes">\n<link rel="manifest" href="manifest.webmanifest">\n<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">\n<link rel="apple-touch-icon" href="icons/apple-180.png">\n'
-PWA_HEAD += '<meta name="atlas-pages" content="1">\n'   # сайт с отдельными страницами тем: адреса вида krebs.html / krebs.en.html
+PWA_HEAD = lambda lang: ('<meta name="theme-color" content="#08070A">\n<meta name="mobile-web-app-capable" content="yes">\n'
+    f'<link rel="manifest" href="manifest{".en" if lang == "en" else ""}.webmanifest">\n<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">\n<link rel="apple-touch-icon" href="icons/apple-180.png">\n'
+    '<meta name="atlas-pages" content="1">\n')   # сайт с отдельными страницами тем: адреса вида krebs.html / krebs.en.html
 def jsval(lit):
     try: return ast.literal_eval(lit)
     except Exception: return ''
@@ -191,7 +276,7 @@ def short(d, n=160):   # описание для поиска: до ~160 зна�
 # статическая оболочка английских страниц: те же замены, что делает T(...) в рантайме, плюс тексты и подписи по словарю
 TSTR = [jsval(m.group(1)) for m in re.finditer(r"\bT\('[^']+', ('(?:[^'\\\n]|\\.)*')", MODS['ru'])]
 def shell_en(doc):
-    a, b = doc.index('<body>'), doc.index('<script type="importmap">')
+    a = doc.index('<body>'); b = doc.index('<script type="module">', a)
     body = doc[a:b]
     for k in sorted(set(x for x in TSTR if x and x in EN), key=len, reverse=True):
         body = body.replace('>' + k + '<', '>' + EN[k] + '<').replace('"' + k + '"', '"' + H.escape(EN[k]) + '"')
@@ -211,22 +296,42 @@ def topic_texts(i, lang):
 def canon(i, lang):   # «Скелет» — стартовая тема главной: его страницы ссылаются на главные (без дублей)
     if i == 'skeleton': return BASE + ('index.en.html' if lang == 'en' else '')
     return BASE + purl(i, lang)
-def mkdoc(lang, hd, topics):
-    d = full.replace('<html lang="ru">', f'<html lang="{lang}">', 1).replace('</head>', hd + PWA_HEAD + '</head>', 1).replace('<title>Кто мы? — от молекулы до мысли</title>\n', '', 1).replace('<!--TOPICS-->', topics, 1)
+BRAND0 = '<a class="brand" href="./"><span class="bt">Кто мы?</span> <span class="bs">от молекулы до мысли</span></a>'
+def mkdoc(lang, hd, topics, pid='', home=False):
+    # importmap — в <head>, до modulepreload (иначе браузер не применит карту к заранее загруженным модулям)
+    d = full.replace(IMPORTMAP_SITE, '', 1)
+    d = d.replace('<html lang="ru">', f'<html lang="{lang}">', 1).replace('</head>', hd + PWA_HEAD(lang) + IMPORTMAP_SITE + '\n' + preload_tags(pid, lang) + '</head>', 1).replace('<title>Кто мы? — от молекулы до мысли</title>\n', '', 1).replace('<!--TOPICS-->', topics, 1)
+    if home:   # главная: заголовок первого уровня — название атласа (тема под ним — h2)
+        assert d.count(BRAND0) == 1
+        d = d.replace(BRAND0, '<h1 class="brandh">' + BRAND0.replace('</span></a>', '</span><span class="vh"> — 3D-атлас человека</span></a>') + '</h1>', 1)
     return shell_en(d) if lang == 'en' else d
+def home_h2(doc):
+    doc, n = re.subn(r'<h1 id="title">(.*?)</h1>', r'<h2 id="title">\1</h2>', doc, count=1); assert n == 1
+    return doc
 # главные: текст стартовой темы (скелет) виден сразу, до загрузки скриптов
-site_html = prefill(mkdoc('ru', SEO_HEAD, topics_html('ru')), *topic_texts('skeleton', 'ru')[:3], notes_of('skeleton', 'ru'))
-site_en = prefill(mkdoc('en', SEO_HEAD_EN, topics_html('en')), *topic_texts('skeleton', 'en')[:3], notes_of('skeleton', 'en'))
+site_html = home_h2(prefill(mkdoc('ru', SEO_HEAD, topics_html('ru'), home=True), *topic_texts('skeleton', 'ru')[:3], notes_of('skeleton', 'ru')))
+site_en = home_h2(prefill(mkdoc('en', SEO_HEAD_EN, topics_html('en'), home=True), *topic_texts('skeleton', 'en')[:3], notes_of('skeleton', 'en')))
 PAGES = {}
 TAIL = {'ru': ' — Кто мы? 3D-атлас человека', 'en': ' — Who are we? 3D human atlas'}
+TAIL_SHORT = {'ru': ' — Кто мы?', 'en': ' — Who are we?'}   # заголовок длиннее 60 знаков — короткий хвост (так же в рантайме: pageTitle)
+SEC_NAME = {i: name for sid, name, it in secs for i, _ in it if i != '#'}
+def topic_ld(i, lang, t, desc):   # schema.org: учебный материал + «хлебные крошки» (атлас → тема)
+    home_url, atlas = (BASE + 'index.en.html', 'Who are we? From molecule to mind') if lang == 'en' else (BASE, 'Кто мы? — от молекулы до мысли')
+    ld = [{'@context': 'https://schema.org', '@type': 'LearningResource', 'name': t, 'description': desc, 'url': canon(i, lang), 'inLanguage': lang,
+           'learningResourceType': 'interactive 3D model' if lang == 'en' else 'интерактивная 3D-модель', 'isAccessibleForFree': True,
+           'about': tr(SEC_NAME.get(i, ''), lang), 'isPartOf': {'@type': 'WebApplication', 'name': atlas, 'url': home_url}},
+          {'@context': 'https://schema.org', '@type': 'BreadcrumbList', 'itemListElement': [
+           {'@type': 'ListItem', 'position': 1, 'name': atlas, 'item': home_url}, {'@type': 'ListItem', 'position': 2, 'name': t, 'item': canon(i, lang)}]}]
+    return '<script type="application/ld+json">' + json.dumps(ld, ensure_ascii=False).replace('</', '<\\/') + '</script>\n'
 for _, _, it in secs:
   for i, _ in it:
     if i == '#' or (i, 'ru') in PAGES: continue
     for lang in ('ru', 'en'):
         k, t, l, nm = topic_texts(i, lang)
         desc = short(l) if l else nm + '. ' + (DESC if lang == 'ru' else DESC_EN)
-        hd = head_tags(t + TAIL[lang], desc, canon(i, lang), canon(i, 'ru'), canon(i, 'en'), lang, 'article', f'<script>window.__PAGE = {{ id: {json.dumps(i)}, lang: {json.dumps(lang)} }};</script>\n')
-        PAGES[(i, lang)] = prefill(mkdoc(lang, hd, topics_html(lang)), k, t, l, notes_of(i, lang))
+        ttl = t + TAIL[lang] if len(t + TAIL[lang]) <= 60 else t + TAIL_SHORT[lang]
+        hd = head_tags(ttl, desc, canon(i, lang), canon(i, 'ru'), canon(i, 'en'), lang, 'article', topic_ld(i, lang, t, desc) + f'<script>window.__PAGE = {{ id: {json.dumps(i)}, lang: {json.dumps(lang)} }};</script>\n')
+        PAGES[(i, lang)] = prefill(mkdoc(lang, hd, topics_html(lang), pid=i), k, t, l, notes_of(i, lang))
 full = full.replace('<!--TOPICS-->', topics_html('ru', hashes=True), 1)
 SITE = os.path.join(OUT, 'site'); shutil.rmtree(SITE, ignore_errors=True); os.makedirs(SITE)
 open(os.path.join(SITE, 'index.html'), 'w', encoding='utf8').write(site_html)
@@ -238,19 +343,31 @@ P404 = ('<!doctype html>\n<html lang="ru"><head><meta charset="utf-8"><meta name
   f'<body><main><h1>Страница не найдена</h1><p>Такой страницы в атласе «Кто мы?» нет. <a href="{BASE}">Открыть атлас</a>.</p><p lang="en">Page not found. <a href="{BASE}index.en.html">Open the atlas in English</a>.</p></main></body></html>\n')
 open(os.path.join(SITE, '404.html'), 'w', encoding='utf8').write(P404)
 shutil.copytree(os.path.join(OUT, APP), os.path.join(SITE, APP))
-# модели: сайт грузит models/<имя>.bin; если есть только старые .txt — перепаковать, без .bin сборку не выпускать
-MODELS = ['skeleton', 'muscles', 'vision', 'digest', 'repro']
-miss = [m for m in MODELS if not os.path.exists(os.path.join(OUT, 'models', m + '.bin'))]
-if miss: subprocess.run([sys.executable, os.path.join(ROOT, 'tools', 'models.py')] + miss)
-miss = [m for m in MODELS if not os.path.exists(os.path.join(OUT, 'models', m + '.bin'))]
-if miss: print('НЕТ МОДЕЛЕЙ out/models/*.bin:', miss, '— запустите tools/models.py'); sys.exit(1)
-os.makedirs(os.path.join(SITE, 'models'))
-for m in MODELS: shutil.copy(os.path.join(OUT, 'models', m + '.bin'), os.path.join(SITE, 'models'))
+os.makedirs(os.path.join(SITE, 'models', DRACO.split('/')[1]))
+for m in MODELS: shutil.copy(os.path.join(MDIR, m + '.bin'), os.path.join(SITE, 'models'))
+for f in DRACO_FILES: shutil.copy(os.path.join(JSM, 'libs', 'draco', 'gltf', f), os.path.join(SITE, DRACO))
 shutil.copytree(os.path.join(ROOT, 'pwa', 'icons'), os.path.join(SITE, 'icons'))
-shutil.copy(os.path.join(ROOT, 'pwa', 'manifest.webmanifest'), SITE)
+# манифесты: русский и английский (у английских страниц свой — установка с них открывает английскую версию)
+man = json.load(open(os.path.join(ROOT, 'pwa', 'manifest.webmanifest'), encoding='utf8'))
+json.dump(man, open(os.path.join(SITE, 'manifest.webmanifest'), 'w', encoding='utf8'), ensure_ascii=False, indent=1)
+man_en = {**man, 'id': './index.en.html', 'name': 'Who are we? From molecule to mind', 'short_name': 'Who are we?', 'lang': 'en', 'start_url': './index.en.html',
+          'description': 'Interactive 3D atlas of the human body: the body, the cell, biochemistry and the brain, from molecule to mind.',
+          'shortcuts': [{**man['shortcuts'][0], 'name': 'Search topics', 'short_name': 'Search', 'url': './index.en.html?find'},
+                        {**man['shortcuts'][1], 'name': 'Русская версия', 'short_name': 'Русский', 'url': './index.html?lang=ru'}]}
+json.dump(man_en, open(os.path.join(SITE, 'manifest.en.webmanifest'), 'w', encoding='utf8'), ensure_ascii=False, indent=1)
+# офлайн: список всего, что нужно атласу без сети (обе языковые версии, three.js, темы, модели, декодер) — с размерами;
+# по нему работают кнопка «Сохранить для офлайна» и sw.js (докачка после обновления)
+def rel_files(top):
+    return sorted(os.path.relpath(f, SITE).replace(os.sep, '/') for f in glob.glob(os.path.join(SITE, top, '**', '*'), recursive=True) if os.path.isfile(f))
+OFFLINE = ['index.html', 'index.en.html', 'manifest.webmanifest', 'manifest.en.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/favicon-32.png'] + rel_files(APP) + rel_files('models')
+OFFLINE = [p for p in OFFLINE if os.path.exists(os.path.join(SITE, p)) and (EN or not p.endswith('.en.html'))]
+off = json.dumps({'cache': 'chv-' + APP, 'models': 'chv-models-' + MODELS_HASH, 'files': [[p, os.path.getsize(os.path.join(SITE, p))] for p in OFFLINE]}, separators=(',', ':'))
+for d in (SITE, OUT): open(os.path.join(d, APP, 'offline.json'), 'w').write(off)
+print('офлайн: файлов', len(OFFLINE), '·', round(sum(os.path.getsize(os.path.join(SITE, p)) for p in OFFLINE) / 1048576, 1), 'МБ')
+SHELL = ['./', './index.html'] + (['./index.en.html'] if EN else []) + [f'./{APP}/core.js'] + ([f'./{APP}/en/core.js'] if EN else []) + [f'./{APP}/offline.json', './manifest.webmanifest', './manifest.en.webmanifest', './icons/icon-192.png', './icons/icon-512.png'] + ['./' + v for v in VENDOR_FILES]
 sw = open(os.path.join(ROOT, 'pwa', 'sw.tpl.js'), encoding='utf8').read()
-if not EN: sw = sw.replace("'./__APP__/en/core.js', ", '')
-open(os.path.join(SITE, 'sw.js'), 'w', encoding='utf8').write(sw.replace('__APP__', APP))
+assert sw.count('__SHELL__') == 1 and '__MODELS__' in sw
+open(os.path.join(SITE, 'sw.js'), 'w', encoding='utf8').write(sw.replace('__SHELL__', json.dumps(SHELL)).replace('__MODELS__', MODELS_HASH).replace('__APP__', APP))
 open(os.path.join(SITE, '.nojekyll'), 'w').write('')
 shutil.copytree(os.path.join(ROOT, 'pwa', 'img'), os.path.join(SITE, 'img'))
 open(os.path.join(SITE, 'robots.txt'), 'w').write(f'User-agent: *\nAllow: /\n\nSitemap: {BASE}sitemap.xml\n')
@@ -267,20 +384,20 @@ open(os.path.join(SITE, 'llms.txt'), 'w', encoding='utf8').write('\n'.join(llms)
 # локальный тест (с PWA)
 LT = os.path.join(ROOT, 'lt')
 full = site_html
-for f in ('sw.js', 'manifest.webmanifest'): shutil.copy(os.path.join(SITE, f), LT)
+for f in ('sw.js', 'manifest.webmanifest', 'manifest.en.webmanifest'): shutil.copy(os.path.join(SITE, f), LT)
 shutil.rmtree(os.path.join(LT, 'icons'), ignore_errors=True); shutil.copytree(os.path.join(SITE, 'icons'), os.path.join(LT, 'icons'))
 shutil.rmtree(os.path.join(LT, 'img'), ignore_errors=True); shutil.copytree(os.path.join(SITE, 'img'), os.path.join(LT, 'img'))
-lt_tx = lambda d: d.replace('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js', './three/build/three.module.js').replace('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/', './three/examples/jsm/')
-lt = lt_tx(full)
-for (i_, lang_), doc_ in PAGES.items(): open(os.path.join(LT, purl(i_, lang_)), 'w', encoding='utf8').write(lt_tx(doc_))
-open(os.path.join(LT, 'index.en.html'), 'w', encoding='utf8').write(lt_tx(site_en))
-open(os.path.join(LT, 'index.html'), 'w', encoding='utf8').write(lt)
+# three.js в lt — та же копия со своего хоста, что и на сайте (<APP>/vendor, models/draco-r160)
+for (i_, lang_), doc_ in PAGES.items(): open(os.path.join(LT, purl(i_, lang_)), 'w', encoding='utf8').write(doc_)
+open(os.path.join(LT, 'index.en.html'), 'w', encoding='utf8').write(site_en)
+open(os.path.join(LT, 'index.html'), 'w', encoding='utf8').write(full)
+shutil.rmtree(os.path.join(LT, DRACO), ignore_errors=True); shutil.copytree(os.path.join(SITE, DRACO), os.path.join(LT, DRACO))
 shutil.rmtree(os.path.join(LT, APP), ignore_errors=True); shutil.copytree(os.path.join(OUT, APP), os.path.join(LT, APP))
 for cf in [os.path.join(LT, APP, 'core.js')] + ([os.path.join(LT, APP, 'en', 'core.js')] if EN else []):
     core = open(cf, encoding='utf8').read()
     hook = "show(BUILDERS[start] ? start : 'skeleton');"
     assert core.count(hook) == 1
-    core = core.replace(hook, hook + " window.__adv = (s) => { for (let i = 0; i < s * 20; i++) cur.update(0.05); }; window.__show = show; window.__built = () => Object.keys(built); window.__glass = () => GLASS.length; window.__cur = () => cur; window.__mem = () => renderer.info.memory;")
+    core = core.replace(hook, hook + " window.__adv = (s) => { for (let i = 0; i < s * 20; i++) cur.update(0.05); }; window.__show = show; window.__built = () => Object.keys(built); window.__glass = () => GLASS.length; window.__cur = () => cur; window.__mem = () => renderer.info.memory; window.__renderer = () => renderer;")
     open(cf, 'w', encoding='utf8').write(core)
 os.makedirs(os.path.join(LT, 'models'), exist_ok=True)
 for f in glob.glob(os.path.join(OUT, 'models', '*.bin')): shutil.copy(f, os.path.join(LT, 'models'))

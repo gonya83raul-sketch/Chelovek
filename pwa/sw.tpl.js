@@ -1,23 +1,51 @@
-/* Человек вживую — офлайн-кэш. Версия меняется при каждой сборке. */
-const V = 'chv-__APP__';
-const SHELL = ['./', './index.html', './__APP__/core.js', './__APP__/en/core.js', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png'];
-self.addEventListener('install', (e) => { e.waitUntil(caches.open(V).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting())); });
-self.addEventListener('activate', (e) => { e.waitUntil(caches.keys().then((ks) => Promise.all(ks.filter((k) => k !== V).map((k) => caches.delete(k)))).then(() => self.clients.claim())); });
-const put = (req, res) => { if (res && (res.ok || res.type === 'opaque')) { const cp = res.clone(); caches.open(V).then((c) => c.put(req, cp)); } return res; };
+/* Кто мы? — офлайн-кэш (tools/build.py подставляет версию, хеш моделей и список оболочки).
+   Оболочка версии — кэш chv-<версия>, меняется с каждой публикацией. 3D-модели и декодер Draco — отдельный долгоживущий кэш
+   chv-models-<хеш моделей>: при обновлении сайта он остаётся, новое имя появляется, только когда меняются сами модели.
+   Новая версия не включается сама: страница показывает «Доступно обновление» и по нажатию присылает 'skipWaiting'. */
+const V = 'chv-__APP__', M = 'chv-models-__MODELS__', META = 'chv-meta';
+const SHELL = __SHELL__;
+const SCOPE = self.registration.scope, FLAG = new URL('offline-flag', SCOPE).href;
+const isModel = (u) => u.pathname.includes('/models/');
+self.addEventListener('install', (e) => {
+  e.waitUntil((async () => {
+    const c = await caches.open(V);
+    await c.addAll(SHELL);
+    // атлас был сохранён для офлайна — новая версия докачивает всё сама (список сборки), иначе после обновления офлайн пропал бы
+    try {
+      if (!(await (await caches.open(META)).match(FLAG))) return;
+      const p = await (await fetch('./__APP__/offline.json')).json(), cm = await caches.open(M);
+      let bad = 0;
+      for (const [path] of p.files) {
+        const u = new URL(path, SCOPE).href, cc = path.startsWith('models/') ? cm : c;
+        if (await cc.match(u)) continue;
+        try { const r = await fetch(u, { cache: 'no-cache' }); if (r.ok) await cc.put(u, r); else bad++; } catch (er) { bad++; }
+      }
+      if (!bad) await (await caches.open(META)).put(FLAG, new Response(V));
+    } catch (er) { /* докачается при следующем «Сохранить для офлайна» */ }
+  })());
+});
+self.addEventListener('message', (e) => { if (e.data === 'skipWaiting') self.skipWaiting(); });
+self.addEventListener('activate', (e) => { e.waitUntil(caches.keys().then((ks) => Promise.all(ks.filter((k) => k !== V && k !== M && k !== META).map((k) => caches.delete(k)))).then(() => self.clients.claim())); });
+const put = (req, res) => {
+  if (res && (res.ok || res.type === 'opaque')) { const cp = res.clone(), u = new URL(typeof req === 'string' ? req : req.url, self.location.href); caches.open(isModel(u) ? M : V).then((c) => c.put(req, cp)); }
+  return res;
+};
 self.addEventListener('fetch', (e) => {
   const req = e.request; if (req.method !== 'GET') return;
-  const url = new URL(req.url);
+  const url = new URL(req.url), p = url.pathname;
   // страница: сначала сеть (чтобы приходили обновления), без сети — из кэша
-  // у каждой темы своя страница (krebs.html): кэшируется под своим адресом; без сети и без кэша — главная (она откроет тему по адресу)
+  // у каждой темы своя страница (krebs.html): кэшируется под своим адресом; без сети и без копии — главная своего языка
+  // (английская для *.en.html и ?lang=en; главная откроет тему по адресу и не перенаправляет — без петли перезагрузок)
   if (req.mode === 'navigate') {
-    const root = /\/(index\.html)?$/.test(url.pathname) && !url.searchParams.has('lang'), key = root ? './index.html' : url.origin + url.pathname;
-    const cached = () => caches.match(key).then((hit) => hit || caches.match('./index.html'));
+    const root = /\/(index\.html)?$/.test(p) && !url.searchParams.has('lang'), key = root ? './index.html' : url.origin + p;
+    const home = /\.en\.html$/.test(p) || url.searchParams.get('lang') === 'en' ? './index.en.html' : './index.html';
+    const cached = () => caches.match(key).then((hit) => hit || caches.match(home)).then((hit) => hit || caches.match('./index.html'));
     // медленная сеть: через 4 с отдаём сохранённую копию (если есть), свежая всё равно ляжет в кэш
     const net = fetch(req).then((r) => put(key, r));
     e.respondWith(Promise.race([net, new Promise((res) => setTimeout(res, 4000)).then(() => caches.match(key).then((hit) => hit || net))]).catch(cached)); return;
   }
   const same = url.origin === self.location.origin;
-  const immutable = (same && (url.pathname.includes('/__APP__/') || url.pathname.includes('/models/') || url.pathname.includes('/icons/'))) || url.hostname === 'cdn.jsdelivr.net';
+  const immutable = (same && (p.includes('/__APP__/') || isModel(url) || p.includes('/icons/'))) || url.hostname === 'cdn.jsdelivr.net';
   if (immutable) { e.respondWith(caches.match(req).then((hit) => hit || fetch(req).then((r) => put(req, r)))); return; }
   if (same || url.hostname.endsWith('fonts.googleapis.com') || url.hostname.endsWith('fonts.gstatic.com')) {
     e.respondWith(caches.match(req).then((hit) => { const net = fetch(req).then((r) => put(req, r)).catch(() => hit); return hit || net; }));
