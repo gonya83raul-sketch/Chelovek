@@ -1,0 +1,70 @@
+{
+ "id": "./index.en.html",
+ "name": "Who are we? From molecule to mind",
+ "short_name": "Who are we?",
+ "description": "Interactive 3D atlas of the human body: the body, the cell, biochemistry and the brain, from molecule to mind.",
+ "lang": "en",
+ "dir": "ltr",
+ "start_url": "./index.en.html",
+ "scope": "./",
+ "display": "standalone",
+ "orientation": "any",
+ "background_color": "#08070A",
+ "theme_color": "#08070A",
+ "categories": [
+  "education",
+  "medical"
+ ],
+ "icons": [
+  {
+   "src": "icons/icon-192.png",
+   "sizes": "192x192",
+   "type": "image/png",
+   "purpose": "any"
+  },
+  {
+   "src": "icons/icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "any"
+  },
+  {
+   "src": "icons/maskable-192.png",
+   "sizes": "192x192",
+   "type": "image/png",
+   "purpose": "maskable"
+  },
+  {
+   "src": "icons/maskable-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "maskable"
+  }
+ ],
+ "shortcuts": [
+  {
+   "name": "Search topics",
+   "short_name": "Search",
+   "url": "./index.en.html?find",
+   "icons": [
+    {
+     "src": "icons/icon-192.png",
+     "sizes": "192x192",
+     "type": "image/png"
+    }
+   ]
+  },
+  {
+   "name": "Русская версия",
+   "short_name": "Русский",
+   "url": "./index.html?lang=ru",
+   "icons": [
+    {
+     "src": "icons/icon-192.png",
+     "sizes": "192x192",
+     "type": "image/png"
+    }
+   ]
+  }
+ ]
+}

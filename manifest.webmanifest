@@ -1,19 +1,70 @@
 {
-  "name": "Кто мы? — от молекулы до мысли",
-  "short_name": "Кто мы?",
-  "description": "Интерактивный 3D-атлас человека: тело, клетка, биохимия и мозг — от молекулы до мысли.",
-  "lang": "ru",
-  "start_url": "./index.html",
-  "scope": "./",
-  "display": "standalone",
-  "orientation": "any",
-  "background_color": "#08070A",
-  "theme_color": "#08070A",
-  "categories": ["education", "medical"],
-  "icons": [
-    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "icons/maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
-    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
-  ]
+ "id": "./index.html",
+ "name": "Кто мы? — от молекулы до мысли",
+ "short_name": "Кто мы?",
+ "description": "Интерактивный 3D-атлас человека: тело, клетка, биохимия и мозг — от молекулы до мысли.",
+ "lang": "ru",
+ "dir": "ltr",
+ "start_url": "./index.html",
+ "scope": "./",
+ "display": "standalone",
+ "orientation": "any",
+ "background_color": "#08070A",
+ "theme_color": "#08070A",
+ "categories": [
+  "education",
+  "medical"
+ ],
+ "icons": [
+  {
+   "src": "icons/icon-192.png",
+   "sizes": "192x192",
+   "type": "image/png",
+   "purpose": "any"
+  },
+  {
+   "src": "icons/icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "any"
+  },
+  {
+   "src": "icons/maskable-192.png",
+   "sizes": "192x192",
+   "type": "image/png",
+   "purpose": "maskable"
+  },
+  {
+   "src": "icons/maskable-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "maskable"
+  }
+ ],
+ "shortcuts": [
+  {
+   "name": "Поиск по темам",
+   "short_name": "Поиск",
+   "url": "./index.html?find",
+   "icons": [
+    {
+     "src": "icons/icon-192.png",
+     "sizes": "192x192",
+     "type": "image/png"
+    }
+   ]
+  },
+  {
+   "name": "English version",
+   "short_name": "English",
+   "url": "./index.en.html",
+   "icons": [
+    {
+     "src": "icons/icon-192.png",
+     "sizes": "192x192",
+     "type": "image/png"
+    }
+   ]
+  }
+ ]
 }

@@ -62,7 +62,7 @@
 - [Менструальный цикл](https://gonya83raul-sketch.github.io/Chelovek/menses.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/menses.en.html)
 - [Влечение и сексуальное здоровье](https://gonya83raul-sketch.github.io/Chelovek/shealth.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/shealth.en.html)
 - [Цикл полового ответа](https://gonya83raul-sketch.github.io/Chelovek/sresp.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/sresp.en.html)
-- [Грудная клетка и грудь](https://gonya83raul-sketch.github.io/Chelovek/chest.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/chest.en.html)
+- [Грудная клетка и молочная железа](https://gonya83raul-sketch.github.io/Chelovek/chest.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/chest.en.html)
 
 ## Мозг
 - [Строение нейрона](https://gonya83raul-sketch.github.io/Chelovek/soma.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/soma.en.html)
@@ -77,9 +77,9 @@
 - [Ствол мозга](https://gonya83raul-sketch.github.io/Chelovek/stem.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/stem.en.html)
 - [Таламус и гипоталамус](https://gonya83raul-sketch.github.io/Chelovek/dien.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/dien.en.html)
 - [Полушария и базальные ганглии](https://gonya83raul-sketch.github.io/Chelovek/hemis.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/hemis.en.html)
-- [Кора](https://gonya83raul-sketch.github.io/Chelovek/cortex.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/cortex.en.html)
+- [Кора больших полушарий](https://gonya83raul-sketch.github.io/Chelovek/cortex.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/cortex.en.html)
 - [Гиппокамп и память](https://gonya83raul-sketch.github.io/Chelovek/hippo.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/hippo.en.html)
-- [Мозжечок](https://gonya83raul-sketch.github.io/Chelovek/cereb.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/cereb.en.html)
+- [Мозжечок и двигательные навыки](https://gonya83raul-sketch.github.io/Chelovek/cereb.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/cereb.en.html)
 - [Системы медиаторов](https://gonya83raul-sketch.github.io/Chelovek/brain.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/brain.en.html)
 - [Зрение](https://gonya83raul-sketch.github.io/Chelovek/vision.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/vision.en.html)
 - [Слух и равновесие](https://gonya83raul-sketch.github.io/Chelovek/ear.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/ear.en.html)

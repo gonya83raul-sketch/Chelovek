@@ -17,6 +17,7 @@
 <meta property="og:image" content="https://gonya83raul-sketch.github.io/Chelovek/icons/icon-512.png">
 <meta property="og:site_name" content="Кто мы? 3D-атлас человека">
 <meta name="twitter:card" content="summary">
+<script type="application/ld+json">[{"@context": "https://schema.org", "@type": "LearningResource", "name": "Полушария и базальные ганглии", "description": "Под корой — белое вещество и ядра базальных ганглиев. Они собирают отдельные движения в программы и вместе с лимбической системой решают, что нам нужно.", "url": "https://gonya83raul-sketch.github.io/Chelovek/hemis.html", "inLanguage": "ru", "learningResourceType": "интерактивная 3D-модель", "isAccessibleForFree": true, "about": "Мозг", "isPartOf": {"@type": "WebApplication", "name": "Кто мы? — от молекулы до мысли", "url": "https://gonya83raul-sketch.github.io/Chelovek/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Кто мы? — от молекулы до мысли", "item": "https://gonya83raul-sketch.github.io/Chelovek/"}, {"@type": "ListItem", "position": 2, "name": "Полушария и базальные ганглии", "item": "https://gonya83raul-sketch.github.io/Chelovek/hemis.html"}]}]</script>
 <script>window.__PAGE = { id: "hemis", lang: "ru" };</script>
 <meta name="theme-color" content="#08070A">
 <meta name="mobile-web-app-capable" content="yes">
@@ -24,18 +25,44 @@
 <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
 <link rel="apple-touch-icon" href="icons/apple-180.png">
 <meta name="atlas-pages" content="1">
+<script type="importmap">
+{ "imports": {
+  "three": "./app19/vendor/three.module.min.js",
+  "three/addons/": "./app19/vendor/jsm/",
+  "three/addons/libs/draco/gltf/": "./models/draco-r160/"
+} }
+</script>
+<link rel="modulepreload" href="app19/core.js">
+<link rel="modulepreload" href="app19/vendor/three.module.min.js">
+<link rel="modulepreload" href="app19/vendor/jsm/controls/OrbitControls.js">
+<link rel="modulepreload" href="app19/vendor/jsm/environments/RoomEnvironment.js">
+<link rel="modulepreload" href="app19/vendor/jsm/loaders/GLTFLoader.js">
+<link rel="modulepreload" href="app19/vendor/jsm/postprocessing/EffectComposer.js">
+<link rel="modulepreload" href="app19/vendor/jsm/postprocessing/MaskPass.js">
+<link rel="modulepreload" href="app19/vendor/jsm/postprocessing/OutputPass.js">
+<link rel="modulepreload" href="app19/vendor/jsm/postprocessing/Pass.js">
+<link rel="modulepreload" href="app19/vendor/jsm/postprocessing/RenderPass.js">
+<link rel="modulepreload" href="app19/vendor/jsm/postprocessing/ShaderPass.js">
+<link rel="modulepreload" href="app19/vendor/jsm/postprocessing/UnrealBloomPass.js">
+<link rel="modulepreload" href="app19/vendor/jsm/shaders/CopyShader.js">
+<link rel="modulepreload" href="app19/vendor/jsm/shaders/LuminosityHighPassShader.js">
+<link rel="modulepreload" href="app19/vendor/jsm/shaders/OutputShader.js">
+<link rel="modulepreload" href="app19/vendor/jsm/utils/BufferGeometryUtils.js">
+<link rel="modulepreload" href="app19/s/hemis.js">
 </head>
 <body>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400..700;1,7..72,400&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400..700;1,7..72,400&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400..700;1,7..72,400&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400..700;1,7..72,400&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"></noscript>
 <style>
 /* Атлас: шкала масштаба вместо вкладок, оглавление слева, сцена — тёмное окно, текст — книжный */
 :root{
   --bg:#121117; --bg-2:#17161D; --stage:#07060A;
   --panel:rgba(20,19,26,.78); --panel-solid:#1A1920;
   --line:#2A2931; --line-2:#3A3842; --hover:rgba(255,255,255,.06);
-  --fg:#ECE7E2; --text:#D6D0D3; --mute:#A49FAA; --dim:#7D7886;
+  --fg:#ECE7E2; --text:#D6D0D3; --mute:#A49FAA; --dim:#908B97;
   --accent:#FFB070;
   --f-serif:'Literata',Georgia,'Times New Roman',serif;
   --f-body:'Golos Text',system-ui,-apple-system,'Segoe UI',sans-serif;
@@ -62,7 +89,7 @@ button,select{font-family:inherit}
 
 /* шкала: от 10⁻⁹ м до мысли */
 .tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) auto;flex:1 1 520px;max-width:720px;min-width:0}
-.tab{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:5px;padding:0 0 4px;margin:0;background:none;border:0;color:var(--mute);cursor:pointer;text-align:left;min-height:48px;transition:color .15s var(--ease)}
+.tab{position:relative;display:flex;text-decoration:none;flex-direction:column;align-items:flex-start;gap:5px;padding:0 0 4px;margin:0;background:none;border:0;color:var(--mute);cursor:pointer;text-align:left;min-height:48px;transition:color .15s var(--ease)}
 /* отрезок шкалы до следующей точки, с делениями */
 .tab:not(:last-child)::before{content:"";position:absolute;left:13px;right:0;top:23px;height:1px;background:var(--line-2)}
 .tab:not(:last-child)::after{content:"";position:absolute;left:13px;right:0;top:19px;height:9px;opacity:.6;background:repeating-linear-gradient(90deg,transparent 0 21px,var(--line-2) 21px 22px);pointer-events:none}
@@ -72,10 +99,10 @@ button,select{font-family:inherit}
 .tab .tn{font:500 15px/1.15 var(--f-body)}
 .tab:hover{color:var(--fg)}
 .tab:hover .tdot{border-color:var(--mute)}
-.tab[aria-selected="true"]{color:var(--fg)}
-.tab[aria-selected="true"] .tn{font-weight:600}
-.tab[aria-selected="true"] .tsc{color:var(--accent)}
-.tab[aria-selected="true"] .tdot{background:var(--accent);border-color:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 22%,transparent)}
+.tab[aria-current]{color:var(--fg)}
+.tab[aria-current] .tn{font-weight:600}
+.tab[aria-current] .tsc{color:var(--accent)}
+.tab[aria-current] .tdot{background:var(--accent);border-color:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 22%,transparent)}
 
 /* кнопки шапки */
 .pill{display:inline-flex;align-items:center;gap:7px;font:500 13px/1 var(--f-body);color:var(--fg);background:transparent;border:1px solid var(--line-2);border-radius:999px;padding:0 14px;min-height:36px;cursor:pointer;transition:border-color .15s var(--ease),background-color .15s var(--ease)}
@@ -94,22 +121,22 @@ button,select{font-family:inherit}
 /* оглавление и сцена */
 .atlas{display:grid;grid-template-columns:var(--side) minmax(0,1fr);gap:0 24px;align-items:start}
 .subtabs{position:sticky;top:12px;max-height:var(--stage-h);overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;padding:2px 8px 16px 0;scrollbar-width:thin;scrollbar-color:var(--line-2) transparent}
-.subhead{flex:none;font:600 13px/1.3 var(--f-body);color:var(--dim);padding:16px 0 6px 14px}
+.subhead{flex:none;margin:0;font:600 13px/1.3 var(--f-body);color:var(--dim);padding:16px 0 6px 14px}
 .subhead:first-child{padding-top:4px}
-.sub{flex:none;display:block;width:100%;text-align:left;font:400 14px/1.35 var(--f-body);color:var(--mute);background:none;border:0;border-left:2px solid var(--line);padding:7px 10px 7px 12px;cursor:pointer;min-height:34px;text-wrap:pretty;transition:color .15s var(--ease),background-color .15s var(--ease),border-color .15s var(--ease)}
+.sub{flex:none;display:block;width:100%;text-decoration:none;text-align:left;font:400 14px/1.35 var(--f-body);color:var(--mute);background:none;border:0;border-left:2px solid var(--line);padding:7px 10px 7px 12px;cursor:pointer;min-height:34px;text-wrap:pretty;transition:color .15s var(--ease),background-color .15s var(--ease),border-color .15s var(--ease)}
 .sub:hover{color:var(--fg);background:var(--hover)}
-.sub[aria-selected="true"]{color:var(--fg);font-weight:500;border-left-color:var(--accent);background:color-mix(in srgb,var(--accent) 9%,transparent)}
+.sub[aria-current="page"]{color:var(--fg);font-weight:500;border-left-color:var(--accent);background:color-mix(in srgb,var(--accent) 9%,transparent)}
 .main{min-width:0}
-:where(.tab,.sub,.btn,.pill,.cfg,.seg button,.subsel,input,summary,.ibtn,.fesc,.atreset):focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+:where(.tab,.sub,.skip,.btn,.pill,.cfg,.seg button,.subsel,input,summary,.ibtn,.fesc,.atreset):focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
 .stage{position:relative;height:var(--stage-h);border-radius:18px;overflow:hidden;background:var(--stage);box-shadow:0 0 0 1px #24222B,0 30px 60px -30px rgba(0,0,0,.7);touch-action:none}
 #gl{position:absolute;inset:0;width:100%;height:100%;display:block}
 .hud{position:absolute;left:24px;right:24px;top:20px;display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;pointer-events:none}
 .ttl{max-width:480px;min-width:0}
 .kicker{font:500 13px/1.3 var(--f-body);color:var(--mute)}
-.ttl h1{font:600 clamp(30px,3.3vw,46px)/1.04 var(--f-serif);font-variation-settings:'opsz' 72;letter-spacing:-.018em;margin:6px 0 10px;text-wrap:balance}
+.ttl :is(h1,h2){font:600 clamp(30px,3.3vw,46px)/1.04 var(--f-serif);font-variation-settings:'opsz' 72;letter-spacing:-.018em;margin:6px 0 10px;text-wrap:balance}
 .ttl p{margin:0;color:var(--text);font-size:15px;line-height:1.5;max-width:430px;text-wrap:pretty;text-shadow:0 1px 8px var(--stage)}
-.kicker,.ttl h1,.stats{text-shadow:0 1px 10px var(--stage),0 0 3px var(--stage)}
+.kicker,.ttl :is(h1,h2),.stats{text-shadow:0 1px 10px var(--stage),0 0 3px var(--stage)}
 .stats{display:flex;gap:26px;flex-wrap:wrap;justify-content:flex-end}
 .stat{display:flex;flex-direction:column;align-items:flex-end;gap:3px}
 .stat i{font:normal 500 12px/1.2 var(--f-body);color:var(--mute)}
@@ -119,6 +146,7 @@ button,select{font-family:inherit}
 .labels{position:absolute;inset:0;pointer-events:none;overflow:hidden}
 .lbl{position:absolute;left:0;top:0;font:500 12px/1.2 var(--f-body);letter-spacing:.005em;color:#E2DCE0;white-space:nowrap;display:flex;align-items:center;gap:6px;text-shadow:0 1px 6px #000,0 0 2px #000;will-change:transform}
 .lbl::before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor;flex:none}
+.lbl.l-left{flex-direction:row-reverse}
 
 /* консоль управления */
 .console{position:absolute;left:16px;right:16px;bottom:16px;background:var(--panel);backdrop-filter:blur(14px) saturate(1.2);-webkit-backdrop-filter:blur(14px) saturate(1.2);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:14px 18px;display:flex;flex-wrap:wrap;gap:14px 28px;align-items:flex-start}
@@ -146,7 +174,19 @@ button,select{font-family:inherit}
 @media (min-width:701px){ .console:not(.out) .info{max-height:9em;overflow-y:auto;scrollbar-width:thin;padding-right:6px} }
 .loading{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);z-index:6;padding:12px 18px;border-radius:12px;background:rgba(18,17,23,.9);border:1px solid var(--line-2);color:var(--fg);font:500 14px/1.4 var(--f-body);max-width:min(440px,calc(100% - 32px));text-align:center}
 .loading[hidden]{display:none}
-.fallback{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;color:var(--mute)}
+.fallback{position:absolute;inset:0;z-index:7;display:flex;flex-direction:column;gap:12px;align-items:center;justify-content:center;text-align:center;padding:24px;color:var(--text);background:var(--stage)}
+.fallback p{margin:0;max-width:52ch}
+.fallback[hidden]{display:none}
+.loading .btn{margin:10px auto 0}
+.mload{top:auto;bottom:22%}
+/* ссылка «К тексту темы» для клавиатуры; заголовок атласа на главной */
+.skip{position:absolute;left:12px;top:-60px;z-index:30;padding:10px 14px;border-radius:10px;background:var(--panel-solid);border:1px solid var(--accent);color:var(--fg);font:500 14px var(--f-body)}
+.skip:focus{top:12px}
+.brandh{margin:0;font:inherit;flex:none}
+/* плашка «Доступно обновление» */
+.upd{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:25;display:flex;align-items:center;gap:12px;max-width:calc(100% - 24px);padding:8px 8px 8px 16px;border-radius:999px;background:var(--panel-solid);border:1px solid var(--line-2);box-shadow:0 10px 30px rgba(0,0,0,.5);font:500 14px var(--f-body);color:var(--fg)}
+.upd .btn{min-height:36px;border-radius:999px}
+.upd .x{background:none;border:0;color:var(--mute);font-size:16px;cursor:pointer;min-width:36px;min-height:36px}
 
 /* текст под сценой — как страница учебника */
 .notes{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr) minmax(0,.8fr);gap:28px 48px;padding-block:44px 8px;max-width:1240px}
@@ -211,12 +251,15 @@ dialog.donate p{color:var(--text);margin:0 0 14px}
 /* заголовок темы: «поделиться» и «сбросить вид» */
 .ttl{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-areas:"k b" "t t" "l l";align-items:center;column-gap:12px}
 .ttl .kicker{grid-area:k;min-width:0}
-.ttl h1{grid-area:t}
+.ttl :is(h1,h2){grid-area:t}
 .ttl p{grid-area:l}
 .tbtns{grid-area:b;justify-self:start;display:flex;gap:6px;pointer-events:auto}
 .ibtn{width:30px;height:30px;display:grid;place-items:center;padding:0;border-radius:50%;border:1px solid var(--line-2);background:color-mix(in srgb,var(--stage) 55%,transparent);color:var(--mute);cursor:pointer;transition:color .15s var(--ease),border-color .15s var(--ease)}
 .ibtn:hover{color:var(--fg);border-color:var(--dim)}
 .ibtn svg{width:16px;height:16px}
+.ibtn[hidden],.ibtn .ir,.ibtn[aria-pressed="true"] .ip{display:none}
+.ibtn[aria-pressed="true"] .ir{display:inline}
+.ibtn[aria-pressed="true"]{color:var(--accent);border-color:var(--accent)}
 /* поиск по темам */
 .pill kbd,.fhint kbd{font:500 11px/1 var(--f-body);color:var(--dim);border:1px solid var(--line-2);border-radius:5px;padding:2px 5px}
 .srch{color:var(--mute)}
@@ -299,13 +342,13 @@ dialog.finder::backdrop{background:rgba(6,5,8,.72)}
   .stage{height:60svh;min-height:360px;max-height:640px;border-radius:14px}
   .hud{left:12px;right:12px;top:10px;gap:8px}
   .kicker{font-size:11px}
-  .ttl h1{font-size:22px;margin:3px 0 0}
+  .ttl :is(h1,h2){font-size:22px;margin:3px 0 0}
   .ttl p{display:none}
   .stats{gap:14px}
   .stat i{font-size:10px}
   .stat b{font-size:17px}
   .stat b small{font-size:11px}
-  .lbl{font-size:10px;letter-spacing:0}
+  .lbl{font-size:11px;letter-spacing:0}
   #scope{width:min(220px,58%);height:78px;right:10px}
   .console.out{position:static;margin-top:10px;background:var(--panel-solid);backdrop-filter:none;-webkit-backdrop-filter:none;padding:14px 12px;gap:14px 16px;border-color:var(--line)}
   .console.out .grp{flex:1 1 100%}
@@ -319,9 +362,10 @@ dialog.finder::backdrop{background:rgba(6,5,8,.72)}
 </style>
 
 <div class="wrap">
+  <a class="skip" href="#notes">К тексту темы</a>
   <header class="top">
     <a class="brand" href="./"><span class="bt">Кто мы?</span> <span class="bs">от молекулы до мысли</span></a>
-    <nav class="tabs" id="sections" role="tablist" aria-label="Разделы атласа по масштабу"></nav>
+    <nav class="tabs" id="sections" aria-label="Разделы атласа по масштабу"></nav>
     <div class="acts">
       <div class="knobs" id="knobs"></div>
       <button class="pill inst" id="inst" type="button" hidden>Установить</button>
@@ -333,16 +377,16 @@ dialog.finder::backdrop{background:rgba(6,5,8,.72)}
   </header>
 
   <div class="atlas">
-    <nav class="subtabs" id="subtabs" role="tablist" aria-label="Темы раздела"></nav>
-    <div class="main">
+    <nav class="subtabs" id="subtabs" aria-label="Темы раздела"></nav>
+    <main class="main" id="main">
       <section class="stage" id="stage" aria-label="Трёхмерная сцена">
-        <canvas id="gl"></canvas>
-        <div class="labels" id="labels"></div>
+        <canvas id="gl" aria-hidden="true"></canvas>
+        <div class="labels" id="labels" aria-hidden="true"></div>
         <canvas id="scope" aria-hidden="true"></canvas>
         <div class="hud">
           <div class="ttl">
             <div class="kicker" id="kicker">Мозг · конечный мозг</div>
-            <h1 id="title">Полушария и базальные ганглии</h1><span class="tbtns"><button class="ibtn" id="share" type="button" aria-label="Поделиться темой" title="Поделиться темой"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3.5M7.5 8 12 3.5 16.5 8"/><path d="M5 12.5V19a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 19v-6.5"/></svg></button><button class="ibtn" id="recam" type="button" aria-label="Сбросить вид камеры" aria-keyshortcuts="Home" title="Сбросить вид камеры (Home)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3"/><path d="M4 3.5v4.2h4.2"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg></button></span>
+            <h1 id="title">Полушария и базальные ганглии</h1><span class="tbtns"><button class="ibtn" id="share" type="button" aria-label="Поделиться темой" title="Поделиться темой"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3.5M7.5 8 12 3.5 16.5 8"/><path d="M5 12.5V19a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 19v-6.5"/></svg></button><button class="ibtn" id="recam" type="button" aria-label="Сбросить вид камеры" aria-keyshortcuts="Home" title="Сбросить вид камеры (Home)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3"/><path d="M4 3.5v4.2h4.2"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg></button><button class="ibtn" id="anim" type="button" aria-pressed="false" aria-label="Пауза анимации" title="Пауза анимации"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path class="ip" d="M8 5.5h3v13H8zM13 5.5h3v13h-3z"/><path class="ir" d="M8 5v14l11-7z"/></svg></button></span>
             <p id="lede">Под корой — белое вещество и ядра базальных ганглиев. Они собирают отдельные движения в программы и вместе с лимбической системой решают, что нам нужно.</p>
           </div>
           <div class="stats" id="stats"></div>
@@ -353,16 +397,16 @@ dialog.finder::backdrop{background:rgba(6,5,8,.72)}
       <div><h2>Конечный мозг</h2>
         <p>Самый крупный отдел, покрывает все остальные, продольная щель делит его на два полушария. Снаружи — кора с бороздами и извилинами, под ней белое вещество, в глубине — базальные ганглии: хвостатое ядро, скорлупа, бледный шар, ограда, миндалина.</p>
         <h3>Как называют части</h3>
-        <p>Скорлупа + бледный шар = <b>чечевицеобразное ядро</b>. Хвостатое + чечевицеобразное = <b>полосатое тело (стриатум)</b>. Дорзальный стриатум — хвостатое и чечевицеобразное ядра, вентральный — прилежащее ядро.</p>
+        <p>Скорлупа + бледный шар = <b>чечевицеобразное ядро</b>. Хвостатое + чечевицеобразное = <b>полосатое тело</b> (corpus striatum, классическое анатомическое понятие). В современном смысле <b>стриатум</b> — это хвостатое ядро + скорлупа (дорзальный стриатум) и прилежащее ядро (вентральный); бледный шар в него не входит, это отдельное звено базальных ганглиев.</p>
         <h3>Базальные ганглии и мозжечок</h3>
         <p>Мозжечок запоминает, как быстро и точно выполнить конкретное движение (отдельное па в танце). Базальные ганглии собирают движения в длинную программу (весь танец с переходами фигур). В обоих случаях работает синаптическая пластичность.</p></div>
       <div><h2>Что здесь настоящее</h2><ul>
         <li>С-образное хвостатое ядро вдоль бокового желудочка, хвост у миндалины.</li><li>Порядок слоёв на срезе: внутренняя капсула, бледный шар, скорлупа, ограда, островок.</li><li>Три типа волокон белого вещества.</li><li>Схема двигательной петли «кора — стриатум — бледный шар — таламус — кора».</li></ul>
         <h2 style="margin-top:22px">Условности</h2><ul><li>Мозг — упрощённая модель, ядра показаны гладкими телами.</li><li>Волокон в реальности миллионы, здесь — десятки.</li></ul></div>
       <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>3</code> режим</li><li>клик по ядру: выбрать</li><li><code>L</code> двигательная петля</li><li><code>P</code> Паркинсон</li><li><code>R</code> вращение</li><li><code>N</code> подписи</li></ul></div></section>
-      <details class="alltopics"><summary>Все темы атласа (74)</summary><div class="atgrid"><section><h3>Биохимия</h3><h4>Ферменты</h4><ul><li data-id="enzyme"><a href="enzyme.html">Как работает фермент</a></li><li data-id="kinetics"><a href="kinetics.html">Скорость реакции и ингибиторы</a></li><li data-id="enzmed"><a href="enzmed.html">Регуляция и ферменты в медицине</a></li></ul><h4>Витамины</h4><ul><li data-id="vitamins"><a href="vitamins.html">Витамины и коферменты</a></li></ul><h4>Энергия</h4><ul><li data-id="atp"><a href="atp.html">АТФ и стадии катаболизма</a></li><li data-id="krebs"><a href="krebs.html">Пируватдегидрогеназа и цикл Кребса</a></li><li data-id="etc"><a href="etc.html">Дыхательная цепь и АТФ-синтаза</a></li><li data-id="radicals"><a href="radicals.html">Свободные радикалы и антиоксиданты</a></li></ul><h4>Углеводы</h4><ul><li data-id="glycolysis"><a href="glycolysis.html">Гликолиз, глюконеогенез, ПФП</a></li><li data-id="glycogen"><a href="glycogen.html">Гликоген и сахар крови</a></li><li data-id="carbdig"><a href="carbdig.html">Переваривание сахаров, лактоза, фруктоза</a></li></ul><h4>Липиды</h4><ul><li data-id="membrane"><a href="membrane.html">Липиды и мембраны</a></li><li data-id="betaox"><a href="betaox.html">Окисление жиров и кетоновые тела</a></li><li data-id="lipoprot"><a href="lipoprot.html">Холестерин и липопротеины</a></li><li data-id="lipogen"><a href="lipogen.html">Синтез жиров, фосфолипиды, ожирение</a></li><li data-id="eicosanoids"><a href="eicosanoids.html">Эйкозаноиды и обезболивающие</a></li></ul><h4>Белки и аминокислоты</h4><ul><li data-id="protein"><a href="protein.html">Белки: аминокислоты и укладка</a></li><li data-id="aminoacid"><a href="aminoacid.html">Обмен аминокислот и мочевина</a></li><li data-id="amines"><a href="amines.html">Биогенные амины, глицин и серин</a></li></ul><h4>Нуклеотиды и гены</h4><ul><li data-id="dna"><a href="dna.html">ДНК: строение, репликация, репарация</a></li><li data-id="express"><a href="express.html">Транскрипция и трансляция</a></li><li data-id="purine"><a href="purine.html">Нуклеотиды и подагра</a></li><li data-id="antibiotics"><a href="antibiotics.html">Антибиотики и синтез белка</a></li><li data-id="mutations"><a href="mutations.html">Мутации и модификация белков</a></li></ul><h4>Гормоны</h4><ul><li data-id="hormsig"><a href="hormsig.html">Как гормоны действуют на клетку</a></li><li data-id="fedfast"><a href="fedfast.html">Обмен веществ: сытость и голод</a></li><li data-id="thyroid"><a href="thyroid.html">Гормоны щитовидной железы</a></li><li data-id="adrenal"><a href="adrenal.html">Надпочечники: стероиды и стресс</a></li><li data-id="calcium"><a href="calcium.html">Кальций: паратгормон и витамин D</a></li><li data-id="pituitary"><a href="pituitary.html">Гипоталамус и гипофиз</a></li><li data-id="diabetes"><a href="diabetes.html">Инсулин и сахарный диабет</a></li><li data-id="sexhorm"><a href="sexhorm.html">Половые гормоны и беременность</a></li></ul><h4>Кровь и печень</h4><ul><li data-id="hemoglobin"><a href="hemoglobin.html">Гемоглобин и перенос кислорода</a></li><li data-id="heme"><a href="heme.html">Обмен гема и желтухи</a></li><li data-id="bloodchem"><a href="bloodchem.html">Кровь: pH, белки плазмы, свёртывание</a></li><li data-id="liver"><a href="liver.html">Печень: обезвреживание, алкоголь, парацетамол</a></li><li data-id="nitrogen"><a href="nitrogen.html">Азот крови, буферы и кислотно-основное состояние</a></li></ul></section><section><h3>Клетка</h3><ul><li data-id="cell"><a href="cell.html">Живая клетка</a></li></ul></section><section><h3>Тело</h3><h4>Как устроено тело</h4><ul><li data-id="planes"><a href="planes.html">Плоскости, направления и полости</a></li><li data-id="referred"><a href="referred.html">Отражённая боль</a></li></ul><h4>Опора и движение</h4><ul><li data-id="skeleton"><a href="skeleton.html">Скелет, мышцы и сосуды</a></li><li data-id="joints"><a href="joints.html">Кости и суставы</a></li></ul><h4>Системы органов</h4><ul><li data-id="heart"><a href="heart.html">Сердце и кровообращение</a></li><li data-id="lungs"><a href="lungs.html">Дыхание</a></li><li data-id="digest"><a href="digest.html">Пищеварение</a></li><li data-id="kidney"><a href="kidney.html">Почки</a></li><li data-id="blood"><a href="blood.html">Кровь</a></li><li data-id="endo"><a href="endo.html">Эндокринная система</a></li><li data-id="immune"><a href="immune.html">Лимфа и иммунитет</a></li><li data-id="repro"><a href="repro.html">Размножение и развитие</a></li><li data-id="menses"><a href="menses.html">Менструальный цикл</a></li><li data-id="shealth"><a href="shealth.html">Влечение и сексуальное здоровье</a></li><li data-id="sresp"><a href="sresp.html">Цикл полового ответа</a></li><li data-id="chest"><a href="chest.html">Грудная клетка и грудь</a></li></ul></section><section><h3>Мозг</h3><h4>Нейроны</h4><ul><li data-id="soma"><a href="soma.html">Строение нейрона</a></li><li data-id="types"><a href="types.html">Типы нейронов</a></li><li data-id="neuron"><a href="neuron.html">Нейрон и импульс</a></li><li data-id="synapse"><a href="synapse.html">Синапс и медиаторы</a></li><li data-id="glia"><a href="glia.html">Нейроглия</a></li></ul><h4>Устройство</h4><ul><li data-id="develop"><a href="develop.html">Развитие мозга</a></li><li data-id="ventricles"><a href="ventricles.html">Желудочки и оболочки</a></li><li data-id="spinal"><a href="spinal.html">Спинной мозг</a></li><li data-id="cranial"><a href="cranial.html">Черепные нервы</a></li><li data-id="stem"><a href="stem.html">Ствол мозга</a></li><li data-id="dien"><a href="dien.html">Таламус и гипоталамус</a></li><li data-id="hemis"><a href="hemis.html">Полушария и базальные ганглии</a></li><li data-id="cortex"><a href="cortex.html">Кора</a></li><li data-id="hippo"><a href="hippo.html">Гиппокамп и память</a></li><li data-id="cereb"><a href="cereb.html">Мозжечок</a></li></ul><h4>Химия</h4><ul><li data-id="brain"><a href="brain.html">Системы медиаторов</a></li></ul><h4>Органы чувств</h4><ul><li data-id="vision"><a href="vision.html">Зрение</a></li><li data-id="ear"><a href="ear.html">Слух и равновесие</a></li><li data-id="skin"><a href="skin.html">Кожа и осязание</a></li><li data-id="chemo"><a href="chemo.html">Обоняние и вкус</a></li></ul></section></div></details>
+      <details class="alltopics"><summary>Все темы атласа (74)</summary><div class="atgrid"><section><h3>Биохимия</h3><h4>Ферменты</h4><ul><li data-id="enzyme"><a href="enzyme.html">Как работает фермент</a></li><li data-id="kinetics"><a href="kinetics.html">Скорость реакции и ингибиторы</a></li><li data-id="enzmed"><a href="enzmed.html">Регуляция и ферменты в медицине</a></li></ul><h4>Витамины</h4><ul><li data-id="vitamins"><a href="vitamins.html">Витамины и коферменты</a></li></ul><h4>Энергия</h4><ul><li data-id="atp"><a href="atp.html">АТФ и стадии катаболизма</a></li><li data-id="krebs"><a href="krebs.html">Пируватдегидрогеназа и цикл Кребса</a></li><li data-id="etc"><a href="etc.html">Дыхательная цепь и АТФ-синтаза</a></li><li data-id="radicals"><a href="radicals.html">Свободные радикалы и антиоксиданты</a></li></ul><h4>Углеводы</h4><ul><li data-id="glycolysis"><a href="glycolysis.html">Гликолиз, глюконеогенез, ПФП</a></li><li data-id="glycogen"><a href="glycogen.html">Гликоген и сахар крови</a></li><li data-id="carbdig"><a href="carbdig.html">Переваривание сахаров, лактоза, фруктоза</a></li></ul><h4>Липиды</h4><ul><li data-id="membrane"><a href="membrane.html">Липиды и мембраны</a></li><li data-id="betaox"><a href="betaox.html">Окисление жиров и кетоновые тела</a></li><li data-id="lipoprot"><a href="lipoprot.html">Холестерин и липопротеины</a></li><li data-id="lipogen"><a href="lipogen.html">Синтез жиров, фосфолипиды, ожирение</a></li><li data-id="eicosanoids"><a href="eicosanoids.html">Эйкозаноиды и обезболивающие</a></li></ul><h4>Белки и аминокислоты</h4><ul><li data-id="protein"><a href="protein.html">Белки: аминокислоты и укладка</a></li><li data-id="aminoacid"><a href="aminoacid.html">Обмен аминокислот и мочевина</a></li><li data-id="amines"><a href="amines.html">Биогенные амины, глицин и серин</a></li></ul><h4>Нуклеотиды и гены</h4><ul><li data-id="dna"><a href="dna.html">ДНК: строение, репликация, репарация</a></li><li data-id="express"><a href="express.html">Транскрипция и трансляция</a></li><li data-id="purine"><a href="purine.html">Нуклеотиды и подагра</a></li><li data-id="antibiotics"><a href="antibiotics.html">Антибиотики и синтез белка</a></li><li data-id="mutations"><a href="mutations.html">Мутации и модификация белков</a></li></ul><h4>Гормоны</h4><ul><li data-id="hormsig"><a href="hormsig.html">Как гормоны действуют на клетку</a></li><li data-id="fedfast"><a href="fedfast.html">Обмен веществ: сытость и голод</a></li><li data-id="thyroid"><a href="thyroid.html">Гормоны щитовидной железы</a></li><li data-id="adrenal"><a href="adrenal.html">Надпочечники: стероиды и стресс</a></li><li data-id="calcium"><a href="calcium.html">Кальций: паратгормон и витамин D</a></li><li data-id="pituitary"><a href="pituitary.html">Гипоталамус и гипофиз</a></li><li data-id="diabetes"><a href="diabetes.html">Инсулин и сахарный диабет</a></li><li data-id="sexhorm"><a href="sexhorm.html">Половые гормоны и беременность</a></li></ul><h4>Кровь и печень</h4><ul><li data-id="hemoglobin"><a href="hemoglobin.html">Гемоглобин и перенос кислорода</a></li><li data-id="heme"><a href="heme.html">Обмен гема и желтухи</a></li><li data-id="bloodchem"><a href="bloodchem.html">Кровь: pH, белки плазмы, свёртывание</a></li><li data-id="liver"><a href="liver.html">Печень: обезвреживание, алкоголь, парацетамол</a></li><li data-id="nitrogen"><a href="nitrogen.html">Азот крови, буферы и кислотно-основное состояние</a></li></ul></section><section><h3>Клетка</h3><ul><li data-id="cell"><a href="cell.html">Живая клетка</a></li></ul></section><section><h3>Тело</h3><h4>Как устроено тело</h4><ul><li data-id="planes"><a href="planes.html">Плоскости, направления и полости</a></li><li data-id="referred"><a href="referred.html">Отражённая боль</a></li></ul><h4>Опора и движение</h4><ul><li data-id="skeleton"><a href="skeleton.html">Скелет, мышцы и сосуды</a></li><li data-id="joints"><a href="joints.html">Кости и суставы</a></li></ul><h4>Системы органов</h4><ul><li data-id="heart"><a href="heart.html">Сердце и кровообращение</a></li><li data-id="lungs"><a href="lungs.html">Дыхание</a></li><li data-id="digest"><a href="digest.html">Пищеварение</a></li><li data-id="kidney"><a href="kidney.html">Почки</a></li><li data-id="blood"><a href="blood.html">Кровь</a></li><li data-id="endo"><a href="endo.html">Эндокринная система</a></li><li data-id="immune"><a href="immune.html">Лимфа и иммунитет</a></li><li data-id="repro"><a href="repro.html">Размножение и развитие</a></li><li data-id="menses"><a href="menses.html">Менструальный цикл</a></li><li data-id="shealth"><a href="shealth.html">Влечение и сексуальное здоровье</a></li><li data-id="sresp"><a href="sresp.html">Цикл полового ответа</a></li><li data-id="chest"><a href="chest.html">Грудная клетка и молочная железа</a></li></ul></section><section><h3>Мозг</h3><h4>Нейроны</h4><ul><li data-id="soma"><a href="soma.html">Строение нейрона</a></li><li data-id="types"><a href="types.html">Типы нейронов</a></li><li data-id="neuron"><a href="neuron.html">Нейрон и импульс</a></li><li data-id="synapse"><a href="synapse.html">Синапс и медиаторы</a></li><li data-id="glia"><a href="glia.html">Нейроглия</a></li></ul><h4>Устройство</h4><ul><li data-id="develop"><a href="develop.html">Развитие мозга</a></li><li data-id="ventricles"><a href="ventricles.html">Желудочки и оболочки</a></li><li data-id="spinal"><a href="spinal.html">Спинной мозг</a></li><li data-id="cranial"><a href="cranial.html">Черепные нервы</a></li><li data-id="stem"><a href="stem.html">Ствол мозга</a></li><li data-id="dien"><a href="dien.html">Таламус и гипоталамус</a></li><li data-id="hemis"><a href="hemis.html">Полушария и базальные ганглии</a></li><li data-id="cortex"><a href="cortex.html">Кора больших полушарий</a></li><li data-id="hippo"><a href="hippo.html">Гиппокамп и память</a></li><li data-id="cereb"><a href="cereb.html">Мозжечок и двигательные навыки</a></li></ul><h4>Химия</h4><ul><li data-id="brain"><a href="brain.html">Системы медиаторов</a></li></ul><h4>Органы чувств</h4><ul><li data-id="vision"><a href="vision.html">Зрение</a></li><li data-id="ear"><a href="ear.html">Слух и равновесие</a></li><li data-id="skin"><a href="skin.html">Кожа и осязание</a></li><li data-id="chemo"><a href="chemo.html">Обоняние и вкус</a></li></ul></section></div></details>
       <div class="foot"><p class="fcontact">Обратная связь: Telegram-канал <a href="https://t.me/KTOMY_ATLAS" target="_blank" rel="noopener">@KTOMY_ATLAS</a> · почта <a href="mailto:gonya83raul@gmail.com">gonya83raul@gmail.com</a> · <a href="https://boosty.to/chelovek3d/donate" target="_blank" rel="noopener">поддержать на Boosty</a></p><span class="fcredit">3D-модели: зрительная система — Sergey Burov, мышцы — Diego Luján García, органы малого таза и пищеварения — Education Resource Fund (Sketchfab, лицензия CC BY 4.0).</span></div>
-    </div>
+    </main>
   </div>
 
   <dialog class="donate" id="donatebox" aria-labelledby="donateTitle">
@@ -392,20 +436,21 @@ dialog.finder::backdrop{background:rgba(6,5,8,.72)}
   <div class="vh" id="srlive" role="status" aria-live="polite"></div>
 </div>
 
-<script type="importmap">
-{ "imports": {
-  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
-} }
-</script>
+
 <script type="module">
 const P = window.__PAGE; let L = P ? P.lang : 'ru', go = null;
 if (!P) { const q = new URLSearchParams(location.search).get('lang'); let m = null;
   try { if (q === 'ru' || q === 'en') localStorage.setItem('lang', q); m = localStorage.getItem('lang'); } catch (e) { /* без памяти */ }
   const want = q || m;
-  if (want === 'en') go = 'index.en.html' + location.hash;
+  if (!/\/(index\.html)?$/.test(location.pathname)) L = /\.en\.html$/.test(location.pathname) ? 'en' : 'ru';
+  else if (want === 'en') { let t = 0; try { t = +sessionStorage.getItem('redir') || 0; sessionStorage.setItem('redir', String(Date.now())); } catch (e) { /* без памяти */ }
+    if (Date.now() - t > 10000) go = 'index.en.html' + (new URLSearchParams(location.search).has('rec') ? '?rec' : '') + location.hash; else L = 'en'; }
   else if (!want && !(navigator.languages || [navigator.language || '']).some((l) => /^(ru|uk|be|kk)/i.test(l))) window.__LANGNOTE = 1; }
-if (go) location.replace(go); else { document.documentElement.lang = L; import(L === 'en' ? './app18/en/core.js' : './app18/core.js'); }
+if (go) location.replace(go); else { document.documentElement.lang = L; import(L === 'en' ? './app19/en/core.js' : './app19/core.js').catch((e) => {
+  console.error(e); const st = document.getElementById('stage'); if (!st || st.querySelector('.fallback')) return;
+  const d = document.createElement('div'), p = document.createElement('p'), b = document.createElement('button'); d.className = 'fallback'; d.setAttribute('role', 'alert');
+  p.textContent = L === 'en' ? 'Could not load the atlas: no connection, or the site files are unavailable. The topic text is below.' : 'Не удалось загрузить атлас: нет сети или файлы сайта недоступны. Текст темы — ниже.';
+  b.type = 'button'; b.className = 'btn primary'; b.textContent = L === 'en' ? 'Reload' : 'Обновить'; b.onclick = () => location.reload(); d.append(p, b); st.append(d); }); }
 </script>
 </body>
 </html>
