@@ -1,14 +1,16 @@
 <title>Кто мы? — от молекулы до мысли</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400..700;1,7..72,400&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400..700;1,7..72,400&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400..700;1,7..72,400&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400..700;1,7..72,400&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"></noscript>
 <style>
 /* Атлас: шкала масштаба вместо вкладок, оглавление слева, сцена — тёмное окно, текст — книжный */
 :root{
   --bg:#121117; --bg-2:#17161D; --stage:#07060A;
   --panel:rgba(20,19,26,.78); --panel-solid:#1A1920;
   --line:#2A2931; --line-2:#3A3842; --hover:rgba(255,255,255,.06);
-  --fg:#ECE7E2; --text:#D6D0D3; --mute:#A49FAA; --dim:#7D7886;
+  --fg:#ECE7E2; --text:#D6D0D3; --mute:#A49FAA; --dim:#908B97;
   --accent:#FFB070;
   --f-serif:'Literata',Georgia,'Times New Roman',serif;
   --f-body:'Golos Text',system-ui,-apple-system,'Segoe UI',sans-serif;
@@ -35,7 +37,7 @@ button,select{font-family:inherit}
 
 /* шкала: от 10⁻⁹ м до мысли */
 .tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) auto;flex:1 1 520px;max-width:720px;min-width:0}
-.tab{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:5px;padding:0 0 4px;margin:0;background:none;border:0;color:var(--mute);cursor:pointer;text-align:left;min-height:48px;transition:color .15s var(--ease)}
+.tab{position:relative;display:flex;text-decoration:none;flex-direction:column;align-items:flex-start;gap:5px;padding:0 0 4px;margin:0;background:none;border:0;color:var(--mute);cursor:pointer;text-align:left;min-height:48px;transition:color .15s var(--ease)}
 /* отрезок шкалы до следующей точки, с делениями */
 .tab:not(:last-child)::before{content:"";position:absolute;left:13px;right:0;top:23px;height:1px;background:var(--line-2)}
 .tab:not(:last-child)::after{content:"";position:absolute;left:13px;right:0;top:19px;height:9px;opacity:.6;background:repeating-linear-gradient(90deg,transparent 0 21px,var(--line-2) 21px 22px);pointer-events:none}
@@ -45,10 +47,10 @@ button,select{font-family:inherit}
 .tab .tn{font:500 15px/1.15 var(--f-body)}
 .tab:hover{color:var(--fg)}
 .tab:hover .tdot{border-color:var(--mute)}
-.tab[aria-selected="true"]{color:var(--fg)}
-.tab[aria-selected="true"] .tn{font-weight:600}
-.tab[aria-selected="true"] .tsc{color:var(--accent)}
-.tab[aria-selected="true"] .tdot{background:var(--accent);border-color:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 22%,transparent)}
+.tab[aria-current]{color:var(--fg)}
+.tab[aria-current] .tn{font-weight:600}
+.tab[aria-current] .tsc{color:var(--accent)}
+.tab[aria-current] .tdot{background:var(--accent);border-color:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 22%,transparent)}
 
 /* кнопки шапки */
 .pill{display:inline-flex;align-items:center;gap:7px;font:500 13px/1 var(--f-body);color:var(--fg);background:transparent;border:1px solid var(--line-2);border-radius:999px;padding:0 14px;min-height:36px;cursor:pointer;transition:border-color .15s var(--ease),background-color .15s var(--ease)}
@@ -67,22 +69,22 @@ button,select{font-family:inherit}
 /* оглавление и сцена */
 .atlas{display:grid;grid-template-columns:var(--side) minmax(0,1fr);gap:0 24px;align-items:start}
 .subtabs{position:sticky;top:12px;max-height:var(--stage-h);overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;padding:2px 8px 16px 0;scrollbar-width:thin;scrollbar-color:var(--line-2) transparent}
-.subhead{flex:none;font:600 13px/1.3 var(--f-body);color:var(--dim);padding:16px 0 6px 14px}
+.subhead{flex:none;margin:0;font:600 13px/1.3 var(--f-body);color:var(--dim);padding:16px 0 6px 14px}
 .subhead:first-child{padding-top:4px}
-.sub{flex:none;display:block;width:100%;text-align:left;font:400 14px/1.35 var(--f-body);color:var(--mute);background:none;border:0;border-left:2px solid var(--line);padding:7px 10px 7px 12px;cursor:pointer;min-height:34px;text-wrap:pretty;transition:color .15s var(--ease),background-color .15s var(--ease),border-color .15s var(--ease)}
+.sub{flex:none;display:block;width:100%;text-decoration:none;text-align:left;font:400 14px/1.35 var(--f-body);color:var(--mute);background:none;border:0;border-left:2px solid var(--line);padding:7px 10px 7px 12px;cursor:pointer;min-height:34px;text-wrap:pretty;transition:color .15s var(--ease),background-color .15s var(--ease),border-color .15s var(--ease)}
 .sub:hover{color:var(--fg);background:var(--hover)}
-.sub[aria-selected="true"]{color:var(--fg);font-weight:500;border-left-color:var(--accent);background:color-mix(in srgb,var(--accent) 9%,transparent)}
+.sub[aria-current="page"]{color:var(--fg);font-weight:500;border-left-color:var(--accent);background:color-mix(in srgb,var(--accent) 9%,transparent)}
 .main{min-width:0}
-:where(.tab,.sub,.btn,.pill,.cfg,.seg button,.subsel,input,summary,.ibtn,.fesc,.atreset):focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+:where(.tab,.sub,.skip,.btn,.pill,.cfg,.seg button,.subsel,input,summary,.ibtn,.fesc,.atreset):focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
 .stage{position:relative;height:var(--stage-h);border-radius:18px;overflow:hidden;background:var(--stage);box-shadow:0 0 0 1px #24222B,0 30px 60px -30px rgba(0,0,0,.7);touch-action:none}
 #gl{position:absolute;inset:0;width:100%;height:100%;display:block}
 .hud{position:absolute;left:24px;right:24px;top:20px;display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;pointer-events:none}
 .ttl{max-width:480px;min-width:0}
 .kicker{font:500 13px/1.3 var(--f-body);color:var(--mute)}
-.ttl h1{font:600 clamp(30px,3.3vw,46px)/1.04 var(--f-serif);font-variation-settings:'opsz' 72;letter-spacing:-.018em;margin:6px 0 10px;text-wrap:balance}
+.ttl :is(h1,h2){font:600 clamp(30px,3.3vw,46px)/1.04 var(--f-serif);font-variation-settings:'opsz' 72;letter-spacing:-.018em;margin:6px 0 10px;text-wrap:balance}
 .ttl p{margin:0;color:var(--text);font-size:15px;line-height:1.5;max-width:430px;text-wrap:pretty;text-shadow:0 1px 8px var(--stage)}
-.kicker,.ttl h1,.stats{text-shadow:0 1px 10px var(--stage),0 0 3px var(--stage)}
+.kicker,.ttl :is(h1,h2),.stats{text-shadow:0 1px 10px var(--stage),0 0 3px var(--stage)}
 .stats{display:flex;gap:26px;flex-wrap:wrap;justify-content:flex-end}
 .stat{display:flex;flex-direction:column;align-items:flex-end;gap:3px}
 .stat i{font:normal 500 12px/1.2 var(--f-body);color:var(--mute)}
@@ -119,7 +121,19 @@ button,select{font-family:inherit}
 @media (min-width:701px){ .console:not(.out) .info{max-height:9em;overflow-y:auto;scrollbar-width:thin;padding-right:6px} }
 .loading{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);z-index:6;padding:12px 18px;border-radius:12px;background:rgba(18,17,23,.9);border:1px solid var(--line-2);color:var(--fg);font:500 14px/1.4 var(--f-body);max-width:min(440px,calc(100% - 32px));text-align:center}
 .loading[hidden]{display:none}
-.fallback{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;color:var(--mute)}
+.fallback{position:absolute;inset:0;z-index:7;display:flex;flex-direction:column;gap:12px;align-items:center;justify-content:center;text-align:center;padding:24px;color:var(--text);background:var(--stage)}
+.fallback p{margin:0;max-width:52ch}
+.fallback[hidden]{display:none}
+.loading .btn{margin:10px auto 0}
+.mload{top:auto;bottom:22%}
+/* ссылка «К тексту темы» для клавиатуры; заголовок атласа на главной */
+.skip{position:absolute;left:12px;top:-60px;z-index:30;padding:10px 14px;border-radius:10px;background:var(--panel-solid);border:1px solid var(--accent);color:var(--fg);font:500 14px var(--f-body)}
+.skip:focus{top:12px}
+.brandh{margin:0;font:inherit;flex:none}
+/* плашка «Доступно обновление» */
+.upd{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:25;display:flex;align-items:center;gap:12px;max-width:calc(100% - 24px);padding:8px 8px 8px 16px;border-radius:999px;background:var(--panel-solid);border:1px solid var(--line-2);box-shadow:0 10px 30px rgba(0,0,0,.5);font:500 14px var(--f-body);color:var(--fg)}
+.upd .btn{min-height:36px;border-radius:999px}
+.upd .x{background:none;border:0;color:var(--mute);font-size:16px;cursor:pointer;min-width:36px;min-height:36px}
 
 /* текст под сценой — как страница учебника */
 .notes{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr) minmax(0,.8fr);gap:28px 48px;padding-block:44px 8px;max-width:1240px}
@@ -184,12 +198,15 @@ dialog.donate p{color:var(--text);margin:0 0 14px}
 /* заголовок темы: «поделиться» и «сбросить вид» */
 .ttl{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-areas:"k b" "t t" "l l";align-items:center;column-gap:12px}
 .ttl .kicker{grid-area:k;min-width:0}
-.ttl h1{grid-area:t}
+.ttl :is(h1,h2){grid-area:t}
 .ttl p{grid-area:l}
 .tbtns{grid-area:b;justify-self:start;display:flex;gap:6px;pointer-events:auto}
 .ibtn{width:30px;height:30px;display:grid;place-items:center;padding:0;border-radius:50%;border:1px solid var(--line-2);background:color-mix(in srgb,var(--stage) 55%,transparent);color:var(--mute);cursor:pointer;transition:color .15s var(--ease),border-color .15s var(--ease)}
 .ibtn:hover{color:var(--fg);border-color:var(--dim)}
 .ibtn svg{width:16px;height:16px}
+.ibtn[hidden],.ibtn .ir,.ibtn[aria-pressed="true"] .ip{display:none}
+.ibtn[aria-pressed="true"] .ir{display:inline}
+.ibtn[aria-pressed="true"]{color:var(--accent);border-color:var(--accent)}
 /* поиск по темам */
 .pill kbd,.fhint kbd{font:500 11px/1 var(--f-body);color:var(--dim);border:1px solid var(--line-2);border-radius:5px;padding:2px 5px}
 .srch{color:var(--mute)}
@@ -272,13 +289,13 @@ dialog.finder::backdrop{background:rgba(6,5,8,.72)}
   .stage{height:60svh;min-height:360px;max-height:640px;border-radius:14px}
   .hud{left:12px;right:12px;top:10px;gap:8px}
   .kicker{font-size:11px}
-  .ttl h1{font-size:22px;margin:3px 0 0}
+  .ttl :is(h1,h2){font-size:22px;margin:3px 0 0}
   .ttl p{display:none}
   .stats{gap:14px}
   .stat i{font-size:10px}
   .stat b{font-size:17px}
   .stat b small{font-size:11px}
-  .lbl{font-size:10px;letter-spacing:0}
+  .lbl{font-size:11px;letter-spacing:0}
   #scope{width:min(220px,58%);height:78px;right:10px}
   .console.out{position:static;margin-top:10px;background:var(--panel-solid);backdrop-filter:none;-webkit-backdrop-filter:none;padding:14px 12px;gap:14px 16px;border-color:var(--line)}
   .console.out .grp{flex:1 1 100%}
@@ -292,9 +309,10 @@ dialog.finder::backdrop{background:rgba(6,5,8,.72)}
 </style>
 
 <div class="wrap">
+  <a class="skip" href="#notes">К тексту темы</a>
   <header class="top">
     <a class="brand" href="./"><span class="bt">Кто мы?</span> <span class="bs">от молекулы до мысли</span></a>
-    <nav class="tabs" id="sections" role="tablist" aria-label="Разделы атласа по масштабу"></nav>
+    <nav class="tabs" id="sections" aria-label="Разделы атласа по масштабу"></nav>
     <div class="acts">
       <div class="knobs" id="knobs"></div>
       <button class="pill inst" id="inst" type="button" hidden>Установить</button>
@@ -306,16 +324,16 @@ dialog.finder::backdrop{background:rgba(6,5,8,.72)}
   </header>
 
   <div class="atlas">
-    <nav class="subtabs" id="subtabs" role="tablist" aria-label="Темы раздела"></nav>
-    <div class="main">
+    <nav class="subtabs" id="subtabs" aria-label="Темы раздела"></nav>
+    <main class="main" id="main">
       <section class="stage" id="stage" aria-label="Трёхмерная сцена">
-        <canvas id="gl"></canvas>
-        <div class="labels" id="labels"></div>
+        <canvas id="gl" aria-hidden="true"></canvas>
+        <div class="labels" id="labels" aria-hidden="true"></div>
         <canvas id="scope" aria-hidden="true"></canvas>
         <div class="hud">
           <div class="ttl">
             <div class="kicker" id="kicker"></div>
-            <h1 id="title"></h1><span class="tbtns"><button class="ibtn" id="share" type="button" aria-label="Поделиться темой" title="Поделиться темой"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3.5M7.5 8 12 3.5 16.5 8"/><path d="M5 12.5V19a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 19v-6.5"/></svg></button><button class="ibtn" id="recam" type="button" aria-label="Сбросить вид камеры" aria-keyshortcuts="Home" title="Сбросить вид камеры (Home)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3"/><path d="M4 3.5v4.2h4.2"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg></button></span>
+            <h1 id="title"></h1><span class="tbtns"><button class="ibtn" id="share" type="button" aria-label="Поделиться темой" title="Поделиться темой"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3.5M7.5 8 12 3.5 16.5 8"/><path d="M5 12.5V19a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 19v-6.5"/></svg></button><button class="ibtn" id="recam" type="button" aria-label="Сбросить вид камеры" aria-keyshortcuts="Home" title="Сбросить вид камеры (Home)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3"/><path d="M4 3.5v4.2h4.2"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg></button><button class="ibtn" id="anim" type="button" aria-pressed="false" aria-label="Пауза анимации" title="Пауза анимации"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path class="ip" d="M8 5.5h3v13H8zM13 5.5h3v13h-3z"/><path class="ir" d="M8 5v14l11-7z"/></svg></button></span>
             <p id="lede"></p>
           </div>
           <div class="stats" id="stats"></div>
@@ -325,7 +343,7 @@ dialog.finder::backdrop{background:rgba(6,5,8,.72)}
       <section class="notes" id="notes"></section>
       <!--TOPICS-->
       <div class="foot"><p class="fcontact">Обратная связь: Telegram-канал <a href="https://t.me/KTOMY_ATLAS" target="_blank" rel="noopener">@KTOMY_ATLAS</a> · почта <a href="mailto:gonya83raul@gmail.com">gonya83raul@gmail.com</a> · <a href="https://boosty.to/chelovek3d/donate" target="_blank" rel="noopener">поддержать на Boosty</a></p><span class="fcredit">3D-модели: зрительная система — Sergey Burov, мышцы — Diego Luján García, органы малого таза и пищеварения — Education Resource Fund (Sketchfab, лицензия CC BY 4.0).</span></div>
-    </div>
+    </main>
   </div>
 
   <dialog class="donate" id="donatebox" aria-labelledby="donateTitle">
@@ -376,7 +394,8 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 /* 3D-модели лежат в models/ сжатыми gzip; распаковка встроенным DecompressionStream */
 const MODEL_EXT = 'bin';   // gzip-архив модели (раньше — base64-текст 'txt', на треть тяжелее)
 /* GLB со сжатой геометрией (Draco): декодер three.js подгружается только когда нужна модель */
-const DRACO_PATH = (() => { try { return import.meta.resolve('three/addons/libs/draco/gltf/'); } catch (e) { return 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/libs/draco/gltf/'; } })();
+// на сайте importmap ведёт декодер в models/draco-r160/ (tools/build.py); без import.meta.resolve (старые браузеры) — туда же
+const DRACO_PATH = (() => { try { return import.meta.resolve('three/addons/libs/draco/gltf/'); } catch (e) { return new URL('models/draco-r160/', document.baseURI).href; } })();
 let dracoP = null;
 let dracoBusy = 0;
 function parseGLB(buf, onLoad, onErr) {
@@ -386,9 +405,36 @@ function parseGLB(buf, onLoad, onErr) {
       .finally(() => { if (--dracoBusy === 0) { d.dispose(); dracoP = null; } }))
     .then(onLoad).catch(onErr);
 }
+const MODEL_SIZE = {}; // размеры models/*.bin в байтах — заполняет tools/build.py
+/* загрузка модели: прогресс по байтам (плашка в окне сцены); если данных нет 60 с или сеть оборвалась — «Повторить»
+   (обещание ждёт повтора, сцена так и показывает «Загружаю…»); слишком старый браузер — сразу ошибка сцене */
 function fetchModel(name) {
-  return fetch('models/' + name + '.' + MODEL_EXT).then((r) => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.blob(); })
-    .then((blob) => { if (typeof DecompressionStream === 'undefined') throw new Error('браузер слишком старый для распаковки модели'); return new Response(blob.stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer(); });
+  const owner = buildingId || curId;
+  return new Promise((resolve, reject) => {
+    const attempt = () => {
+      const ac = typeof AbortController === 'function' ? new AbortController() : null; let tm = 0;
+      const arm = () => { clearTimeout(tm); if (ac) tm = setTimeout(() => ac.abort(), 60000); };
+      arm(); modelUi(name, owner, { got: 0, total: MODEL_SIZE[name] || 0 });
+      fetch('models/' + name + '.' + MODEL_EXT, ac ? { signal: ac.signal } : undefined).then(async (r) => {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const total = MODEL_SIZE[name] || +r.headers.get('Content-Length') || 0;
+        let blob;
+        if (r.body && r.body.getReader) {
+          const rd = r.body.getReader(), parts = []; let got = 0;
+          for (;;) { const { done, value } = await rd.read(); if (done) break; parts.push(value); got += value.length; arm(); modelUi(name, owner, { got, total }); }
+          blob = new Blob(parts);
+        } else blob = await r.blob();
+        clearTimeout(tm);
+        if (typeof DecompressionStream === 'undefined') { const e = new Error('браузер слишком старый для распаковки модели'); e.fatal = true; throw e; }
+        return new Response(blob.stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
+      }).then((buf) => { modelUi(name, owner, null); resolve(buf); }, (e) => {
+        clearTimeout(tm);
+        if (e && e.fatal) { modelUi(name, owner, null); reject(e); return; }
+        modelUi(name, owner, { err: e && e.name === 'AbortError' ? 'сеть не отвечает' : String(e && e.message || e), retry: attempt });
+      });
+    };
+    attempt();
+  });
 }
 const $ = (s) => document.querySelector(s);
 /* язык сборки: английская сборка (tools/i18n.mjs) меняет 'ru' на 'en' и все русские строки — по словарю data/i18n/en.json */
@@ -429,27 +475,31 @@ function noise3(x, y, z) {
 
 /* ---------- renderer ---------- */
 const stageEl = $('#stage'), canvas = $('#gl');
-let renderer;
+/* без WebGL (старый браузер, сбой драйвера) оболочка всё равно строится: навигация, язык, поиск и текст темы работают, вместо сцены — объяснение */
+let renderer = null;
 try {
   renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
-} catch (e) {
-  stageEl.append(h('div', { class: 'fallback' }, 'Этому браузеру не удалось запустить 3D-графику (WebGL). Попробуйте открыть страницу в свежем Chrome, Safari или Firefox.'));
-  throw e;
+} catch (e) { renderer = null; }
+const NOGL = !renderer;
+let envTex = null, composer = null, renderPass = null, bloom = null;
+function makeEnv() { const pm = new THREE.PMREMGenerator(renderer), t = pm.fromScene(new RoomEnvironment(), 0.04).texture; pm.dispose(); return t; }
+if (renderer) {
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, matchMedia('(pointer:coarse)').matches ? 1.5 : 2));
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.05;
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.localClippingEnabled = true;
+  envTex = makeEnv();
+  composer = new EffectComposer(renderer);
+  renderPass = new RenderPass(new THREE.Scene(), new THREE.PerspectiveCamera());
+  composer.addPass(renderPass);
+  bloom = new UnrealBloomPass(new THREE.Vector2(512, 512), 0.85, 0.55, 0.18);
+  composer.addPass(bloom);
+  composer.addPass(new OutputPass());
+} else {
+  stageEl.append(h('div', { class: 'fallback', role: 'note' }, h('p', {}, 'Этому браузеру не удалось запустить 3D-графику (WebGL). Попробуйте открыть страницу в свежем Chrome, Safari или Firefox.'),
+    h('p', {}, 'Текст темы — под окном сцены; другие темы открываются из оглавления и поиска.')));
 }
-renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, matchMedia('(pointer:coarse)').matches ? 1.5 : 2));
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.05;
-renderer.outputColorSpace = THREE.SRGBColorSpace;
-renderer.localClippingEnabled = true;
-const pmrem = new THREE.PMREMGenerator(renderer);
-const envTex = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-
-const composer = new EffectComposer(renderer);
-const renderPass = new RenderPass(new THREE.Scene(), new THREE.PerspectiveCamera());
-composer.addPass(renderPass);
-const bloom = new UnrealBloomPass(new THREE.Vector2(512, 512), 0.85, 0.55, 0.18);
-composer.addPass(bloom);
-composer.addPass(new OutputPass());
 
 function glowTexture() {
   const c = document.createElement('canvas'); c.width = c.height = 64;
@@ -465,7 +515,7 @@ const LOOK = { shell: 0, bloom: 0 }; // оболочки и свечение в�
 const GLASS = [];
 function applyLook() {
   GLASS.forEach((m) => { m.uniforms.uRim.value = m.userData.rim0 * LOOK.shell; m.uniforms.uBase.value = m.userData.base0 * LOOK.shell; m.uniforms.uGain.value = 0.35 + 0.65 * LOOK.shell; });
-  bloom.strength = 1.1 * LOOK.bloom; bloom.enabled = LOOK.bloom > 0;
+  if (bloom) { bloom.strength = 1.1 * LOOK.bloom; bloom.enabled = LOOK.bloom > 0; }
 }
 
 // keep: оболочка видна всегда (клетка, митохондрия, колба — без неё сцена непонятна), не зависит от LOOK.shell
@@ -550,8 +600,14 @@ function addLights(scene, rim = 0xff6f9a) {
   const r = new THREE.PointLight(rim, 40, 40, 1.6); r.position.set(-7, 3, -6); scene.add(r);
   const f = new THREE.PointLight(0x6f8cff, 25, 40, 1.6); f.position.set(8, -4, 6); scene.add(f);
 }
+/* «Уменьшить движение» в системе и кнопка паузы: камера сама не вращается, время сцены стоит (перелёты камеры идут — их запускает человек) */
+const RMOTION = matchMedia('(prefers-reduced-motion:reduce)');
+const ANIM = { paused: false, dt: 0 };
 function makeControls(camera, target) {
-  const c = new OrbitControls(camera, canvas); c.target.copy(target); c.enableDamping = true; c.dampingFactor = 0.08; c.enabled = false; c.update(); return c;
+  const c = new OrbitControls(camera, canvas); c.target.copy(target); c.enableDamping = true; c.dampingFactor = 0.08; c.enabled = false;
+  // сцены сами включают автовращение (controls.autoRotate = true / st.rot) — здесь оно гасится, сцены переписывать не нужно
+  let ar = false; Object.defineProperty(c, 'autoRotate', { configurable: true, enumerable: true, get: () => ar && !RMOTION.matches && !ANIM.paused, set: (v) => { ar = !!v; } });
+  c.update(); return c;
 }
 
 /* ---------- UI helpers ---------- */
@@ -3841,6 +3897,7 @@ function glowNucleus(parent, p, color, size = 0.05, halo = 9) {
 /* общий «перелёт» камеры: st.fly = {target,pos,t} */
 function flyStep(st, camera, controls, dt, rate = 2.6, dur = 2.4) {
   if (!st.fly) return;
+  if (ANIM.paused) dt = ANIM.dt;   // пауза анимации: перелёт камеры, запрошенный человеком, всё равно доводится
   if (st._fly !== st.fly) { st._fly = st.fly; st.fly.t = 0; }   // повторный перелёт в тот же режим — заново
   st.fly.t += dt; const k = 1 - Math.exp(-dt * rate);
   controls.target.lerp(st.fly.target, k); camera.position.lerp(st.fly.pos, k);
@@ -9570,7 +9627,7 @@ function makeShealth() {
 /* ---------- app shell ---------- */
 const BUILDERS = { cell: makeCell, skeleton: makeSkeleton, neuron: makeNeuron, synapse: makeSynapse, brain: makeBrain, types: makeTypes, glia: makeGlia, develop: makeDevelop, vision: makeVision, soma: makeSoma, ventricles: makeVentricles, spinal: makeSpinal, cranial: makeCranial, stem: makeStem, dien: makeDien, hemis: makeHemis, cortex: makeCortex, hippo: makeHippo, cereb: makeCereb, heart: makeHeart, lungs: makeLungs, digest: makeDigest, kidney: makeKidney, endo: makeEndo, immune: makeImmune, ear: makeEar, skin: makeSkin, blood: makeBlood, repro: makeRepro, chemo: makeChemo, chest: makeChest, sresp: makeSresp, menses: makeMenses, shealth: makeShealth };
 const built = {};
-let cur = null, curId = null;
+let cur = null, curId = null, buildingId = null;
 const statsEl = $('#stats'), consoleEl = $('#console'), labelsEl = $('#labels'), scopeEl = $('#scope'), notesEl = $('#notes');
 const sctx = scopeEl.getContext('2d');
 let labelEls = [];
@@ -9578,6 +9635,7 @@ let labelEls = [];
 function accentSet(c) { document.documentElement.style.setProperty('--accent', c); }
 
 function layout() {
+  if (!renderer) return;
   const w = stageEl.clientWidth, hgt = stageEl.clientHeight;
   renderer.setSize(w, hgt, false); composer.setSize(w, hgt); bloom.setSize(w, hgt);
   // на узком (портретном) экране расширяем угол обзора, чтобы сцена помещалась по ширине
@@ -9618,6 +9676,7 @@ if (LANG !== 'ru') {
   T('#srch', 'Поиск по темам (/)', 'title'); T('#srch .stxt', 'Поиск');
   T('#share', 'Поделиться темой', 'aria-label'); T('#share', 'Поделиться темой', 'title');
   T('#recam', 'Сбросить вид камеры', 'aria-label'); T('#recam', 'Сбросить вид камеры (Home)', 'title');
+  T('#anim', 'Пауза анимации', 'aria-label'); T('#anim', 'Пауза анимации', 'title'); T('.skip', 'К тексту темы');
   T('#finder', 'Поиск по темам', 'aria-label'); T('#fq', 'Найти тему…', 'placeholder'); T('#fq', 'Найти тему', 'aria-label');
   T('.fesc .vh', 'Закрыть поиск'); T('#fres', 'Темы', 'aria-label'); T('.fkeys', '<kbd>↑</kbd><kbd>↓</kbd> выбрать · <kbd>Enter</kbd> открыть');
   T('.dctxt', 'Новости, новые темы и обсуждение — в Telegram-канале <a href="https://t.me/KTOMY_ATLAS" target="_blank" rel="noopener">@KTOMY_ATLAS</a>. Ошибки и предложения пишите на <a href="mailto:gonya83raul@gmail.com">gonya83raul@gmail.com</a>.');
@@ -9634,7 +9693,10 @@ if (window.__LANGNOTE && LANG === 'ru') { let off = false; try { off = localStor
 /* переключатель языка: запоминается, ссылка ?lang=en|ru */
 { const lb = $('#lang'), other = LANG === 'ru' ? 'en' : 'ru';
   lb.textContent = other.toUpperCase(); lb.lang = other; lb.title = other === 'en' ? 'English' : 'Русский';
-  lb.addEventListener('click', () => { try { localStorage.setItem('lang', other); } catch (e) { /* без памяти — через ссылку */ } location.href = PAGES && curId ? (isRootUrl() ? (other === 'en' ? 'index.en.html' : './?lang=ru') : pageUrl(curId, other)) : location.pathname + '?lang=' + other + location.hash; });
+  lb.addEventListener('click', () => { try { localStorage.setItem('lang', other); } catch (e) { /* без памяти — через ссылку */ }
+    // «Назад» с другой версии должен вернуть на эту: у главной язык выбирается по памяти браузера, поэтому в истории оставляем явный ?lang=
+    if (isRootUrl() && new URLSearchParams(location.search).get('lang') !== LANG) { try { history.replaceState(history.state, '', location.pathname + '?lang=' + LANG + location.hash); } catch (e) { /* не критично */ } }
+    location.href = PAGES && curId ? (isRootUrl() ? (other === 'en' ? 'index.en.html' : './?lang=ru') : pageUrl(curId, other)) : location.pathname + '?lang=' + other + location.hash; });
 }
 { const dlg = $('#donatebox'), btn = $('#donate'), cp = $('#dcopy');
   btn.addEventListener('click', () => { if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', ''); });
@@ -9691,25 +9753,34 @@ const SCALE = { bio: ['10⁻⁹ м', 'молекулы, нанометры'], ce
 const byScale = (s) => { const i = Object.keys(SCALE).indexOf(s.id); return i < 0 ? 99 : i; };
 [...SECTIONS].sort((a, b) => byScale(a) - byScale(b)).forEach((s) => {
   const sc = SCALE[s.id];
-  secNav.append(h('button', { class: 'tab', role: 'tab', type: 'button', 'data-sec': s.id, 'aria-selected': 'false', title: sc ? 'Масштаб: ' + sc[1] : null, onclick: () => show(lastIn[s.id] || firstOf(s)) },
+  const first = lastIn[s.id] || firstOf(s);
+  secNav.append(h('a', { class: 'tab', href: topicHref(first), 'data-sec': s.id, title: sc ? 'Масштаб: ' + sc[1] : null, onclick: (e) => navClick(e, () => lastIn[s.id] || firstOf(s)) },
     h('span', { class: 'tsc', 'aria-hidden': 'true' }, sc ? sc[0] : ''), h('span', { class: 'tdot', 'aria-hidden': 'true' }), h('span', { class: 'tn' }, s.name)));
 });
+/* разделы и темы — настоящие ссылки (открываются в новой вкладке, видны поисковикам); обычный клик — переход без перезагрузки */
+function topicHref(id) { return PAGES ? pageUrl(id) : '#' + id; }
+function navClick(e, idf) {
+  if (e.defaultPrevented || e.button || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+  const id = idf(); if (!BUILDERS[id] || (NOGL && PAGES)) return;   // без 3D на сайте — обычный переход на страницу темы (её текст в HTML)
+  e.preventDefault(); show(id);
+}
 function renderNav(id) {
   const s = secOf(id); lastIn[s.id] = id;
-  secNav.querySelectorAll('.tab').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.sec === s.id)));
+  secNav.querySelectorAll('.tab').forEach((b) => { const on = b.dataset.sec === s.id; if (on) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current');
+    const sx = SECTIONS.find((x) => x.id === b.dataset.sec); if (sx) b.setAttribute('href', topicHref(lastIn[sx.id] || firstOf(sx))); });
   const hadF = subNav.contains(document.activeElement);
   const st = subNav.scrollTop; subNav.innerHTML = '';
-  s.scenes.forEach(([sid, name]) => subNav.append(sid === '#' ? h('span', { class: 'subhead' }, name) : h('button', { class: 'sub', role: 'tab', type: 'button', 'data-id': sid, 'aria-selected': String(sid === id), onclick: () => show(sid) }, name)));
+  s.scenes.forEach(([sid, name]) => subNav.append(sid === '#' ? h('h3', { class: 'subhead' }, name) : h('a', { class: 'sub', href: topicHref(sid), 'data-id': sid, 'aria-current': sid === id ? 'page' : null, onclick: (e) => navClick(e, () => sid) }, name)));
   // оглавление слева прокручивается само, чтобы текущая тема была видна
   subNav.scrollTop = st;
-  const act = subNav.querySelector('.sub[aria-selected="true"]');
+  const act = subNav.querySelector('.sub[aria-current="page"]');
   if (act && subNav.scrollHeight > subNav.clientHeight && (act.offsetTop < st || act.offsetTop + act.offsetHeight > st + subNav.clientHeight)) subNav.scrollTop = act.offsetTop - subNav.clientHeight / 3;
   // на телефоне вместо длинного ряда — выпадающий список с группами
   const sel = h('select', { class: 'subsel', 'aria-label': 'Тема раздела «' + s.name + '»', onchange: (e) => show(e.target.value) }); let og = sel;
   s.scenes.forEach(([sid, name]) => { if (sid === '#') { og = h('optgroup', { label: name }); sel.append(og); } else { const o = h('option', { value: sid, 'data-n': name }, name); if (sid === id) o.selected = true; og.append(o); } });
   subNav.append(sel);
   if (typeof decorateNav === 'function') decorateNav();
-  if (hadF) { const a = subNav.querySelector('.sub[aria-selected="true"]'); (a && a.offsetParent ? a : sel).focus({ preventScroll: true }); }
+  if (hadF) { const a = subNav.querySelector('.sub[aria-current="page"]'); (a && a.offsetParent ? a : sel).focus({ preventScroll: true }); }
 }
 /* каждая вкладка — отдельный файл: грузится при первом открытии, старые сцены выгружаются */
 const chunkP = {};
@@ -9733,6 +9804,7 @@ function evict() {
   while (recent.length > KEEP) { const old = recent.shift(); const sc = built[old]; if (!sc || sc === cur) continue; delete built[old]; try { disposeScene(sc); } catch (e) { /* выгрузка не критична */ } }
 }
 function show(id) {
+  if (NOGL) { noglShow(id); return; }
   const seq = ++showSeq;
   if (built[id]) { activate(id); return; }
   renderNav(id);
@@ -9740,10 +9812,29 @@ function show(id) {
   loadEl.textContent = 'Загружаю «' + (item ? item[1] : id) + '»…'; loadEl.hidden = false;
   loadBuilder(id).then((mk) => {
     if (seq !== showSeq) return;
-    const L = []; building = L; let sc;
-    try { sc = mk(); } finally { building = null; }
+    const L = []; building = L; buildingId = id; let sc;
+    try { sc = mk(); } finally { building = null; buildingId = null; }
     sc.__listen = L; built[id] = sc; loadEl.hidden = true; activate(id);
-  }).catch((e) => { if (seq !== showSeq) return; loadEl.textContent = 'Не удалось загрузить раздел: ' + (e && e.message || e) + '. Обновите страницу.'; console.error(e); });
+  }).catch((e) => { if (seq !== showSeq) return; delete chunkP[BUILDERS[id][0]];
+    loadEl.textContent = 'Не удалось загрузить раздел: ' + (e && e.message || e) + '. ' + (navigator.onLine === false ? 'Нет сети — эта тема ещё не сохранена для офлайна.' : 'Возможно, сайт обновился — обновите страницу.');
+    loadEl.append(h('div', {}, button('Обновить', () => location.reload(), true))); console.error(e); });
+}
+/* без WebGL: только навигация и текст. На сайте у каждой темы своя страница с текстом в HTML — переход на неё обычный */
+const STATIC_ID = (window.__PAGE && window.__PAGE.id) || 'skeleton';
+let noglFirst = true;
+function noglShow(id) {
+  if (PAGES && !noglFirst && id !== curId) { location.href = pageUrl(id); return; }
+  noglFirst = false; curId = id;
+  renderNav(id);
+  if (id !== STATIC_ID) {   // текст в HTML — от другой темы (офлайн-копия главной под адресом темы)
+    const t = TOPIC[id];
+    $('#kicker').textContent = t ? t.sec + (t.grp ? ' · ' + t.grp : '') : ''; $('#title').textContent = t ? t.name : id; $('#lede').textContent = TOPIC_LEDE[id] || '';
+    notesEl.innerHTML = ''; document.title = pageTitle(t ? t.name : id);
+  }
+  ['#recam', '#anim'].forEach((q) => { const b = $(q); if (b) b.hidden = true; });
+  consoleEl.style.display = 'none'; scopeEl.hidden = true;
+  loadEl.hidden = true; refreshSeen();
+  window.__ready = id;
 }
 function activate(id) {
   loadEl.hidden = true;
@@ -9770,6 +9861,8 @@ function activate(id) {
   layout();
   evict();
   uxActivate(id);
+  modelUi();
+  animSync(true);
   window.__ready = id;
 }
 /* кнопка «Назад» (в том числе на Android) возвращает к предыдущей теме */
@@ -9782,11 +9875,12 @@ window.addEventListener('keydown', (e) => {
   if (t.closest('input, textarea, dialog[open]')) return;
   // пробел и Enter на кнопке, выбранной с клавиатуры, нажимают её, а не уходят сцене
   if ((e.key === ' ' || e.key === 'Enter') && t.closest('button, a, summary, select, [role=tab]') && t.matches(':focus-visible')) return;
-  if (cur.onKey(e)) e.preventDefault();
+  if (cur.onKey(e)) { e.preventDefault(); animResume(); }
 });
 
 /* ---------- навигация: поиск по темам, прогресс изучения, «поделиться», сброс камеры ---------- */
 const BRAND = 'Кто мы?', TITLE_TAIL = ' — ' + 'Кто мы? 3D-атлас человека';
+const pageTitle = (t) => ((t + TITLE_TAIL).length > 60 ? t + ' — ' + BRAND : t + TITLE_TAIL);   // как в tools/build.py: заголовок не длиннее 60 знаков
 const HEAD_SEL = [['link[rel="canonical"]', 'href'], ['link[hreflang="ru"]', 'href'], ['link[hreflang="en"]', 'href'], ['link[hreflang="x-default"]', 'href'], ['meta[name="description"]', 'content'], ['meta[property="og:description"]', 'content'], ['meta[property="og:title"]', 'content'], ['meta[property="og:url"]', 'content']];
 const HEAD0 = { title: document.title, v: HEAD_SEL.map(([q, a]) => { const e = document.head.querySelector(q); return e && e.getAttribute(a); }) };   // главная: вернуть при «Назад»
 // бытовые слова, по которым ищут тему (в английской сборке строки заменяются английскими по словарю)
@@ -9995,9 +10089,9 @@ function copyOld(txt) {
   ta.remove(); return ok ? Promise.resolve() : Promise.reject(new Error('copy'));
 }
 $('#share').addEventListener('click', async () => {
-  if (!cur) return;
-  const url = PAGES ? new URL(pageUrl(curId), location.href).href : location.origin + location.pathname + '?lang=' + LANG + '#' + curId, title = cur.title + ' — ' + BRAND;
-  if (navigator.share && matchMedia('(pointer:coarse)').matches) { try { await navigator.share({ title, text: cur.lede, url }); } catch (e) { /* пользователь передумал */ } return; }
+  if (!curId) return;
+  const url = PAGES ? new URL(pageUrl(curId), location.href).href : location.origin + location.pathname + '?lang=' + LANG + '#' + curId, title = $('#title').textContent + ' — ' + BRAND;
+  if (navigator.share && matchMedia('(pointer:coarse)').matches) { try { await navigator.share({ title, text: $('#lede').textContent, url }); } catch (e) { /* пользователь передумал */ } return; }
   copyText(url).then(() => toast('Ссылка на тему скопирована'), () => toast(url, 8000));
 });
 
@@ -10006,7 +10100,7 @@ let camFly = null;
 function uxActivate(id) {
   dwellId = id; dwell = 0;
   if (PAGES && isRootUrl()) { document.title = HEAD0.title; HEAD_SEL.forEach(([q, a], k) => { const e = document.head.querySelector(q); if (e && HEAD0.v[k] != null) e.setAttribute(a, HEAD0.v[k]); }); }   // главная сохраняет свой заголовок и описание
-  else document.title = cur.title + TITLE_TAIL;
+  else document.title = pageTitle(cur.title);
   if (PAGES && location.pathname.endsWith('/' + pageUrl(id))) {   // описание и адреса в <head> — под открытую тему (как в статических страницах)
     const abs = (l) => new URL(id === 'skeleton' ? (l === 'en' ? 'index.en.html' : './') : pageUrl(id, l), location.href).href, set = (sel, attr, v) => { const e = document.head.querySelector(sel); if (e) e.setAttribute(attr, v); };
     const desc = TOPIC_LEDE[id] || cur.lede || '';
@@ -10084,11 +10178,56 @@ document.addEventListener('visibilitychange', () => { visible = !document.hidden
 // сцена не рисуется, когда её не видно (прокрутили к тексту) или страницу закрывает окно (поиск, «Поддержать»): меньше нагрев и расход батареи
 let onScreen = true;
 if ('IntersectionObserver' in window) new IntersectionObserver((es) => { onScreen = es[es.length - 1].isIntersecting; clock.getDelta(); }).observe(stageEl);
+/* пауза анимации: кнопка у заголовка темы. При «уменьшить движение» в системе сцена открывается на паузе;
+   нажатие кнопки в её панели или клавиши сцены (человек сам запускает процесс) паузу снимает */
+const animBtn = $('#anim'); let animUser = false;
+function animSet(p) { ANIM.paused = p; animBtn.setAttribute('aria-pressed', String(p)); }
+function animSync() { if (!animUser) animSet(RMOTION.matches); }
+function animResume() { if (ANIM.paused && !animUser) animSet(false); }
+animBtn.addEventListener('click', () => { animUser = true; animSet(!ANIM.paused); say(ANIM.paused ? 'Анимация на паузе' : 'Анимация идёт'); });
+consoleEl.addEventListener('click', (e) => { if (e.target.closest('button, input, select, label')) animResume(); });
+if (RMOTION.addEventListener) RMOTION.addEventListener('change', animSync);
+
+/* прогресс загрузки 3D-модели и «Повторить» (fetchModel); показывается в окне той темы, которая модель запросила */
+const MODEL_ST = {};
+const mloadEl = h('div', { class: 'loading mload' }); mloadEl.hidden = true; stageEl.append(mloadEl);
+const fmtMB = (b) => { const s = (b / 1048576).toFixed(1); return (LANG === 'ru' ? s.replace('.', ',') : s) + ' МБ'; };
+function modelUi(name, owner, st) {
+  if (name) { if (st) MODEL_ST[name] = { owner, ...st }; else delete MODEL_ST[name]; }
+  const k = Object.keys(MODEL_ST).find((n) => MODEL_ST[n].owner === curId), m = k && MODEL_ST[k];
+  if (!m) { mloadEl.hidden = true; mloadEl.dataset.k = ''; return; }
+  mloadEl.hidden = false;
+  if (m.err) {
+    if (mloadEl.dataset.k === 'err' + k) return;
+    mloadEl.dataset.k = 'err' + k; const msg = 'Не удалось загрузить 3D-модель (' + m.err + ').';
+    mloadEl.textContent = msg; mloadEl.append(h('div', {}, button('Повторить', () => m.retry(), true))); say(msg);
+    return;
+  }
+  const txt = 'Загружаю 3D-модель: ' + (m.total ? Math.min(99, Math.floor(m.got / m.total * 100)) + ' % из ' + fmtMB(m.total) : fmtMB(m.got));
+  if (mloadEl.dataset.k !== txt) { mloadEl.dataset.k = txt; mloadEl.textContent = txt; }
+}
+
+/* потеря WebGL-контекста (телефон освободил видеопамять): не чернеть навсегда — дождаться восстановления, карту окружения сделать заново */
+let ctxLost = false;
+if (renderer) {
+  const lostEl = h('div', { class: 'fallback', role: 'status', hidden: '' }, h('p', {}, '3D-графика временно отключилась: браузер освободил видеопамять. Восстанавливаю…'), button('Обновить страницу', () => location.reload(), true));
+  stageEl.append(lostEl);
+  canvas.addEventListener('webglcontextlost', (e) => { e.preventDefault(); ctxLost = true; lostEl.hidden = false; });
+  canvas.addEventListener('webglcontextrestored', () => {
+    const old = envTex; envTex = makeEnv();
+    Object.values(built).forEach((sc) => { if (sc.scene.environment === old) sc.scene.environment = envTex;
+      sc.scene.traverse((o) => { if (o.material) [].concat(o.material).forEach((m) => { if (m.envMap === old) { m.envMap = envTex; m.needsUpdate = true; } }); }); });
+    if (old) old.dispose();
+    ctxLost = false; lostEl.hidden = true; clock.getDelta(); layout();
+  });
+}
+
 function frame(now) {
   requestAnimationFrame(frame);
-  if (!visible || !cur || !onScreen || document.querySelector('dialog[open]')) return;
+  if (!visible || !cur || !onScreen || ctxLost || document.querySelector('dialog[open]')) return;
   const dt = Math.min(clock.getDelta(), 0.05);
-  cur.update(dt);
+  ANIM.dt = dt;
+  cur.update(ANIM.paused ? 0 : dt);
   camStep(dt);
   cur.controls.update();
   composer.render();
@@ -10104,28 +10243,64 @@ applyLook();
   inst.addEventListener('click', () => { if (!deferred) return; deferred.prompt(); deferred.userChoice.finally(() => { deferred = null; inst.hidden = true; }); });
   window.addEventListener('appinstalled', () => { inst.hidden = true; });
   if ('serviceWorker' in navigator && document.querySelector('link[rel="manifest"]')) {
-    navigator.serviceWorker.register('sw.js').then(() => {
-      const btn = h('button', { class: 'pill ghost', type: 'button', title: 'Скачать все темы и 3D-модели, чтобы атлас работал без интернета' }, 'Сохранить для офлайна');
+    // новая версия сайта ставится в фоне и ждёт: плашка «Доступно обновление», перезагрузка — только по нажатию
+    let upAsked = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => { if (upAsked) { upAsked = false; location.reload(); } });
+    const offerUpdate = (w) => {
+      if (!w || document.querySelector('.upd')) return;
+      const bar = h('div', { class: 'upd', role: 'status' }, h('span', {}, 'Доступно обновление атласа'),
+        h('button', { class: 'btn primary', type: 'button', onclick: () => { upAsked = true; w.postMessage('skipWaiting'); setTimeout(() => { if (upAsked) location.reload(); }, 4000); } }, 'Обновить'),
+        h('button', { class: 'x', type: 'button', 'aria-label': 'Позже', title: 'Позже', onclick: () => bar.remove() }, '✕'));
+      document.body.append(bar);
+    };
+    navigator.serviceWorker.register('sw.js').then((reg) => {
+      const watch = (w) => { if (w) w.addEventListener('statechange', () => { if (w.state === 'installed' && navigator.serviceWorker.controller) offerUpdate(w); }); };
+      if (reg.waiting && navigator.serviceWorker.controller) offerUpdate(reg.waiting);
+      watch(reg.installing); reg.addEventListener('updatefound', () => watch(reg.installing));
+      /* «Сохранить для офлайна»: обе языковые версии, three.js, все темы, 3D-модели и декодер — по списку сборки (offline.json, с размерами);
+         прогресс — по байтам, файл считается сохранённым, только когда он лёг в кэш */
+      if (!window.caches) return;
+      const OFF = new URL(LANG === 'ru' ? './offline.json' : '../offline.json', import.meta.url), ROOT = new URL('../', OFF), FLAG = new URL('offline-flag', ROOT).href;
+      let plan = null;
+      const getPlan = () => (plan ||= fetch(OFF).then((r) => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }).catch((e) => { plan = null; throw e; }));
+      const btn = h('button', { class: 'pill ghost', type: 'button', title: 'Скачать все темы (на русском и английском) и 3D-модели, чтобы атлас работал без интернета' }, 'Сохранить для офлайна');
+      const label = (p) => 'Сохранить для офлайна (≈ ' + fmtMB(p.files.reduce((a, f) => a + f[1], 0)).replace(/[.,]\d /, ' ') + ')';
+      Promise.all([getPlan(), caches.open('chv-meta').then((c) => c.match(FLAG)).then((r) => r && r.text())]).then(([p, fl]) => { btn.textContent = fl === p.cache ? 'Сохранено для офлайна ✓' : label(p); }).catch(() => { /* подпись без объёма */ });
       btn.addEventListener('click', async () => {
         btn.disabled = true;
-        try { if (navigator.storage && navigator.storage.persist) await navigator.storage.persist(); } catch (e) { /* не критично */ }
-        const files = [...new Set(Object.values(BUILDERS).map(([f]) => f))], models = ['skeleton', 'muscles', 'vision', 'digest', 'repro'];
-        const N = files.length + models.length; let n = 0, bad = 0;
-        const step = () => { btn.textContent = 'Сохраняю… ' + Math.round((++n / N) * 100) + '%'; };
-        // всё, что страница уже загрузила до установки кэша (three.js, шрифты, сама страница)
-        const seen = [location.href.split('#')[0], ...performance.getEntriesByType('resource').map((e) => e.name)].filter((u) => /^https?:/.test(u) && !u.includes('/models/'));
-        for (const u of new Set(seen)) { try { await fetch(u, { cache: 'reload' }); } catch (e) { /* шрифт может не скачаться — не страшно */ } }
-        for (const f of files) { try { await (chunkP[f] ||= import('./s/' + f + '.js')); } catch (e) { bad++; } step(); }
-        for (const m of models) { try { const r = await fetch('models/' + m + '.' + MODEL_EXT); if (!r.ok) throw 0; await r.blob(); } catch (e) { bad++; } step(); }
-        // декодер сжатой геометрии (Draco) — чтобы модели открывались и без сети
-        try { await import('three/addons/loaders/DRACOLoader.js'); for (const f of ['draco_wasm_wrapper.js', 'draco_decoder.wasm', 'draco_decoder.js']) await fetch(DRACO_PATH + f); } catch (e) { bad++; }
-        btn.textContent = bad ? 'Сохранено не всё — повторите' : 'Сохранено ✓'; btn.disabled = !bad;
+        try {
+          const p = await getPlan(), need = p.files.reduce((a, f) => a + f[1], 0) || 1;
+          try { if (navigator.storage && navigator.storage.estimate) { const est = await navigator.storage.estimate(); if (est.quota && est.quota - (est.usage || 0) < need * 1.1) { btn.textContent = 'Не хватает места на устройстве'; btn.disabled = false; return; } } } catch (e) { /* оценки нет — пробуем */ }
+          try { if (navigator.storage && navigator.storage.persist) await navigator.storage.persist(); } catch (e) { /* не критично */ }
+          const cApp = await caches.open(p.cache), cMod = await caches.open(p.models);
+          let done = 0, bad = 0;
+          const step = () => { btn.textContent = 'Сохраняю… ' + Math.floor(done / need * 100) + ' %'; };
+          const one = async ([path, size]) => {
+            const u = new URL(path, ROOT).href, c = path.startsWith('models/') ? cMod : cApp;
+            if (!(await c.match(u))) {
+              let ok = false;
+              for (let k = 0; k < 2 && !ok; k++) { try { const r = await fetch(u, { cache: 'no-cache' }); if (!r.ok) throw new Error('HTTP ' + r.status); await c.put(u, r); ok = true; } catch (e) { /* ещё попытка */ } }
+              if (!ok) { bad++; return; }
+            }
+            done += size; step();
+          };
+          step();
+          const q = [...p.files];
+          await Promise.all([0, 1, 2, 3].map(async () => { while (q.length) await one(q.shift()); }));   // по 4 файла одновременно
+          if (!bad) await (await caches.open('chv-meta')).put(FLAG, new Response(p.cache));   // новая версия сайта докачает всё сама (sw.js)
+          btn.textContent = bad ? 'Сохранено не всё (' + bad + ') — повторить' : 'Сохранено для офлайна ✓';
+        } catch (e) { btn.textContent = 'Не удалось сохранить — повторить'; }
+        btn.disabled = false;
       });
       $('#knobs').append(btn); $('#cfg').hidden = false;
     }).catch(() => { /* без офлайна */ });
   }
 }
+/* «К тексту темы» — без смены адреса */
+$('.skip').addEventListener('click', (e) => { e.preventDefault(); notesEl.tabIndex = -1; notesEl.focus({ preventScroll: true }); notesEl.scrollIntoView({ block: 'start' }); });
 const start = idFromUrl();
 show(BUILDERS[start] ? start : 'skeleton');
-requestAnimationFrame(frame);
+if (renderer) requestAnimationFrame(frame);
+// ярлык приложения «Поиск по темам» (manifest shortcuts): ?find
+if (new URLSearchParams(location.search).has('find')) setTimeout(fopen, 0);
 </script>
