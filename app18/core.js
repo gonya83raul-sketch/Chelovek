@@ -447,12 +447,15 @@ function accentSet(c) { document.documentElement.style.setProperty('--accent', c
 
 function layout() {
   const w = stageEl.clientWidth, hgt = stageEl.clientHeight;
+  // режим съёмки: кадр рисуется в 1920 пикселей по высоте при любом размере окна
+  if (REC) { const pr = 1920 / Math.max(1, hgt); renderer.setPixelRatio(pr); composer.setPixelRatio(pr); recFit(hgt); }
   renderer.setSize(w, hgt, false); composer.setSize(w, hgt); bloom.setSize(w, hgt);
   // на узком (портретном) экране расширяем угол обзора, чтобы сцена помещалась по ширине
-  const asp = w / Math.max(1, hgt), A0 = 1.5;
+  // в режиме съёмки по ширине влезает меньше: вертикальный ролик обрезает края, а объект крупнее
+  const asp = w / Math.max(1, hgt), A0 = REC ? 0.9 : 1.5;
   // ракурсы сцен биохимии рассчитаны на компьютер: цель камеры смещена, чтобы объект не прятался под заголовком и пультом.
   // На телефоне пульт вынесен под сцену — возвращаем объект к центру сдвигом кадра (вниз и влево).
-  const bioMob = mqMob.matches;
+  const bioMob = mqMob.matches && !REC;   // в режиме съёмки объект ставится в центр иначе — recCenter()
   Object.entries(built).forEach(([id, s]) => { const c = s.camera; if (c.userData.fov0 === undefined) c.userData.fov0 = c.fov; c.fov = asp < A0 ? 2 * Math.atan(Math.tan(c.userData.fov0 * Math.PI / 360) * A0 / asp) * 180 / Math.PI : c.userData.fov0; c.aspect = asp;
     if (bioMob && (secOf(id) || {}).id === 'bio') { const z = s.mobZoom || 0.7; c.setViewOffset(w, hgt, (1 - z) / 2 * w + 0.05 * w, (1 - z) / 2 * hgt - Math.min(0.2, 0.13 * asp) * hgt, z * w, z * hgt); } else c.clearViewOffset();
     c.updateProjectionMatrix(); });
@@ -463,7 +466,10 @@ function layout() {
 function placeScope() { scopeEl.style.bottom = (consoleEl.parentNode === stageEl ? consoleEl.offsetHeight + 28 : 12) + 'px'; }
 /* телефон: панель управления уходит под сцену, яркость — за кнопкой */
 const mqMob = matchMedia('(max-width:700px)');
+/* режим съёмки роликов (адрес с ?rec): кадр 9:16 без интерфейса, пульт — справа от кадра */
+const REC = new URLSearchParams(location.search).has('rec');
 function placeConsole() {
+  if (REC) { placeScope(); return; }   // пульт живёт в боковой панели съёмки
   if (mqMob.matches) { if (consoleEl.parentNode === stageEl) { stageEl.after(consoleEl); consoleEl.classList.add('out'); } }
   else if (consoleEl.parentNode !== stageEl) { stageEl.append(consoleEl); consoleEl.classList.remove('out'); }
   placeScope();
@@ -631,7 +637,7 @@ function activate(id) {
   try {
     if (PAGES) {   // адрес страницы темы; главная остаётся главной, пока человек не перешёл на другую тему
       const u = pageUrl(id), root = isRootUrl();
-      if (!fromPop && (!location.pathname.endsWith('/' + u) || location.hash) && !(root && !location.hash && !navigated)) (navigated ? history.pushState : history.replaceState).call(history, { id }, '', u);
+      if (!fromPop && (!location.pathname.endsWith('/' + u) || location.hash) && !(root && !location.hash && !navigated)) (navigated ? history.pushState : history.replaceState).call(history, { id }, '', u + (REC ? '?rec' : ''));
       navigated = true;
     } else if (location.hash.slice(1) !== id) (location.hash ? history.pushState : history.replaceState).call(history, null, '', '#' + id);
   } catch (e) { /* ignore */ }
@@ -921,7 +927,7 @@ function updateLabels() {
   const w = stageEl.clientWidth, hgt = stageEl.clientHeight;
   // подписи не налезают друг на друга (на компьютере и на телефоне): налезающая сдвигается вверх/вниз на строку-две,
   // а если места нет — прячется. Сначала ставятся те, что были видны в прошлом кадре, — при вращении не мигают.
-  const thin = mqMob.matches, lh = thin ? 12 : 15, items = [], placed = [];
+  const thin = REC ? rec.lh : mqMob.matches, lh = REC ? rec.lh : thin ? 12 : 15, items = [], placed = [];
   cur.labels.forEach((l, i) => {
     const el = labelEls[i]; if (!el) return;
     const vis = !l.show || l.show();
@@ -936,7 +942,7 @@ function updateLabels() {
     let dy = null;
     for (const d of [0, el._on ? el._dy || 0 : 0, -lh, lh, -2 * lh, 2 * lh]) { const r = [x - 4, y + d - lh / 2, x - 2 + el._w, y + d + lh / 2]; if (free(r)) { dy = d; placed.push(r); break; } }
     if (dy === null) { el.style.opacity = '0'; el._on = false; return; }
-    el._on = true; el._dy = dy; el.style.opacity = String(op);
+    el._on = true; el._dy = dy; el.style.opacity = String(op); el._x = x; el._y = y + dy; el._op = op;   // _x/_y/_op — для записи видео
     el.style.transform = `translate(${x.toFixed(1)}px, ${(y + dy).toFixed(1)}px) translate(-3px,-50%)`;
   });
 }
@@ -959,10 +965,12 @@ function frame(now) {
   const dt = Math.min(clock.getDelta(), 0.05);
   cur.update(dt);
   camStep(dt);
-  cur.controls.update();
+  if (REC) recStep(dt);
+  cur.controls.update(dt);
   composer.render();
   updateLabels();
   if (cur.drawScope) cur.drawScope(sctx, scopeEl.clientWidth, scopeEl.clientHeight);
+  if (REC) recDraw();
   updateStats(now);
 }
 applyLook();
@@ -993,6 +1001,134 @@ applyLook();
       $('#knobs').append(btn); $('#cfg').hidden = false;
     }).catch(() => { /* без офлайна */ });
   }
+}
+/* ---------- режим съёмки роликов (?rec) ----------
+   кадр 9:16 во всю высоту окна (рисуется в 1080×1920), без заголовков и пульта; подписи крупнее; камера плавно облетает сцену.
+   «Записать» сохраняет ролик прямо из страницы — вместе с подписями; можно и снимать экран, захватив только кадр. */
+const rec = { orbit: true, speed: 1, spd: 0, dolly: 0, fs: 0.018, px: 16, lh: 22, mark: true, mr: null, t0: 0, tt: 0, ctx: null, font: 'sans-serif', sc: null, cf: null, cw: 0 };
+const RT = LANG === 'en'
+  ? { title: 'Recording mode', hint: 'The frame on the left is 9:16 and renders at 1080×1920. Record it with the button below (labels included), or screen-capture just that area.', topic: 'Topic', cam: 'Camera', orbit: 'Orbit', sec: 's per turn', move: 'Move', in: 'Zoom in', stop: 'Hold', out: 'Zoom out', center: 'Center', home: 'Reset view', labels: 'Label size', frame: 'Frame', mark: 'Atlas caption', safe: 'Instagram safe zones', record: 'Recording', start: '● Record', stopRec: '■ Stop', saved: 'Saved: ', noRec: 'This browser cannot record video here — use screen capture.', scene: 'Scene controls', exit: 'Exit recording mode', brand: 'Who are we? · 3D human atlas' }
+  : { title: 'Режим съёмки', hint: 'Кадр слева — 9:16, рисуется в 1080×1920. Запишите его кнопкой ниже (вместе с подписями) или снимайте с экрана только эту область.', topic: 'Тема', cam: 'Камера', orbit: 'Облёт', sec: 'с на оборот', move: 'Движение', in: 'Наезд', stop: 'Стоп', out: 'Отъезд', center: 'По центру', home: 'Исходный ракурс', labels: 'Размер подписей', frame: 'Кадр', mark: 'Надпись атласа', safe: 'Безопасные зоны Instagram', record: 'Запись', start: '● Записать', stopRec: '■ Стоп', saved: 'Сохранено: ', noRec: 'Этот браузер не умеет записывать видео — снимайте экран.', scene: 'Пульт темы', exit: 'Выйти из режима съёмки', brand: 'Кто мы? · 3D-атлас человека' };
+let recPick = null, recMark = null, recBtn = null, recOut = null;
+// подписи — доля высоты кадра: в ролике на телефоне читаются так же, как в превью
+function recFit(hgt) { rec.px = Math.round(rec.fs * hgt); rec.lh = Math.round(rec.px * 1.35); stageEl.style.setProperty('--rec-fs', rec.px + 'px'); }
+const recOff = new THREE.Vector3();
+/* камера — на центр объекта: на компьютере цель сдвинута, чтобы объект не прятался под заголовком, а в кадре съёмки заголовка нет.
+   Центр — медиана центров видимых объектов (большая оболочка или фон не перетягивают); камера переезжает вместе с целью за 0,8 с,
+   ракурс и расстояние те же */
+function recCenter() {
+  const xs = [], ys = [], zs = [], v = new THREE.Vector3();
+  cur.scene.updateMatrixWorld();
+  cur.scene.traverseVisible((o) => {
+    if (!(o.isMesh || o.isPoints) || !o.geometry) return;
+    const src = o.isInstancedMesh ? o : o.geometry; if (!src.boundingSphere) src.computeBoundingSphere();
+    const s = src.boundingSphere; if (!s || !Number.isFinite(s.radius)) return;
+    v.copy(s.center).applyMatrix4(o.matrixWorld); xs.push(v.x); ys.push(v.y); zs.push(v.z);
+  });
+  if (!xs.length) return;
+  const med = (a) => a.sort((p, q) => p - q)[a.length >> 1], to = V3(med(xs), med(ys), med(zs));
+  rec.cf = { sc: cur, t0: cur.controls.target.clone(), p0: cur.camera.position.clone(), to, k: 0 };
+}
+function recStep(dt) {
+  const c = cur.controls;
+  if (recPick && recPick.value !== curId) recPick.value = curId;
+  // новая тема — сразу в центр и ещё раз через 2 с: 3D-модели (скелет, органы) догружаются не сразу
+  if (rec.sc !== cur) { rec.sc = cur; rec.cw = 2; recCenter(); }
+  if (rec.cw > 0 && (rec.cw -= dt) <= 0) recCenter();
+  if (rec.cf && rec.cf.sc === cur && !camFly) {
+    const f = rec.cf; f.k = Math.min(1, f.k + dt / 0.8); const e = 1 - Math.pow(1 - f.k, 3);
+    c.target.lerpVectors(f.t0, f.to, e); recOff.subVectors(c.target, f.t0); cur.camera.position.copy(f.p0).add(recOff);
+    if (f.k >= 1) rec.cf = null;
+  }
+  // облёт разгоняется и тормозит плавно, без рывка; пока камеру тянут мышью, OrbitControls его сами приостанавливают
+  rec.spd += ((rec.orbit ? rec.speed : 0) - rec.spd) * Math.min(1, dt * 1.5);
+  c.autoRotate = Math.abs(rec.spd) > 0.002; c.autoRotateSpeed = rec.spd;
+  // наезд / отъезд: расстояние до цели меняется на ~6% в секунду
+  if (rec.dolly && !camFly) {
+    recOff.copy(cur.camera.position).sub(c.target);
+    const d = recOff.length(), nd = clamp(d * Math.exp(rec.dolly * 0.06 * dt), Math.max(c.minDistance, 0.01), c.maxDistance);
+    if (d > 0) cur.camera.position.copy(c.target).addScaledVector(recOff, nd / d);
+  }
+}
+/* кадр ролика: 3D-сцена + осциллограф + подписи + надпись атласа на холсте 1080×1920 */
+function recDraw() {
+  if (!rec.mr) return;
+  const g = rec.ctx, W = g.canvas.width, H = g.canvas.height, k = W / stageEl.clientWidth, fs = rec.px * k;
+  g.drawImage(canvas, 0, 0, W, H);
+  if (!scopeEl.hidden) { const sr = stageEl.getBoundingClientRect(), r = scopeEl.getBoundingClientRect(); g.drawImage(scopeEl, (r.left - sr.left) * k, (r.top - sr.top) * k, r.width * k, r.height * k); }
+  g.save(); g.textBaseline = 'middle'; g.shadowColor = '#000'; g.shadowBlur = fs * 0.5; g.font = `500 ${fs}px ${rec.font}`;
+  labelEls.forEach((el) => {
+    if (!el._on || !el._op) return;
+    const x = (el._x - 3) * k, y = el._y * k, r = fs * 0.2;   // как в разметке: точка .4em, отступ .45em
+    g.globalAlpha = el._op; g.fillStyle = el.style.color || '#E2DCE0';
+    g.beginPath(); g.arc(x + r, y, r, 0, Math.PI * 2); g.fill();
+    g.fillText(el.textContent, x + fs * 0.85, y);
+  });
+  if (rec.mark) { g.globalAlpha = 0.72; g.fillStyle = '#fff'; g.textBaseline = 'top'; g.font = `600 ${H * 0.019}px ${rec.font}`; g.fillText(RT.brand, W * 0.06, H * 0.125); }
+  g.restore();
+  const now = performance.now();
+  if (now - rec.tt > 250) { rec.tt = now; const s = Math.floor((now - rec.t0) / 1000); recBtn.textContent = `${RT.stopRec} ${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; }
+}
+function recToggle() {
+  if (rec.mr) { rec.mr.stop(); return; }
+  const cv = document.createElement('canvas'); cv.width = 1080; cv.height = 1920; rec.ctx = cv.getContext('2d');
+  const type = ['video/mp4;codecs=avc1.640028', 'video/mp4', 'video/webm;codecs=vp9', 'video/webm'].find((t) => MediaRecorder.isTypeSupported(t));
+  let mr;
+  try { mr = new MediaRecorder(cv.captureStream(60), type ? { mimeType: type, videoBitsPerSecond: 16e6 } : { videoBitsPerSecond: 16e6 }); } catch (e) { recOut.textContent = RT.noRec; return; }
+  const parts = [];
+  mr.ondataavailable = (e) => { if (e.data.size) parts.push(e.data); };
+  mr.onstop = () => {
+    rec.mr = null; recBtn.textContent = RT.start;
+    const ext = /mp4/.test(mr.mimeType) ? 'mp4' : 'webm', name = `kto-my-${curId}-${new Date().toISOString().slice(0, 19).replace(/[T:]/g, '-')}.${ext}`;
+    const a = h('a', { href: URL.createObjectURL(new Blob(parts, { type: mr.mimeType })), download: name });
+    document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 60000);
+    recOut.textContent = RT.saved + name;
+  };
+  mr.start(1000); rec.mr = mr; rec.t0 = performance.now(); recOut.textContent = '';
+}
+if (REC) {
+  document.body.classList.add('rec');
+  document.head.append(h('style', {}, `
+body.rec{overflow:hidden}
+body.rec *{visibility:hidden}
+body.rec #stage,body.rec #stage *,body.rec #recside,body.rec #recside *{visibility:visible}
+body.rec #stage .hud,body.rec #stage [hidden]{display:none}
+body.rec #stage{position:fixed;left:0;top:0;width:calc(100vh*9/16);height:100vh;min-height:0;max-height:none;border-radius:0;box-shadow:none;z-index:60}
+#recside{position:fixed;left:calc(100vh*9/16);right:0;top:0;bottom:0;overflow-y:auto;padding:18px 22px 40px;background:var(--bg);border-left:1px solid var(--line);z-index:60}
+#recside h2{font:600 22px/1.2 var(--f-serif);margin:0 0 6px}
+#recside h3{font:600 15px/1.2 var(--f-body);margin:22px 0 0}
+#recside .recnote{color:var(--mute);font-size:13px;margin:0;max-width:60ch}
+#recside > .btn{margin-top:18px}
+body.rec .console{position:static;margin-top:12px;display:flex;flex-wrap:wrap;gap:14px 20px;background:var(--panel-solid);backdrop-filter:none;-webkit-backdrop-filter:none;border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.recsel{font:500 14px var(--f-body);color:var(--fg);background:var(--panel-solid);border:1px solid var(--line-2);border-radius:9px;padding:7px 10px;max-width:100%}
+body.rec .lbl{font-size:var(--rec-fs);gap:.45em}
+body.rec .lbl::before{width:.4em;height:.4em}
+#recmark{position:absolute;left:6%;top:12.5%;font:600 calc(100vh*.019)/1 var(--f-body);color:#fff;opacity:.72;text-shadow:0 1px 6px #000;pointer-events:none;white-space:nowrap}
+#recsafe{position:absolute;inset:0;pointer-events:none}
+#recsafe i{position:absolute;background:rgba(255,70,70,.14);border:1px dashed rgba(255,130,130,.55)}`));
+  recMark = h('div', { id: 'recmark' }, RT.brand);
+  // поверх кадра (в ролик не попадает): сверху и снизу Instagram кладёт свои надписи, справа — кнопки
+  const safe = h('div', { id: 'recsafe', hidden: true }, h('i', { style: 'left:0;right:0;top:0;height:11%' }), h('i', { style: 'left:0;right:0;bottom:0;height:21%' }), h('i', { style: 'right:0;width:14%;top:50%;bottom:21%' }));
+  stageEl.append(recMark, safe);
+  recPick = h('select', { class: 'recsel', 'aria-label': RT.topic, onchange: (e) => show(e.target.value) },
+    SECTIONS.map((s) => h('optgroup', { label: s.name }, s.scenes.filter(([id]) => id !== '#').map(([id, name]) => h('option', { value: id }, name)))));
+  recBtn = button(RT.start, recToggle, true); recOut = h('div', { class: 'recnote', role: 'status' });
+  if (!('MediaRecorder' in window) || !HTMLCanvasElement.prototype.captureStream) { recBtn.disabled = true; recOut.textContent = RT.noRec; }
+  const dSeg = seg([{ id: -1, label: RT.in }, { id: 0, label: RT.stop }, { id: 1, label: RT.out }], () => rec.dolly, (v) => { rec.dolly = v; });
+  const side = h('aside', { id: 'recside', 'aria-label': RT.title },
+    h('h2', {}, RT.title), h('p', { class: 'recnote' }, RT.hint),
+    h('div', { class: 'console' },
+      group(RT.topic, null, recPick),
+      group(RT.cam, null, toggle(RT.orbit, () => rec.orbit, (v) => { rec.orbit = v; }), range('recspd', 0.2, 3, 0.1, () => rec.speed, (v) => { rec.speed = v; }, (v) => Math.round(60 / v) + ' ' + RT.sec)),
+      group(RT.move, null, dSeg, button(RT.center, recCenter), button(RT.home, () => { rec.dolly = 0; dSeg.sync(); rec.cf = null; resetCam(); })),
+      group(RT.labels, null, range('recfs', 0.012, 0.035, 0.001, () => rec.fs, (v) => { rec.fs = v; recFit(stageEl.clientHeight); }, (v) => Math.round(v * 1920) + ' px')),
+      group(RT.frame, null, toggle(RT.mark, () => rec.mark, (v) => { rec.mark = v; recMark.hidden = !v; }), toggle(RT.safe, () => !safe.hidden, (v) => { safe.hidden = !v; })),
+      group(RT.record, null, recBtn, recOut)),
+    h('h3', {}, RT.scene), consoleEl,
+    button(RT.exit, () => { location.href = location.pathname; }));
+  document.body.append(side);
+  rec.font = getComputedStyle(document.body).fontFamily;
+  placeScope(); layout();
 }
 const start = idFromUrl();
 show(BUILDERS[start] ? start : 'skeleton');
