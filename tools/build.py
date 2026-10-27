@@ -231,7 +231,15 @@ P404 = ('<!doctype html>\n<html lang="ru"><head><meta charset="utf-8"><meta name
   '<title>Страница не найдена — Кто мы?</title><style>body{background:#121117;color:#ECE7E2;font:16px/1.6 system-ui,sans-serif;margin:0;padding:48px 20px}main{max-width:640px;margin:0 auto}a{color:#FFB070}h1{font:600 30px Georgia,serif;margin:0 0 12px}</style></head>'
   f'<body><main><h1>Страница не найдена</h1><p>Такой страницы в атласе «Кто мы?» нет. <a href="{BASE}">Открыть атлас</a>.</p><p lang="en">Page not found. <a href="{BASE}index.en.html">Open the atlas in English</a>.</p></main></body></html>\n')
 open(os.path.join(SITE, '404.html'), 'w', encoding='utf8').write(P404)
-shutil.copytree(os.path.join(OUT, APP), os.path.join(SITE, APP)); shutil.copytree(os.path.join(OUT, 'models'), os.path.join(SITE, 'models'))
+shutil.copytree(os.path.join(OUT, APP), os.path.join(SITE, APP))
+# модели: сайт грузит models/<имя>.bin; если есть только старые .txt — перепаковать, без .bin сборку не выпускать
+MODELS = ['skeleton', 'muscles', 'vision', 'digest', 'repro']
+miss = [m for m in MODELS if not os.path.exists(os.path.join(OUT, 'models', m + '.bin'))]
+if miss: subprocess.run([sys.executable, os.path.join(ROOT, 'tools', 'models.py')] + miss)
+miss = [m for m in MODELS if not os.path.exists(os.path.join(OUT, 'models', m + '.bin'))]
+if miss: print('НЕТ МОДЕЛЕЙ out/models/*.bin:', miss, '— запустите tools/models.py'); sys.exit(1)
+os.makedirs(os.path.join(SITE, 'models'))
+for m in MODELS: shutil.copy(os.path.join(OUT, 'models', m + '.bin'), os.path.join(SITE, 'models'))
 shutil.copytree(os.path.join(ROOT, 'pwa', 'icons'), os.path.join(SITE, 'icons'))
 shutil.copy(os.path.join(ROOT, 'pwa', 'manifest.webmanifest'), SITE)
 sw = open(os.path.join(ROOT, 'pwa', 'sw.tpl.js'), encoding='utf8').read()
