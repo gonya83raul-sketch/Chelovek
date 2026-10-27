@@ -1,4 +1,4 @@
-# Передача работы в Claude Code (состояние на 26.10.2026, сайт app16)
+# Передача работы в Claude Code (состояние на 26.10.2026, сайт app17)
 
 Этот файл — самое короткое и полное описание того, как продолжить работу над атласом «Кто мы? — от молекулы до мысли» в Claude Code.
 Подробная история решений — в NOTES.md (читать по нужде, он длинный).
@@ -68,7 +68,7 @@ cd lt && python3 -m http.server 8765  # локальный сервер (ост�
    В EN использовать кавычки “ ”, не «ёлочки».
 2. Поднять `APP` в tools/build.py, собрать, прогнать sweep.
 3. Сайт: клон ветки main рядом (`git clone -b main https://github.com/gonya83raul-sketch/Chelovek.git ../chelovek-site`), затем
-   `cd ../chelovek-site && git pull --rebase && git rm -rq app16 && cp -r ../chelovek-src/out/site/. . && git add -A && git commit -m "app17: …" && git push`.
+   `cd ../chelovek-site && git pull --rebase && git rm -rq app17 && cp -r ../chelovek-src/out/site/. . && git add -A && git commit -m "app18: …" && git push`.
 4. Исходники: `git add -A && git commit -m "…" && git pull --rebase origin source && git push origin HEAD:source`.
 5. Дописать в NOTES.md раздел о сделанном.
 

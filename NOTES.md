@@ -138,3 +138,9 @@ C. Новые темы (п.1 ниже + сверить оглавление data
 - sitemap: главные + 146 страниц тем с xhtml:link и lastmod. robots.txt в подкаталоге поисковики не читают — sitemap надо отправить вручную в Google Search Console и Яндекс Вебмастер.
 - Рецензия: review/seo-b.md (15 замечаний; исправлены высокие и средние, кроме №8 — это действие владельца сайта; из низких сделаны 404, описание ≤160, lastmod, og:site_name/twitter:card, таймаут SW; не сделаны: обложка 1200×630, JSON-LD на страницах тем).
 - Перевод: b26_seo.json (следующий — b27_*).
+
+## app17 (27.10.2026): лёгкие модели и пауза рендера
+- Модели теперь `models/<имя>.bin` — gzip без base64 (MODEL_EXT = 'bin'). В GLB (vision, digest, repro) текстуры → WebP (EXT_texture_webp), геометрия → Draco (KHR_draco_mesh_compression: позиции 14 бит, нормали 10, UV 12). Имена узлов/мешей/материалов не меняются. Всего 32,7 МБ → 13,6 МБ (vision 7,5 → 2,1; digest 10,4 → 2,4; repro 3,9 → 1,4; скелет 3,4 → 2,5; мышцы 6,9 → 5,2).
+- Инструменты: `python3 tools/models.py [имена]` (из out/models/<имя>.txt или .glb делает .bin; WebP через Pillow, Draco — `node tools/glbdraco.mjs` кодировщиком из three.js, без npm-пакетов — их установка запрещена политикой песочницы). tools/setup.sh берёт .bin из ветки main.
+- Загрузка: `parseGLB(buf, onLoad, onErr)` — GLTFLoader + DRACOLoader (декодер грузится только при первой модели, путь `import.meta.resolve('three/addons/libs/draco/gltf/')`). «Сохранить для офлайна» докачивает и декодер.
+- Рендер останавливается, когда сцена вне экрана (IntersectionObserver на #stage) или открыт любой `<dialog>`; вкладка в фоне — как раньше.

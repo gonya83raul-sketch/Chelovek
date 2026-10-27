@@ -75,7 +75,7 @@ ledes = [f'{t}: {mm["lede"]}' for t, mm in META.items() if 'lede' in mm]
 L0 = 'const TOPIC_LEDE = {}; // заполняет tools/build.py'
 assert page.count(L0) == 1
 page = page.replace(L0, 'const TOPIC_LEDE = { ' + ', '.join(ledes) + ' };', 1)
-APP = 'app16'   # меняется при каждой публикации со старой структурой кэша
+APP = 'app17'   # меняется при каждой публикации со старой структурой кэша
 OUT = os.path.join(ROOT, 'out'); os.makedirs(OUT, exist_ok=True)
 i0 = page.index('<script type="module">') ; i1 = page.index('</script>', i0)
 mod = page[i0 + len('<script type="module">'):i1]
@@ -269,5 +269,5 @@ for cf in [os.path.join(LT, APP, 'core.js')] + ([os.path.join(LT, APP, 'en', 'co
     core = core.replace(hook, hook + " window.__adv = (s) => { for (let i = 0; i < s * 20; i++) cur.update(0.05); }; window.__show = show; window.__built = () => Object.keys(built); window.__glass = () => GLASS.length; window.__cur = () => cur; window.__mem = () => renderer.info.memory;")
     open(cf, 'w', encoding='utf8').write(core)
 os.makedirs(os.path.join(LT, 'models'), exist_ok=True)
-for f in glob.glob(os.path.join(OUT, 'models', '*.txt')): shutil.copy(f, os.path.join(LT, 'models'))
+for f in glob.glob(os.path.join(OUT, 'models', '*.bin')): shutil.copy(f, os.path.join(LT, 'models'))
 print('OK page', len(page.encode('utf8')), 'bytes;', len(scenes), 'bio scenes')

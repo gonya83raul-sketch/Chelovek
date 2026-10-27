@@ -374,7 +374,14 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 /* ---------- helpers ---------- */
 /* 3D-модели лежат в models/ сжатыми gzip; распаковка встроенным DecompressionStream */
-const MODEL_EXT = 'txt';
+const MODEL_EXT = 'bin';   // gzip-архив модели (раньше — base64-текст 'txt', на треть тяжелее)
+/* GLB со сжатой геометрией (Draco): декодер three.js подгружается только когда нужна модель */
+const DRACO_PATH = (() => { try { return import.meta.resolve('three/addons/libs/draco/gltf/'); } catch (e) { return 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/libs/draco/gltf/'; } })();
+let dracoP = null;
+function parseGLB(buf, onLoad, onErr) {
+  (dracoP ||= import('three/addons/loaders/DRACOLoader.js').then(({ DRACOLoader }) => { const d = new DRACOLoader(); d.setDecoderPath(DRACO_PATH); return d; }))
+    .then((d) => { const l = new GLTFLoader(); l.setDRACOLoader(d); l.parse(buf, '', onLoad, onErr); }, onErr);
+}
 function fetchModel(name) {
   return fetch('models/' + name + '.' + MODEL_EXT).then((r) => { if (!r.ok) throw new Error('HTTP ' + r.status); return MODEL_EXT === 'txt' ? r.text().then((t) => { const b = atob(t.trim()); const u = new Uint8Array(b.length); for (let i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return new Blob([u]); }) : r.blob(); })
     .then((blob) => { if (typeof DecompressionStream === 'undefined') throw new Error('браузер слишком старый для распаковки модели'); return new Response(blob.stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer(); });
@@ -3492,10 +3499,9 @@ function makeVision() {
   const lensMat = new THREE.MeshPhysicalMaterial({ color: 0xcfe6ff, roughness: 0.08, transmission: 0, transparent: true, opacity: 0.55, clearcoat: 1, emissive: 0x2a4a6a, emissiveIntensity: 0.4, clippingPlanes: [CUT], side: THREE.DoubleSide });
   const lens = new THREE.Mesh(new THREE.SphereGeometry(1, 48, 32), lensMat); lens.position.copy(LENS_C); lens.scale.set(0.19, 0.19, 0.1); lens.visible = false; scene.add(lens);
 
-  const loader = new GLTFLoader();
   const onFail = (e) => { st.err = String(e && e.message || e); refs.setInfo && refs.setInfo(); };
   // модель лежит рядом со страницей в сжатом виде (models/)
-  fetchModel('vision').then((buf) => { loader.parse(buf, '', onModel, onFail); })
+  fetchModel('vision').then((buf) => { parseGLB(buf, onModel, onFail); })
     .catch(onFail);
   function onModel(g) {
     holder.add(g.scene);
@@ -7327,7 +7333,7 @@ function makeDigest() {
   function loadReal() {
     if (st.realLoad) return; st.realLoad = 1; refs.setInfo && refs.setInfo();
     fetchModel('digest').then((buf) => {
-      new GLTFLoader().parse(buf, '', (gltf) => {
+      parseGLB(buf, (gltf) => {
         const root = gltf.scene; root.updateMatrixWorld(true);
         const box = new THREE.Box3().setFromObject(root), size = box.getSize(V3(0, 0, 0)), c = box.getCenter(V3(0, 0, 0));
         const k = 4.6 / size.y; root.scale.setScalar(k); root.position.set(-c.x * k, -0.6 - box.min.y * k, -c.z * k - 0.02); REAL.add(root); root.updateMatrixWorld(true);
@@ -8791,7 +8797,7 @@ function makeRepro(initMode) {
   function loadReal() {
     if (st.realLoad) return; st.realLoad = 1; refs.setInfo && refs.setInfo();
     fetchModel('repro').then((buf) => {
-      new GLTFLoader().parse(buf, '', (gltf) => {
+      parseGLB(buf, (gltf) => {
         const root = gltf.scene; root.updateMatrixWorld(true);
         const pel = root.getObjectByName('Pelvis') || root; const box = new THREE.Box3().setFromObject(pel); const size = box.getSize(V3(0, 0, 0)), c = box.getCenter(V3(0, 0, 0));
         const k = REAL_W / size.x; root.scale.setScalar(k); root.position.copy(c).multiplyScalar(-k).add(REAL_AT); REAL.add(root); root.updateMatrixWorld(true);
@@ -10069,9 +10075,12 @@ function updateStats(now) {
 const clock = new THREE.Clock();
 let visible = true;
 document.addEventListener('visibilitychange', () => { visible = !document.hidden; clock.getDelta(); });
+// сцена не рисуется, когда её не видно (прокрутили к тексту) или страницу закрывает окно (поиск, «Поддержать»): меньше нагрев и расход батареи
+let onScreen = true;
+if ('IntersectionObserver' in window) new IntersectionObserver((es) => { onScreen = es[es.length - 1].isIntersecting; clock.getDelta(); }).observe(stageEl);
 function frame(now) {
   requestAnimationFrame(frame);
-  if (!visible || !cur) return;
+  if (!visible || !cur || !onScreen || document.querySelector('dialog[open]')) return;
   const dt = Math.min(clock.getDelta(), 0.05);
   cur.update(dt);
   camStep(dt);
@@ -10102,6 +10111,8 @@ applyLook();
         for (const u of new Set(seen)) { try { await fetch(u, { cache: 'reload' }); } catch (e) { /* шрифт может не скачаться — не страшно */ } }
         for (const f of files) { try { await (chunkP[f] ||= import('./s/' + f + '.js')); } catch (e) { bad++; } step(); }
         for (const m of models) { try { const r = await fetch('models/' + m + '.' + MODEL_EXT); if (!r.ok) throw 0; await r.blob(); } catch (e) { bad++; } step(); }
+        // декодер сжатой геометрии (Draco) — чтобы модели открывались и без сети
+        try { await import('three/addons/loaders/DRACOLoader.js'); for (const f of ['draco_wasm_wrapper.js', 'draco_decoder.wasm', 'draco_decoder.js']) await fetch(DRACO_PATH + f); } catch (e) { bad++; }
         btn.textContent = bad ? 'Сохранено не всё — повторите' : 'Сохранено ✓'; btn.disabled = !bad;
       });
       $('#knobs').append(btn); $('#cfg').hidden = false;
