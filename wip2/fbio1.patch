@@ -1,0 +1,38 @@
+From 9abb8a419d9a7e83e37ea1a842115bd7fbaa32e0 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Tue, 27 Oct 2026 16:27:13 +0000
+Subject: [PATCH] =?UTF-8?q?=D0=91=D0=B8=D0=BE=D1=85=D0=B8=D0=BC=D0=B8?=
+ =?UTF-8?q?=D1=8F=201:=20=D0=B7=D0=B0=D0=BC=D0=B5=D1=82=D0=BA=D0=B0=20?=
+ =?UTF-8?q?=D0=BE=20=D1=81=D0=BE=D1=81=D1=82=D0=BE=D1=8F=D0=BD=D0=B8=D0=B8?=
+ =?UTF-8?q?=20=D1=80=D0=B0=D0=B1=D0=BE=D1=82=D1=8B=20(=D0=BF=D1=80=D0=B0?=
+ =?UTF-8?q?=D0=B2=D0=BA=D0=B8=20=D1=81=D1=86=D0=B5=D0=BD=20=D0=BE=D1=82?=
+ =?UTF-8?q?=D0=BB=D0=BE=D0=B6=D0=B5=D0=BD=D1=8B)?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01CAsbEKYKPKpphinWsqDRBa
+---
+ review/fix-fbio1.md | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+ create mode 100644 review/fix-fbio1.md
+
+diff --git a/review/fix-fbio1.md b/review/fix-fbio1.md
+new file mode 100644
+index 0000000..72a01e0
+--- /dev/null
++++ b/review/fix-fbio1.md
+@@ -0,0 +1,9 @@
++# Исправление сцен «Биохимия 1» (fbio1) — работа приостановлена
++
++Статус: ни одна сцена не исправлена, код сцен в ветке не менялся (черновик glycogen откатан, чтобы не оставлять полуготовый файл).
++
++Подготовка по glycogen (черновик вне репозитория): радиально ветвящаяся гранула (8 цепей от гликогенина, 2 ветви α-1,6 на цепь, ~950 остатков, кольца глюкозы), вырезанный сектор, камера растёт вместе с гранулой, увеличенный фрагмент точки ветвления — молекула панозы (Glc α1→6 Glc α1→4 Glc, 66 атомов, сгенерирована tools/molgen.py), подписи α-1,4 / α-1,6, на телефоне mobZoom ≈0.9, в режиме «Сахар крови» — заполненная история графика и контур тела ярче.
++
++Уже сделано в оболочке: DESK_SHIFT.bio = 0.5; β-окисление: «активация −2, ≈129 АТФ».
++
++Осталось: все 9 сцен (glycogen, atp, etc, glycolysis, betaox, aminoacid, kinetics, enzmed, krebs) и перевод в data/i18n/en/b35_fbio1.json.
+-- 
+2.43.0
+

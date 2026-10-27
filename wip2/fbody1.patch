@@ -1,0 +1,154 @@
+From c7adb4cf63f247396d44d1e2234d21c20d46c40b Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Tue, 27 Oct 2026 16:27:22 +0000
+Subject: [PATCH] =?UTF-8?q?=D0=A2=D0=B5=D0=BB=D0=BE-1:=20=D1=87=D0=B5?=
+ =?UTF-8?q?=D1=80=D0=BD=D0=BE=D0=B2=D0=B8=D0=BA=20=D0=B1=D0=B5=D0=B4=D1=80?=
+ =?UTF-8?q?=D0=B5=D0=BD=D0=BD=D0=BE=D0=B9=20=D0=BA=D0=BE=D1=81=D1=82=D0=B8?=
+ =?UTF-8?q?=20=D0=B4=D0=BB=D1=8F=20=C2=AB=D0=9A=D0=BE=D1=81=D1=82=D0=B5?=
+ =?UTF-8?q?=D0=B9=20=D0=B8=20=D1=81=D1=83=D1=81=D1=82=D0=B0=D0=B2=D0=BE?=
+ =?UTF-8?q?=D0=B2=C2=BB=20(wip/joints=5Ffemur=5Fdraft.js,=20=D0=BD=D0=B5?=
+ =?UTF-8?q?=20=D0=B2=20=D1=81=D0=B1=D0=BE=D1=80=D0=BA=D0=B5),=20=D1=81?=
+ =?UTF-8?q?=D0=BE=D1=81=D1=82=D0=BE=D1=8F=D0=BD=D0=B8=D0=B5=20=D1=80=D0=B0?=
+ =?UTF-8?q?=D0=B1=D0=BE=D1=82=20=D0=B2=20review/fix-fbody1.md=20=E2=80=94?=
+ =?UTF-8?q?=20=D1=80=D0=B0=D0=B1=D0=BE=D1=82=D0=B0=20=D0=BF=D1=80=D0=B8?=
+ =?UTF-8?q?=D0=BE=D1=81=D1=82=D0=B0=D0=BD=D0=BE=D0=B2=D0=BB=D0=B5=D0=BD?=
+ =?UTF-8?q?=D0=B0?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01CAsbEKYKPKpphinWsqDRBa
+---
+ review/fix-fbody1.md      | 20 +++++++++
+ wip/joints_femur_draft.js | 91 +++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 111 insertions(+)
+ create mode 100644 review/fix-fbody1.md
+ create mode 100644 wip/joints_femur_draft.js
+
+diff --git a/review/fix-fbody1.md b/review/fix-fbody1.md
+new file mode 100644
+index 0000000..eaad7f1
+--- /dev/null
++++ b/review/fix-fbody1.md
+@@ -0,0 +1,20 @@
++# Исправление сцен «Тело-1» (joints kidney endo chest menses repro referred lungs digest) — остановлено по просьбе пользователя
++
++## Состояние
++- Сцены в src_page.html и body/*.js **не менялись** (оценки как в review/score-body.md).
++- Начата joints, п. 1–4 «До 5/5»: черновик новой бедренной кости — `wip/joints_femur_draft.js` (в сборку не входит, не проверен).
++  Замена блока G1 в body/11_joints.js (строки «1. трубчатая кость» … «рамка»):
++  - правая бедренная кость, фронтальный распил: головка, шейка под 125°, большой и малый вертелы, мыщелки, надмыщелки — гладкое объединение тел (`boneF`), задняя половина объёмная (глубина √f), а не призма;
++  - распил — канва: компактное вещество (толстая стенка диафиза, calcar), канал с жёлтым мозгом желобом-полостью, губчатое с трабекулами по линиям нагрузки (главные сжимающие/растягивающие, вторичные, вертел, дистальные), хрящ, надкостница, эпифизарные линии, питательная артерия с ветвями;
++  - рамка остеонов — видимым контуром на компактном веществе.
++
++## Что осталось для joints
++1. Вставить фрагмент вместо старого G1; переписать `setOp` (вместо setTrb/marrowY — подменять `faceBone.geometry/map` на `faceGeo(true)` / `cutCanvas(true)`, создавать лениво).
++2. Перенести подписи на новую форму (головка справа, x>0): хрящ (1.62, 3.35), губчатое (1.25, 3.3), красный мозг (0.6, −2.5), эпифизарная линия (1.15, 2.92), компактное (0.33, 1.2), жёлтый мозг (0, 0.2), артерия (1.5, 1.35), надкостница (0.38, −1.6), «рамка — блок остеонов» (0.38, −1.0); добавить «большой вертел», «шейка (125°)», «мыщелки».
++3. Подобрать VIEW.bone/VIEWM.bone под оболочку (лёгкий поворот ~20° справа, чтобы видна была объёмная задняя половина), проверить mobZoom 0.55.
++4. Условности в notes: трабекулы теперь по линиям нагрузки; новые строки — в data/i18n/en/b31_fbody1.json.
++5. Сборка, sweep, снимки 1440×900 / 390×844 / EN.
++
++## Остальные сцены — не начаты
++kidney, endo, chest, menses (+repro), referred, lungs, digest — пункты «До 5/5» из review/score-body.md.
++Снимки «до» с новой оболочкой: lt/f_b_<id>.jpg (не в git).
+diff --git a/wip/joints_femur_draft.js b/wip/joints_femur_draft.js
+new file mode 100644
+index 0000000..15a1dfb
+--- /dev/null
++++ b/wip/joints_femur_draft.js
+@@ -0,0 +1,91 @@
++  /* ---------- 1. бедренная кость (правая, вид спереди, фронтальный распил по Неттеру) ---------- */
++  const G1 = new THREE.Group(); scene.add(G1);
++  // форма — гладкое объединение тел: диафиз, шейка под углом 125°, головка, большой и малый вертелы, мыщелки.
++  // f > 0 — внутри; глубина задней (несрезанной) половины = √f. x > 0 — медиальная сторона (головка).
++  const NK = [0.819, 0.574], N0 = [0.05, 2.75], HC = [N0[0] + 1.25 * NK[0], N0[1] + 1.25 * NK[1]], HR = 0.56;
++  const capT = (x, y, ax, ay, bx, by, ra, rb) => { const dx = bx - ax, dy = by - ay; const t = clamp(((x - ax) * dx + (y - ay) * dy) / (dx * dx + dy * dy), 0, 1); const px = ax + dx * t - x, py = ay + dy * t - y, r = ra + (rb - ra) * t; return r * r - px * px - py * py; };
++  const ell = (x, y, cx, cy, rx, ry, rz, rot = 0) => { const c = Math.cos(rot), s = Math.sin(rot), u = ((x - cx) * c + (y - cy) * s) / rx, v = (-(x - cx) * s + (y - cy) * c) / ry; return rz * rz * (1 - u * u - v * v); };
++  const smax = (a, b, k = 0.05) => { const hh = Math.max(k - Math.abs(a - b), 0) / k; return Math.max(a, b) + hh * hh * k / 4; };
++  const axX = (y) => 0.05 - 0.02 * (y + 2.6);
++  const boneF = (x, y) => [capT(x, y, 0.05, -2.6, 0.0, 0, 0.4, 0.36), capT(x, y, 0.0, 0, -0.06, 2.75, 0.36, 0.42), capT(x, y, N0[0], N0[1], HC[0], HC[1], 0.42, 0.32),
++    HR * HR - (x - HC[0]) ** 2 - (y - HC[1]) ** 2, ell(x, y, -0.08, 2.85, 0.62, 0.55, 0.45), ell(x, y, -0.47, 3.22, 0.36, 0.55, 0.42, -0.22), ell(x, y, 0.4, 2.1, 0.26, 0.15, 0.24, -0.65),
++    ell(x, y, 0.02, -2.75, 0.8, 0.85, 0.6), ell(x, y, 0.5, -3.56, 0.47, 0.55, 0.85), ell(x, y, -0.47, -3.5, 0.46, 0.52, 0.85), ell(x, y, 0.86, -3.12, 0.2, 0.28, 0.4), ell(x, y, -0.84, -3.1, 0.19, 0.27, 0.4)].reduce((a, b) => smax(a, b));
++  // толщина компактного слоя: толстая стенка диафиза, тонкая в эпифизах, утолщение (calcar) под шейкой
++  const cortT = (x, y, op) => (op ? 0.035 : 0.045) + (op ? 0.05 : 0.105) * (1 - smooth(1.3, 2.4, Math.abs(y + 0.15))) + 0.06 * Math.exp(-((x - 0.42) ** 2 + (y - 2.45) ** 2) / 0.05);
++  const rSh = (y) => (y < 0 ? 0.36 + 0.04 * (-y / 2.6) : 0.36 + 0.06 * (y / 2.75));
++  const canalR = (x, y, op) => { const r = rSh(y) - cortT(x, y, op) - 0.01; const e = y > 1.95 ? 1 - ((y - 1.95) / 0.45) ** 2 : y < -1.6 ? 1 - ((y + 1.6) / 0.4) ** 2 : 1; return e > 0 ? r * Math.sqrt(e) : 0; };
++  const X0 = -1.2, X1 = 1.95, Y0 = -4.35, Y1 = 4.25, BW = X1 - X0, BH = Y1 - Y0, PX = 0.0062, NW = Math.round(BW / PX), NH = Math.round(BH / PX);
++  const artic = (x, y) => (Math.hypot(x - HC[0], y - HC[1]) < HR + 0.02 && (x - HC[0]) * NK[0] + (y - HC[1]) * NK[1] > -0.22) || (y < -3.32 && Math.abs(x) < 0.97);
++  // маска и расстояние до края (фаска 3-4)
++  const MASK = new Uint8Array(NW * NH), DIST = new Float32Array(NW * NH);
++  for (let j = 0; j < NH; j++) for (let i = 0; i < NW; i++) { const k = j * NW + i; MASK[k] = boneF(X0 + (i + 0.5) * PX, Y1 - (j + 0.5) * PX) > 0 ? 1 : 0; DIST[k] = MASK[k] ? 1e9 : 0; }
++  for (let j = 0; j < NH; j++) for (let i = 0; i < NW; i++) { const k = j * NW + i; if (!DIST[k]) continue; let d = DIST[k]; if (i) d = Math.min(d, DIST[k - 1] + 1); if (j) { d = Math.min(d, DIST[k - NW] + 1); if (i) d = Math.min(d, DIST[k - NW - 1] + 1.414); if (i < NW - 1) d = Math.min(d, DIST[k - NW + 1] + 1.414); } DIST[k] = d; }
++  for (let j = NH - 1; j >= 0; j--) for (let i = NW - 1; i >= 0; i--) { const k = j * NW + i; if (!DIST[k]) continue; let d = DIST[k]; if (i < NW - 1) d = Math.min(d, DIST[k + 1] + 1); if (j < NH - 1) { d = Math.min(d, DIST[k + NW] + 1); if (i < NW - 1) d = Math.min(d, DIST[k + NW + 1] + 1.414); if (i) d = Math.min(d, DIST[k + NW - 1] + 1.414); } DIST[k] = d; }
++  const cpx = (x) => (x - X0) / PX, cpy = (y) => (Y1 - y) / PX;
++  const hex = (c) => { const v = new THREE.Color(c); return [v.r * 255, v.g * 255, v.b * 255]; };
++  const CC = { cart: hex('#A8DCEA'), peri: hex('#D98A94'), comp: hex('#EDE0C4'), comp2: hex('#D9C9A6'), red: hex('#8E2E42'), red2: hex('#6E2234'), yel: hex('#E6C46A'), yel2: hex('#F3DC92') };
++  // распил: компактное вещество, губчатое с трабекулами вдоль линий нагрузки, канал с жёлтым мозгом, хрящ, надкостница, эпифизарные линии
++  function cutCanvas(op) {
++    const cv = document.createElement('canvas'); cv.width = NW; cv.height = NH; const ctx = cv.getContext('2d'), img = ctx.createImageData(NW, NH), D = img.data;
++    const sp = document.createElement('canvas'); sp.width = NW; sp.height = NH; const sctx2 = sp.getContext('2d'), simg = sctx2.createImageData(NW, NH);
++    for (let j = 0; j < NH; j++) for (let i = 0; i < NW; i++) {
++      const k = j * NW + i; if (!MASK[k]) continue; const x = X0 + (i + 0.5) * PX, y = Y1 - (j + 0.5) * PX, d = DIST[k] * PX, a = artic(x, y);
++      const n = Math.sin(i * 0.9 + Math.sin(j * 0.13) * 3) * 0.5 + Math.sin(j * 0.31 + i * 0.07) * 0.5;
++      let c;
++      if (a && d < 0.055) c = CC.cart.map((v) => v * (0.92 + 0.08 * d / 0.055));
++      else if (!a && d < 0.02) c = CC.peri;
++      else if (d < cortT(x, y, op) + (a ? 0.055 : 0)) { const l = 0.5 + 0.5 * Math.sin((y * 9 + n * 0.6) * 6); c = CC.comp.map((v, q) => v + (CC.comp2[q] - v) * l * 0.35); }
++      else if (Math.abs(x - axX(y)) < canalR(x, y, op)) { const g = Math.sin(i * 0.55) * Math.sin(j * 0.47); c = CC.yel.map((v, q) => v + (CC.yel2[q] - v) * Math.max(0, g) * 0.6); }
++      else { c = CC.red.map((v, q) => v + (CC.red2[q] - v) * (0.5 + 0.5 * n)); simg.data[k * 4 + 3] = 255; }
++      D[k * 4] = c[0]; D[k * 4 + 1] = c[1]; D[k * 4 + 2] = c[2]; D[k * 4 + 3] = 255;
++    }
++    ctx.putImageData(img, 0, 0); sctx2.putImageData(simg, 0, 0);
++    // трабекулы рисуются отдельно и обрезаются маской губчатого вещества
++    const tr = document.createElement('canvas'); tr.width = NW; tr.height = NH; const t = tr.getContext('2d'); t.lineCap = 'round'; t.strokeStyle = '#F2E6CC';
++    const R = mulberry(op ? 77 : 7), rr = (a, b) => a + (b - a) * R();
++    const curve = (p0, c, p1, wdt) => { if (op && R() < 0.45) return; t.lineWidth = (op ? 0.55 : 1) * wdt / PX; if (op) t.setLineDash([rr(6, 18), rr(4, 10)]); else t.setLineDash([]); t.beginPath(); t.moveTo(cpx(p0[0]), cpy(p0[1])); t.quadraticCurveTo(cpx(c[0]), cpy(c[1]), cpx(p1[0]), cpy(p1[1])); t.stroke(); };
++    const onHead = (deg, r = 0.5) => [HC[0] + r * Math.cos(deg * Math.PI / 180), HC[1] + r * Math.sin(deg * Math.PI / 180)];
++    const L = (a, b, u) => [a[0] + (b[0] - a[0]) * u, a[1] + (b[1] - a[1]) * u];
++    for (let q = 0; q < 13; q++) { const u = q / 12, s = L([0.3, 2.15], [0.66, 2.92], u), e = onHead(125 - u * 115); curve(s, [L(s, e, 0.5)[0] - 0.08, L(s, e, 0.5)[1] + 0.02], e, 0.034); }   // главные сжимающие: от медиальной стенки шейки к своду головки
++    for (let q = 0; q < 10; q++) { const u = q / 9, s = [-0.36 - 0.02 * u, 2.25 + 0.5 * u], e = onHead(215 + u * 95, 0.48); curve(s, [0.25 - 0.1 * u, 3.95 - 0.15 * u], e, 0.026); }   // главные растягивающие: дуги от латеральной стенки над шейкой в нижнюю часть головки
++    for (let q = 0; q < 8; q++) { const u = q / 7, s = [0.32, 1.75 + 0.35 * u], e = [-0.6 + 0.35 * u, 2.95 + 0.4 * u]; curve(s, [0.05, 2.35 + 0.3 * u], e, 0.022); }   // вторичные сжимающие — к большому вертелу
++    for (let q = 0; q < 7; q++) { const u = q / 6, s = [-0.82 + 0.1 * u, 2.95 + 0.12 * u], e = [-0.62 + 0.4 * u, 3.62 + 0.1 * u]; curve(s, [-0.75 + 0.3 * u, 3.4], e, 0.018); }   // большой вертел
++    for (let q = 0; q < 5; q++) { const u = q / 4, s = [-0.33, 1.7 + 0.25 * u], e = [0.33, 2.3 + 0.3 * u]; curve(s, [-0.05, 2.25 + 0.3 * u], e, 0.016); }   // вторичные растягивающие
++    [[0.5, -3.56, 0.47, 0.55], [-0.47, -3.5, 0.46, 0.52]].forEach(([cx, cy, rx, ry], side) => { for (let q = 0; q < 8; q++) { const u = q / 7, s = [(side ? -1 : 1) * (0.18 + 0.12 * u), -1.85 - 0.1 * u], a = (200 + 140 * u) * Math.PI / 180; const e = [cx + rx * 0.9 * Math.cos(a), cy + ry * 0.9 * Math.sin(a)]; curve(s, [L(s, e, 0.5)[0] * 0.95, L(s, e, 0.5)[1]], e, 0.024); } });   // дистальные вертикальные — к суставным поверхностям мыщелков
++    for (let q = 0; q < 7; q++) { const y = -2.25 - q * 0.19; curve([-1.0, y], [0, y + 0.08 * Math.sin(q)], [1.0, y - 0.03], 0.016); }   // дистальные поперечные
++    t.setLineDash([]); t.globalAlpha = 0.75;
++    for (let q = 0; q < (op ? 300 : 1100); q++) { const x = rr(X0, X1), y = rr(Y0, Y1), a = rr(0, Math.PI), l = rr(0.04, 0.09); t.lineWidth = (op ? 0.006 : 0.011) / PX; t.beginPath(); t.moveTo(cpx(x), cpy(y)); t.lineTo(cpx(x + l * Math.cos(a)), cpy(y + l * Math.sin(a))); t.stroke(); }   // мелкая сеть перекладин
++    t.globalAlpha = 1; t.globalCompositeOperation = 'destination-in'; t.drawImage(sp, 0, 0);
++    ctx.drawImage(tr, 0, 0);
++    // эпифизарные линии (следы пластинок роста) — белые, по всему губчатому веществу
++    const ep = document.createElement('canvas'); ep.width = NW; ep.height = NH; const e2 = ep.getContext('2d'); e2.strokeStyle = '#FFF8E6'; e2.lineWidth = 0.022 / PX; e2.lineCap = 'round';
++    const wavy = (a, b, amp, n) => { e2.beginPath(); for (let q = 0; q <= 40; q++) { const u = q / 40, p = L(a, b, u), nx = -(b[1] - a[1]), ny = b[0] - a[0], l = Math.hypot(nx, ny), w = amp * Math.sin(u * Math.PI * n); (q ? e2.lineTo.bind(e2) : e2.moveTo.bind(e2))(cpx(p[0] + nx / l * w), cpy(p[1] + ny / l * w)); } e2.stroke(); };
++    const EC = [HC[0] - 0.27 * NK[0], HC[1] - 0.27 * NK[1]], PP = [-NK[1], NK[0]];
++    wavy([EC[0] - 0.62 * PP[0], EC[1] - 0.62 * PP[1]], [EC[0] + 0.62 * PP[0], EC[1] + 0.62 * PP[1]], 0.03, 3);
++    wavy([-0.12, 3.3], [-0.95, 2.88], 0.025, 2);
++    wavy([-1.1, -2.98], [1.15, -3.02], 0.035, 4);
++    e2.globalCompositeOperation = 'destination-in'; e2.drawImage(sp, 0, 0); ctx.drawImage(ep, 0, 0);
++    // питательная артерия: канал в стенке и ветви в костномозговом канале
++    ctx.strokeStyle = '#D8404C'; ctx.lineCap = 'round'; ctx.lineWidth = 0.03 / PX; ctx.beginPath(); ctx.moveTo(cpx(0.4), cpy(0.78)); ctx.lineTo(cpx(0.12), cpy(0.5)); ctx.stroke();
++    ctx.lineWidth = 0.016 / PX; [[0.12, 0.5, 0.0, 1.1, 0.05, 1.8], [0.12, 0.5, 0.12, -0.2, 0.02, -1.1]].forEach(([a, b, c, d, e, f]) => { ctx.beginPath(); ctx.moveTo(cpx(a), cpy(b)); ctx.quadraticCurveTo(cpx(c), cpy(d), cpx(e), cpy(f)); ctx.stroke(); });
++    const tx = new THREE.CanvasTexture(cv); tx.colorSpace = THREE.SRGBColorSpace; tx.anisotropy = 4; return tx;
++  }
++  // наружная поверхность задней половины: кость, хрящ на суставных поверхностях, надкостница на диафизе
++  function skinCanvas() {
++    const S = 4, w = Math.round(NW / S), hh = Math.round(NH / S), cv = document.createElement('canvas'); cv.width = w; cv.height = hh; const ctx = cv.getContext('2d'), img = ctx.createImageData(w, hh);
++    for (let j = 0; j < hh; j++) for (let i = 0; i < w; i++) { const x = X0 + (i + 0.5) * PX * S, y = Y1 - (j + 0.5) * PX * S, k = (j * w + i) * 4; if (boneF(x, y) <= -0.004) continue; const c = artic(x, y) ? CC.cart : Math.abs(y) < 2.3 ? hex('#E6C9B8') : CC.comp; img.data[k] = c[0]; img.data[k + 1] = c[1]; img.data[k + 2] = c[2]; img.data[k + 3] = 255; }
++    ctx.putImageData(img, 0, 0); const tx = new THREE.CanvasTexture(cv); tx.colorSpace = THREE.SRGBColorSpace; return tx;
++  }
++  const gridGeo = (zf) => { const g = new THREE.PlaneGeometry(BW, BH, 126, 344); g.translate(X0 + BW / 2, Y0 + BH / 2, 0); const p = g.attributes.position; for (let i = 0; i < p.count; i++) p.setZ(i, zf(p.getX(i), p.getY(i))); g.computeVertexNormals(); return g; };
++  const faceGeo = (op) => gridGeo((x, y) => { const r = canalR(x, y, op), d = x - axX(y); return d * d < r * r ? -0.8 * Math.sqrt(r * r - d * d) : 0; });   // канал — желобом (полость)
++  const CUT = { norm: cutCanvas(false), op: null }, FG = { norm: faceGeo(false), op: null };
++  const faceMat = new THREE.MeshPhysicalMaterial({ map: CUT.norm, emissiveMap: CUT.norm, emissive: 0xffffff, emissiveIntensity: 0.22, roughness: 0.62, alphaTest: 0.5, side: THREE.DoubleSide });
++  const faceBone = new THREE.Mesh(FG.norm, faceMat); G1.add(faceBone);
++  const skinTx = skinCanvas();
++  const backBone = new THREE.Mesh(gridGeo((x, y) => -Math.sqrt(Math.max(0, boneF(x, y)))), new THREE.MeshPhysicalMaterial({ map: skinTx, emissiveMap: skinTx, emissive: 0xffffff, emissiveIntensity: 0.06, roughness: 0.55, clearcoat: 0.2, alphaTest: 0.5, side: THREE.DoubleSide })); backBone.position.z = -0.002; G1.add(backBone);
++  // питательная артерия снаружи — входит в стенку диафиза через питательное отверстие
++  const artC = new THREE.CatmullRomCurve3([V3(1.5, 1.35, 0.35), V3(1.0, 1.05, 0.1), V3(0.62, 0.9, 0.0), V3(0.4, 0.78, 0.0)]);
++  G1.add(new THREE.Mesh(new THREE.TubeGeometry(artC, 40, 0.035, 8), flat('#D84A50', { e: 0.2 })));
++  // рамка на компактном веществе: откуда взят блок остеонов (кнопка «Остеоны»)
++  const frame = new THREE.Group(); frame.position.set(0.29, -1.0, 0.012); G1.add(frame);
++  [[0, 0.21, 0.19, 0.022], [0, -0.21, 0.19, 0.022], [0.095, 0, 0.022, 0.44], [-0.095, 0, 0.022, 0.44]].forEach(([x, y, w, hh]) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, hh), new THREE.MeshBasicMaterial({ color: '#FFF4D8' })); m.position.set(x, y, 0); frame.add(m); });
+-- 
+2.43.0
+

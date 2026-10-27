@@ -1,0 +1,146 @@
+From f78fb535b5e7822560f6761e952ed14a2809ca0f Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Tue, 27 Oct 2026 16:29:07 +0000
+Subject: [PATCH] =?UTF-8?q?WIP=20fbio2=20(=D1=81=D0=BE=D1=85=D1=80=D0=B0?=
+ =?UTF-8?q?=D0=BD=D0=B5=D0=BD=D0=BE=20=D0=BF=D1=80=D0=B8=20=D0=BE=D1=82?=
+ =?UTF-8?q?=D0=BA=D0=BB=D0=B0=D0=B4=D1=8B=D0=B2=D0=B0=D0=BD=D0=B8=D0=B8=20?=
+ =?UTF-8?q?=D1=80=D0=B0=D0=B1=D0=BE=D1=82=D1=8B)?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ bio/42_carbdig.js | 58 ++++++++++++++++++++++++++++-------------------
+ 1 file changed, 35 insertions(+), 23 deletions(-)
+
+diff --git a/bio/42_carbdig.js b/bio/42_carbdig.js
+index f649969..22d34a5 100644
+--- a/bio/42_carbdig.js
++++ b/bio/42_carbdig.js
+@@ -6,9 +6,11 @@
+ function makeCarbdig() {
+   rnd = mulberry(4201);
+   const scene = bioStage({ rim: 0xf2c14e });
+-  const VIEW = { dig: [V3(0.7, -2.1, 0), V3(1.3, 0.2, 22)], met: [V3(41.2, -1.65, 0), V3(41.8, 0.2, 18.5)] };
+-  const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VIEW.dig[1]);
+-  const controls = makeControls(camera, VIEW.dig[0]); controls.minDistance = 3; controls.maxDistance = 40;
++  const VIEW = { dig: [V3(1.2, 0.5, 0), V3(1.4, 0.9, 15.5)], met: [V3(41.2, 0.3, 0), V3(41.4, 0.7, 16.5)] };
++  const VIEWM = { dig: [V3(1.2, 0.6, 0), V3(1.2, 0.8, 11.5)], met: [V3(41.2, 0.4, 0), V3(41.2, 0.6, 13.5)] };
++  const mqm = window.matchMedia('(max-width:700px)'), VV = (m) => (mqm.matches && VIEWM[m]) || VIEW[m];
++  const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VV('dig')[1]);
++  const controls = makeControls(camera, VV('dig')[0]); controls.minDistance = 3; controls.maxDistance = 40;
+   const fx = new Sparks(1800, 0.08); scene.add(fx.obj);
+   const SC = { glc: '#F2C14E', fru: '#FF9A5C', gal: '#7FE0A0' };
+   const ENZC = { amy: '#7FD6FF', malt: '#F2C14E', suc: '#FF9A5C', lac: '#7FE0A0' };
+@@ -16,19 +18,26 @@ function makeCarbdig() {
+   /* ---------- 1. переваривание и всасывание ---------- */
+   const G1 = new THREE.Group(); scene.add(G1);
+   const YT = 0.55, YB = -1.25, XL = -3.3, XR = 3.3;
+-  // клетки эпителия (энтероциты) и микроворсинки
++  // клетки эпителия (энтероциты): округлые призмы с ядром, лёгким вздутием и щёточной каймой
++  const cellGeo = (w, hh, d, r, seed) => {   // скруглённая призма: вершины коробки выталкиваются от внутреннего ядра на радиус r
++    const g = new THREE.BoxGeometry(w, hh, d, 14, 14, 8), iw = w / 2 - r, ih = hh / 2 - r, id = d / 2 - r, c = V3(0, 0, 0);
++    return displaceGeo(g, (v) => { c.set(clamp(v.x, -iw, iw), clamp(v.y, -ih, ih), clamp(v.z, -id, id)); const dir = v.clone().sub(c); if (dir.lengthSq() > 1e-8) dir.normalize().multiplyScalar(r); v.copy(c).add(dir); v.x *= 1 + 0.035 * Math.sin((v.y / hh + 0.5) * Math.PI); v.z += 0.03 * noise3(v.x * 2, v.y * 2, seed); });
++  };
+   for (let i = 0; i < 3; i++) {
+-    const g = new THREE.BoxGeometry(2.1, YT - YB, 1.5, 6, 6, 4); displaceGeo(g, (v) => { v.x *= 1 - 0.04 * Math.cos(v.y * 2); v.z += 0.04 * noise3(v.x, v.y, i); });
+-    g.translate(XL + 1.1 + i * 2.2, (YT + YB) / 2, 0); g.computeVertexNormals();
+-    G1.add(new THREE.Mesh(g, new THREE.MeshPhysicalMaterial({ color: new THREE.Color('#E8A0A0').multiplyScalar(0.22), roughness: 0.5, transparent: true, opacity: 0.55, depthWrite: false })));
+-    const nuc = new THREE.Mesh(ell3(0.32, 0.42, 0.3, V3(XL + 1.1 + i * 2.2, YB + 0.55, 0)), protMat('#9F7BFF', 0.3)); G1.add(nuc);
++    const g = cellGeo(2.04, YT - YB, 1.5, 0.3, i); g.translate(XL + 1.1 + i * 2.2, (YT + YB) / 2, 0);
++    const cm = new THREE.Mesh(g, new THREE.MeshPhysicalMaterial({ color: new THREE.Color('#E8A0A0').multiplyScalar(0.3), roughness: 0.45, clearcoat: 0.3, transparent: true, opacity: 0.6, depthWrite: false, emissive: new THREE.Color('#E8A0A0'), emissiveIntensity: 0.05 })); cm.renderOrder = 1; G1.add(cm);
++    const nuc = new THREE.Mesh(blobGeo(0.34, 0.44, 0.32, 70 + i, 0.1, 4), protMat('#9F7BFF', 0.34)); nuc.position.set(XL + 1.1 + i * 2.2, YB + 0.62, 0); G1.add(nuc);
++    const nl = new THREE.Mesh(new THREE.SphereGeometry(0.1, 14, 10), protMat('#E0C8FF', 0.5)); nl.position.set(XL + 1.1 + i * 2.2 + 0.1, YB + 0.66, 0.2); G1.add(nl);   // ядрышко
++    for (let k = 0; k < 3; k++) { const mt = new THREE.Mesh(ell3(0.2, 0.09, 0.09, null, 14), organMat('#F2A25C', 0.5)); mt.position.set(XL + 1.1 + i * 2.2 + (k - 1) * 0.5, YB + 1.12 + 0.12 * (k % 2), 0.28); mt.rotation.z = 0.4 * (k - 1); G1.add(mt); }   // митохондрии
+   }
+   const MV = []; for (let x = XL + 0.08; x < XR; x += 0.14) for (let z = -0.6; z <= 0.6; z += 0.3) MV.push(V3(x + rand(-0.02, 0.02), YT + 0.17, z + rand(-0.04, 0.04)));
+-  const mvI = new THREE.InstancedMesh(new THREE.CapsuleGeometry(0.035, 0.3, 3, 6), organMat('#F2B0B0', 0.4), MV.length); const dm = new THREE.Object3D();
++  const mvI = new THREE.InstancedMesh(new THREE.CapsuleGeometry(0.04, 0.3, 3, 6), organMat('#F2B0B0', 0.5), MV.length); const dm = new THREE.Object3D();
+   MV.forEach((p, i) => { dm.position.copy(p); dm.rotation.set(rand(-0.08, 0.08), 0, rand(-0.08, 0.08)); dm.updateMatrix(); mvI.setMatrixAt(i, dm.matrix); }); G1.add(mvI);
+-  // капилляр
+-  const CAP = new THREE.CatmullRomCurve3([V3(XL - 0.6, YB - 0.6, 0.2), V3(-1, YB - 0.5, 0.25), V3(1, YB - 0.62, 0.2), V3(XR + 0.6, YB - 0.55, 0.2)]);
+-  G1.add(new THREE.Mesh(taperTube(CAP, () => 0.22, 60, 14), new THREE.MeshPhysicalMaterial({ color: new THREE.Color('#C0404A').multiplyScalar(0.35), roughness: 0.4, transparent: true, opacity: 0.55, depthWrite: false })));
++  // капилляр с эритроцитами (двояковогнутые диски плывут по току крови)
++  const CAP = new THREE.CatmullRomCurve3([V3(XL - 0.9, YB - 0.62, 0.2), V3(-1, YB - 0.52, 0.25), V3(1, YB - 0.64, 0.2), V3(XR + 0.9, YB - 0.56, 0.2)]);
++  G1.add(new THREE.Mesh(taperTube(CAP, () => 0.24, 60, 14), new THREE.MeshPhysicalMaterial({ color: new THREE.Color('#C0404A').multiplyScalar(0.4), roughness: 0.4, clearcoat: 0.4, transparent: true, opacity: 0.5, depthWrite: false, emissive: new THREE.Color('#C0404A'), emissiveIntensity: 0.05 })));
++  const rbcG = new THREE.LatheGeometry([[0.0, 0.05], [0.07, 0.07], [0.14, 0.1], [0.2, 0.08], [0.22, 0.0], [0.2, -0.08], [0.14, -0.1], [0.07, -0.07], [0.0, -0.05]].map(([x, y]) => new THREE.Vector2(x, y)), 14);
++  const RBC = []; for (let i = 0; i < 9; i++) { const m = new THREE.Mesh(rbcG, organMat('#D6453F', 0.8)); m.userData.u0 = i / 9; G1.add(m); RBC.push(m); }
+   // ферменты щёточной каймы и амилаза
+   const BB = [];
+   [['malt', -2.6], ['suc', -1.3], ['lac', 0.0], ['malt', 1.2], ['suc', 2.4], ['lac', 2.95]].forEach(([k, x], i) => { const m = new THREE.Mesh(blobGeo(0.2, 0.15, 0.18, 40 + i, 0.15, 3), protMat(ENZC[k], 0.55)); m.geometry.computeVertexNormals(); m.position.set(x, YT + 0.42, 0.45); G1.add(m); BB.push({ k, m, x }); });
+@@ -57,10 +66,12 @@ function makeCarbdig() {
+     ITEMS.splice(ITEMS.indexOf(it), 1, ...out); return out;
+   }
+   function killItem(it) { it.meshes.forEach((m) => { G1.remove(m); }); ITEMS.splice(ITEMS.indexOf(it), 1); }
+-  // толстая кишка: пузырьки при лактазной недостаточности
+-  // толстая кишка — продолжение просвета (трубка), центр геометрии в начале координат меша, чтобы «раздуваться» от газа
+-  const colG = tube([V3(XR + 0.3, 2.9, 0), V3(XR + 1.3, 2.2, 0), V3(XR + 1.4, 0.8, 0)], 0.5); colG.computeBoundingBox(); const colC = colG.boundingBox.getCenter(V3(0, 0, 0)); colG.translate(-colC.x, -colC.y, -colC.z);
+-  const colon = new THREE.Mesh(colG, organMat('#C8A090', 0.45, { transparent: true, opacity: 0.7, depthWrite: false })); colon.position.copy(colC); G1.add(colon);
++  // просвет тонкой кишки замыкает верхняя стенка и воронка, переходящая в толстую кишку (изгиб с гаустрами)
++  const LUM_Y = 2.05, LUM_R = 1.5;
++  G1.add(new THREE.Mesh(tube([V3(XL - 0.1, LUM_Y + LUM_R, 0), V3(0, LUM_Y + LUM_R + 0.02, 0), V3(XR, LUM_Y + LUM_R, 0)], 0.07, 40, 8), organMat('#C8A090', 0.55)));
++  const colCurve = new THREE.CatmullRomCurve3([V3(XR - 0.05, LUM_Y, 0), V3(XR + 0.9, LUM_Y + 0.05, 0), V3(XR + 1.8, LUM_Y - 0.45, 0), V3(XR + 2.2, LUM_Y - 1.4, 0), V3(XR + 2.2, LUM_Y - 2.4, 0)]);
++  const colG = taperTube(colCurve, (u) => (LUM_R - 0.78 * smooth(0, 0.7, u)) * (1 + 0.06 * Math.sin(u * 34)), 90, 18); colG.computeBoundingBox(); const colC = colG.boundingBox.getCenter(V3(0, 0, 0)); colG.translate(-colC.x, -colC.y, -colC.z);
++  const colon = new THREE.Mesh(colG, organMat('#C8A090', 0.5, { transparent: true, opacity: 0.55, depthWrite: false })); colon.position.copy(colC); G1.add(colon);
+ 
+   /* ---------- 2. галактоза и фруктоза в печени ---------- */
+   const OX = 41.3; const G2 = new THREE.Group(); G2.position.set(OX, 0, 0); scene.add(G2);
+@@ -88,13 +99,14 @@ function makeCarbdig() {
+ 
+   /* ---------- состояние ---------- */
+   const st = { t: 0, mode: 'dig', labels: true, rot: false, fly: null, msg: null, food: 'mix', lacDef: false, absorbed: { glc: 0, fru: 0, gal: 0 }, toColon: 0, gas: 0, defect: 'none', acc: { gal1p: 0, f1p: 0 }, atp: 1, lensO: 0, sugar: 1, auto: true, nextT: 0, queue: [] };
+-  function setMode(m) { st.mode = m; refs.modeSeg && refs.modeSeg.sync(); G1.visible = m === 'dig'; G2.visible = m === 'met'; st.fly = flyTarget(VIEW[m][0], VIEW[m][1]); st.msg = null; refs.rebuild && refs.rebuild(); refs.setInfo && refs.setInfo(); }
++  function setMode(m) { st.mode = m; refs.modeSeg && refs.modeSeg.sync(); G1.visible = m === 'dig'; G2.visible = m === 'met'; st.fly = flyTarget(VV(m)[0], VV(m)[1]); st.msg = null; refs.rebuild && refs.rebuild(); refs.setInfo && refs.setInfo(); }
+   function meal() { const kinds = st.food === 'bread' ? ['starch', 'starch', 'starch'] : st.food === 'sugar' ? ['sucrose', 'sucrose', 'sucrose', 'sucrose'] : st.food === 'milk' ? ['lactose', 'lactose', 'lactose', 'lactose'] : ['starch', 'sucrose', 'lactose', 'sucrose']; kinds.forEach((k, i) => st.queue.push([k, st.t + i * 0.3])); }
+   const ENZ_OF = { maltose: 'malt', sucrose: 'suc', lactose: 'lac' };
+   const tmpV = V3(0, 0, 0);
+   function update(dt) {
+     st.t += dt; const t = st.t; controls.autoRotate = st.rot; controls.autoRotateSpeed = 0.4; flyStep(st, camera, controls, dt);
+     if (st.mode === 'dig') {
++      RBC.forEach((m, i) => { const u = (m.userData.u0 + t * 0.045) % 1, p = CAP.getPoint(u), q = CAP.getTangent(u); m.position.copy(p); m.rotation.set(0.2 * Math.sin(t + i), 0, Math.atan2(q.y, q.x) + Math.PI / 2 + 0.3 * Math.sin(t * 0.7 + i * 2)); });
+       if (st.auto && t > st.nextT) { st.nextT = t + 2.6; meal(); }
+       st.queue = st.queue.filter(([k, at]) => { if (t >= at) { if (ITEMS.length < 70) spawn(k); return false; } return true; });
+       AMY.forEach((a, i) => { a.m.position.set(Math.sin(t * 0.3 + a.ph) * 2.6, 2.4 + 0.5 * Math.sin(t * 0.5 + a.ph * 1.7), 0.3); a.m.rotation.y += dt; });
+@@ -128,7 +140,7 @@ function makeCarbdig() {
+           it.cu += dt * 0.35; it.p.copy(CAP.getPoint(Math.min(1, it.cu))); if (it.cu >= 1) { killItem(it); return; }
+         } else if (it.stage === 'colon') {
+           it.p.addScaledVector(it.v, dt); it.v.y += dt * 0.15;
+-          if (it.p.x > XR + 1.0) { st.toColon++; st.gas += 1; killItem(it); for (let k = 0; k < 6; k++) fx.spawn(V3(XR + 1.3 + rand(-0.4, 0.4), 1.4 + rand(-0.5, 0.5), 0.3), V3(rand(-0.1, 0.1), 0.5 + rnd() * 0.4, 0), new THREE.Color(0xd8f0ff), 1.4, 0.4, 0.9); return; }
++          if (it.p.x > XR + 1.3) { st.toColon++; st.gas += 1; killItem(it); for (let k = 0; k < 6; k++) fx.spawn(V3(XR + 1.9 + rand(-0.3, 0.3), 0.9 + rand(-0.5, 0.5), 0.3), V3(rand(-0.1, 0.1), 0.5 + rnd() * 0.4, 0), new THREE.Color(0xd8f0ff), 1.4, 0.4, 0.9); return; }
+         }
+         // отрисовка цепочки
+         const n = it.meshes.length; const dir = V3(Math.cos(it.ang), Math.sin(it.ang) * 0.35, 0);
+@@ -176,17 +188,17 @@ function makeCarbdig() {
+     fk: '<b>Эссенциальная фруктозурия</b> (дефект фруктокиназы) — безобидное состояние: фруктоза не фосфорилируется в печени и выводится с мочой, обнаруживается случайно.',
+   };
+   const labels = [
+-    { text: 'просвет тонкой кишки', pos: V3(-2.2, 3.55, 0), color: '#C8B8A8', show: () => st.labels && st.mode === 'dig' },
+-    { text: 'щёточная кайма', pos: V3(-3.6, YT + 1.0, 0.6), color: '#F2B0B0', show: () => st.labels && st.mode === 'dig' },
++    { text: 'просвет тонкой кишки', pos: V3(XL + 0.1, LUM_Y + LUM_R + 0.22, 0), color: '#C8B8A8', show: () => st.labels && st.mode === 'dig' && !mqm.matches },
++    { text: 'щёточная кайма', pos: V3(XL + 0.05, YT + 1.25, 0.6), color: '#F2B0B0', show: () => st.labels && st.mode === 'dig' },
+     { text: 'лактаза', pos: V3(0.25, YT + 0.62, 0.6), color: ENZC.lac, show: () => st.labels && st.mode === 'dig' && !st.lacDef },
+     { text: 'сахараза', pos: V3(-1.05, YT + 0.62, 0.6), color: ENZC.suc, show: () => st.labels && st.mode === 'dig' },
+     { text: 'мальтаза', pos: V3(-2.4, YT + 0.62, 0.6), color: ENZC.malt, show: () => st.labels && st.mode === 'dig' },
+     { text: 'SGLT1 + Na⁺', pos: V3(-2.2, YT - 0.3, 0.6), color: '#7FD6FF', show: () => st.labels && st.mode === 'dig' },
+     { text: 'GLUT5', pos: V3(0.6, YT - 0.3, 0.6), color: '#FF9A5C', show: () => st.labels && st.mode === 'dig' },
+     { text: 'GLUT2', pos: V3(2.55, YB + 0.25, 0.6), color: '#C77DFF', show: () => st.labels && st.mode === 'dig' },
+-    { text: 'энтероцит', pos: V3(-1.0, YB + 1.1, 0.8), color: '#E8A0A0', show: () => st.labels && st.mode === 'dig' },
++    { text: 'энтероцит', pos: V3(-1.2, YB + 1.45, 0.8), color: '#E8A0A0', show: () => st.labels && st.mode === 'dig' && !mqm.matches },
+     { text: 'капилляр → воротная вена', pos: V3(1.1, YB - 0.95, 0.3), color: '#E06A6A', show: () => st.labels && st.mode === 'dig' },
+-    { text: 'толстая кишка', pos: V3(XR + 0.9, 2.75, 0), color: '#C8A090', show: () => st.labels && st.mode === 'dig' },
++    { text: 'толстая кишка', pos: V3(XR + 0.45, LUM_Y + 0.35, 0.5), color: '#C8A090', show: () => st.labels && st.mode === 'dig' },
+     ...Object.entries(NODES).map(([k, n]) => ({ text: n.name || MOL(n.m).name, pos: n.p.clone().add(k === 'gly' ? V3(OX + 0.35, -0.1, 0.2) : k === 'g6p' ? V3(OX + 0.38, -0.05, 0.2) : k === 'dhap' ? V3(OX - 0.3, 0.45, 0.2) : V3(OX - 0.55, -0.75, 0.2)), color: k === 'gly' || k === 'g6p' || k === 'g1p' ? '#F2C14E' : k.startsWith('udp') ? '#9FB4FF' : ['gal', 'gal1p'].includes(k) ? '#7FE0A0' : '#FF9A5C', show: () => st.labels && st.mode === 'met' })),
+     ...AR.filter((a) => a.name).map((a) => ({ text: a.name, pos: NODES[a.a].p.clone().lerp(NODES[a.b].p, 0.5).add(V3(OX - 0.6, a.id === 'epi' ? -0.55 : a.id === 'tri' ? -0.45 : a.id === 'galt' ? -0.42 : 0.5, 0.3)), color: '#C8C8D0', show: () => st.labels && st.mode === 'met' })),
+     { text: 'гликоген', pos: V3(OX + 3.1, 3.1, 0.3), color: '#F2C14E', show: () => st.labels && st.mode === 'met' },
+@@ -225,7 +237,7 @@ function makeCarbdig() {
+     return [['Всосалось молекул', st.absorbed.glc + st.absorbed.fru + st.absorbed.gal, ''], ['Лактоза в толстую кишку', st.toColon, '']];
+   }
+   const self = {
+-    scene, camera, controls, update: update2, ui, onKey, stats, labels, drawScope, accent: '#F2C14E',
++    scene, camera, controls, update: update2, ui, onKey, stats, labels, drawScope, accent: '#F2C14E', deskShift: 2, mobZoom: 1,
+     kicker: 'Биохимия · обмен углеводов', title: 'Переваривание сахаров',
+     lede: 'Хлеб, сахар и молоко превращаются в три простых сахара — глюкозу, фруктозу и галактозу. Как они проходят через стенку кишки и что бывает, когда одного фермента не хватает.',
+     notes: `
+-- 
+2.43.0
+
