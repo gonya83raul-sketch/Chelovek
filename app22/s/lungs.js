@@ -15,7 +15,7 @@ function makeLungs() {
   __set_rnd(mulberry(1313));
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x06070a); scene.environment = envTex;
   labLights(scene, 0x8fc0ff);
-  const VIEW = { tract: flyTarget(V3(0.0, 1.95, 0), V3(2.6, 3.2, 7.4)), alv: flyTarget(V3(29.6, -0.8, 0), V3(31.8, 0.9, 7.6)), mech: flyTarget(V3(0.0, 1.85, 0), V3(-2.2, 2.6, 7.6)) };
+  const VIEW = { tract: flyTarget(V3(0.0, 2.3, 0), V3(3.0, 3.65, 8.9)), alv: flyTarget(V3(29.6, -0.8, 0), V3(31.8, 0.9, 7.6)), mech: flyTarget(V3(0.0, 1.85, 0), V3(-2.2, 2.6, 7.6)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(VIEW.tract.pos);
   const controls = makeControls(camera, VIEW.tract.target); controls.minDistance = 1.5; controls.maxDistance = 22;
   const body = new THREE.Group(); scene.add(body);
@@ -49,7 +49,12 @@ function makeLungs() {
   const TRACH = new THREE.CatmullRomCurve3([V3(0, 3.38, 0.12), V3(0, 3.0, 0.08), V3(0, 2.62, 0.02)]);
   add('tr', taperTube(TRACH, () => 0.075, 40, 16), { k: 0.5, mat: { transparent: true, opacity: 0.75 } });
   for (let i = 0; i < 16; i++) { const p = TRACH.getPointAt(i / 16 + 0.02), t2 = TRACH.getTangentAt(i / 16); const m = new THREE.Mesh(new THREE.TorusGeometry(0.08, 0.012, 6, 24, Math.PI * 1.5), PART.tr.mats[0]); m.position.copy(p); m.quaternion.setFromUnitVectors(V3(0, 0, 1), t2); m.rotateZ(Math.PI * 0.75); body.add(m); }
-  const lar = add('lar', (() => { const g = new THREE.CylinderGeometry(0.11, 0.09, 0.26, 16, 1); g.translate(0, 3.5, 0.14); return g; })(), { k: 0.5 });
+  // гортань: щитовидный хрящ — две пластины углом вперёд (кадык), под ним перстневидное кольцо, внутри — просвет
+  const lar = add('lar', (() => { const a = [];
+    [1, -1].forEach((sd) => { const pl = new THREE.BoxGeometry(0.15, 0.17, 0.018, 2, 2, 1); pl.translate(0.075 * sd, 0, 0); pl.rotateY(-0.55 * sd); pl.translate(0, 3.52, 0.22); a.push(pl); });
+    const cr = new THREE.TorusGeometry(0.085, 0.022, 10, 28); cr.rotateX(Math.PI / 2); cr.translate(0, 3.39, 0.14); a.push(cr);
+    const lum = new THREE.CylinderGeometry(0.085, 0.08, 0.26, 16, 1); lum.translate(0, 3.5, 0.14); a.push(lum);
+    return mergeGeometries(a.map((g) => g.toNonIndexed())); })(), { k: 0.5 });
   const epig = add('lar', ell3(0.07, 0.02, 0.06, V3(0, 3.66, 0.12)), { k: 0.6 });
   const NOSE = new THREE.CatmullRomCurve3([V3(0, 4.05, 0.5), V3(0, 4.12, 0.3), V3(0, 4.05, 0.05), V3(0, 3.85, -0.06), V3(0, 3.65, 0.02), V3(0, 3.5, 0.12)]);
   add('nose', taperTube(NOSE, (u) => (u < 0.4 ? 0.09 : 0.065), 60, 14), { k: 0.5, mat: { transparent: true, opacity: 0.7 } });
@@ -86,7 +91,9 @@ function makeLungs() {
   ribs.add(new THREE.Mesh(mergeGeometries(vertArr), ribMat));
   ribs.add(new THREE.Mesh(tube([V3(0, 2.82, 0.52), V3(0, 2.2, 0.56), V3(0, 1.85, 0.52)], 0.045, 16, 8), ribMat));
   // сердце: геометрия в нуле, место — через position (иначе поворот уносит его вокруг начала мира в правое лёгкое)
-  const heartG = new THREE.Mesh(ell3(0.27, 0.32, 0.24), new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xb8444a).multiplyScalar(0.5), roughness: 0.4, transparent: true, opacity: 0.55, depthWrite: false })); heartG.position.copy(BODY.heart); heartG.rotation.z = 0.4; body.add(heartG);
+  // капля: широкое основание вверху справа, верхушка влево-вниз
+  const heartGeo = displaceGeo(new THREE.SphereGeometry(1, 36, 28), (v) => { const k = v.y < 0 ? 1 + 0.55 * v.y : 1; v.set(v.x * 0.27 * k, v.y * 0.34, v.z * 0.24 * k); });
+  const heartG = new THREE.Mesh(heartGeo, new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xb8444a).multiplyScalar(0.5), roughness: 0.4, transparent: true, opacity: 0.55, depthWrite: false })); heartG.position.copy(BODY.heart).add(V3(0.06, 0, 0)); heartG.rotation.z = 0.55; body.add(heartG);
   /* ---------- альвеолы (вынесены в сторону) ---------- */
   const alv = new THREE.Group(); alv.position.set(30, 0, 0); scene.add(alv); alv.visible = false;
   const BRL = new THREE.CatmullRomCurve3([V3(-2.6, 1.0, 0), V3(-1.6, 0.6, 0.05), V3(-0.8, 0.15, 0)]);

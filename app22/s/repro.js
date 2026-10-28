@@ -20,7 +20,7 @@ function makeRepro(initMode) {
   __set_rnd(mulberry(2121));
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x08060a); scene.environment = envTex;
   labLights(scene, 0xf2b0c8);
-  const VIEW = { female: flyTarget(V3(0, -0.4, 0), V3(1.5, 0.6, 4.6)), male: flyTarget(V3(0, -0.4, 0.1), V3(2.2, 0.3, 2.6)), cycle: flyTarget(V3(0.15, -0.05, 0), V3(2.15, 0.45, 1.95)), dev: flyTarget(V3(0.1, -0.05, 0), V3(-0.9, 0.5, 2.8)) };
+  const VIEW = { female: flyTarget(V3(0, -0.4, 0), V3(1.5, 0.6, 4.6)), male: flyTarget(V3(0, -0.4, 0.1), V3(2.2, 0.3, 2.6)), cycle: flyTarget(V3(-0.08, 0.06, 0), V3(0.25, 0.3, 2.7)), dev: flyTarget(V3(0.1, -0.05, 0), V3(-0.9, 0.5, 2.8)) };
   const V0 = VIEW[initMode || 'female']; const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(V0.pos);
   const controls = makeControls(camera, V0.target); controls.minDistance = 0.8; controls.maxDistance = 14;
   bodyShell(scene, { rim: 0.18, arms: false });
@@ -35,7 +35,8 @@ function makeRepro(initMode) {
     a.push(tube([V3(0.4, -0.08, -0.02), V3(0.24, -0.2, 0.24), V3(0, -0.23, 0.33), V3(-0.24, -0.2, 0.24), V3(-0.4, -0.08, -0.02)], 0.035, 40, 8));
     return mergeGeometries(a); })(), new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xe8d8bb).multiplyScalar(0.3), roughness: 0.6, transparent: true, opacity: 0.1, depthWrite: false })); scene.add(pelvis);
   /* ---------- женская система ---------- */
-  ghost(ell3(0.12, 0.09, 0.09, V3(0, -0.02, 0.24)), '#F2D860', F); ghost(tube([V3(0, 0.4, -0.3), V3(0.02, 0.0, -0.28), V3(0, -0.4, -0.18)], 0.06, 20, 10), '#C8A090', F);
+  const fGhosts = [ghost(ell3(0.12, 0.09, 0.09, V3(0, -0.02, 0.24)), '#F2D860', F)]; fGhosts.push(ghost(tube([V3(0, 0.4, -0.3), V3(0.02, 0.0, -0.28), V3(0, -0.4, -0.18)], 0.06, 20, 10), '#C8A090', F));   // пузырь и прямая кишка — ориентиры; в «Цикле» спрятаны, чтобы не заслонять матку
+  fGhosts.forEach((g) => { g.visible = initMode !== 'cycle'; });
   const utG = displaceGeo(new THREE.SphereGeometry(1, 48, 36), (v) => { let k = v.y < 0 ? 1 - 0.55 * (-v.y) : 1; v.set(v.x * 0.17 * k, v.y * 0.2, v.z * 0.1 * k); }); utG.rotateX(0.35); utG.translate(0, 0.17, 0.04);   // антеверсия: дно наклонено вперёд, над мочевым пузырём
   const ut = add('ut', utG, F, { mat: { transparent: true, opacity: 0.55, depthWrite: false } });
   const endoG = displaceGeo(new THREE.SphereGeometry(1, 40, 30), (v) => { let k = v.y < 0 ? 1 - 0.6 * (-v.y) : 1; v.set(v.x * 0.11 * k, v.y * 0.14, v.z * 0.02 * k + 0.0); });
@@ -109,7 +110,7 @@ function makeRepro(initMode) {
   const parts = () => (st.mode === 'male' ? RP_M : st.mode === 'female' && st.realLoad === 2 ? RP_R : RP_F);
   const schem = () => st.mode === 'cycle' || st.mode === 'dev' || (st.mode === 'female' && st.realLoad !== 2);
   function select(id) { st.sel = id === 'all' ? null : id; refs.seg && refs.seg.sync(); dimOthers(parts().map((p) => PART[p.id]), st.sel); if (parts() === RP_F) ut.material.opacity = st.sel && st.sel !== 'ut' ? 0.12 : 0.55; boneGlass(); st.msg = null; refs.setInfo && refs.setInfo(); }
-  function setMode(m) { st.mode = m; refs.modeSeg && refs.modeSeg.sync(); st.msg = null; const real = m === 'female' && st.realLoad === 2; F.visible = m !== 'male' && !real; REAL.visible = real; M.visible = m === 'male'; if (m === 'female') loadReal(); if (real) { dimOthers(RP_R.map((p) => PART[p.id]), null); boneGlass(); } st.fly = VIEW[m]; st.sel = null; refs.rebuild && refs.rebuild(); if (m === 'dev') { st.devT = st.t; st.devStage = -1; } refs.setInfo && refs.setInfo(); }
+  function setMode(m) { st.mode = m; refs.modeSeg && refs.modeSeg.sync(); st.msg = null; const real = m === 'female' && st.realLoad === 2; F.visible = m !== 'male' && !real; REAL.visible = real; M.visible = m === 'male'; if (m === 'female') loadReal(); if (real) { dimOthers(RP_R.map((p) => PART[p.id]), null); boneGlass(); } st.fly = VIEW[m]; st.sel = null; fGhosts.forEach((g) => { g.visible = m !== 'cycle'; }); refs.rebuild && refs.rebuild(); if (m === 'dev') { st.devT = st.t; st.devStage = -1; } refs.setInfo && refs.setInfo(); }
   pickOn(() => self, camera, pick, (id) => { if (st.mode === 'female' || st.mode === 'male') select(id); });
   // гормоны цикла (день 1–28)
   const gau = (x, m, s) => Math.exp(-(((x - m) / s) ** 2));
@@ -153,7 +154,7 @@ function makeRepro(initMode) {
     const x = (d) => 8 + (d - 1) / 27 * (w - 16), Y = (v) => hgt - 10 - v * (hgt - 26);
     const cols = ['#9FD0FF', '#C77DFF', '#FF8AB0', '#F2C14E'], names = ['ФСГ', 'ЛГ', 'эстроген', 'прогест.'];
     ctx.fillStyle = 'rgba(255,80,90,.12)'; ctx.fillRect(x(1), 14, x(5) - x(1), hgt - 24);
-    cols.forEach((c, k) => { ctx.strokeStyle = c; ctx.lineWidth = 2; ctx.beginPath(); for (let d = 1; d <= 28; d += 0.25) { const hm = HORM(d), v = [hm.fsh, hm.lh, hm.est, hm.prog][k]; d === 1 ? ctx.moveTo(x(d), Y(v)) : ctx.lineTo(x(d), Y(v)); } ctx.globalAlpha = 0.85; ctx.stroke(); ctx.globalAlpha = 1; ctx.fillStyle = c; ctx.font = '500 9px JetBrains Mono, monospace'; ctx.fillText(names[k], 10 + k * 62, 11); });
+    cols.forEach((c, k) => { ctx.strokeStyle = c; ctx.lineWidth = 2; ctx.beginPath(); for (let d = 1; d <= 28; d += 0.25) { const hm = HORM(d), v = [hm.fsh, hm.lh, hm.est, hm.prog][k]; d === 1 ? ctx.moveTo(x(d), Y(v)) : ctx.lineTo(x(d), Y(v)); } ctx.globalAlpha = 0.85; ctx.stroke(); ctx.globalAlpha = 1; ctx.fillStyle = c; ctx.font = '500 9px JetBrains Mono, monospace'; ctx.fillText(names[k], 10 + k * Math.min(62, (w - 62) / 3), 11); });
     ctx.strokeStyle = '#fff'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(x(st.day), 14); ctx.lineTo(x(st.day), hgt - 8); ctx.stroke();
   }
   const DEV = [
@@ -172,7 +173,7 @@ function makeRepro(initMode) {
   const labels = [
     { text: 'яичник', pos: V3(0.48, 0.12, 0.05), color: '#F2B0C8', show: () => st.labels && schem() },
     { text: 'маточная труба', pos: V3(0.3, 0.42, 0.05), color: '#F2C88A', show: () => st.labels && schem() },
-    { text: 'матка', pos: V3(-0.2, 0.3, 0.08), color: '#E88A9A', show: () => st.labels && schem() },
+    { text: 'матка', pos: V3(-0.1, 0.33, 0.1), color: '#E88A9A', show: () => st.labels && schem() },
     { text: 'эндометрий', pos: V3(-0.06, 0.12, 0.12), color: '#ff7a8a', show: () => st.labels && st.mode === 'cycle' },
     { text: 'шейка и влагалище', pos: V3(0.08, -0.3, -0.02), color: '#D8A0B0', show: () => st.labels && schem() },
     { text: 'мочевой пузырь', pos: V3(0.1, -0.02, 0.36), color: '#F2D860', show: () => st.labels && ((st.mode === 'female' && schem()) || st.mode === 'male') },
@@ -188,7 +189,7 @@ function makeRepro(initMode) {
   loadReal();
   function ui(el) {
     const ib = infoBox('1 1 360px');
-    refs.setInfo = () => { ib.info.innerHTML = st.msg || (st.mode === 'female' && st.realErr ? 'Не удалось загрузить 3D-модель: ' + st.realErr : st.mode === 'female' && st.realLoad === 1 ? 'Загружаю реалистичную 3D-модель…' : '') || (st.mode === 'cycle' ? cycText() : (st.mode === 'female' || st.mode === 'male') && st.sel ? PART[st.sel].text : TXT[st.mode]); };
+    refs.setInfo = () => { const stat = st.mode === 'female' && st.realErr ? 'Не удалось загрузить 3D-модель: ' + st.realErr : st.mode === 'female' && st.realLoad === 1 ? 'Загружаю реалистичную 3D-модель…' : ''; ib.info.innerHTML = st.msg || ((st.mode === 'cycle' ? cycText() : (st.mode === 'female' || st.mode === 'male') && st.sel ? PART[st.sel].text : TXT[st.mode]) + (stat ? '<br><span style="opacity:.6">' + stat + '</span>' : '')); };
     refs.modeSeg = seg([{ id: 'female', label: 'Женская система' }, { id: 'male', label: 'Мужская система' }, { id: 'cycle', label: 'Цикл' }, { id: 'dev', label: 'Первая неделя' }], () => st.mode, (v) => setMode(v));
     const segBox = h('div', { class: 'gctl' });
     refs.rebuild = () => { segBox.innerHTML = ''; const list = parts(); refs.seg = seg([{ id: 'all', label: 'Все' }, ...list.map((p) => ({ id: p.id, label: p.name, color: p.color }))], () => st.sel || 'all', (v) => { if (st.mode === 'cycle' || st.mode === 'dev') setMode('female'); select(v); }); segBox.append(refs.seg); };

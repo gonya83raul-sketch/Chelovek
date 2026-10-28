@@ -5,18 +5,18 @@ import { BODY, Sparks, THREE, V3, __set_rnd, bodyShell, branchTree, button, dimO
    ТЕЛО · ГРУДНАЯ КЛЕТКА И МОЛОЧНАЯ ЖЕЛЕЗА (учебная схема)
    ========================================================= */
 const CH_PARTS = [
-  { id: 'rib', name: 'Ribs', color: '#E8D8BB', text: '<b>Ribs</b> — 12 pairs. The first 7 pairs (true ribs) attach by cartilage directly to the sternum, pairs 8–10 (false ribs) attach to the cartilage of the rib above, and pairs 11–12 (floating ribs) end freely in the abdominal muscles. At the back, each rib articulates with a thoracic vertebra and rotates upward during inhalation, like a bucket handle.' },
-  { id: 'stern', name: 'Sternum and clavicles', color: '#F2E6C8', text: '<b>The sternum</b> is a flat bone at the front: the manubrium, the body and the xiphoid process. The <b>clavicles</b> attach to the manubrium and connect the arm to the axial skeleton. The sternum contains red bone marrow — it is used for marrow biopsies.' },
-  { id: 'spine', name: 'Thoracic spine', color: '#D8C8A8', text: '<b>The thoracic spine</b> consists of 12 vertebrae with articular facets for the ribs. Together with the ribs and sternum it forms the rib cage — a protective frame for the heart and lungs.' },
-  { id: 'mus', name: 'Intercostal muscles and diaphragm', color: '#C86A6A', text: '<b>The intercostal muscles</b>: the external ones raise the ribs (inhalation), the internal ones lower them (forced exhalation). From below, the thoracic cavity is closed by the dome of the <b>diaphragm</b>. On the outside, the chest is covered by the pectoralis major and minor.' },
-  { id: 'med', name: 'Mediastinal organs', color: '#E0605A', text: '<b>The mediastinum</b> is the space between the lungs: the heart in its pericardial sac, the aorta and the venae cavae, the trachea and main bronchi, the esophagus, the thymus, nerves and the thoracic duct. Each lung lies in its own pleural sac.' },
+  { id: 'rib', name: 'Рёбра', color: '#E8D8BB', text: '<b>Рёбра</b> — 12 пар. Первые 7 пар (истинные) крепятся хрящами прямо к грудине, 8–10-я (ложные) — к хрящу вышележащего ребра, 11–12-я (колеблющиеся) свободно заканчиваются в мышцах живота. Каждое ребро сзади сочленяется с грудным позвонком и при вдохе поворачивается вверх, как ручка ведра.' },
+  { id: 'stern', name: 'Грудина и ключицы', color: '#F2E6C8', text: '<b>Грудина</b> — плоская кость спереди: рукоятка, тело и мечевидный отросток. К рукоятке крепятся <b>ключицы</b>, соединяющие руку со скелетом туловища. В грудине есть красный костный мозг — из неё берут пункцию.' },
+  { id: 'spine', name: 'Грудной отдел позвоночника', color: '#D8C8A8', text: '<b>Грудной отдел позвоночника</b> — 12 позвонков с суставными ямками для рёбер. Вместе с рёбрами и грудиной образует грудную клетку — защитный каркас для сердца и лёгких.' },
+  { id: 'mus', name: 'Межрёберные мышцы и диафрагма', color: '#C86A6A', text: '<b>Межрёберные мышцы</b>: наружные поднимают рёбра (вдох), внутренние опускают (форсированный выдох). Снизу грудную полость закрывает купол <b>диафрагмы</b>. Снаружи грудную клетку покрывают большая и малая грудные мышцы.' },
+  { id: 'med', name: 'Органы средостения', color: '#E0605A', text: '<b>Средостение</b> — пространство между лёгкими: сердце в околосердечной сумке, аорта и полые вены, трахея и главные бронхи, пищевод, тимус, нервы и грудной лимфатический проток. Каждое лёгкое лежит в своём плевральном мешке.' },
 ];
 const BR_PARTS = [
-  { id: 'lob', name: 'Lobes and lobules', color: '#F2B0C8', text: '<b>The glandular tissue</b> consists of 15–20 lobes radiating from the nipple like the spokes of a wheel. Each lobe is divided into lobules, and the lobules into tiny sacs (alveoli), where milk is produced during breastfeeding.' },
-  { id: 'duct', name: 'Milk ducts', color: '#F2D88A', text: '<b>The milk ducts</b> collect milk from the lobules and open onto the nipple through 15–20 openings. Just before the nipple they widen slightly.' },
-  { id: 'nip', name: 'Nipple and areola', color: '#C88070', text: '<b>The nipple</b> and the pigmented <b>areola</b> around it contain smooth muscle fibers and Montgomery glands, which secrete a protective fluid.' },
-  { id: 'fat', name: 'Adipose tissue and ligaments', color: '#F2E0A0', text: '<b>Adipose tissue</b> determines the shape and size of the breast — which is why size has nothing to do with the amount of milk. <b>Cooper’s ligaments</b> — thin connective-tissue bands running from the skin to the fascia of the pectoral muscle — support the gland. The breast has no muscles of its own: it lies on the pectoralis major.' },
-  { id: 'lymph', name: 'Lymph nodes', color: '#7FD6FF', text: '<b>Lymph</b> from the breast drains mainly (~75%) to the axillary lymph nodes, and also to the nodes along the sternum. That is why a doctor always checks the armpit during an examination.' },
+  { id: 'lob', name: 'Доли и дольки', color: '#F2B0C8', text: '<b>Железистая ткань</b> состоит из 15–20 долей, расходящихся от соска как спицы колеса. Каждая доля делится на дольки, а дольки — на мельчайшие пузырьки (альвеолы), где при кормлении образуется молоко.' },
+  { id: 'duct', name: 'Млечные протоки', color: '#F2D88A', text: '<b>Млечные протоки</b> собирают молоко от долек и открываются на соске 15–20 отверстиями. Перед соском они немного расширяются.' },
+  { id: 'nip', name: 'Сосок и ареола', color: '#C88070', text: '<b>Сосок</b> и окружающая его пигментированная <b>ареола</b> содержат гладкие мышечные волокна и железы Монтгомери, выделяющие защитный секрет.' },
+  { id: 'fat', name: 'Жировая ткань и связки', color: '#F2E0A0', text: '<b>Жировая ткань</b> определяет форму и размер груди — поэтому размер не связан с количеством молока. <b>Связки Купера</b> — тонкие соединительнотканные тяжи от кожи к фасции грудной мышцы — поддерживают железу. Своих мышц в груди нет: она лежит на большой грудной мышце.' },
+  { id: 'lymph', name: 'Лимфоузлы', color: '#7FD6FF', text: '<b>Лимфа</b> от молочной железы оттекает в основном (~75%) в подмышечные лимфоузлы, а также к узлам вдоль грудины. Поэтому врач при осмотре всегда проверяет подмышечную область.' },
 ];
 function makeChest() {
   __set_rnd(mulberry(2323));
@@ -133,39 +133,39 @@ function makeChest() {
     fx.update(dt);
   }
   const TXT = {
-    chest: '<b>The rib cage</b> is a frame of 12 pairs of ribs, the sternum and 12 thoracic vertebrae. It protects the heart, lungs and great vessels, supports the muscles of the shoulder girdle and, together with the diaphragm, works as a pump for breathing. Click a part.',
-    breast: '<b>The breast</b> (side section). It lies on the pectoralis major and consists of glandular tissue (15–20 lobes with ducts), adipose tissue and connective-tissue ligaments. People of both sexes have mammary glands, but in women they develop at puberty under the influence of estrogens and progesterone. Click a part.',
-    lact: '<b>Lactation.</b> After childbirth the pituitary hormone <b>prolactin</b> makes the alveolar cells produce milk (glowing lobules). Click “Nursing”.',
-    suck: '<b>The milk ejection reflex.</b> Suckling stimulates receptors in the nipple → a signal travels along nerves to the hypothalamus → the posterior pituitary releases <b>oxytocin</b> → the muscle cells around the alveoli contract, and milk flows along the ducts to the nipple. Suckling also sustains prolactin production. The first milk — colostrum — is especially rich in antibodies.',
+    chest: '<b>Грудная клетка</b> — каркас из 12 пар рёбер, грудины и 12 грудных позвонков. Она защищает сердце, лёгкие и крупные сосуды, служит опорой для мышц плечевого пояса и вместе с диафрагмой работает как насос при дыхании. Нажмите на часть.',
+    breast: '<b>Молочная железа</b> (разрез сбоку). Она лежит на большой грудной мышце и состоит из железистой ткани (15–20 долей с протоками), жировой ткани и соединительнотканных связок. Железы есть у людей обоих полов, но у женщин они развиваются в период полового созревания под действием эстрогенов и прогестерона. Нажмите на часть.',
+    lact: '<b>Лактация.</b> После родов гормон гипофиза <b>пролактин</b> заставляет клетки альвеол производить молоко (светящиеся дольки). Нажмите «Кормление».',
+    suck: '<b>Рефлекс выделения молока.</b> Сосание раздражает рецепторы соска → сигнал по нервам в гипоталамус → задняя доля гипофиза выделяет <b>окситоцин</b> → мышечные клетки вокруг альвеол сокращаются, и молоко идёт по протокам к соску. Сосание же поддерживает выработку пролактина. Первое молоко — молозиво — особенно богато антителами.',
   };
   const labels = [
-    { text: 'sternum', pos: V3(0.12, 2.5, 0.68), color: '#F2E6C8', show: () => st.labels && st.mode === 'chest' },
-    { text: 'clavicle', pos: V3(0.65, 3.12, 0.35), color: '#F2E6C8', show: () => st.labels && st.mode === 'chest' },
-    { text: 'ribs', pos: V3(1.05, 2.3, 0.2), color: '#E8D8BB', show: () => st.labels && st.mode === 'chest' },
-    { text: 'costal cartilages', pos: V3(0.42, 1.85, 0.62), color: '#c8d8e0', show: () => st.labels && st.mode === 'chest' },
-    { text: 'spine', pos: V3(0.0, 1.55, -0.6), color: '#D8C8A8', show: () => st.labels && st.mode === 'chest' },
-    { text: 'diaphragm', pos: V3(0.7, 1.45, 0.45), color: '#C86A6A', show: () => st.labels && st.mode === 'chest' },
-    { text: 'heart', pos: BODY.heart.clone().add(V3(0.15, -0.05, 0.3)), color: '#FF8A7A', show: () => st.labels && st.mode === 'chest' },
-    { text: 'pectoralis major', pos: V3(29.25, 0.95, 0.2), color: '#D07070', show: () => st.labels && st.mode !== 'chest' },
-    { text: 'ribs', pos: V3(28.9, 1.05, 0.4), color: '#E8D8BB', show: () => st.labels && st.mode !== 'chest' },
-    { text: 'lobes and lobules', pos: V3(30.1, 0.35, 0.1), color: '#F2B0C8', show: () => st.labels && st.mode !== 'chest' },
-    { text: 'milk ducts', pos: V3(30.25, -0.2, 0.15), color: '#F2D88A', show: () => st.labels && st.mode !== 'chest' },
-    { text: 'nipple and areola', pos: V3(30.65, -0.6, 0.15), color: '#E09080', show: () => st.labels && st.mode !== 'chest' },
-    { text: 'adipose tissue', pos: V3(29.9, -1.05, 0.1), color: '#F2E0A0', show: () => st.labels && st.mode !== 'chest' },
-    { text: 'to the axillary lymph nodes', pos: V3(29.45, 1.38, -0.9), color: '#7FD6FF', show: () => st.labels && st.mode !== 'chest' },
+    { text: 'грудина', pos: V3(0.12, 2.5, 0.68), color: '#F2E6C8', show: () => st.labels && st.mode === 'chest' },
+    { text: 'ключица', pos: V3(0.65, 3.12, 0.35), color: '#F2E6C8', show: () => st.labels && st.mode === 'chest' },
+    { text: 'рёбра', pos: V3(1.05, 2.3, 0.2), color: '#E8D8BB', show: () => st.labels && st.mode === 'chest' },
+    { text: 'рёберные хрящи', pos: V3(0.42, 1.85, 0.62), color: '#c8d8e0', show: () => st.labels && st.mode === 'chest' },
+    { text: 'позвоночник', pos: V3(0.0, 1.55, -0.6), color: '#D8C8A8', show: () => st.labels && st.mode === 'chest' && camera.position.z < 1.5 },   // спереди позвоночник закрыт грудиной — подпись только при взгляде сбоку или сзади
+    { text: 'диафрагма', pos: V3(0.7, 1.45, 0.45), color: '#C86A6A', show: () => st.labels && st.mode === 'chest' },
+    { text: 'сердце', pos: BODY.heart.clone().add(V3(0.15, -0.05, 0.3)), color: '#FF8A7A', show: () => st.labels && st.mode === 'chest' },
+    { text: 'большая грудная мышца', pos: V3(29.25, 0.95, 0.2), color: '#D07070', show: () => st.labels && st.mode !== 'chest' },
+    { text: 'рёбра', pos: V3(28.9, 1.05, 0.4), color: '#E8D8BB', show: () => st.labels && st.mode !== 'chest' },
+    { text: 'доли и дольки', pos: V3(30.1, 0.35, 0.1), color: '#F2B0C8', show: () => st.labels && st.mode !== 'chest' },
+    { text: 'млечные протоки', pos: V3(30.25, -0.2, 0.15), color: '#F2D88A', show: () => st.labels && st.mode !== 'chest' },
+    { text: 'сосок и ареола', pos: V3(30.65, -0.6, 0.15), color: '#E09080', show: () => st.labels && st.mode !== 'chest' },
+    { text: 'жировая ткань', pos: V3(29.9, -1.05, 0.1), color: '#F2E0A0', show: () => st.labels && st.mode !== 'chest' },
+    { text: 'к подмышечным лимфоузлам', pos: V3(29.45, 1.38, -0.9), color: '#7FD6FF', show: () => st.labels && st.mode !== 'chest' },
   ];
   const refs = {};
   function ui(el) {
     const ib = infoBox('1 1 360px');
     refs.setInfo = () => { ib.info.innerHTML = st.msg || (st.sel && st.mode !== 'lact' ? PART[st.sel].text : TXT[st.mode]); };
-    refs.modeSeg = seg([{ id: 'chest', label: 'Chest' }, { id: 'breast', label: 'Breast' }, { id: 'lact', label: 'Lactation' }], () => st.mode, (v) => setMode(v));
+    refs.modeSeg = seg([{ id: 'chest', label: 'Грудная клетка' }, { id: 'breast', label: 'Молочная железа' }, { id: 'lact', label: 'Лактация' }], () => st.mode, (v) => setMode(v));
     const box = h('div', { class: 'gctl' });
-    refs.rebuild = () => { box.innerHTML = ''; refs.seg = seg([{ id: 'all', label: 'All' }, ...list().map((p) => ({ id: p.id, label: p.name, color: p.color }))], () => st.sel || 'all', (v) => { if (st.mode === 'lact') setMode('breast'); select(v); }); box.append(refs.seg); };
+    refs.rebuild = () => { box.innerHTML = ''; refs.seg = seg([{ id: 'all', label: 'Все' }, ...list().map((p) => ({ id: p.id, label: p.name, color: p.color }))], () => st.sel || 'all', (v) => { if (st.mode === 'lact') setMode('breast'); select(v); }); box.append(refs.seg); };
     refs.rebuild();
-    refs.rot = toggle('Rotate', () => st.rot, (v) => { st.rot = v; });
-    const lab = toggle('Labels', () => st.labels, (v) => { st.labels = v; });
+    refs.rot = toggle('Вращение', () => st.rot, (v) => { st.rot = v; });
+    const lab = toggle('Подписи', () => st.labels, (v) => { st.labels = v; });
     Object.assign(refs, { lab });
-    el.append(group('Mode', '1–3', refs.modeSeg), h('div', { class: 'grp', style: 'flex:1 1 480px' }, h('div', { class: 'glabel' }, 'Parts', h('kbd', {}, 'click')), box), group('Experiment', 'F', button('Nursing', suckle, true)), group('View', 'R · N', refs.rot, lab), ib.el);
+    el.append(group('Режим', '1–3', refs.modeSeg), h('div', { class: 'grp', style: 'flex:1 1 480px' }, h('div', { class: 'glabel' }, 'Части', h('kbd', {}, 'клик')), box), group('Опыт', 'F', button('Кормление', suckle, true)), group('Вид', 'R · N', refs.rot, lab), ib.el);
     refs.setInfo();
   }
   function onKey(e) {
@@ -176,16 +176,16 @@ function makeChest() {
     if (e.key === 'Escape') { select('all'); return true; }
     return false;
   }
-  function stats() { return st.mode === 'chest' ? [['Pairs of ribs', 12, ''], ['Thoracic vertebrae', 12, '']] : st.mode === 'lact' ? [['Prolactin', Math.round(st.prl * 100), '%'], ['Oxytocin', Math.round(st.oxy * 100), '%']] : [['Lobes', '15–20', '']]; }
+  function stats() { return st.mode === 'chest' ? [['Пар рёбер', 12, ''], ['Грудных позвонков', 12, '']] : st.mode === 'lact' ? [['Пролактин', Math.round(st.prl * 100), '%'], ['Окситоцин', Math.round(st.oxy * 100), '%']] : [['Долей', '15–20', '']]; }
   const self = {
     scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#F2B0C8',
-    kicker: 'Body · chest', title: 'Chest and breast',
-    lede: 'The bony frame that protects the heart and lungs and helps us breathe, and how the breast is built — from lobules to ducts and the hormones of breastfeeding.',
+    kicker: 'Тело · грудь', title: 'Грудная клетка и молочная железа',
+    lede: 'Костный каркас, который защищает сердце и лёгкие и помогает дышать, и устройство молочной железы — от долек до протоков и гормонов кормления.',
     notes: `
-      <div><h2>Breast health</h2><p>Monthly self-examination and check-ups with a doctor help detect lumps in time. Breast cancer is the most common cancer in women (it also occurs in men); at an early stage it responds well to treatment. After age 40, regular mammography — an X-ray examination of the breast — is recommended.</p>
-        <h3>Hormones</h3><p>Estrogens are responsible for the growth of the ducts, progesterone for the development of the lobules, prolactin for milk production and oxytocin for milk ejection.</p></div>
-      <div><h2>Simplifications</h2><ul><li>The structure is shown schematically, like a textbook drawing; the number of lobes is reduced.</li><li>Ribs and cartilages are simplified.</li></ul></div>
-      <div class="keys"><h2>Keys</h2><ul><li><code>1</code>–<code>3</code> mode</li><li>click: part</li><li><code>F</code> feeding</li><li><code>R</code> rotate · <code>N</code> labels</li></ul></div>`,
+      <div><h2>Здоровье груди</h2><p>Ежемесячный самоосмотр и осмотр у врача помогают вовремя заметить уплотнения. Рак молочной железы — самое частое онкологическое заболевание у женщин (встречается и у мужчин); на ранней стадии он хорошо лечится. После 40 лет рекомендуют регулярную маммографию — рентгеновское исследование железы.</p>
+        <h3>Гормоны</h3><p>Эстрогены отвечают за рост протоков, прогестерон — за развитие долек, пролактин — за выработку молока, окситоцин — за его выделение.</p></div>
+      <div><h2>Условности</h2><ul><li>Строение показано схематично, как на учебном рисунке; число долей уменьшено.</li><li>Рёбра и хрящи упрощены.</li></ul></div>
+      <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>3</code> режим</li><li>клик: часть</li><li><code>F</code> кормление</li><li><code>R</code> вращение · <code>N</code> подписи</li></ul></div>`,
   };
   return self;
 }

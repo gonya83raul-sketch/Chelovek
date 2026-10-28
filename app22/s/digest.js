@@ -5,19 +5,19 @@ import { Sparks, THREE, V3, __set_rnd, bodyShell, button, dimOthers, displaceGeo
    ТЕЛО · ПИЩЕВАРИТЕЛЬНАЯ СИСТЕМА
    ========================================================= */
 const DG_PARTS = [
-  { id: 'mouth', name: 'Mouth and salivary glands', color: '#E8A0A0', text: '<b>Oral cavity.</b> The teeth grind food, and the tongue mixes it with saliva. Three pairs of salivary glands (parotid, submandibular, sublingual) secrete 1–1.5 L of saliva a day. The enzyme amylase begins to break down starch, and mucus binds the food bolus together.' },
-  { id: 'eso', name: 'Esophagus', color: '#E0B0A0', text: 'The <b>esophagus</b> is a 25 cm muscular tube. A bolus passes through it in 5–8 seconds thanks to <b>peristalsis</b> — a wave of contraction of the wall. It works even upside down. At the bottom, a sphincter keeps the acidic stomach contents from flowing back (otherwise, heartburn).' },
-  { id: 'stom', name: 'Stomach', color: '#E89880', text: 'The <b>stomach</b> holds 1–1.5 L (stretching to 3–4 L). Glands in its wall secrete 2–2.5 L of gastric juice a day: hydrochloric acid (pH 1.5–2, kills microbes) and pepsin, which breaks down proteins. Mucus protects the wall from digesting itself. Food stays here for 2–4 hours and turns into semi-liquid chyme.' },
-  { id: 'liver', name: 'Liver and gallbladder', color: '#B05A48', text: 'The <b>liver</b> is the largest gland, about 1.5 kg. It produces bile (up to 1 L a day), which emulsifies fats by breaking them into tiny droplets. Bile collects in the <b>gallbladder</b> and enters the duodenum. The liver also neutralizes toxins, stores glycogen and makes blood proteins.' },
-  { id: 'panc', name: 'Pancreas', color: '#F2C88A', text: 'The <b>pancreas</b> secretes 1.5–2 L of juice a day: trypsin (proteins), lipase (fats), amylase (carbohydrates) and bicarbonate, which neutralizes stomach acid. Its islets (1–2% of the tissue) are the endocrine part: insulin and glucagon.' },
-  { id: 'si', name: 'Small intestine', color: '#F0B8A8', text: 'The <b>small intestine</b> is 4–6 m long: the duodenum, jejunum and ileum. Here digestion is completed and almost all absorption takes place — through villi and microvilli. Food passes through it in 3–5 hours.' },
-  { id: 'li', name: 'Large intestine', color: '#C8A090', text: 'The <b>large intestine</b> (about 1.5 m): the cecum with the appendix, the colon (ascending, transverse, descending, sigmoid) and the rectum. It absorbs water and salts and forms feces over 12–36 hours. Trillions of bacteria of the microbiota live here: they break down fiber and synthesize vitamin K and B vitamins.' },
+  { id: 'mouth', name: 'Рот и слюнные железы', color: '#E8A0A0', text: '<b>Ротовая полость.</b> Зубы измельчают пищу, язык перемешивает её со слюной. Три пары слюнных желёз (околоушные, поднижнечелюстные, подъязычные) выделяют 1–1,5 л слюны в сутки. Фермент амилаза начинает расщеплять крахмал, слизь склеивает пищевой комок.' },
+  { id: 'eso', name: 'Пищевод', color: '#E0B0A0', text: '<b>Пищевод</b> — мышечная трубка 25 см. Комок проходит его за 5–8 секунд благодаря <b>перистальтике</b> — волне сокращения стенки. Он работает даже вниз головой. Внизу сфинктер не пускает кислое содержимое желудка обратно (иначе — изжога).' },
+  { id: 'stom', name: 'Желудок', color: '#E89880', text: '<b>Желудок</b> вмещает 1–1,5 л (растягивается до 3–4 л). Железы стенки выделяют 2–2,5 л желудочного сока в сутки: соляную кислоту (pH 1,5–2, убивает микробов) и пепсин, расщепляющий белки. Слизь защищает стенку от самопереваривания. Пища остаётся здесь 2–4 часа и превращается в полужидкий химус.' },
+  { id: 'liver', name: 'Печень и желчный пузырь', color: '#B05A48', text: '<b>Печень</b> — самая большая железа, около 1,5 кг. Вырабатывает желчь (до 1 л в сутки), которая эмульгирует жиры, дробя их на мелкие капли. Желчь копится в <b>желчном пузыре</b> и поступает в двенадцатиперстную кишку. Ещё печень обезвреживает яды, запасает гликоген и производит белки крови.' },
+  { id: 'panc', name: 'Поджелудочная железа', color: '#F2C88A', text: '<b>Поджелудочная железа</b> выделяет 1,5–2 л сока в сутки: трипсин (белки), липазу (жиры), амилазу (углеводы) и бикарбонат, нейтрализующий кислоту желудка. Её островки (1–2% ткани) — эндокринная часть: инсулин и глюкагон.' },
+  { id: 'si', name: 'Тонкая кишка', color: '#F0B8A8', text: '<b>Тонкая кишка</b> длиной 4–6 м: двенадцатиперстная, тощая и подвздошная. Здесь заканчивается переваривание и происходит почти всё всасывание — через ворсинки и микроворсинки. Пища проходит её за 3–5 часов.' },
+  { id: 'li', name: 'Толстая кишка', color: '#C8A090', text: '<b>Толстая кишка</b> (около 1,5 м): слепая кишка с аппендиксом, ободочная (восходящая, поперечная, нисходящая, сигмовидная) и прямая. Всасывает воду и соли, формирует каловые массы за 12–36 часов. Здесь живут триллионы бактерий микробиоты: они расщепляют клетчатку и синтезируют витамины K и группы B.' },
 ];
 function makeDigest() {
   __set_rnd(mulberry(1414));
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x07060a); scene.environment = envTex;
   labLights(scene, 0xffb08a);
-  const VIEW = { org: flyTarget(V3(0.0, 0.85, 0), V3(2.1, 2.0, 9.8)), path: flyTarget(V3(0.0, 1.1, 0), V3(-2.4, 2.2, 10.2)), villi: flyTarget(V3(30, -1.0, 0), V3(32.6, 1.3, 8.4)) };
+  const VIEW = { org: flyTarget(V3(0.0, 0.95, 0), V3(2.35, 2.25, 11.0)), path: flyTarget(V3(0.0, 1.1, 0), V3(-2.4, 2.2, 10.2)), villi: flyTarget(V3(30, -1.0, 0), V3(32.6, 1.3, 8.4)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(VIEW.org.pos);
   const controls = makeControls(camera, VIEW.org.target); controls.minDistance = 1.5; controls.maxDistance = 22;
   const body = new THREE.Group(); scene.add(body);
@@ -67,12 +67,12 @@ function makeDigest() {
   dia.position.y = 1.5; body.add(dia);
   /* ---------- путешествие пищи ---------- */
   const STAGES = [
-    { key: 'mouth', c: CUR.mouth, d: 2.5, real: '10–30 s', col: 0xd8b070, text: '<b>Mouth.</b> Food is ground up and moistened with saliva. Salivary amylase begins breaking down starch into maltose. The tongue shapes a bolus and pushes it into the pharynx — swallowing is triggered reflexively.' },
-    { key: 'eso', c: CUR.eso, d: 2.2, real: '5–8 s', col: 0xd8b070, text: '<b>Esophagus.</b> A peristaltic wave (a ring of contraction behind the bolus) pushes the food down. The lower sphincter opens and lets it into the stomach.' },
-    { key: 'stom', c: CUR.stom, d: 5, real: '2–4 h', col: 0xe0c070, text: '<b>Stomach.</b> The walls mix the food with hydrochloric acid and pepsin: proteins break down into peptides, microbes die. The result is acidic, semi-liquid chyme, which leaves in portions through the pylorus.' },
-    { key: 'duo', c: CUR.duo, d: 2.5, real: '~30 min', col: 0xe8d070, text: '<b>Duodenum.</b> Bile (green, breaks up fats) and pancreatic juice (trypsin, lipase, amylase, bicarbonate) pour in here. The acid is neutralized, and digestion is in full swing.' },
-    { key: 'si', c: CUR.si, d: 7, real: '3–5 h', col: 0xe8d070, text: '<b>Small intestine.</b> Enzymes of the wall complete the breakdown: proteins → amino acids, carbohydrates → glucose, fats → fatty acids and glycerol. They are absorbed through the villi into the blood and lymph (yellow sparks leave the intestine).' },
-    { key: 'li', c: CUR.li, d: 6, real: '12–36 h', col: 0x9a7048, text: '<b>Large intestine.</b> Undigested residues (fiber) enter the cecum. Here water is absorbed (light-blue sparks), and bacteria ferment the fibers and make vitamins. The residues are compacted and expelled through the rectum.' },
+    { key: 'mouth', c: CUR.mouth, d: 2.5, real: '10–30 с', col: 0xd8b070, text: '<b>Рот.</b> Пища измельчается и смачивается слюной. Амилаза слюны начинает расщеплять крахмал до мальтозы. Язык формирует комок и проталкивает его в глотку — глотание запускается рефлекторно.' },
+    { key: 'eso', c: CUR.eso, d: 2.2, real: '5–8 с', col: 0xd8b070, text: '<b>Пищевод.</b> Перистальтическая волна (кольцо сокращения позади комка) проталкивает пищу вниз. Нижний сфинктер раскрывается и пропускает её в желудок.' },
+    { key: 'stom', c: CUR.stom, d: 5, real: '2–4 ч', col: 0xe0c070, text: '<b>Желудок.</b> Стенки перемешивают пищу с соляной кислотой и пепсином: белки распадаются на пептиды, микробы гибнут. Получается кислый полужидкий химус, который порциями выходит через привратник.' },
+    { key: 'duo', c: CUR.duo, d: 2.5, real: '~30 мин', col: 0xe8d070, text: '<b>Двенадцатиперстная кишка.</b> Сюда вливаются желчь (зелёная, дробит жиры) и сок поджелудочной железы (трипсин, липаза, амилаза, бикарбонат). Кислота нейтрализуется, переваривание идёт полным ходом.' },
+    { key: 'si', c: CUR.si, d: 7, real: '3–5 ч', col: 0xe8d070, text: '<b>Тонкая кишка.</b> Ферменты стенки завершают расщепление: белки → аминокислоты, углеводы → глюкоза, жиры → жирные кислоты и глицерин. Через ворсинки они всасываются в кровь и лимфу (жёлтые искры уходят из кишки).' },
+    { key: 'li', c: CUR.li, d: 6, real: '12–36 ч', col: 0x9a7048, text: '<b>Толстая кишка.</b> Непереваренные остатки (клетчатка) поступают в слепую кишку. Здесь всасывается вода (голубые искры), бактерии сбраживают волокна и делают витамины. Остатки уплотняются и выводятся через прямую кишку.' },
   ];
   const RUN = pathRunner(STAGES.map((s) => ({ c: s.c, d: s.d, s })));
   const bolus = new THREE.Mesh(new THREE.SphereGeometry(0.055, 20, 14), new THREE.MeshPhysicalMaterial({ color: 0xd8b070, roughness: 0.5, emissive: 0x5a3a10, emissiveIntensity: 0.6 })); body.add(bolus); bolus.visible = false;
@@ -82,17 +82,17 @@ function makeDigest() {
   const SCH = pick.slice(); SCH.push(dia);
   const DTX = Object.fromEntries(DG_PARTS.map((p) => [p.id, p.text]));
   const RG = [
-    { id: 'd_mouth', name: 'Tongue and pharynx', color: '#E8A0A0', keys: ['Tongue', 'Pharynx'], text: DTX.mouth },
-    { id: 'd_eso', name: 'Esophagus', color: '#E0B0A0', keys: ['Esophagus'], text: DTX.eso },
-    { id: 'd_stom', name: 'Stomach', color: '#E89880', keys: ['Stomach2'], text: DTX.stom },
-    { id: 'd_liver', name: 'Liver and biliary tract', color: '#B05A48', keys: ['liver', 'Biliary_tract'], text: DTX.liver },
-    { id: 'd_panc', name: 'Pancreas', color: '#F2C88A', keys: ['Pancreas'], text: DTX.panc },
-    { id: 'd_si', name: 'Small intestine', color: '#F0B8A8', keys: ['Small_intestine'], text: DTX.si },
-    { id: 'd_li', name: 'Large intestine', color: '#C8A090', keys: ['Large_intestine', 'Tinea_coli'], text: DTX.li + ' Three muscular bands run along its wall (shown separately on the model) — they gather the intestine into its characteristic pouches, the haustra.' },
-    { id: 'd_spl', name: 'Spleen', color: '#B0506A', keys: ['Spleen'], text: 'The <b>spleen</b> lies on the left under the diaphragm, next to the stomach. It is not a digestive organ but a blood-forming and immune organ: it filters the blood and destroys old red blood cells. Its blood drains through the portal vein into the liver.' },
-    { id: 'd_air', name: 'Larynx and trachea', color: '#E8DCC8', keys: ['Larynx', 'Trachea', 'Epiglosttis', 'arytenoids', 'Corniculate', 'Cricoid', 'Thyroid_cartilage2', 'Thyrohyoid_membrane2', 'Thyrocricoid_ligament2', 'Median_cricothyroid_ligament'], text: 'The <b>larynx and trachea</b> lie in front of the esophagus. In the pharynx the airway and the food passage cross; during swallowing the <b>epiglottis</b> closes the entrance to the larynx and the larynx rises — food goes into the esophagus, not the trachea. The laryngeal cartilages (thyroid, cricoid, arytenoid) support the vocal cords.' },
-    { id: 'd_dia', name: 'Diaphragm', color: '#C86A6A', keys: ['Diaphragm'], text: 'The <b>diaphragm</b> separates the thoracic cavity from the abdominal cavity. The esophagus passes through an opening in it; the crura of the diaphragm help the lower esophageal sphincter keep acid from flowing back. If the opening is widened, part of the stomach can bulge into the chest (hiatal hernia).' },
-    { id: 'd_bone', name: 'Skeleton', color: '#E8D8BB', keys: ['Sacrum4', 'Scapula1', 'Spine1', 'Sternum1', 'Pelvis1', 'Ribcage1'], text: 'The <b>skeleton of the trunk</b> — spine, ribs, sternum, shoulder blades, pelvis — is shown for orientation. The liver, stomach and spleen are covered by the lower ribs, while most of the intestine lies lower, in and above the bowl of the pelvis.' },
+    { id: 'd_mouth', name: 'Язык и глотка', color: '#E8A0A0', keys: ['Tongue', 'Pharynx'], text: DTX.mouth },
+    { id: 'd_eso', name: 'Пищевод', color: '#E0B0A0', keys: ['Esophagus'], text: DTX.eso },
+    { id: 'd_stom', name: 'Желудок', color: '#E89880', keys: ['Stomach2'], text: DTX.stom },
+    { id: 'd_liver', name: 'Печень и желчные пути', color: '#B05A48', keys: ['liver', 'Biliary_tract'], text: DTX.liver },
+    { id: 'd_panc', name: 'Поджелудочная железа', color: '#F2C88A', keys: ['Pancreas'], text: DTX.panc },
+    { id: 'd_si', name: 'Тонкая кишка', color: '#F0B8A8', keys: ['Small_intestine'], text: DTX.si },
+    { id: 'd_li', name: 'Толстая кишка', color: '#C8A090', keys: ['Large_intestine', 'Tinea_coli'], text: DTX.li + ' По её стенке тянутся три мышечные ленты (на модели отдельно) — из-за них кишка собирается в характерные вздутия-гаустры.' },
+    { id: 'd_spl', name: 'Селезёнка', color: '#B0506A', keys: ['Spleen'], text: '<b>Селезёнка</b> лежит слева под диафрагмой, рядом с желудком. Это не орган пищеварения, а кроветворный и иммунный орган: она фильтрует кровь и разрушает старые эритроциты. Её кровь оттекает через воротную вену в печень.' },
+    { id: 'd_air', name: 'Гортань и трахея', color: '#E8DCC8', keys: ['Larynx', 'Trachea', 'Epiglosttis', 'arytenoids', 'Corniculate', 'Cricoid', 'Thyroid_cartilage2', 'Thyrohyoid_membrane2', 'Thyrocricoid_ligament2', 'Median_cricothyroid_ligament'], text: '<b>Гортань и трахея</b> лежат впереди пищевода. В глотке дыхательный и пищевой пути перекрещиваются; при глотании <b>надгортанник</b> закрывает вход в гортань, а гортань поднимается — пища уходит в пищевод, а не в трахею. Хрящи гортани (щитовидный, перстневидный, черпаловидные) держат голосовые связки.' },
+    { id: 'd_dia', name: 'Диафрагма', color: '#C86A6A', keys: ['Diaphragm'], text: '<b>Диафрагма</b> отделяет грудную полость от брюшной. Пищевод проходит через её отверстие; ножки диафрагмы помогают нижнему сфинктеру пищевода не пускать кислоту обратно. Если отверстие расширено, часть желудка может выпячиваться в грудь (грыжа пищеводного отверстия).' },
+    { id: 'd_bone', name: 'Скелет', color: '#E8D8BB', keys: ['Sacrum4', 'Scapula1', 'Spine1', 'Sternum1', 'Pelvis1', 'Ribcage1'], text: '<b>Скелет туловища</b> — позвоночник, рёбра, грудина, лопатки, таз — для ориентира. Печень, желудок и селезёнка прикрыты нижними рёбрами, а большая часть кишечника лежит ниже, в чаше таза и над ней.' },
   ];
   RG.forEach((p) => { PART[p.id] = { ...p, mats: [], c: V3(0, 0, 0), n: 0 }; });
   const REAL = new THREE.Group(); body.add(REAL); REAL.visible = false;
@@ -173,42 +173,42 @@ function makeDigest() {
     fx.update(dt);
   }
   const TXT = {
-    org: 'The <b>digestive system</b> is a tube 8–10 m long from the mouth to the anus, plus glands that secrete enzyme-containing juices into it: the salivary glands, liver and pancreas. Food is mechanically broken up, chemically split into simple molecules and absorbed into the blood. Click an organ or start the path of food.',
-    path: '<b>Path of food.</b> A bolus moves along the tube; the ring behind it is a wave of peristalsis. Time in the scene is compressed; the real duration of each stage is shown on the right.',
-    villi: '<b>Villi of the small intestine.</b> The mucosa is gathered into folds, the folds are covered with villi (≈1 mm), and each villus cell carries thousands of microvilli (right). This raises the absorptive area to ~30 m². Glucose and amino acids (yellow and green) enter the blood capillaries and reach the liver via the portal vein. Fats (white) collect in a lymphatic capillary — the lacteal — and go into the lymph.',
+    org: '<b>Пищеварительная система</b> — трубка длиной 8–10 м от рта до анального отверстия и железы, которые выделяют в неё соки с ферментами: слюнные, печень, поджелудочная. Пища механически измельчается, химически расщепляется до простых молекул и всасывается в кровь. Нажмите на орган или запустите путь пищи.',
+    path: '<b>Путь пищи.</b> Комок движется по трубке; кольцо позади — волна перистальтики. Время в сцене сжато, реальная длительность каждого этапа — справа.',
+    villi: '<b>Ворсинки тонкой кишки.</b> Слизистая собрана в складки, складки покрыты ворсинками (≈1 мм), а каждая клетка ворсинки — тысячами микроворсинок (справа). Так площадь всасывания вырастает до ~30 м². Глюкоза и аминокислоты (жёлтые и зелёные) уходят в кровеносные капилляры и по воротной вене попадают в печень. Жиры (белые) собираются в лимфатический капилляр — млечный сосуд — и идут в лимфу.',
   };
   const labels = [
-    { text: 'salivary glands', pos: V3(0.42, 4.05, 0.1), color: '#E8A0A0', show: () => st.labels && st.mode !== 'villi' && !realOn() },
-    { text: 'esophagus', pos: V3(0.12, 2.6, -0.25), color: '#E0B0A0', show: () => st.labels && st.mode !== 'villi' && !realOn() },
-    { text: 'stomach', pos: V3(0.72, 1.55, 0.2), color: '#E89880', show: () => st.labels && st.mode !== 'villi' && !realOn() },
-    { text: 'liver', pos: V3(-0.75, 1.62, 0.2), color: '#C8705A', show: () => st.labels && st.mode !== 'villi' && !realOn() },
-    { text: 'gallbladder', pos: V3(-0.6, 1.25, 0.4), color: '#9FD080', show: () => st.labels && st.mode !== 'villi' && !realOn() },
-    { text: 'pancreas', pos: V3(0.75, 1.15, 0.1), color: '#F2C88A', show: () => st.labels && st.mode !== 'villi' && !realOn() },
-    { text: 'duodenum', pos: V3(-0.42, 0.95, 0.0), color: '#F0B8A8', show: () => st.labels && st.mode !== 'villi' && !realOn() },
-    { text: 'small intestine', pos: V3(0.1, 0.5, 0.35), color: '#F0B8A8', show: () => st.labels && st.mode !== 'villi' && !realOn() },
-    { text: 'large intestine', pos: V3(0.75, 0.75, 0.1), color: '#C8A090', show: () => st.labels && st.mode !== 'villi' && !realOn() },
-    { text: 'appendix', pos: V3(-0.5, -0.04, 0.25), color: '#C8A090', show: () => st.labels && st.mode !== 'villi' && !realOn() },
-    { text: 'rectum', pos: V3(0.1, -0.35, -0.1), color: '#C8A090', show: () => st.labels && st.mode !== 'villi' && !realOn() },
-    { text: 'villus', pos: V3(29.0, 0.3, 1.2), color: '#F0B8A8', show: () => st.labels && st.mode === 'villi' },
-    { text: 'capillaries → liver', pos: V3(28.4, -1.0, 1.25), color: '#E0605A', show: () => st.labels && st.mode === 'villi' },
-    { text: 'lacteal → lymph', pos: V3(30.6, -0.9, -1.2), color: '#F0E8C0', show: () => st.labels && st.mode === 'villi' },
-    { text: 'microvilli', pos: V3(32.55, 1.1, -0.6), color: '#f0c8b8', show: () => st.labels && st.mode === 'villi' },
+    { text: 'слюнные железы', pos: V3(0.42, 4.05, 0.1), color: '#E8A0A0', show: () => st.labels && st.mode !== 'villi' && !realOn() },
+    { text: 'пищевод', pos: V3(0.12, 2.6, -0.25), color: '#E0B0A0', show: () => st.labels && st.mode !== 'villi' && !realOn() },
+    { text: 'желудок', pos: V3(0.72, 1.55, 0.2), color: '#E89880', show: () => st.labels && st.mode !== 'villi' && !realOn() },
+    { text: 'печень', pos: V3(-0.75, 1.62, 0.2), color: '#C8705A', show: () => st.labels && st.mode !== 'villi' && !realOn() },
+    { text: 'желчный пузырь', pos: V3(-0.6, 1.25, 0.4), color: '#9FD080', show: () => st.labels && st.mode !== 'villi' && !realOn() },
+    { text: 'поджелудочная', pos: V3(0.75, 1.15, 0.1), color: '#F2C88A', show: () => st.labels && st.mode !== 'villi' && !realOn() },
+    { text: '12-перстная кишка', pos: V3(-0.42, 0.95, 0.0), color: '#F0B8A8', show: () => st.labels && st.mode !== 'villi' && !realOn() },
+    { text: 'тонкая кишка', pos: V3(0.1, 0.5, 0.35), color: '#F0B8A8', show: () => st.labels && st.mode !== 'villi' && !realOn() },
+    { text: 'толстая кишка', pos: V3(0.75, 0.75, 0.1), color: '#C8A090', show: () => st.labels && st.mode !== 'villi' && !realOn() },
+    { text: 'аппендикс', pos: V3(-0.5, -0.04, 0.25), color: '#C8A090', show: () => st.labels && st.mode !== 'villi' && !realOn() },
+    { text: 'прямая кишка', pos: V3(0.1, -0.35, -0.1), color: '#C8A090', show: () => st.labels && st.mode !== 'villi' && !realOn() },
+    { text: 'ворсинка', pos: V3(29.0, 0.3, 1.2), color: '#F0B8A8', show: () => st.labels && st.mode === 'villi' },
+    { text: 'капилляры → печень', pos: V3(28.4, -1.0, 1.25), color: '#E0605A', show: () => st.labels && st.mode === 'villi' },
+    { text: 'млечный сосуд → лимфа', pos: V3(30.6, -0.9, -1.2), color: '#F0E8C0', show: () => st.labels && st.mode === 'villi' },
+    { text: 'микроворсинки', pos: V3(32.55, 1.1, -0.6), color: '#f0c8b8', show: () => st.labels && st.mode === 'villi' },
   ];
   RG.forEach((p) => { const l = { text: p.name.toLowerCase(), pos: V3(0, -9, 0), color: p.color, show: () => st.labels && realOn() && (!st.sel || st.sel === p.id) }; PART[p.id].lab = l; labels.unshift(l); });
   const refs = {};
   loadReal();
   function ui(el) {
     const ib = infoBox('1 1 340px');
-    refs.setInfo = () => { ib.info.innerHTML = st.msg || (st.mode === 'org' && st.realErr ? 'Could not load the 3D model: ' + st.realErr : st.mode === 'org' && st.realLoad === 1 ? 'Loading realistic 3D model…' : '') || (st.mode === 'org' && st.sel ? PART[st.sel].text : TXT[st.mode]); };
-    refs.modeSeg = seg([{ id: 'org', label: 'Organs' }, { id: 'path', label: 'Path of food' }, { id: 'villi', label: 'Absorption' }], () => st.mode, (v) => setMode(v));
+    refs.setInfo = () => { const stat = st.mode === 'org' && st.realErr ? 'Не удалось загрузить 3D-модель: ' + st.realErr : st.mode === 'org' && st.realLoad === 1 ? 'Загружаю реалистичную 3D-модель…' : ''; ib.info.innerHTML = st.msg || ((st.mode === 'org' && st.sel ? PART[st.sel].text : TXT[st.mode]) + (stat ? '<br><span style="opacity:.6">' + stat + '</span>' : '')); };
+    refs.modeSeg = seg([{ id: 'org', label: 'Органы' }, { id: 'path', label: 'Путь пищи' }, { id: 'villi', label: 'Всасывание' }], () => st.mode, (v) => setMode(v));
     const segBox = h('div', { class: 'gctl' });
-    refs.rebuild = () => { segBox.innerHTML = ''; refs.seg = seg([{ id: 'all', label: 'All' }, ...(realOn() ? RG : DG_PARTS).map((p) => ({ id: p.id, label: p.name, color: p.color }))], () => st.sel || 'all', (v) => { if (st.mode !== 'org') setMode('org'); select(v); }); segBox.append(refs.seg); };
+    refs.rebuild = () => { segBox.innerHTML = ''; refs.seg = seg([{ id: 'all', label: 'Все' }, ...(realOn() ? RG : DG_PARTS).map((p) => ({ id: p.id, label: p.name, color: p.color }))], () => st.sel || 'all', (v) => { if (st.mode !== 'org') setMode('org'); select(v); }); segBox.append(refs.seg); };
     refs.rebuild();
-    refs.rot = toggle('Rotate', () => st.rot, (v) => { st.rot = v; });
-    const lab = toggle('Labels', () => st.labels, (v) => { st.labels = v; });
+    refs.rot = toggle('Вращение', () => st.rot, (v) => { st.rot = v; });
+    const lab = toggle('Подписи', () => st.labels, (v) => { st.labels = v; });
     Object.assign(refs, { lab });
-    el.append(group('Mode', '1–3', refs.modeSeg), h('div', { class: 'grp', style: 'flex:1 1 520px' }, h('div', { class: 'glabel' }, 'Organs', h('kbd', {}, 'click')), segBox),
-      group('Experiment', 'F', button('Swallow a bite', start, true)), group('View', 'R · N', refs.rot, lab), ib.el);
+    el.append(group('Режим', '1–3', refs.modeSeg), h('div', { class: 'grp', style: 'flex:1 1 520px' }, h('div', { class: 'glabel' }, 'Органы', h('kbd', {}, 'клик')), segBox),
+      group('Опыт', 'F', button('Проглотить кусочек', start, true)), group('Вид', 'R · N', refs.rot, lab), ib.el);
     refs.setInfo();
   }
   function onKey(e) {
@@ -219,19 +219,19 @@ function makeDigest() {
     if (e.key === 'Escape') { select('all'); return true; }
     return false;
   }
-  function stats() { return st.mode === 'path' && st.stage >= 0 ? [['Stage', STAGES[st.stage].key === 'si' ? 'small intestine' : DG_PARTS.find((p) => p.id === STAGES[st.stage].key)?.name || 'Duodenum', ''], ['In real life', STAGES[st.stage].real, '']] : st.mode === 'villi' ? [['Absorptive area', '≈30', 'm²']] : [['Tract length', '8–10', 'м'], ['Juices per day', '≈7', 'л']]; }
+  function stats() { return st.mode === 'path' && st.stage >= 0 ? [['Этап', STAGES[st.stage].key === 'si' ? 'тонкая кишка' : DG_PARTS.find((p) => p.id === STAGES[st.stage].key)?.name || '12-перстная', ''], ['В жизни', STAGES[st.stage].real, '']] : st.mode === 'villi' ? [['Площадь всасывания', '≈30', 'м²']] : [['Длина тракта', '8–10', 'м'], ['Соков в сутки', '≈7', 'л']]; }
   const self = {
     scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#F2C88A',
-    kicker: 'Body · digestion', title: 'Digestive system',
-    lede: 'From a sandwich to glucose in the blood takes about a day — a journey through a tube 8–10 meters long, with acid, enzymes, bile and trillions of bacteria.',
+    kicker: 'Тело · пищеварение', title: 'Пищеварительная система',
+    lede: 'От бутерброда до глюкозы в крови — около суток пути по трубке длиной 8–10 метров, с кислотой, ферментами, желчью и триллионами бактерий.',
     notes: `
-      <div><h2>What is broken down where</h2><ul>
-        <li><b>Carbohydrates:</b> salivary and pancreatic amylase → disaccharides → intestinal enzymes → glucose.</li>
-        <li><b>Proteins:</b> gastric pepsin → trypsin and chymotrypsin → intestinal peptidases → amino acids.</li>
-        <li><b>Fats:</b> bile emulsifies → lipase → fatty acids and glycerol.</li></ul>
-        <h3>Regulation</h3><p>Salivation and the first phase of gastric secretion start even before eating — at the sight and smell of food (experiments of I. P. Pavlov, Nobel Prize 1904). After that, gut hormones take over: gastrin, secretin, cholecystokinin.</p></div>
-      <div><h2>Simplifications</h2><ul><li>In “Path of food” mode the organs are schematic, and the loops of the small intestine are laid out in a simplified way.</li><li>Transit time in the animation is compressed thousands of times.</li><li>Villi are magnified about 2000 times.</li></ul></div>
-      <div class="keys"><h2>Keys</h2><ul><li><code>1</code>–<code>3</code> mode</li><li>click: organ</li><li><code>F</code> swallow</li><li><code>R</code> rotate · <code>N</code> labels</li></ul></div>`,
+      <div><h2>Что расщепляется и где</h2><ul>
+        <li><b>Углеводы:</b> амилаза слюны и поджелудочной → дисахариды → ферменты кишечника → глюкоза.</li>
+        <li><b>Белки:</b> пепсин желудка → трипсин и химотрипсин → пептидазы кишки → аминокислоты.</li>
+        <li><b>Жиры:</b> желчь эмульгирует → липаза → жирные кислоты и глицерин.</li></ul>
+        <h3>Регуляция</h3><p>Слюноотделение и первая фаза желудочной секреции запускаются ещё до еды — на вид и запах (опыты И. П. Павлова, Нобелевская премия 1904 г.). Дальше работают гормоны кишки: гастрин, секретин, холецистокинин.</p></div>
+      <div><h2>Условности</h2><ul><li>В режиме «Путь пищи» органы схематичные, петли тонкой кишки уложены упрощённо.</li><li>Время прохождения в анимации сжато в тысячи раз.</li><li>Ворсинки увеличены примерно в 2000 раз.</li></ul></div>
+      <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>3</code> режим</li><li>клик: орган</li><li><code>F</code> проглотить</li><li><code>R</code> вращение · <code>N</code> подписи</li></ul></div>`,
   };
   return self;
 }
