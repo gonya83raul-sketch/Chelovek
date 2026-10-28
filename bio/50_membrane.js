@@ -22,7 +22,8 @@ const MB_CL = [
 function makeMembrane() {
   rnd = mulberry(1401);
   const scene = bioStage({ rim: 0xf2c14e });
-  const VIEW = { bilayer: flyTarget(V3(0.4, -1.4, 1.5), V3(5.0, -0.2, 17)), fa: flyTarget(V3(40, -1.2, 0), V3(40, 0.8, 13.5)), classes: flyTarget(V3(80, -1.2, 0), V3(80, 0.9, 14.5)), digest: flyTarget(V3(120, -1.2, 0), V3(120.4, 0.6, 13.5)) };
+  const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: кадр уходит из-под заголовка и описания (телефон — прежний ракурс)
+  const VIEW = { bilayer: DK ? flyTarget(V3(-0.9, -0.4, 1.5), V3(4.0, 0.9, 18.5)) : flyTarget(V3(0.4, -1.4, 1.5), V3(5.0, -0.2, 17)), fa: flyTarget(V3(40, -1.2, 0), V3(40, 0.8, 13.5)), classes: flyTarget(V3(80, -1.2, 0), V3(80, 0.9, 14.5)), digest: flyTarget(V3(120, -1.2, 0), V3(120.4, 0.6, 13.5)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.bilayer.pos);
   const controls = makeControls(camera, VIEW.bilayer.target); controls.minDistance = 2; controls.maxDistance = 40;
   const fx = new Sparks(1400, 0.08); scene.add(fx.obj);
