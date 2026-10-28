@@ -210,7 +210,7 @@ full = head + page + '</body>\n</html>\n'
 open(os.path.join(OUT, 'index.html'), 'w', encoding='utf8').write(full)
 # SEO: заголовок и описание в <head>, canonical, языковые версии, schema.org; статический список тем (виден поисковикам без JS)
 BASE = 'https://gonya83raul-sketch.github.io/Chelovek/'
-DESC = 'Бесплатный интерактивный 3D-атлас человека: анатомия, клетка, мозг и биохимия — от молекулы до мысли. Вращайте модели, запускайте процессы, изучайте болезни и лекарства.'
+DESC = 'Бесплатный интерактивный 3D-атлас человека: анатомия, клетка, мозг и биохимия — от молекулы до мысли. Вращайте модели, запускайте процессы, изучайте болезни.'
 merged = open(os.path.join(OUT, '_merged.mjs'), encoding='utf8').read()
 sb = merged[merged.index('const SECTIONS = ['):]; sb = sb[:sb.index('].map(')]
 SEC_ORDER = {'bio': 0, 'cell': 1, 'body': 2, 'brain': 3}
@@ -225,6 +225,7 @@ EN = {}
 for f in sorted(glob.glob(os.path.join(ROOT, 'data', 'i18n', 'en', '*.json'))): EN.update(json.load(open(f, encoding='utf8')))
 tr = lambda x, lang: EN.get(x, x) if lang == 'en' else x
 purl = lambda i, lang: i + ('.en' if lang == 'en' else '') + '.html'
+lurl = lambda i, lang: ('index.en.html' if lang == 'en' else './') if i == 'skeleton' else purl(i, lang)   # ссылка на тему: «Скелет» — это главная
 SEC_EN = {'Тело': 'Body'}   # названия разделов: в словаре «Тело» = тело нейрона (Cell body), а раздел — Body
 trsec = lambda n, lang: SEC_EN.get(n) or tr(n, lang) if lang == 'en' else n
 def topics_html(lang, hashes=False):
@@ -235,12 +236,13 @@ def topics_html(lang, hashes=False):
         if li: parts.append('<ul>' + ''.join(li) + '</ul>'); li.clear()
     for i, n in items:
         if i == '#': flush(); parts.append(f'<h4>{esc(tr(n, lang))}</h4>')
-        else: li.append(f'<li data-id="{i}"><a href="{"#" + i if hashes else purl(i, lang)}">{esc(tr(n, lang))}</a></li>')
+        else: li.append(f'<li data-id="{i}"><a href="{"#" + i if hashes else lurl(i, lang)}">{esc(tr(n, lang))}</a></li>')
     flush()
     bl.append(f'<section><h3>{esc(trsec(name, lang))}</h3>{"".join(parts)}</section>')
   return f'<details class="alltopics"><summary>{esc(tr("Все темы атласа", lang))} ({ntop})</summary><div class="atgrid">{"".join(bl)}</div></details>'
-JSONLD = json.dumps({'@context': 'https://schema.org', '@type': 'WebApplication', 'name': 'Кто мы? — от молекулы до мысли', 'alternateName': 'Who are we? From molecule to mind', 'url': BASE, 'description': DESC, 'applicationCategory': 'EducationalApplication', 'operatingSystem': 'Web', 'inLanguage': ['ru', 'en'], 'isAccessibleForFree': True, 'offers': {'@type': 'Offer', 'price': '0', 'priceCurrency': 'RUB'}, 'sameAs': ['https://t.me/KTOMY_ATLAS', 'https://boosty.to/chelovek3d']}, ensure_ascii=False)
-DESC_EN = 'Free interactive 3D atlas of the human body: anatomy, the cell, the brain and biochemistry, from molecule to mind. Rotate models, run processes, explore diseases and drugs.'
+PUBLISHER = {'@type': 'Organization', 'name': 'Кто мы? 3D-атлас человека', 'url': BASE, 'sameAs': ['https://t.me/KTOMY_ATLAS', 'https://boosty.to/chelovek3d']}
+JSONLD = json.dumps({'@context': 'https://schema.org', '@type': 'WebApplication', 'name': 'Кто мы? — от молекулы до мысли', 'alternateName': 'Who are we? From molecule to mind', 'url': BASE, 'description': DESC, 'applicationCategory': 'EducationalApplication', 'operatingSystem': 'Web', 'inLanguage': ['ru', 'en'], 'isAccessibleForFree': True, 'publisher': PUBLISHER}, ensure_ascii=False)
+DESC_EN = 'Free interactive 3D human atlas: anatomy, the cell, the brain and biochemistry, from molecule to mind. Rotate models, run processes, explore diseases and drugs.'
 JSONLD_EN = json.dumps({**json.loads(JSONLD), 'name': 'Who are we? From molecule to mind', 'alternateName': 'Кто мы? — от молекулы до мысли', 'url': BASE + 'index.en.html', 'description': DESC_EN, 'inLanguage': ['en', 'ru']}, ensure_ascii=False)
 import ast, html as H, datetime
 TODAY = datetime.date.today().isoformat()
@@ -317,14 +319,14 @@ def home_h2(doc):
 site_html = home_h2(prefill(mkdoc('ru', SEO_HEAD, topics_html('ru'), home=True), *topic_texts('skeleton', 'ru')[:3], notes_of('skeleton', 'ru')))
 site_en = home_h2(prefill(mkdoc('en', SEO_HEAD_EN, topics_html('en'), home=True), *topic_texts('skeleton', 'en')[:3], notes_of('skeleton', 'en')))
 PAGES = {}
-TAIL = {'ru': ' — Кто мы? 3D-атлас человека', 'en': ' — Who are we? 3D human atlas'}
+TAIL = {'ru': ' — 3D-атлас «Кто мы?»', 'en': ' — Who are we? 3D human atlas'}
 TAIL_SHORT = {'ru': ' — Кто мы?', 'en': ' — Who are we?'}   # заголовок длиннее 60 знаков — короткий хвост (так же в рантайме: pageTitle)
 SEC_NAME = {i: name for sid, name, it in secs for i, _ in it if i != '#'}
 def topic_ld(i, lang, t, desc):   # schema.org: учебный материал + «хлебные крошки» (атлас → тема)
     home_url, atlas = (BASE + 'index.en.html', 'Who are we? From molecule to mind') if lang == 'en' else (BASE, 'Кто мы? — от молекулы до мысли')
     ld = [{'@context': 'https://schema.org', '@type': 'LearningResource', 'name': t, 'description': desc, 'url': canon(i, lang), 'inLanguage': lang,
            'learningResourceType': 'interactive 3D model' if lang == 'en' else 'интерактивная 3D-модель', 'isAccessibleForFree': True,
-           'about': trsec(SEC_NAME.get(i, ''), lang), 'isPartOf': {'@type': 'WebApplication', 'name': atlas, 'url': home_url}},
+           'about': trsec(SEC_NAME.get(i, ''), lang), 'publisher': PUBLISHER, 'isPartOf': {'@type': 'WebApplication', 'name': atlas, 'url': home_url}},
           {'@context': 'https://schema.org', '@type': 'BreadcrumbList', 'itemListElement': [
            {'@type': 'ListItem', 'position': 1, 'name': atlas, 'item': home_url}, {'@type': 'ListItem', 'position': 2, 'name': t, 'item': canon(i, lang)}]}]
     return '<script type="application/ld+json">' + json.dumps(ld, ensure_ascii=False).replace('</', '<\\/') + '</script>\n'
@@ -335,7 +337,7 @@ for _, _, it in secs:
         k, t, l, nm = topic_texts(i, lang)
         desc = short(l) if l else nm + '. ' + (DESC if lang == 'ru' else DESC_EN)
         ttl = t + TAIL[lang] if len(t + TAIL[lang]) <= 60 else t + TAIL_SHORT[lang]
-        hd = head_tags(ttl, desc, canon(i, lang), canon(i, 'ru'), canon(i, 'en'), lang, 'article', topic_ld(i, lang, t, desc) + f'<script>window.__PAGE = {{ id: {json.dumps(i)}, lang: {json.dumps(lang)} }};</script>\n')
+        hd = head_tags(ttl, desc, canon(i, lang), canon(i, 'ru'), canon(i, 'en'), lang, 'article', ('' if i == 'skeleton' else topic_ld(i, lang, t, desc)) + f'<script>window.__PAGE = {{ id: {json.dumps(i)}, lang: {json.dumps(lang)} }};</script>\n')
         PAGES[(i, lang)] = prefill(mkdoc(lang, hd, topics_html(lang), pid=i), k, t, l, notes_of(i, lang))
 full = full.replace('<!--TOPICS-->', topics_html('ru', hashes=True), 1)
 SITE = os.path.join(OUT, 'site'); shutil.rmtree(SITE, ignore_errors=True); os.makedirs(SITE)
@@ -377,14 +379,33 @@ open(os.path.join(SITE, '.nojekyll'), 'w').write('')
 shutil.copytree(os.path.join(ROOT, 'pwa', 'img'), os.path.join(SITE, 'img'))
 open(os.path.join(SITE, 'robots.txt'), 'w').write(f'User-agent: *\nAllow: /\n\nSitemap: {BASE}sitemap.xml\n')
 alt = lambda ru, en: f'<xhtml:link rel="alternate" hreflang="ru" href="{ru}"/><xhtml:link rel="alternate" hreflang="en" href="{en}"/><xhtml:link rel="alternate" hreflang="x-default" href="{ru}"/>'
-SM = [f'<url><loc>{u}</loc>{alt(BASE, BASE + "index.en.html")}<lastmod>{TODAY}</lastmod></url>' for u in (BASE, BASE + 'index.en.html')]
-for (i, lang) in PAGES:
+LMF = os.path.join(ROOT, 'data', 'lastmod.json')
+LM = json.load(open(LMF, encoding='utf8')) if os.path.exists(LMF) else {}
+def lastmod(url, doc, i=None, lang='ru'):
+    import hashlib
+    h = hashlib.sha1(re.sub(r'app\d+', 'app', doc).encode())
+    if i:
+        sf = os.path.join(OUT, APP, *(['en'] if lang == 'en' else []), 's', i + '.js')
+        if os.path.exists(sf): h.update(re.sub(rb'app\d+', b'app', open(sf, 'rb').read()))
+    h = h.hexdigest()[:16]
+    if LM.get(url, [None])[0] != h: LM[url] = [h, TODAY]
+    return LM[url][1]
+SM = [f'<url><loc>{u}</loc>{alt(BASE, BASE + "index.en.html")}<lastmod>{lastmod(u, d, "skeleton", lg)}</lastmod></url>' for u, d, lg in ((BASE, site_html, 'ru'), (BASE + 'index.en.html', site_en, 'en'))]
+for (i, lang), doc in PAGES.items():
     if i == 'skeleton': continue
-    SM.append(f'<url><loc>{BASE}{purl(i, lang)}</loc>{alt(BASE + purl(i, "ru"), BASE + purl(i, "en"))}<lastmod>{TODAY}</lastmod></url>')
+    SM.append(f'<url><loc>{BASE}{purl(i, lang)}</loc>{alt(BASE + purl(i, "ru"), BASE + purl(i, "en"))}<lastmod>{lastmod(BASE + purl(i, lang), doc, i, lang)}</lastmod></url>')
+json.dump(dict(sorted(LM.items())), open(LMF, 'w', encoding='utf8'), indent=0)
 open(os.path.join(SITE, 'sitemap.xml'), 'w').write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n' + '\n'.join(SM) + '\n</urlset>\n')
 llms = ['# Кто мы? — от молекулы до мысли (Who are we? From molecule to mind)', '', '> ' + DESC, '', f'Сайт: {BASE} (английская версия: {BASE}index.en.html). Каждая тема — отдельная страница: {BASE}krebs.html (английская: {BASE}krebs.en.html). Обратная связь: https://t.me/KTOMY_ATLAS, gonya83raul@gmail.com.', '']
+def llm_item(i, n, lang):
+    l = topic_texts(i, lang)[2]
+    return f'- [{tr(n, lang)}]({BASE}{lurl(i, lang) if i != "skeleton" else ("index.en.html" if lang == "en" else "")})' + (': ' + short(l, 200) if l else '')
 for sid, name, items in secs:
-    llms.append(f'## {name}'); llms += [f'- [{n}]({BASE}{purl(i, "ru")}) · [EN]({BASE}{purl(i, "en")})' for i, n in items if i != '#']; llms.append('')
+    llms.append(f'## {name}'); llms += [llm_item(i, n, 'ru') for i, n in items if i != '#']; llms.append('')
+llms += ['## English', '', '> ' + DESC_EN, '']
+for sid, name, items in secs:
+    llms.append(f'### {trsec(name, "en")}'); llms += [llm_item(i, n, 'en') for i, n in items if i != '#']; llms.append('')
+llms += ['## Optional', '', f'- [Sitemap]({BASE}sitemap.xml): все страницы тем на русском и английском', '']
 open(os.path.join(SITE, 'llms.txt'), 'w', encoding='utf8').write('\n'.join(llms))
 # локальный тест (с PWA)
 LT = os.path.join(ROOT, 'lt')

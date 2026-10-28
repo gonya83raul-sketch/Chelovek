@@ -10065,7 +10065,7 @@ window.addEventListener('keydown', (e) => {
 });
 
 /* ---------- навигация: поиск по темам, прогресс изучения, «поделиться», сброс камеры ---------- */
-const BRAND = 'Кто мы?', TITLE_TAIL = ' — ' + 'Кто мы? 3D-атлас человека';
+const BRAND = 'Кто мы?', TITLE_TAIL = ' — ' + '3D-атлас «Кто мы?»';
 const pageTitle = (t) => ((t + TITLE_TAIL).length > 60 ? t + ' — ' + BRAND : t + TITLE_TAIL);   // как в tools/build.py: заголовок не длиннее 60 знаков
 const HEAD_SEL = [['link[rel="canonical"]', 'href'], ['link[hreflang="ru"]', 'href'], ['link[hreflang="en"]', 'href'], ['link[hreflang="x-default"]', 'href'], ['meta[name="description"]', 'content'], ['meta[property="og:description"]', 'content'], ['meta[property="og:title"]', 'content'], ['meta[property="og:url"]', 'content']];
 const HEAD0 = { title: document.title, v: HEAD_SEL.map(([q, a]) => { const e = document.head.querySelector(q); return e && e.getAttribute(a); }) };   // главная: вернуть при «Назад»
