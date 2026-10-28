@@ -9301,10 +9301,10 @@ function makeChest() {
       const pts = [V3(0.07 * s, y, -0.42), V3(w * 0.72 * s, y - 0.04, -0.38), V3(w * s, y - 0.16, 0.0), V3(w * 0.82 * s, y - drop * 0.75, 0.42 * front)];
       if (i < 10) pts.push(V3(w * 0.45 * s, y - drop, 0.56));
       const c = new THREE.CatmullRomCurve3(pts); ribG.push(taperTube(c, () => 0.026, 40, 6));
-      if (i < 7) { const cc = new THREE.CatmullRomCurve3([pts[pts.length - 1], V3(0.06 * s, 2.82 - i * 0.12, 0.58)]); cartC[s][i] = cc; cartG.push(taperTube(cc, () => 0.02, 10, 6)); }
+      if (i < 7) { const cc = new THREE.CatmullRomCurve3([pts[pts.length - 1], V3(0.06 * s, 2.82 - i * 0.12, 0.58)]); cartC[s][i] = cc; cartG.push(taperTube(cc, (u) => 0.03 - 0.008 * u, 10, 8)); }
       else if (i < 10) {   // 8–10 рёбра: хрящ сливается с хрящом вышележащего ребра — сплошная рёберная дуга
         const a = pts[pts.length - 1], b = cartC[s][i - 1].getPointAt(0.45), cc = new THREE.CatmullRomCurve3([a, a.clone().lerp(b, 0.5).add(V3(0, 0.05, 0.02)), b]);
-        cartC[s][i] = cc; cartG.push(taperTube(cc, () => 0.018, 14, 6));
+        cartC[s][i] = cc; cartG.push(taperTube(cc, (u) => 0.026 - 0.008 * u, 14, 8));
       }
       if (i < 11) { const c2 = new THREE.CatmullRomCurve3(pts.slice(0, 4).map((p) => p.clone().add(V3(0, -0.075, 0)))); musG.push(taperTube(c2, () => 0.04, 30, 4)); }
     });
@@ -9312,7 +9312,10 @@ function makeChest() {
   add('rib', mergeGeometries(ribG), body, { k: 0.3 });
   add('stern', mergeGeometries(cartG), body, { k: 0.5, mat: { color: new THREE.Color('#c8d8e0').multiplyScalar(0.45) } });
   add('mus', mergeGeometries(musG), body, { k: 0.35, mat: { transparent: true, opacity: 0.45, depthWrite: false } });
-  const stG = new THREE.BoxGeometry(0.16, 0.95, 0.06, 4, 16, 2); displaceGeo(stG, (v) => { v.x *= v.y > 0.3 ? 1.5 : 1 - 0.4 * smooth(-0.2, -0.5, v.y); }); stG.translate(0, 2.4, 0.6); add('stern', stG, body, { k: 0.45 });
+  // грудина из трёх частей: широкая рукоятка с яремной вырезкой, угол Людовика (сужение и выступ), тело, узкий мечевидный отросток
+  const stG = new THREE.BoxGeometry(1, 0.95, 0.06, 10, 48, 2); displaceGeo(stG, (v) => { const y = v.y;
+    const w = y > 0.24 ? 0.15 + 0.11 * smooth(0.24, 0.36, y) : y > -0.33 ? 0.15 + 0.045 * Math.sin(Math.PI * (0.24 - y) / 0.57) - 0.03 * smooth(-0.2, -0.33, y) : 0.09 * (1 - smooth(-0.33, -0.475, y)) + 0.02;
+    v.x *= w; if (y > 0.46) v.y -= 0.035 * Math.exp(-((v.x / 0.05) ** 2)); v.z += 0.018 * Math.exp(-(((y - 0.24) / 0.04) ** 2)) - (y < -0.33 ? 0.02 : 0); }); stG.translate(0, 2.4, 0.6); add('stern', stG, body, { k: 0.45 });
   [1, -1].forEach((s) => add('stern', tube([V3(0.08 * s, 2.92, 0.55), V3(0.45 * s, 3.02, 0.45), V3(0.85 * s, 3.05, 0.1), V3(1.0 * s, 3.0, -0.05)], 0.03, 30, 8), body, { k: 0.45 }));
   const vert = []; for (let i = 0; i < 12; i++) { const g = new THREE.CylinderGeometry(0.075, 0.075, 0.1, 16); g.translate(0, 2.95 - i * 0.15, -0.46); vert.push(g); const sp = new THREE.BoxGeometry(0.03, 0.06, 0.18); sp.rotateX(0.5); sp.translate(0, 2.92 - i * 0.15, -0.6); vert.push(sp); }
   add('spine', mergeGeometries(vert), body, { k: 0.45 });
