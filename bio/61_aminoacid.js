@@ -134,6 +134,7 @@ function makeAminoacid() {
     alk: '<b>Алкаптонурия</b> — первая болезнь, названная «врождённой ошибкой метаболизма» (А. Гаррод, 1902): дефект оксидазы гомогентизиновой кислоты. Моча темнеет на воздухе, к зрелым годам темнеют хрящи (охроноз) и болят суставы.',
   };
   const labels = [
+    ...AM_PEP.map((p, k) => ({ text: p.name, pos: enzB[k].position, color: p.color, show: () => st.labels && st.mode === 'dig' && enzB[k].visible })),   // фермент подписан там, где он режет цепь
     { text: 'желудок: пепсин + HCl', pos: V3(-6.4, 2.6, 0), color: '#FF8A5C', show: () => st.labels && st.mode === 'dig' && st.cyc % 16 < 4.2 },
     { text: 'тонкая кишка', pos: V3(1.5, 2.4, 0), color: '#7FD6FF', show: () => st.labels && st.mode === 'dig' && st.cyc % 16 >= 3.8 },
     { text: 'аминокислоты → в кровь', pos: V3(2.4, -1.4, 0), color: '#7FE0A0', show: () => st.labels && st.mode === 'dig' && st.cyc % 16 > 11 },
