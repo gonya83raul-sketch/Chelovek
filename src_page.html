@@ -2665,7 +2665,7 @@ function makeTypes() {
 
   const labels = [];
   cells.slice(0, 7).forEach((c) => {
-    labels.push({ text: c.def.name, pos: c.somaPos.clone().add(c.origin).add(V3(0.9, 0.9, 0.3)), show: () => st.labels && st.view === 'all' });
+    labels.push({ text: c.def.name, pos: c.somaPos.clone().add(c.origin).add(V3(1.1, -0.9, 0.3)), show: () => st.labels && st.view === 'all' });   // под сомой справа: не на дендритах и не под описанием
     c.lbl.forEach(([t, p]) => labels.push({ text: t, pos: c.origin.clone().add(p), show: () => st.labels && st.view === c.def.id }));
   });
   [['кожа', at(-11.2, -4.3)], ['сенсорный нейрон', at(-4.0, 4.5)], ['спинномозговой ганглий', at(-3.6, 2.2)], ['вставочный 1', at(2.4, -0.8)], ['вставочный 2', at(6.3, 3.9, 0.3)],
