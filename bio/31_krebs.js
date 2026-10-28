@@ -17,12 +17,12 @@ const KR_TOK = { nadh: ['НАДН', '#FFD070'], fadh2: ['ФАДН₂', '#FFE45A'
 function makeKrebs() {
   rnd = mulberry(1001);
   const scene = bioStage({ rim: 0x7fd6ff });
-  const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 200); camera.position.set(0.4, 0.3, 22);
-  const controls = makeControls(camera, V3(0.4, -2.3, 0)); controls.minDistance = 4; controls.maxDistance = 35;
+  const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 200); camera.position.set(-1.2, 0.5, 24);
+  const controls = makeControls(camera, V3(-1.2, -2.2, 0)); controls.minDistance = 4; controls.maxDistance = 35;
   const fx = new Sparks(1800, 0.09); scene.add(fx.obj);
   // митохондрия на фоне: оболочка и кристы
   const mito = new THREE.Mesh(new THREE.CapsuleGeometry(4.2, 9.5, 12, 48), glassMat(0xffb070, { rim: 0.2, base: 0.002, pow: 2.4, keep: true })); mito.rotation.z = Math.PI / 2; mito.scale.set(0.95, 0.85, 0.4); mito.position.set(0.5, -0.2, -5.5); scene.add(mito);
-  for (let k = 0; k < 7; k++) { const g = new THREE.Mesh(new THREE.BoxGeometry(0.06, 3.2 - Math.abs(k - 3) * 0.4, 1.1), new THREE.MeshPhysicalMaterial({ color: 0x6a4030, roughness: 0.7, transparent: true, opacity: 0.18, depthWrite: false })); g.position.set(-6.7 + k * 2.2, -0.3 + (k % 2 ? 0.8 : -0.8), -5.5); scene.add(g); }
+  for (let k = 0; k < 7; k++) { const g = new THREE.Mesh(displaceGeo(new THREE.CylinderGeometry(0.5, 0.5, 3.2 - Math.abs(k - 3) * 0.4, 24, 8, true, 0, Math.PI), (v) => { v.x *= 0.35; v.z *= 1.1; v.x += 0.12 * Math.sin(v.y * 2.2 + k); }), new THREE.MeshPhysicalMaterial({ color: 0x8a5a40, roughness: 0.7, transparent: true, opacity: 0.22, depthWrite: false, side: THREE.DoubleSide })); g.position.set(-6.7 + k * 2.2, -0.3 + (k % 2 ? 0.8 : -0.8), -5.5); scene.add(g); }
   const C = V3(1.0, 0.1, 0), R = 3.0;
   const ang = (k) => Math.PI / 2 - 0.42 - k * (Math.PI * 2 / 8);
   const pos = (k, r = R) => V3(C.x + Math.cos(ang(k)) * r, C.y + Math.sin(ang(k)) * r, 0);
@@ -42,7 +42,7 @@ function makeKrebs() {
   const toks = []; const tokPos = { nadh: V3(), fadh2: V3(), gtp: V3() }; // подписи следуют за последним жетоном
   function token(kind, p0, dir) { const m = kind === 'co2' ? molMesh(MOL('co2'), { scale: 0.2 }) : kind === 'h2o' ? molMesh(MOL('h2o'), { scale: 0.22 }) : new THREE.Mesh(new THREE.SphereGeometry(0.13, 16, 12), tokMat[kind]); m.position.copy(p0); scene.add(m); toks.push({ m, kind, v: dir, age: 0 }); return m; }
   const ETC = V3(7.4, -1.0, 0);
-  const etcBar = new THREE.Mesh(new THREE.BoxGeometry(0.35, 3.2, 1.4), new THREE.MeshPhysicalMaterial({ color: 0x5a3a2a, emissive: 0xffb070, emissiveIntensity: 0.1, roughness: 0.5 })); etcBar.position.copy(ETC); scene.add(etcBar);
+  const etcBar = new THREE.Mesh(new THREE.CapsuleGeometry(0.14, 2.9, 8, 20), new THREE.MeshPhysicalMaterial({ color: 0x8a5a40, emissive: 0xffb070, emissiveIntensity: 0.15, roughness: 0.5, transparent: true, opacity: 0.75 })); etcBar.position.copy(ETC); scene.add(etcBar);
   const piles = []; for (let k = 0; k < 6; k++) { const m = molMesh(MOL('succinate'), { scale: 0.11, hideH: true }); m.visible = false; scene.add(m); piles.push(m); }
   const malon = molMesh(MOL('malonate'), { scale: 0.16, hideH: true, tint: '#FF6A6A' }); malon.visible = false; scene.add(malon);
   const pick = NODES.map((n) => { const s = new THREE.Mesh(new THREE.SphereGeometry(0.7, 10, 8), new THREE.MeshBasicMaterial({ visible: false })); s.position.copy(n.m.position); s.userData.pick = n.d.id; scene.add(s); return s; }).concat([pdhPick]);

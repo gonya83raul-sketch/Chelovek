@@ -15,7 +15,7 @@ const AM_ARO = [
 function makeAminoacid() {
   rnd = mulberry(1801);
   const scene = bioStage({ rim: 0x7fe0a0 });
-  const VIEW = { dig: flyTarget(V3(0, -1.6, 0), V3(0.5, 0.8, 17)), trans: flyTarget(V3(40, -1.5, 0), V3(40.5, 0.6, 16)), urea: flyTarget(V3(80, -1.6, 0), V3(80.6, 0.6, 18)), aro: flyTarget(V3(120, -1.6, 0), V3(120.5, 0.6, 17.5)) };
+  const VIEW = { dig: flyTarget(V3(0, 1.3, 0), V3(0.5, 3.7, 18)), trans: flyTarget(V3(40, -1.5, 0), V3(40.5, 0.6, 16)), urea: flyTarget(V3(80, -1.6, 0), V3(80.6, 0.6, 18)), aro: flyTarget(V3(120, -1.6, 0), V3(120.5, 0.6, 17.5)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.dig.pos);
   const controls = makeControls(camera, VIEW.dig.target); controls.minDistance = 2; controls.maxDistance = 40;
   const fx = new Sparks(1400, 0.08); scene.add(fx.obj);

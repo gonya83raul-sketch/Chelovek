@@ -18,8 +18,8 @@ const KN_INH = {
 function makeKinetics() {
   rnd = mulberry(611);
   const scene = bioStage({ rim: 0xf2c14e });
-  const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 200); camera.position.set(1.5, 3.2, 15.5);
-  const controls = makeControls(camera, V3(0, -1.6, 0)); controls.minDistance = 4; controls.maxDistance = 30;
+  const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 200); camera.position.set(0.3, 3.6, 18.5);
+  const controls = makeControls(camera, V3(-1.2, -1.4, 0)); controls.minDistance = 4; controls.maxDistance = 30;
   const BX = 5.2, BY = 2.0, BZ = 2.8, NE = 14, NP = 520, SC = 0.034;
   // контейнер-«кювета»
   const box = new THREE.Mesh(new THREE.BoxGeometry(BX * 2 + 0.6, BY * 2 + 0.6, BZ * 2 + 0.6), glassMat(0x9fd0ff, { rim: 0.25, base: 0.006, pow: 3 })); scene.add(box);
@@ -145,7 +145,7 @@ function makeKinetics() {
     }
   }
   const labels = [
-    { text: 'фермент (лизоцим, PDB 1AKI)', pos: E[4].p.clone().add(V3(-0.6, 1.0, 0)), color: '#E46FA8', show: () => st.labels },
+    { text: 'фермент (модель — лизоцим, PDB 1AKI)', pos: E[4].p.clone().add(V3(-0.6, 1.0, 0)), color: '#E46FA8', show: () => st.labels },
     { text: 'субстрат', pos: V3(-0.2, BY + 0.5, -BZ), color: PT.S, show: () => st.labels },
     { text: 'продукт', pos: V3(1.6, BY + 0.5, -BZ), color: PT.P, show: () => st.labels },
     ...['comp', 'nonc', 'irr'].map((k) => ({ text: 'ингибитор', pos: V3(3.3, BY + 0.5, -BZ), color: KN_INH[k].color, show: () => st.labels && st.inh === k })),
