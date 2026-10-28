@@ -13,6 +13,7 @@ const code = fs.readFileSync(inFile, 'utf8');
 const ast = acorn.parse(code, { ecmaVersion: 'latest', sourceType: 'module' });
 const CYR = /[А-Яа-яЁё]/;
 const NO_TR = new Set(['Русский']); // название языка на кнопке переключателя
+const UNIT1 = { 'г': 'g', 'с': 's', 'л': 'L', 'ч': 'h', 'м': 'm' }; // однобуквенные единицы в статистике сцен
 const isKey = (t) => t.trim().length <= 1 || NO_TR.has(t); // буквы русской раскладки в обработчиках клавиш — не переводятся
 const unitOf = (pos) => {
   const s = ast.body.find((b) => b.start <= pos && pos < b.end);
@@ -32,6 +33,12 @@ walk.full(ast, (n) => {
   // кусочки с одними «ёлочками» (закрывающая кавычка после вставки) — в переводе английские кавычки
   else if (mode === 'apply' && n.type === 'Literal' && typeof n.value === 'string' && /[«»]/.test(n.value)) pieces.push({ start: n.start, end: n.end, text: n.value, kind: 'str', q: code[n.start], quotes: true });
   else if (mode === 'apply' && n.type === 'TemplateElement' && /[«»]/.test(n.value.cooked ?? n.value.raw)) pieces.push({ start: n.start, end: n.end, text: n.value.cooked ?? n.value.raw, kind: 'tpl', quotes: true });
+  // однобуквенная единица в плитке статистики ['Масса', '120–160', 'г'] — по таблице UNIT1 (общий словарь такие строки не берёт)
+  else if (mode === 'apply' && n.type === 'ArrayExpression' && n.elements.length === 3) {
+    const [k, , u] = n.elements;
+    if (k && k.type === 'Literal' && typeof k.value === 'string' && k.value.length > 1 && u && u.type === 'Literal' && typeof u.value === 'string' && UNIT1[u.value])
+      pieces.push({ start: u.start, end: u.end, text: u.value, kind: 'str', q: code[u.start], unit: true });
+  }
 });
 pieces.sort((x, y) => x.start - y.start);
 
@@ -46,7 +53,7 @@ if (mode === 'extract') {
   let out = '', last = 0;
   for (const p of pieces) {
     // уточнение по месту: ключ «<имя функции/переменной>::<строка>» важнее общего (одно русское слово — разные переводы)
-    const tr = p.num ? p.text.replace(/(\d),(\d)/g, '$1.$2') : p.quotes ? p.text.replace(/«/g, '“').replace(/»/g, '”') : (dict[unitOf(p.start) + '::' + p.text] ?? dict[p.text]);
+    const tr = p.unit ? UNIT1[p.text] : p.num ? p.text.replace(/(\d),(\d)/g, '$1.$2') : p.quotes ? p.text.replace(/«/g, '“').replace(/»/g, '”') : (dict[unitOf(p.start) + '::' + p.text] ?? dict[p.text]);
     if (tr == null || tr === '') { miss.add(p.text); continue; }
     let rep;
     if (p.kind === 'str') rep = p.q === "'" ? "'" + tr.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\n/g, '\\n') + "'" : JSON.stringify(tr);

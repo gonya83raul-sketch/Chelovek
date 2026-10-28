@@ -225,6 +225,8 @@ EN = {}
 for f in sorted(glob.glob(os.path.join(ROOT, 'data', 'i18n', 'en', '*.json'))): EN.update(json.load(open(f, encoding='utf8')))
 tr = lambda x, lang: EN.get(x, x) if lang == 'en' else x
 purl = lambda i, lang: i + ('.en' if lang == 'en' else '') + '.html'
+SEC_EN = {'Тело': 'Body'}   # названия разделов: в словаре «Тело» = тело нейрона (Cell body), а раздел — Body
+trsec = lambda n, lang: SEC_EN.get(n) or tr(n, lang) if lang == 'en' else n
 def topics_html(lang, hashes=False):
   bl = []
   for sid, name, items in secs:
@@ -235,7 +237,7 @@ def topics_html(lang, hashes=False):
         if i == '#': flush(); parts.append(f'<h4>{esc(tr(n, lang))}</h4>')
         else: li.append(f'<li data-id="{i}"><a href="{"#" + i if hashes else purl(i, lang)}">{esc(tr(n, lang))}</a></li>')
     flush()
-    bl.append(f'<section><h3>{esc(tr(name, lang))}</h3>{"".join(parts)}</section>')
+    bl.append(f'<section><h3>{esc(trsec(name, lang))}</h3>{"".join(parts)}</section>')
   return f'<details class="alltopics"><summary>{esc(tr("Все темы атласа", lang))} ({ntop})</summary><div class="atgrid">{"".join(bl)}</div></details>'
 JSONLD = json.dumps({'@context': 'https://schema.org', '@type': 'WebApplication', 'name': 'Кто мы? — от молекулы до мысли', 'alternateName': 'Who are we? From molecule to mind', 'url': BASE, 'description': DESC, 'applicationCategory': 'EducationalApplication', 'operatingSystem': 'Web', 'inLanguage': ['ru', 'en'], 'isAccessibleForFree': True, 'offers': {'@type': 'Offer', 'price': '0', 'priceCurrency': 'RUB'}, 'sameAs': ['https://t.me/KTOMY_ATLAS', 'https://boosty.to/chelovek3d']}, ensure_ascii=False)
 DESC_EN = 'Free interactive 3D atlas of the human body: anatomy, the cell, the brain and biochemistry, from molecule to mind. Rotate models, run processes, explore diseases and drugs.'
@@ -265,6 +267,9 @@ def notes_of(i, lang):
     t = MODS.get(lang) or MODS['ru']; fn = FN.get(i)
     if not fn: return ''
     k = t.find('function ' + fn + '('); e = t.find('\nfunction make', k + 10); seg = t[k:e if e > 0 else len(t)]
+    w = re.match(r'function \w+\(\) \{ return (make\w+)\(', seg)   # обёртка: makeMenses() { return makeRepro('cycle'); } — текст у makeRepro
+    if w:
+        k = t.find('function ' + w.group(1) + '('); e = t.find('\nfunction make', k + 10); seg = t[k:e if e > 0 else len(t)]
     m = re.search(r'\bnotes: `((?:[^`\\]|\\.)*)`', seg)
     if not m or '${' in m.group(1): return ''
     return m.group(1).replace('\\`', '`').replace('\\\\', '\\')
@@ -319,7 +324,7 @@ def topic_ld(i, lang, t, desc):   # schema.org: учебный материал 
     home_url, atlas = (BASE + 'index.en.html', 'Who are we? From molecule to mind') if lang == 'en' else (BASE, 'Кто мы? — от молекулы до мысли')
     ld = [{'@context': 'https://schema.org', '@type': 'LearningResource', 'name': t, 'description': desc, 'url': canon(i, lang), 'inLanguage': lang,
            'learningResourceType': 'interactive 3D model' if lang == 'en' else 'интерактивная 3D-модель', 'isAccessibleForFree': True,
-           'about': tr(SEC_NAME.get(i, ''), lang), 'isPartOf': {'@type': 'WebApplication', 'name': atlas, 'url': home_url}},
+           'about': trsec(SEC_NAME.get(i, ''), lang), 'isPartOf': {'@type': 'WebApplication', 'name': atlas, 'url': home_url}},
           {'@context': 'https://schema.org', '@type': 'BreadcrumbList', 'itemListElement': [
            {'@type': 'ListItem', 'position': 1, 'name': atlas, 'item': home_url}, {'@type': 'ListItem', 'position': 2, 'name': t, 'item': canon(i, lang)}]}]
     return '<script type="application/ld+json">' + json.dumps(ld, ensure_ascii=False).replace('</', '<\\/') + '</script>\n'
