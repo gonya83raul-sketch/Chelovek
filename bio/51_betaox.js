@@ -29,8 +29,8 @@ function makeBetaox() {
   }
   /* ---------- 1. липолиз в адипоците ---------- */
   const G1 = new THREE.Group(); scene.add(G1);
-  const cell = new THREE.Mesh(new THREE.SphereGeometry(3.0, 48, 32), glassMat(0xffd080, { rim: 0.6, base: 0.02, keep: true })); cell.position.set(-0.5, 0.7, 0); G1.add(cell);
-  const drop = new THREE.Mesh(new THREE.SphereGeometry(2.25, 48, 32), new THREE.MeshPhysicalMaterial({ color: 0x6a4a14, roughness: 0.5, clearcoat: 0.4, clearcoatRoughness: 0.5, emissive: 0x3a2404, emissiveIntensity: 0.12, envMapIntensity: 0.4 })); drop.position.copy(cell.position); G1.add(drop);
+  const cell = new THREE.Mesh(new THREE.SphereGeometry(3.0, 48, 32), glassMat(0xffd080, { rim: 0.35, base: 0.02, keep: true })); cell.position.set(-0.5, 0.7, 0); G1.add(cell);
+  const drop = new THREE.Mesh(new THREE.SphereGeometry(2.05, 48, 32), new THREE.MeshPhysicalMaterial({ color: 0x8a6420, roughness: 0.5, clearcoat: 0.4, clearcoatRoughness: 0.5, emissive: 0x3a2404, emissiveIntensity: 0.12, envMapIntensity: 0.4 })); drop.position.copy(cell.position); G1.add(drop);
   const nuc = new THREE.Mesh(ell3(0.5, 0.17, 0.4), organMat('#9F7BFF', 0.4)); nuc.position.set(-0.5 + 2.62 * Math.cos(-0.5), 0.7 + 2.62 * Math.sin(-0.5), 0); nuc.rotation.z = -0.5 + Math.PI / 2; G1.add(nuc); // ядро сплющено каплей к краю клетки
   const rec = new THREE.Mesh(blobGeo(0.28, 0.4, 0.28, 3, 0.1, 3), protMat('#FF8A5C', 0.4)); rec.position.set(-0.5 + 2.95 * Math.cos(0.5), 0.7 + 2.95 * Math.sin(0.5), 0); G1.add(rec);
   const horm = molMesh(MOL('adrenaline'), { scale: 0.12, hideH: true }); G1.add(horm);
