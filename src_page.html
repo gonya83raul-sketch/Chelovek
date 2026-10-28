@@ -7663,6 +7663,8 @@ function makeKidney() {
   const AO = new THREE.CatmullRomCurve3([V3(0.06, 1.8, -0.36), V3(0.06, 1.0, -0.4), V3(0.06, 0.45, -0.36)]), VC = new THREE.CatmullRomCurve3([V3(-0.1, 1.8, -0.32), V3(-0.1, 1.0, -0.36), V3(-0.1, 0.42, -0.32)]);
   const topTaper = (r) => (u) => r * (0.8 + 0.2 * smooth(0, 0.06, u));   // верх срезан под диафрагмой, а не иглой
   add('ves', taperTube(AO, topTaper(0.05), 30, 12), { color: '#E0605A' }); add('ves', taperTube(VC, topTaper(0.06), 30, 12), { color: '#6C86E0' });
+  // концы сосудов под диафрагмой — скруглённые, а не плоский срез
+  add('ves', new THREE.SphereGeometry(0.04, 16, 10).translate(AO.getPoint(0).x, AO.getPoint(0).y, AO.getPoint(0).z), { color: '#E0605A' }); add('ves', new THREE.SphereGeometry(0.048, 16, 10).translate(VC.getPoint(0).x, VC.getPoint(0).y, VC.getPoint(0).z), { color: '#6C86E0' });
   [1, -1].forEach((s) => {
     add('ves', taperTube(new THREE.CatmullRomCurve3([V3(0.06, 0.47, -0.36), V3(0.06 + 0.12 * s, 0.3, -0.33), V3(0.3 * s, 0.02, -0.22), V3(0.36 * s, -0.12, -0.12)]), (u) => 0.036 - 0.01 * u, 24, 10), { color: '#E0605A' });
     add('ves', taperTube(new THREE.CatmullRomCurve3([V3(-0.1, 0.44, -0.32), V3(-0.1 + 0.12 * s, 0.26, -0.3), V3(0.27 * s, 0.0, -0.26), V3(0.33 * s, -0.14, -0.16)]), (u) => 0.042 - 0.012 * u, 24, 10), { color: '#6C86E0' });
@@ -7763,7 +7765,7 @@ function makeKidney() {
   };
   const labels = [
     { text: 'левая почка', pos: V3(0.8, 0.5, -0.35), color: '#D07060', show: () => st.labels && st.mode === 'sys' },
-    { text: 'правая почка', pos: V3(-0.75, 0.95, -0.35), color: '#D07060', left: true, show: () => st.labels && st.mode === 'sys' },
+    { text: 'правая почка', pos: V3(-0.75, 0.95, -0.35), color: '#D07060', show: () => st.labels && st.mode === 'sys' },
     { text: 'надпочечник', pos: V3(0.5, 1.45, -0.35), color: '#F2C14E', show: () => st.labels && st.mode === 'sys' },
     { text: 'аорта', pos: V3(0.12, 1.45, -0.4), color: '#E0605A', show: () => st.labels && st.mode === 'sys' },
     { text: 'нижняя полая вена', pos: V3(-0.2, 1.5, -0.35), left: true, color: '#8CA0F0', show: () => st.labels && st.mode === 'sys' },
