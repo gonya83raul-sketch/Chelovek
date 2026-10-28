@@ -7,7 +7,8 @@
 function makeBloodchem() {
   rnd = mulberry(2601);
   const scene = bioStage({ bg: 0x0a0709, rim: 0xff6a6a });
-  const VIEW = { ph: flyTarget(V3(0.3, -2.3, 0), V3(0.8, -0.6, 17)), prot: flyTarget(V3(40.4, -2.6, 0), V3(40.9, -0.8, 19)), coag: flyTarget(V3(79.6, -2.3, 0), V3(80.2, -0.5, 18.5)) };
+  const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: кадр уходит из-под заголовка и описания (телефон — прежний ракурс)
+  const VIEW = { ph: DK ? flyTarget(V3(-0.7, -1.5, 0), V3(-0.2, 0.2, 18)) : flyTarget(V3(0.3, -2.3, 0), V3(0.8, -0.6, 17)), prot: flyTarget(V3(40.4, -2.6, 0), V3(40.9, -0.8, 19)), coag: flyTarget(V3(79.6, -2.3, 0), V3(80.2, -0.5, 18.5)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.ph.pos);
   const controls = makeControls(camera, VIEW.ph.target); controls.minDistance = 3; controls.maxDistance = 40;
   const fx = new Sparks(1600, 0.08); scene.add(fx.obj);

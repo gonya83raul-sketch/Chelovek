@@ -15,7 +15,7 @@ function makeEnzyme() {
   rnd = mulberry(501);
   const scene = bioStage({ rim: 0x7fd6ff });
   const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: кадр уходит из-под заголовка и описания (телефон — прежний ракурс)
-  const VIEW = { site: DK ? flyTarget(V3(-0.6, -0.5, 0), V3(0.65, 0.85, 13.2)) : flyTarget(V3(0.3, -1.0, 0), V3(1.4, 0.2, 9.8)), fit: flyTarget(V3(40, -1.0, 0), V3(41.8, 0.6, 13.5)), classes: flyTarget(V3(80, -3.2, 0), V3(80, 14, 24)) };
+  const VIEW = { site: DK ? flyTarget(V3(-0.6, -0.9, 0), V3(0.65, 0.45, 14.2)) : flyTarget(V3(0.3, -1.0, 0), V3(1.4, 0.2, 9.8)), fit: flyTarget(V3(40, -1.0, 0), V3(41.6, 0.2, 14.8)), classes: flyTarget(V3(80, -3.2, 0), V3(80, 14, 24)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.site.pos);
   const controls = makeControls(camera, VIEW.site.target); controls.minDistance = 2; controls.maxDistance = 40;
   const fx = new Sparks(1600, 0.08); scene.add(fx.obj);
@@ -154,10 +154,10 @@ function makeEnzyme() {
     classes: '<b>Шесть классов ферментов</b> по типу реакции (международная классификация КФ). Номер класса — первая цифра шифра фермента. Нажмите на класс или на модель.',
   };
   const labels = [
-    { text: 'Glu35 · отдаёт протон', pos: cent(L.resm[0]).addScaledVector(outw, 0.5).add(V3(0.25, -0.35, 0)), color: '#FF8A5C', show: () => st.labels && st.mode === 'site' },
+    { text: 'Glu35 · отдаёт протон', pos: cent(L.resm[0]).addScaledVector(outw, 1.0).add(V3(0.25, -0.2, 0)), color: '#FF8A5C', show: () => st.labels && st.mode === 'site' },
     { text: 'Asp52', pos: cent(L.resm[1]).addScaledVector(outw, 0.3).add(V3(0.15, 0.4, 0)), color: '#FF6A6A', show: () => st.labels && st.mode === 'site' },
     { text: 'якорные Trp62 · 63 · 108', pos: cent(L.resm[3]).addScaledVector(outw, 0.4).add(V3(0, 0.3, 0)), color: '#B8A6FF', show: () => st.labels && st.mode === 'site' },
-    { text: 'субстрат: цепь сахаров', pos: sugarHome[0].clone().addScaledVector(outw, 0.7), color: '#F2E6C8', show: () => st.labels && st.mode === 'site' },
+    { text: 'субстрат: цепь сахаров', pos: sugarHome[0].clone().addScaledVector(outw, 1.2), color: '#F2E6C8', show: () => st.labels && st.mode === 'site' },
     { text: 'крышка (LID)', pos: avg(AO, [130, 140, 150]).add(V3(40.3, 0.3, 0)), color: '#F2C14E', show: () => st.labels && st.mode === 'fit' },
     { text: 'карман для АМФ', pos: avg(AO, [35, 45, 55]).add(V3(40.3, 0.2, 0)), color: '#7FE0A0', show: () => st.labels && st.mode === 'fit' },
     { text: 'ядро фермента', pos: avg(AO, [80, 100, 180, 200]).add(V3(40.4, -0.6, 0)), color: '#7FD6FF', show: () => st.labels && st.mode === 'fit' },

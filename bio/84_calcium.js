@@ -7,7 +7,8 @@
 function makeCalcium() {
   rnd = mulberry(8401);
   const scene = bioStage({ rim: 0xf2e6c8 });
-  const VIEW = { reg: [V3(-1.0, -0.1, 0), V3(-0.5, 1.0, 18.5)], vitd: [V3(39.9, -0.9, 0), V3(40.4, 0.6, 17)], bone: [V3(80.3, -1.8, 0), V3(80.3, 4.5, 10.5)] };
+  const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: кадр уходит из-под заголовка и описания (телефон — прежний ракурс)
+  const VIEW = { reg: DK ? [V3(-1.0, 0.5, 0), V3(-0.5, 1.7, 19.5)] : [V3(-1.0, -0.1, 0), V3(-0.5, 1.0, 18.5)], vitd: [V3(39.9, -0.9, 0), V3(40.4, 0.6, 17)], bone: [V3(80.3, -1.8, 0), V3(80.3, 4.5, 10.5)] };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VIEW.reg[1]);
   const controls = makeControls(camera, VIEW.reg[0]); controls.minDistance = 3; controls.maxDistance = 40;
   const fx = new Sparks(2000, 0.07); scene.add(fx.obj);

@@ -7,7 +7,7 @@ function makeLipogen() {
   rnd = mulberry(5301);
   const scene = bioStage({ rim: 0xe8c060 });
   const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: кадр уходит из-под заголовка и описания (телефон — прежний ракурс)
-  const VIEW = { tag: DK ? [V3(-1.6, -1.5, 0), V3(-1.0, 0.4, 18.5)] : [V3(0.8, -1.9, 0), V3(1.4, 0.0, 18.5)], pl: [V3(41.2, -1.8, 0), V3(41.8, 0.1, 18.5)], fat: [V3(80.8, -1.7, 0), V3(81.4, 0.6, 17.5)] };
+  const VIEW = { tag: DK ? [V3(-0.9, -1.3, 0), V3(-0.3, 0.6, 17)] : [V3(0.8, -1.9, 0), V3(1.4, 0.0, 18.5)], pl: [V3(41.2, -1.8, 0), V3(41.8, 0.1, 18.5)], fat: [V3(80.8, -1.7, 0), V3(81.4, 0.6, 17.5)] };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VIEW.tag[1]);
   const controls = makeControls(camera, VIEW.tag[0]); controls.minDistance = 3; controls.maxDistance = 40;
   const fx = new Sparks(1800, 0.08); scene.add(fx.obj);
@@ -149,8 +149,8 @@ function makeLipogen() {
     { text: 'ацил-КоА', pos: V3(-0.9 + 0.6, Y1 + 2.0, 0.4), color: COL.acyl, show: () => st.labels && st.mode === 'tag' && st.cyc > 0.8 && st.cyc < 2.4 },
     { text: 'глюкоза → ДГАФ', pos: V3(-4.4 + 0.6, -1.85, 0.2), color: COL.g3p, show: () => st.labels && st.mode === 'tag' },
     { text: 'глицерол (печень)', pos: V3(-2.3 + 0.6, -1.85, 0.2), color: COL.g3p, show: () => st.labels && st.mode === 'tag' && st.tissue === 'liver' },
-    { text: 'ЛПОНП → кровь', pos: V3(3.8 + 1.4, -1.2, 0.2), color: '#7FD6FF', show: () => st.labels && st.mode === 'tag' && st.tissue === 'liver' },
-    { text: 'жировая капля', pos: V3(3.8 + 1.5, -1.2, 0.2), color: COL.tag, show: () => st.labels && st.mode === 'tag' && st.tissue === 'adipose' },
+    { text: 'ЛПОНП → кровь', pos: V3(3.5, -2.5, 0.2), color: '#7FD6FF', show: () => st.labels && st.mode === 'tag' && st.tissue === 'liver' },
+    { text: 'жировая капля', pos: V3(3.5, -2.5, 0.2), color: COL.tag, show: () => st.labels && st.mode === 'tag' && st.tissue === 'adipose' },
     { text: 'фосфатидная кислота', pos: P2.pa.clone().add(V3(OX2 - 0.5, 0.75, 0)), color: COL.pa, show: () => st.labels && st.mode === 'pl' },
     { text: 'ДАГ', pos: P2.dag.clone().add(V3(OX2 - 0.1, 0.75, 0)), color: COL.dag, show: () => st.labels && st.mode === 'pl' },
     { text: 'фосфатидилхолин', pos: P2.pc.clone().add(V3(OX2 + 0.2, 0.75, 0)), color: COL.pc, show: () => st.labels && st.mode === 'pl' },
