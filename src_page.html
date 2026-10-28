@@ -7228,7 +7228,14 @@ function makeLungs() {
   // сердце: геометрия в нуле, место — через position (иначе поворот уносит его вокруг начала мира в правое лёгкое)
   // капля: широкое основание вверху справа, верхушка влево-вниз
   const heartGeo = displaceGeo(new THREE.SphereGeometry(1, 36, 28), (v) => { const k = v.y < 0 ? 1 + 0.55 * v.y : 1; v.set(v.x * 0.27 * k, v.y * 0.34, v.z * 0.24 * k); });
-  const heartG = new THREE.Mesh(heartGeo, new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xb8444a).multiplyScalar(0.5), roughness: 0.4, transparent: true, opacity: 0.55, depthWrite: false })); heartG.position.copy(BODY.heart).add(V3(0.06, 0, 0)); heartG.rotation.z = 0.55; body.add(heartG);
+  const heartG = new THREE.Mesh(heartGeo, new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xb8444a).multiplyScalar(0.5), roughness: 0.4, transparent: true, opacity: 0.42, depthWrite: false })); heartG.position.copy(BODY.heart).add(V3(0.06, 0, 0)); heartG.rotation.z = 0.55; body.add(heartG);
+  // крупные сосуды: лёгочный ствол делится на правую и левую лёгочные артерии, над ним — дуга аорты
+  { const H = BODY.heart, vm = (c) => new THREE.MeshPhysicalMaterial({ color: c, roughness: 0.45, transparent: true, opacity: 0.6, depthWrite: false });
+    const pt = new THREE.CatmullRomCurve3([H.clone().add(V3(0.0, 0.22, 0.12)), H.clone().add(V3(-0.02, 0.4, 0.08)), H.clone().add(V3(-0.05, 0.5, 0.0))]);
+    body.add(new THREE.Mesh(new THREE.TubeGeometry(pt, 16, 0.05, 10), vm(0x6c86e0)));
+    [1, -1].forEach((sd) => body.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([H.clone().add(V3(-0.05, 0.5, 0.0)), H.clone().add(V3(0.25 * sd - 0.05, 0.52, -0.04)), H.clone().add(V3(0.42 * sd - 0.05, 0.45, -0.06))]), 16, 0.035, 8), vm(0x6c86e0))));
+    const ao = new THREE.CatmullRomCurve3([H.clone().add(V3(-0.1, 0.2, 0.05)), H.clone().add(V3(-0.14, 0.55, 0.02)), H.clone().add(V3(-0.02, 0.72, -0.08)), H.clone().add(V3(0.1, 0.62, -0.22)), H.clone().add(V3(0.08, 0.2, -0.3))]);
+    body.add(new THREE.Mesh(new THREE.TubeGeometry(ao, 30, 0.05, 10), vm(0xe0605a))); }
   /* ---------- альвеолы (вынесены в сторону) ---------- */
   const alv = new THREE.Group(); alv.position.set(30, 0, 0); scene.add(alv); alv.visible = false;
   const BRL = new THREE.CatmullRomCurve3([V3(-2.6, 1.0, 0), V3(-1.6, 0.6, 0.05), V3(-0.8, 0.15, 0)]);
