@@ -24,13 +24,14 @@ const PR_LV = [
 function makeProtein() {
   __set_rnd(mulberry(1701));
   const scene = bioStage({ rim: 0x7fd6ff });
-  const VIEW = { aa: flyTarget(V3(0, -1.8, 0), V3(0, 0.6, 21.5)), lv: flyTarget(V3(40, -1.2, 0), V3(40.8, 0.8, 14.5)), fold: flyTarget(V3(80.6, -2.1, 0), V3(81.6, 0.6, 22)) };
+  const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: кадр уходит из-под заголовка и описания (телефон — прежний ракурс)
+  const VIEW = { aa: DK ? flyTarget(V3(0, 0.1, 0), V3(0, 2.9, 25)) : flyTarget(V3(0, -0.6, 0), V3(0, 0.2, 12.8)), lv: flyTarget(V3(40, -1.2, 0), V3(40.8, 0.8, 14.5)), fold: flyTarget(V3(80.6, -2.1, 0), V3(81.6, 0.6, 22)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.aa.pos);
   const controls = makeControls(camera, VIEW.aa.target); controls.minDistance = 2; controls.maxDistance = 45;
   const fx = new Sparks(1200, 0.08); scene.add(fx.obj);
   /* ---------- 1. аминокислоты ---------- */
   const G1 = new THREE.Group(); scene.add(G1);
-  const AAM = PR_AA.map(([id, l, gr, ess], k) => { const col = k % 10, row = Math.floor(k / 10); const m = molMesh(MOL(id), { scale: 0.2, hideH: true }); const g = new THREE.Group(); g.add(m); g.position.set(-8.78 + col * 1.95, -0.15 - row * 2.15, 0); G1.add(g); const ring = new THREE.Mesh(new THREE.TorusGeometry(0.75, 0.02, 8, 48), new THREE.MeshBasicMaterial({ color: new THREE.Color(PR_GR[gr][1]).multiplyScalar(0.7), transparent: true, opacity: 0.25 })); ring.position.y = -0.1; g.add(ring); const pk = new THREE.Mesh(new THREE.SphereGeometry(0.8, 8, 6), new THREE.MeshBasicMaterial({ visible: false })); pk.userData.pick = id; g.add(pk); return { id, l, gr, ess, g, m, ring }; });
+  const AAM = PR_AA.map(([id, l, gr, ess], k) => { const NC = DK ? 10 : 4, col = k % NC, row = Math.floor(k / NC);   /* телефон: 5 рядов по 4 */ const m = molMesh(MOL(id), { scale: 0.2, hideH: true }); const g = new THREE.Group(); g.add(m); g.position.set(DK ? -8.78 + col * 1.95 : -2.925 + col * 1.95, DK ? -0.15 - row * 2.15 : 3.4 - row * 2.3, 0); G1.add(g); const ring = new THREE.Mesh(new THREE.TorusGeometry(0.75, 0.02, 8, 48), new THREE.MeshBasicMaterial({ color: new THREE.Color(PR_GR[gr][1]).multiplyScalar(0.7), transparent: true, opacity: 0.25 })); ring.position.y = -0.1; g.add(ring); const pk = new THREE.Mesh(new THREE.SphereGeometry(0.8, 8, 6), new THREE.MeshBasicMaterial({ visible: false })); pk.userData.pick = id; g.add(pk); return { id, l, gr, ess, g, m, ring }; });
   /* ---------- 2. уровни структуры ---------- */
   const G2 = new THREE.Group(); G2.position.set(40, 0.4, 0); scene.add(G2);
   const HB = PDB('hb'); const hsc = 0.075;
@@ -127,7 +128,7 @@ function makeProtein() {
     fold: '<b>Укладка и денатурация.</b> Форму белка задаёт его последовательность, но в тесной клетке длинной цепи помогают <b>шапероны</b>. Справа — реальная структура шаперонина <b>GroEL/GroES</b> (PDB 1AON): два кольца по 7 субъединиц (голубые) и «крышка» GroES (жёлтая) — бочка, внутри которой белок спокойно сворачивается, используя энергию АТФ. Слева — белок (лизоцим): режим «Нагрев» показывает <b>денатурацию</b> — разрушение вторичной и третичной структуры без разрыва пептидных связей; при мягком воздействии она обратима (ренатурация), при сильном — нет (сваренный белок яйца). Денатурируют нагрев, кислоты и щёлочи, соли тяжёлых металлов, спирт, мочевина.',
   };
   const labels = [
-    ...AAM.map((a) => ({ text: `${MOL(a.id).name} · ${a.l}${a.ess === 1 ? ' ★' : a.ess === 2 ? ' ☆' : ''}`, pos: a.g.position.clone().add(V3(-0.55, AAM.indexOf(a) % 2 ? 0.95 : -1.02, 0)), color: PR_GR[a.gr][1], show: () => st.labels && st.mode === 'aa' })),
+    ...AAM.map((a) => ({ text: `${MOL(a.id).name}${DK ? ' · ' + a.l : ''}${a.ess === 1 ? ' ★' : a.ess === 2 ? ' ☆' : ''}`, pos: a.g.position.clone().add(DK ? V3(-0.55, AAM.indexOf(a) % 2 ? 0.95 : -1.02, 0) : V3(-0.75, -0.98, 0)), color: PR_GR[a.gr][1], show: () => st.labels && st.mode === 'aa' })),
     { text: 'N-конец', pos: V3(40 - 6.2, -0.4, 0), color: '#5B8CFF', show: () => st.labels && st.mode === 'lv' && st.lv === 1 },
     { text: 'C-конец', pos: V3(40 + 6.2, -0.4, 0), color: '#FF6A6A', show: () => st.labels && st.mode === 'lv' && st.lv === 1 },
     { text: 'пептидная связь + H₂O', pos: V3(40 - 3.8, 3.0, 0), color: '#F2E6C8', show: () => st.labels && st.mode === 'lv' && st.lv === 1 },
@@ -169,7 +170,7 @@ function makeProtein() {
   }
   function stats() { return st.mode === 'aa' ? [['Аминокислот', '20', ''], ['Незаменимых', '9', '']] : st.mode === 'lv' ? [['Гемоглобин', '574', 'аминокислоты'], ['Масса', '64,5', 'кДа']] : [['Состояние', st.fphase || '', '']]; }
   const self = {
-    scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#7FD6FF',
+    mobZoom: 1.0, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#7FD6FF',
     kicker: 'Биохимия · белки', title: 'Белки: от аминокислоты до формы',
     lede: 'Цепочка из двадцати видов «бусин» сама сворачивается в точную трёхмерную машину. Здесь — аминокислоты, четыре уровня структуры гемоглобина и шаперон, который помогает белкам укладываться.',
     notes: `

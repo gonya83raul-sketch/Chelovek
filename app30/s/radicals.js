@@ -11,7 +11,8 @@ Object.assign(BIO_MOL, {"tocopherol":{"name":"α-Токоферол (E)","el":"C
 function makeRadicals() {
   __set_rnd(mulberry(3301));
   const scene = bioStage({ rim: 0xff8a5c });
-  const VIEW = { paths: [V3(0.4, -1.2, 0), V3(1.0, 0.6, 17)], ros: [V3(40.4, -1.5, 0), V3(41.0, 2.0, 18.5)], burst: [V3(80.3, -1.3, 0), V3(80.9, 0.6, 15.5)] };
+  const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: кадр уходит из-под заголовка и описания (телефон — прежний ракурс)
+  const VIEW = { paths: DK ? [V3(-1.0, -1.2, 0), V3(-0.4, 0.6, 17)] : [V3(0.4, -1.2, 0), V3(1.0, 0.6, 17)], ros: [V3(40.4, -1.5, 0), V3(41.0, 2.0, 18.5)], burst: [V3(80.3, -1.3, 0), V3(80.9, 0.6, 15.5)] };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VIEW.paths[1]);
   const controls = makeControls(camera, VIEW.paths[0]); controls.minDistance = 3; controls.maxDistance = 40;
   const fx = new Sparks(2600, 0.09); scene.add(fx.obj);

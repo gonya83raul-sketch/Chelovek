@@ -11,7 +11,8 @@ Object.assign(BIO_MOL, {"tag":{"name":"Триацилглицерин","el":"C C
 function makeLipogen() {
   __set_rnd(mulberry(5301));
   const scene = bioStage({ rim: 0xe8c060 });
-  const VIEW = { tag: [V3(0.8, -1.9, 0), V3(1.4, 0.0, 18.5)], pl: [V3(41.2, -1.8, 0), V3(41.8, 0.1, 18.5)], fat: [V3(80.8, -1.7, 0), V3(81.4, 0.6, 17.5)] };
+  const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: кадр уходит из-под заголовка и описания (телефон — прежний ракурс)
+  const VIEW = { tag: DK ? [V3(-1.6, -1.5, 0), V3(-1.0, 0.4, 18.5)] : [V3(0.8, -1.9, 0), V3(1.4, 0.0, 18.5)], pl: [V3(41.2, -1.8, 0), V3(41.8, 0.1, 18.5)], fat: [V3(80.8, -1.7, 0), V3(81.4, 0.6, 17.5)] };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VIEW.tag[1]);
   const controls = makeControls(camera, VIEW.tag[0]); controls.minDistance = 3; controls.maxDistance = 40;
   const fx = new Sparks(1800, 0.08); scene.add(fx.obj);
