@@ -8,7 +8,9 @@ function makePurine() {
   rnd = mulberry(2101);
   const scene = bioStage({ rim: 0xc77dff });
   const VIEW = { build: flyTarget(V3(0, -1.5, 0), V3(0.4, 0.6, 16)), catab: flyTarget(V3(39.4, 1.55, 0), V3(39.9, 3.75, 17.5)), synth: flyTarget(V3(80, -1.4, 0), V3(80.8, 0.6, 15)) };
-  if (matchMedia('(max-width:700px)').matches) [VIEW.build.target, VIEW.build.pos].forEach((v) => { v.x += 2.1; v.z += 3; });   // телефон: раскладка «Строения» шире экрана — кадр по её центру и чуть дальше
+  // телефон: «Строение» столбиком — аденин сверху, пурины, пиримидины, АМФ внизу
+  const MOB = matchMedia('(max-width:700px)').matches;
+  if (MOB) VIEW.build = flyTarget(V3(0.2, -0.3, 0), V3(0.5, 0.9, 12.5));
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.build.pos);
   const controls = makeControls(camera, VIEW.build.target); controls.minDistance = 2; controls.maxDistance = 40;
   const fx = new Sparks(1200, 0.08); scene.add(fx.obj);
@@ -17,12 +19,12 @@ function makePurine() {
   // аденин: окраска атомов по происхождению
   const A = MOL('adenine'); const SRC = { 0: 'asp', 1: 'co2', 2: 'asp', 3: 'thf', 4: 'gln', 5: 'gly', 6: 'gln', 7: 'thf', 8: 'gly', 9: 'gly' };
   const SRCC = { gly: '#7FE0A0', asp: '#FF6A6A', gln: '#7FA8FF', co2: '#C8C8D0', thf: '#F2C14E' };
-  const adG = new THREE.Group(); adG.position.set(0.8, 0.5, 0); G1.add(adG);
+  const adG = new THREE.Group(); adG.position.copy(MOB ? V3(0, 2.3, 0) : V3(0.8, 0.5, 0)); G1.add(adG);
   Object.entries(SRCC).forEach(([k, c]) => { const idx = new Set(Object.entries(SRC).filter(([, v]) => v === k).map(([i]) => +i)); adG.add(molMesh(A, { scale: 0.42, idx, tint: c, bondR: 0.11 })); });
   // связи между атомами разного происхождения — общая модель полупрозрачная
   const adAll = molMesh(A, { scale: 0.42, hideH: true }); molFade(adAll, 0.35); adG.add(adAll);
-  const bases = ['adenine', 'guanine', 'cytosine', 'thymine', 'uracil'].map((id, k) => { const m = molMesh(MOL(id), { scale: 0.2, hideH: true }); m.position.set(4.1 + k * 1.6, 1.1, 0); if (k >= 2) m.position.set(3.4 + (k - 2) * 1.4, -0.9, 0); G1.add(m); return m; });
-  const amp = molMesh(MOL('amp'), { scale: 0.17, hideH: true }); amp.position.set(-1.9, -2.2, 0); G1.add(amp);
+  const bases = ['adenine', 'guanine', 'cytosine', 'thymine', 'uracil'].map((id, k) => { const m = molMesh(MOL(id), { scale: 0.2, hideH: true }); m.position.copy(MOB ? (k < 2 ? V3(-0.9 + k * 1.8, 0.3, 0) : V3(-1.5 + (k - 2) * 1.5, -1.5, 0)) : (k < 2 ? V3(4.1 + k * 1.6, 1.1, 0) : V3(3.4 + (k - 2) * 1.4, -0.9, 0))); G1.add(m); return m; });
+  const amp = molMesh(MOL('amp'), { scale: 0.17, hideH: true }); amp.position.copy(MOB ? V3(-0.3, -3.2, 0) : V3(-1.9, -2.2, 0)); G1.add(amp);
   /* ---------- 2. распад и подагра ---------- */
   const G2 = new THREE.Group(); G2.position.set(40, 0, 0); scene.add(G2);
   const PATH = [['amp', -6.6, 1.8], ['hypoxanthine', -3.8, 1.8], ['xanthine', -1.0, 1.8], ['urate', 1.8, 1.8]];
@@ -83,10 +85,10 @@ function makePurine() {
     synth: '<b>Синтез нуклеотидов и антиметаболиты.</b> Пурины и пиримидины клетка строит из аминокислот, CO₂ и рибозы, а для переноса одноуглеродных групп нужна <b>тетрагидрофолиевая кислота</b> — её восстанавливает дигидрофолатредуктаза (реальная структура с коферментом НАДФН, PDB 1RX1). Быстро делящиеся клетки особенно зависят от этого пути, и на этом построена химиотерапия: <b>метотрексат</b> — аналог фолата, прочно занимает ДГФР; <b>5-фторурацил</b> (справа рядом с тимином) — аналог тимина, блокирует тимидилатсинтазу. Часть оснований клетка не синтезирует заново, а переиспользует — <b>«путь спасения»</b> через фермент ГГФРТ; его наследственный дефект — <b>синдром Леша — Найхана</b> (подагра и самоповреждения у мальчиков).',
   };
   const labels = [
-    { text: 'аденин: откуда атомы', pos: V3(0.2, 2.2, 0), color: '#F2E6C8', show: () => st.labels && st.mode === 'build' },
-    { text: 'АМФ (нуклеотид)', pos: V3(-2.5, -3.1, 0), color: '#C77DFF', show: () => st.labels && st.mode === 'build' },
-    ...['аденин', 'гуанин'].map((n, k) => ({ text: n + ' · пурин', pos: V3(4.1 + k * 1.6 - 0.5, 0.3, 0), color: '#FF8A5C', show: () => st.labels && st.mode === 'build' })),
-    ...['цитозин', 'тимин (ДНК)', 'урацил (РНК)'].map((n, k) => ({ text: n, pos: V3(3.4 + k * 1.4 - 0.4, -1.65, 0), color: '#7FD6FF', show: () => st.labels && st.mode === 'build' })),
+    { text: 'аденин: откуда атомы', pos: MOB ? V3(0.7, 3.2, 0) : V3(0.2, 2.2, 0), color: '#F2E6C8', show: () => st.labels && st.mode === 'build' },
+    { text: 'АМФ (нуклеотид)', pos: MOB ? V3(-0.9, -4.0, 0) : V3(-2.5, -3.1, 0), color: '#C77DFF', show: () => st.labels && st.mode === 'build' },
+    ...['аденин', 'гуанин'].map((n, k) => ({ text: n + ' · пурин', pos: MOB ? V3(-1.4 + k * 1.8, -0.45, 0) : V3(4.1 + k * 1.6 - 0.5, 0.3, 0), color: '#FF8A5C', show: () => st.labels && st.mode === 'build' })),
+    ...['цитозин', 'тимин (ДНК)', 'урацил (РНК)'].map((n, k) => ({ text: n, pos: MOB ? V3(-1.9 + k * 1.5, -2.15 - (k % 2) * 0.28, 0) : V3(3.4 + k * 1.4 - 0.4, -1.65, 0), color: '#7FD6FF', show: () => st.labels && st.mode === 'build' })),
     ...PATH.map(([id, x, y]) => ({ text: MOL(id).name, pos: V3(40 + x - 0.6, y - 0.95, 0), color: '#EFEAE6', show: () => st.labels && st.mode === 'catab' })),
     { text: 'гуанин', pos: V3(40 - 4.3, -0.7, 0), color: '#EFEAE6', show: () => st.labels && st.mode === 'catab' },
     { text: 'ксантиноксидаза', pos: V3(40 - 1.6, 2.5, 0), color: '#FF8A5C', show: () => st.labels && st.mode === 'catab' && !st.allo },
