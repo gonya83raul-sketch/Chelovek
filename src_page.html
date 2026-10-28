@@ -7871,12 +7871,12 @@ function makeEndo() {
   const ghostMat = (c) => new THREE.MeshPhysicalMaterial({ color: new THREE.Color(c).multiplyScalar(0.35), roughness: 0.6, transparent: true, opacity: 0.22, depthWrite: false, emissive: new THREE.Color(c), emissiveIntensity: 0.05 });
   const TG = {
     liver: { p: V3(-0.35, 1.52, 0.12), m: new THREE.Mesh(ell3(0.55, 0.26, 0.38, V3(-0.35, 1.52, 0.12)), ghostMat('#b05a48')) },
-    heart: { p: BODY.heart.clone(), m: new THREE.Mesh(ell3(0.25, 0.3, 0.22), ghostMat('#c84a50')) },
+    heart: { p: BODY.heart.clone(), m: new THREE.Mesh(displaceGeo(new THREE.SphereGeometry(1, 36, 28), (v) => { const k = v.y < 0 ? 1 + 0.55 * v.y : 1; v.set(v.x * 0.27 * k, v.y * 0.34, v.z * 0.24 * k); }), ghostMat('#c84a50')) },   // сердце-капля, верхушкой вниз-влево
     kid: { p: V3(0.45, 1.0, -0.33), m: new THREE.Mesh(mergeGeometries([0.45, -0.45].map((x) => ell3(0.11, 0.18, 0.09, V3(x, x > 0 ? 1.0 : 0.94, -0.33)))), ghostMat('#b85a50')) },
     mus: { p: V3(-0.5, -1.0, 0.05), m: new THREE.Mesh(tube([V3(-0.5, -0.35, 0.05), V3(-0.52, -1.05, 0.08), V3(-0.5, -1.75, 0.05)], (u) => 0.03 + 0.15 * Math.sin(Math.PI * u), 30, 16), ghostMat('#c86a6a')) },   // мышца-веретено
     bone: { p: V3(0.5, -1.0, 0.0), m: new THREE.Mesh(mergeGeometries([tube([V3(0.5, -0.3, 0.0), V3(0.48, -1.8, 0.02)], 0.05, 20, 10), ell3(0.09, 0.08, 0.08, V3(0.5, -0.28, 0.0), 16), ell3(0.09, 0.08, 0.08, V3(0.48, -1.82, 0.02), 16)]), ghostMat('#e8d8bb')) },   // бедренная кость с головками
   };
-  TG.heart.m.position.copy(BODY.heart); TG.heart.m.rotation.z = 0.4;   // геометрия в нуле — пульсирует на месте, верхушка влево
+  TG.heart.m.position.copy(BODY.heart).add(V3(0.06, 0, 0)); TG.heart.m.rotation.z = 0.55;   // геометрия в нуле — пульсирует на месте, верхушка влево
   Object.values(TG).forEach((x) => scene.add(x.m));
   TG.thy = { p: GL.thy.p }; TG.adr = { p: GL.adr.p }; TG.gon = { p: GL.gon.p }; TG.hyp = { p: GL.hyp.p }; TG.panc = { p: GL.panc.p };
   const arc = (a, b) => { const m = a.clone().lerp(b, 0.5); m.z += 0.35; m.x += (b.x - a.x) * 0.1; return new THREE.CatmullRomCurve3([a, m, b]); };
