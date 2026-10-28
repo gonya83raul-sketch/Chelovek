@@ -7644,7 +7644,7 @@ function makeKidney() {
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 120); camera.position.copy(VIEW.sys.pos);
   const controls = makeControls(camera, VIEW.sys.target); controls.minDistance = 1.5; controls.maxDistance = 22;
   const body = new THREE.Group(); scene.add(body);
-  bodyShell(body, { rim: 0.2 });
+  bodyShell(body, { rim: 0.36 });
   const PART = Object.fromEntries(KD_PARTS.map((p) => [p.id, { ...p, mats: [] }])), pick = [];
   const add = (id, g, o = {}, parent = body) => { const m = organMat(o.color || PART[id].color, o.k ?? 0.42, o.mat || {}); PART[id].mats.push(m); const me = new THREE.Mesh(g, m); me.userData.pick = id; pick.push(me); parent.add(me); return me; };
   const beanGeo = (s) => displaceGeo(new THREE.SphereGeometry(1, 48, 36), (v) => { let x = v.x * 0.55, y = v.y, z = v.z * 0.4; if (x * s < 0) x += s * 0.22 * Math.exp(-((y / 0.38) ** 2)) * smooth(0, -0.5, x * s); v.set(x, y, z); });
@@ -7654,7 +7654,7 @@ function makeKidney() {
   // аорта и полая вена
   // аорта и полая вена: сверху уходят под диафрагму (сужаются), внизу на уровне L4 делятся на общие подвздошные
   const AO = new THREE.CatmullRomCurve3([V3(0.06, 1.8, -0.36), V3(0.06, 1.0, -0.4), V3(0.06, 0.45, -0.36)]), VC = new THREE.CatmullRomCurve3([V3(-0.1, 1.8, -0.32), V3(-0.1, 1.0, -0.36), V3(-0.1, 0.42, -0.32)]);
-  const topTaper = (r) => (u) => r * (0.35 + 0.65 * smooth(0, 0.12, u));
+  const topTaper = (r) => (u) => r * (0.8 + 0.2 * smooth(0, 0.06, u));   // верх срезан под диафрагмой, а не иглой
   add('ves', taperTube(AO, topTaper(0.05), 30, 12), { color: '#E0605A' }); add('ves', taperTube(VC, topTaper(0.06), 30, 12), { color: '#6C86E0' });
   [1, -1].forEach((s) => {
     add('ves', taperTube(new THREE.CatmullRomCurve3([V3(0.06, 0.47, -0.36), V3(0.06 + 0.12 * s, 0.3, -0.33), V3(0.3 * s, 0.02, -0.22), V3(0.36 * s, -0.12, -0.12)]), (u) => 0.036 - 0.01 * u, 24, 10), { color: '#E0605A' });
@@ -7755,10 +7755,11 @@ function makeKidney() {
     void: '<b>Мочеиспускание.</b> Растяжение стенки пузыря → сигнал по нервам в крестцовый отдел спинного мозга → сокращение мышцы пузыря и расслабление внутреннего сфинктера. Кора разрешает или запрещает расслабить наружный сфинктер.',
   };
   const labels = [
-    { text: 'почка', pos: V3(0.75, 1.05, -0.35), color: '#D07060', show: () => st.labels && st.mode === 'sys' },
+    { text: 'левая почка', pos: V3(0.75, 1.05, -0.35), color: '#D07060', show: () => st.labels && st.mode === 'sys' },
+    { text: 'правая почка', pos: V3(-0.75, 0.95, -0.35), color: '#D07060', left: true, show: () => st.labels && st.mode === 'sys' },
     { text: 'надпочечник', pos: V3(0.5, 1.45, -0.35), color: '#F2C14E', show: () => st.labels && st.mode === 'sys' },
-    { text: 'аорта', pos: V3(0.12, 1.6, -0.4), color: '#E0605A', show: () => st.labels && st.mode === 'sys' },
-    { text: 'нижняя полая вена', pos: V3(-0.2, 1.7, -0.35), color: '#8CA0F0', show: () => st.labels && st.mode === 'sys' },
+    { text: 'аорта', pos: V3(0.12, 1.45, -0.4), color: '#E0605A', show: () => st.labels && st.mode === 'sys' },
+    { text: 'нижняя полая вена', pos: V3(-0.2, 1.5, -0.35), left: true, color: '#8CA0F0', show: () => st.labels && st.mode === 'sys' },
     { text: 'мочеточник', pos: V3(0.21, 0.5, -0.3), color: '#E8D8A0', show: () => st.labels && st.mode === 'sys' },
     { text: 'мочевой пузырь', pos: V3(0.25, 0.05, 0.2), color: '#F2D860', show: () => st.labels && st.mode === 'sys' },
     { text: 'корковое вещество', pos: V3(30.55, 0.75, 0.05), color: '#d07a6a', show: () => st.labels && st.mode === 'kid' },
@@ -7799,7 +7800,7 @@ function makeKidney() {
   }
   function stats() { const out = (0.5 + (1 - st.adh) * 2.5).toFixed(1); return [['Первичная моча', '≈180', 'л/сут'], ['Конечная', out, 'л/сут'], ['Пузырь', Math.round(st.fill * 500), 'мл']]; }
   const self = {
-    mobZoom: 0.6, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#F2D860',
+    mobZoom: 0.5, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#F2D860',
     kicker: 'Тело · выделение', title: 'Почки и мочевыделение',
     lede: 'Каждые сутки почки пропускают через себя всю кровь около 300 раз, отфильтровывают 180 литров жидкости и возвращают обратно в кровь 99% её.',
     notes: `
@@ -7834,10 +7835,10 @@ function makeEndo() {
   rnd = mulberry(1616);
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x07060a); scene.environment = envTex;
   labLights(scene, 0xc77dff);
-  const VIEW = { map: flyTarget(V3(0.0, 1.15, 0), V3(2.3, 1.9, 12.8)), sugar: flyTarget(V3(-0.1, 0.75, 0), V3(1.8, 1.8, 6.2)), stress: flyTarget(V3(0.1, 1.9, 0), V3(-2.6, 3.0, 8.4)), thy: flyTarget(V3(0.0, 3.25, 0.1), V3(1.3, 3.6, 3.6)) };
+  const VIEW = { map: flyTarget(V3(0.0, 1.45, 0), V3(2.3, 2.2, 12.8)), sugar: flyTarget(V3(-0.1, 0.75, 0), V3(1.8, 1.8, 6.2)), stress: flyTarget(V3(0.1, 1.9, 0), V3(-2.6, 3.0, 8.4)), thy: flyTarget(V3(0.0, 3.25, 0.1), V3(1.3, 3.6, 3.6)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(VIEW.map.pos);
   const controls = makeControls(camera, VIEW.map.target); controls.minDistance = 1.2; controls.maxDistance = 22;
-  bodyShell(scene, { rim: 0.22 });
+  bodyShell(scene, { rim: 0.36 });
   const GL = Object.fromEntries(EN_GL.map((g) => [g.id, { ...g, mats: [], meshes: [] }])), pick = [];
   const add = (id, geo, o = {}) => { const m = organMat(GL[id].color, 0.48, { emissiveIntensity: 0.12, ...o }); GL[id].mats.push(m); const me = new THREE.Mesh(geo, m); me.userData.pick = id; pick.push(me); scene.add(me); GL[id].meshes.push(me); return me; };
   // мозг-призрак
@@ -7956,7 +7957,7 @@ function makeEndo() {
   }
   function stats() { const S = SIM; return st.mode === 'sugar' ? [['Глюкоза', S.G.toFixed(1), 'ммоль/л'], ['Инсулин', Math.round(S.I), 'мкЕд/мл']] : st.mode === 'stress' ? [['Пульс', Math.round(S.HR), 'уд/мин'], ['Кортизол', Math.round(S.C * 30), 'нмоль/л']] : st.mode === 'thy' ? [['ТТГ', S.TSH.toFixed(1), 'мЕд/л'], ['T4', (S.T4 * 15).toFixed(0), 'пмоль/л']] : [['Желёз', 8, ''], ['Гормонов', '>50', '']]; }
   const self = {
-    mobZoom: 0.6, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#C77DFF',
+    mobZoom: 0.5, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#C77DFF',
     kicker: 'Тело · гормоны', title: 'Эндокринная система',
     lede: 'Крошечные железы управляют ростом, обменом веществ, сном, стрессом и сахаром крови, рассылая по кровотоку химические письма — гормоны.',
     notes: `
