@@ -338,7 +338,7 @@ def topic_ld(i, lang, t, desc):   # schema.org: учебный материал 
     home_url, atlas = (BASE + 'index.en.html', 'Who are we? From molecule to mind') if lang == 'en' else (BASE, 'Кто мы? — от молекулы до мысли')
     ld = [{'@context': 'https://schema.org', '@type': 'LearningResource', 'name': t, 'description': desc, 'url': canon(i, lang), 'inLanguage': lang,
            'learningResourceType': 'interactive 3D model' if lang == 'en' else 'интерактивная 3D-модель', 'isAccessibleForFree': True,
-           'about': trsec(SEC_NAME.get(i, ''), lang), 'publisher': PUBLISHER, **({'image': og_img(i, lang)} if og_img(i, lang) else {}), 'isPartOf': {'@type': 'WebApplication', 'name': atlas, 'url': home_url}},
+           'about': trsec(SEC_NAME.get(i, ''), lang), 'publisher': {**PUBLISHER, 'name': 'Who are we? 3D human atlas'} if lang == 'en' else PUBLISHER, **({'image': og_img(i, lang)} if og_img(i, lang) else {}), 'isPartOf': {'@type': 'WebApplication', 'name': atlas, 'url': home_url}},
           {'@context': 'https://schema.org', '@type': 'BreadcrumbList', 'itemListElement': [
            {'@type': 'ListItem', 'position': 1, 'name': atlas, 'item': home_url}, {'@type': 'ListItem', 'position': 2, 'name': t, 'item': canon(i, lang)}]}]
     return '<script type="application/ld+json">' + json.dumps(ld, ensure_ascii=False).replace('</', '<\\/') + '</script>\n'
@@ -398,7 +398,7 @@ LMF = os.path.join(ROOT, 'data', 'lastmod.json')
 LM = json.load(open(LMF, encoding='utf8')) if os.path.exists(LMF) else {}
 def lastmod(url, doc, i=None, lang='ru'):
     import hashlib
-    h = hashlib.sha1(re.sub(r'app\d+', 'app', doc).encode())
+    h = hashlib.sha1(re.sub(r'app\d+', 'app', re.sub(r'<details class="alltopics">.*?</details>', '', doc, flags=re.S)).encode())   # без общего списка тем: новая тема не сдвигает дату у всех
     if i:
         sf = os.path.join(OUT, APP, *(['en'] if lang == 'en' else []), 's', i + '.js')
         if os.path.exists(sf): h.update(re.sub(rb'app\d+', b'app', open(sf, 'rb').read()))
