@@ -10021,7 +10021,7 @@ function activate(id) {
   $('#kicker').textContent = cur.kicker; $('#title').textContent = cur.title; $('#lede').textContent = cur.lede;
   consoleEl.innerHTML = ''; cur.ui(consoleEl);
   notesEl.innerHTML = cur.notes;
-  labelsEl.classList.toggle('bg', !!cur.labelBg);   // сцена с густой геометрией просит подложку под подписи
+  labelsEl.classList.toggle('bg', cur.labelBg !== false);   // подложка под подписями — по умолчанию у всех сцен (сцена может отключить: labelBg: false)
   labelsEl.innerHTML = ''; labelEls = cur.labels.map((l) => { const e = h('div', { class: 'lbl' }, l.text); if (l.color) e.style.color = l.color; labelsEl.append(e); return e; });
   scopeEl.hidden = !cur.drawScope;
   accentSet(cur.accent);
