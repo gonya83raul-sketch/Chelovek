@@ -2810,7 +2810,7 @@ function makeGlia() {
 
   /* ---------- астроциты и ГЭБ ---------- */
   const astroMat = mat('astro', { emissive: 0x0a2a26, emissiveIntensity: 1 });
-  const footMat = mat('astro', { transparent: true, opacity: 0.85, side: THREE.DoubleSide, emissive: 0x0a2a26, emissiveIntensity: 1 });
+  const footMat = mat('astro', { transparent: true, opacity: 0.45, depthWrite: false, side: THREE.DoubleSide, emissive: 0x0a2a26, emissiveIntensity: 1 });
   const astroArr = [], feet = [];
   const ASTRO = [{ p: V3(-3.4, 1.4, 0.9), fx: [-5.6, -4.3, -3.0, -1.7] }, { p: V3(3.9, 0.9, -1.1), fx: [-0.4, 0.9, 2.2, 3.5, 4.8] }, { p: V3(-8.2, 1.0, -1.8), fx: [-9.5, -8.2, -6.9] }, { p: V3(8.4, 1.1, 1.4), fx: [6.1, 7.4, 8.7, 10] }];
   ASTRO.forEach((A, ai) => {
