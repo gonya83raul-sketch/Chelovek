@@ -8,7 +8,7 @@ function makeSexhorm() {
   rnd = mulberry(8701);
   const scene = bioStage({ rim: 0xff6fa8 });
   const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: кадр уходит из-под заголовка и описания (телефон — прежний ракурс)
-  const VIEW = { synth: DK ? [V3(-2.0, 0.65, 0), V3(-2.0, 1.6, 23)] : [V3(1.0, -0.35, 0), V3(1.0, 0.5, 22)], axis: [V3(40.0, -0.2, 0), V3(40.6, 1.1, 20)], preg: [V3(81.3, -1.3, -0.4), V3(81.3, 7.0, 12.0)] };
+  const VIEW = { synth: DK ? [V3(-1.3, 0.65, 0), V3(-1.3, 1.7, 25)] : [V3(1.0, -0.35, 0), V3(1.0, 0.5, 22)], axis: [V3(40.0, -0.2, 0), V3(40.6, 1.1, 20)], preg: [V3(81.3, -1.3, -0.4), V3(81.3, 7.0, 12.0)] };
   const VIEWM = { synth: [V3(1.3, 0.45, 0), V3(1.7, 1.45, 25)], preg: [V3(80.5, -0.6, -0.4), V3(80.5, 8.0, 14.5)], axis: [V3(40.0, 0.6, 0), V3(40.4, 1.3, 13)] }, mqm = window.matchMedia('(max-width:700px)'), VV = (m) => (mqm.matches && VIEWM[m]) || VIEW[m];
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VIEW.synth[1]);
   const controls = makeControls(camera, VIEW.synth[0]); controls.minDistance = 3; controls.maxDistance = 45;
@@ -29,8 +29,8 @@ function makeSexhorm() {
     andro: { m: 'androstenedione', p: V3(2.5, 0.25, 0), name: 'андростендион', col: '#9FB4FF' },
     testo: { m: 'testosterone', p: V3(5.0, 1.45, 0), name: 'тестостерон', col: ANDR },
     estrone: { m: 'estrone', p: V3(5.0, -0.95, 0), name: 'эстрон', col: ESTR },
-    dht: { m: 'dht', p: V3(7.5, 2.15, 0), name: 'дигидротестостерон', col: '#3A6CFF' },
-    e2: { m: 'estradiol', p: V3(7.5, -0.15, 0), name: 'эстрадиол', col: ESTR },
+    dht: { m: 'dht', p: V3(7.7, 2.45, 0), name: 'дигидротестостерон', col: '#3A6CFF' },
+    e2: { m: 'estradiol', p: V3(7.7, -0.35, 0), name: 'эстрадиол', col: ESTR },
   };
   Object.values(NODE).forEach((n) => { n.g = fit(n.m, 0.7); n.g.position.copy(n.p); G1.add(n.g); n.glow = glowNucleus(G1, n.p.clone().add(V3(0, 0, -0.3)), n.col, 0.08, 14); n.glow.core.visible = false; n.lvl = 0.5; });
   const EDGES = [
@@ -44,8 +44,12 @@ function makeSexhorm() {
   drugM.aro.position.set(6.3, -2.05, 0.4); drugM.fin.position.copy(EDGES[7].mid).add(V3(-0.9, 0.55, 0.4));
   Object.values(drugM).forEach((m) => { m.visible = false; G1.add(m); });
   // клетки: яичник — тека (ЛГ) и гранулёза (ФСГ); яичко — клетка Лейдига (ЛГ) и ткани-мишени
-  const plate = (x0, x1, y0, y1, col) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(x1 - x0, y1 - y0), new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.035, depthWrite: false })); m.position.set((x0 + x1) / 2, (y0 + y1) / 2, -0.9); G1.add(m); return m; };
-  const CELLS = { f: [plate(-6.0, 3.3, -2.1, 2.6, '#9FB4FF'), plate(3.5, 8.6, -2.1, 2.6, '#FF6FA8')], m: [plate(-6.0, 6.2, -2.1, 2.6, '#9FB4FF'), plate(6.4, 8.6, 1.2, 3.0, '#3A6CFF'), plate(6.4, 8.6, -1.2, 0.9, '#F2D08A')] };
+  // клетка — скруглённая «подушка» с тонкой мембраной по краю (а не резкий прямоугольник)
+  const plate = (x0, x1, y0, y1, col) => { const w = x1 - x0, h = y1 - y0, r = Math.min(0.7, w / 3, h / 3), sh = new THREE.Shape();
+    sh.moveTo(-w / 2 + r, -h / 2); sh.lineTo(w / 2 - r, -h / 2); sh.quadraticCurveTo(w / 2, -h / 2, w / 2, -h / 2 + r); sh.lineTo(w / 2, h / 2 - r); sh.quadraticCurveTo(w / 2, h / 2, w / 2 - r, h / 2); sh.lineTo(-w / 2 + r, h / 2); sh.quadraticCurveTo(-w / 2, h / 2, -w / 2, h / 2 - r); sh.lineTo(-w / 2, -h / 2 + r); sh.quadraticCurveTo(-w / 2, -h / 2, -w / 2 + r, -h / 2);
+    const m = new THREE.Mesh(new THREE.ShapeGeometry(sh, 12), new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.05, depthWrite: false })); m.position.set((x0 + x1) / 2, (y0 + y1) / 2, -0.9);
+    m.add(new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(sh.getPoints(12)), new THREE.LineBasicMaterial({ color: col, transparent: true, opacity: 0.35 }))); G1.add(m); return m; };
+  const CELLS = { f: [plate(-6.0, 3.3, -2.1, 2.6, '#9FB4FF'), plate(3.5, 8.6, -2.1, 2.6, '#FF6FA8')], m: [plate(-6.0, 6.2, -2.1, 2.6, '#9FB4FF'), plate(6.4, 9.0, 1.4, 3.3, '#3A6CFF'), plate(6.4, 9.0, -1.5, 0.7, '#F2D08A')] };
   const P1 = Array.from({ length: 60 }, () => ({ s: ball(0.06, '#fff', G1), on: false, t: 0, e: null }));
 
   /* ---------- 2. ось гипоталамус — гипофиз — гонады ---------- */
@@ -251,12 +255,12 @@ function makeSexhorm() {
   const L1 = () => st.labels && st.mode === 'synth', L2 = () => st.labels && st.mode === 'axis', L3 = () => st.labels && st.mode === 'preg';
   const labels = [
     ...Object.values(NODE).map((n) => ({ text: n.name, pos: n.p.clone().add(V3(-0.35, -0.82, 0.3)), color: n.col, show: L1 })),
-    ...EDGES.map((e) => { const A = NODE[e.a].p, B = NODE[e.b].p, d = B.clone().sub(A).normalize(), nn = Math.abs(d.x) < 0.2 ? V3(1, 0, 0) : V3(-d.y, d.x, 0).multiplyScalar(d.x > 0 ? 1 : -1); return { text: e.enz, pos: e.mid.clone().addScaledVector(nn, 0.34).add(V3(-0.2, 0, 0.3)), color: e.tag === 'aro' ? ESTR : e.tag === 'fin' ? '#3A6CFF' : '#B8C4D8', show: L1 }; }),
+    ...EDGES.map((e) => { const A = NODE[e.a].p, B = NODE[e.b].p, d = B.clone().sub(A).normalize(), nn = Math.abs(d.x) < 0.2 ? V3(1, 0, 0) : V3(-d.y, d.x, 0).multiplyScalar(d.x > 0 ? 1 : -1); return { text: e.enz, pos: e.mid.clone().addScaledVector(nn, 0.34).add(V3(-0.2, 0, 0.3)), color: e.tag === 'aro' ? ESTR : e.tag === 'fin' ? '#3A6CFF' : '#B8C4D8', show: () => L1() && DK }; }),
     { text: 'общий путь — как в коре надпочечников', pos: V3(-5.4, 2.35, 0.3), color: '#8A90A8', show: L1 },
     { text: 'клетка теки · ЛГ', pos: V3(-5.7, -1.85, 0), color: '#9FB4FF', show: () => L1() && st.sex === 'f' },
     { text: 'клетка гранулёзы · ФСГ', pos: V3(3.7, -1.85, 0), color: '#FF6FA8', show: () => L1() && st.sex === 'f' },
     { text: 'клетка Лейдига · ЛГ', pos: V3(-5.7, -1.85, 0), color: '#9FB4FF', show: () => L1() && st.sex === 'm' },
-    { text: 'простата, кожа', pos: V3(6.5, 2.85, 0), color: '#3A6CFF', show: () => L1() && st.sex === 'm' },
+    { text: 'простата, кожа', pos: V3(6.5, 3.15, 0), color: '#3A6CFF', show: () => L1() && st.sex === 'm' },
     { text: 'жировая ткань', pos: V3(6.5, -1.05, 0), color: '#F2D08A', show: () => L1() && st.sex === 'm' },
     { text: 'летрозол', pos: drugM.aro.position.clone().add(V3(0.6, -0.1, 0.3)), color: '#FF6A5A', show: () => L1() && st.aro },
     { text: 'финастерид', pos: drugM.fin.position.clone().add(V3(-0.3, 0.6, 0.3)), color: '#FF6A5A', show: () => L1() && st.fin },
