@@ -20,7 +20,7 @@ function makeRepro(initMode) {
   __set_rnd(mulberry(2121));
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x08060a); scene.environment = envTex;
   labLights(scene, 0xf2b0c8);
-  const VIEW = { female: flyTarget(V3(0, -0.4, 0), V3(1.5, 0.6, 4.6)), male: flyTarget(V3(0, -0.4, 0.1), V3(2.2, 0.3, 2.6)), cycle: flyTarget(V3(-0.08, 0.06, 0), V3(0.25, 0.3, 2.7)), dev: flyTarget(V3(0.1, -0.05, 0), V3(-0.9, 0.5, 2.8)) };
+  const VIEW = { female: flyTarget(V3(0, -0.3, 0), V3(1.38, 0.62, 4.2)), male: flyTarget(V3(0, -0.4, 0.1), V3(2.2, 0.3, 2.6)), cycle: flyTarget(V3(-0.08, 0.06, 0), V3(0.25, 0.3, 2.7)), dev: flyTarget(V3(0.1, -0.05, 0), V3(-0.9, 0.5, 2.8)) };
   const V0 = VIEW[initMode || 'female']; const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(V0.pos);
   const controls = makeControls(camera, V0.target); controls.minDistance = 0.8; controls.maxDistance = 14;
   bodyShell(scene, { rim: 0.18, arms: false });
@@ -211,7 +211,7 @@ function makeRepro(initMode) {
   }
   function stats() { return st.mode === 'cycle' ? [['День цикла', Math.floor(st.day), 'из 28']] : st.mode === 'dev' ? [['Сутки', Math.max(0, Math.floor(st.devDay || 0)), ''], ['Клеток', (st.devDay || 0) < 1 ? 1 : (st.devDay || 0) < 4.5 ? Math.min(32, 2 ** Math.floor(1 + (st.devDay - 1) * 1.3)) : '≈100', '']] : [['Хромосом в клетке', 46, ''], ['В половой клетке', 23, '']]; }
   const self = {
-    scene, camera, controls, update: update2, ui, onKey, stats, labels, drawScope, accent: '#F2B0C8',
+    mobZoom: initMode === 'cycle' ? 0.72 : 0.6, scene, camera, controls, update: update2, ui, onKey, stats, labels, drawScope, accent: '#F2B0C8',
     kicker: 'Тело · размножение', title: 'Размножение и развитие',
     lede: 'Как устроены половые системы, как гормоны гипофиза и яичников задают 28-дневный цикл и что происходит с новой жизнью в первую неделю.',
     notes: `

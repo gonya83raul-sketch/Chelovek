@@ -1,4 +1,4 @@
-import { Sparks, THREE, V3, __set_rnd, bodyShell, displaceGeo, ell3, envTex, flowTubeMat, flyStep, flyTarget, glowNucleus, group, infoBox, labLights, makeControls, mulberry, organMat, pickOn, randUnit, rnd, scopeShow, seg, toggle } from '../core.js';
+import { Sparks, THREE, V3, __set_rnd, bodyShell, brainShell, displaceGeo, ell3, envTex, flowTubeMat, flyStep, flyTarget, glowNucleus, group, infoBox, labLights, makeControls, mulberry, organMat, pickOn, randUnit, rnd, scopeShow, seg, taperTube, toggle } from '../core.js';
 
 
 /* =========================================================
@@ -42,20 +42,37 @@ function makeShealth() {
   __set_rnd(mulberry(2525));
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x08060a); scene.environment = envTex;
   labLights(scene, 0xc77dff);
-  const VIEW = { drive: flyTarget(V3(0, 2.2, 0), V3(2.2, 2.8, 8.5)), sti: flyTarget(V3(30, -0.6, 0), V3(30, 0.8, 8.4)), protect: flyTarget(V3(60, -0.9, 0), V3(60.4, 1.6, 12.4)) };
+  const MOB = matchMedia('(max-width:700px)').matches;
+  // выноска: увеличенный мозг (координаты brainKit: x — вперёд, z — вбок к зрителю) справа от тела; на телефоне — над головой
+  const CB = MOB ? V3(0.15, 5.95, 0) : V3(2.35, 3.15, 0), KB = MOB ? 0.68 : 0.6;
+  const VIEW = { drive: MOB ? flyTarget(V3(0.15, 3.75, 0), V3(0.9, 4.35, 13.6)) : flyTarget(V3(1.0, 2.05, 0), V3(1.7, 2.7, 10.2)), sti: flyTarget(V3(30, -0.6, 0), V3(30, 0.8, 8.4)), protect: flyTarget(V3(60, -0.9, 0), V3(60.4, 1.6, 12.4)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 140); camera.position.copy(VIEW.drive.pos);
   const controls = makeControls(camera, VIEW.drive.target); controls.minDistance = 1.5; controls.maxDistance = 22;
   /* ---------- влечение ---------- */
   const dr = new THREE.Group(); scene.add(dr);
   bodyShell(dr, { rim: 0.18 });
-  dr.add(new THREE.Mesh(ell3(0.34, 0.28, 0.4, V3(0, 4.25, 0)), new THREE.MeshPhysicalMaterial({ color: 0xe0b8c8, roughness: 0.6, transparent: true, opacity: 0.12, depthWrite: false })));
-  const BN = Object.fromEntries(SH_BRAIN.map((b) => [b.id, { ...b, g: glowNucleus(dr, b.p, b.color, b.id === 'gon' ? 0.07 : 0.04, 7) }]));
-  const pickBrain = SH_BRAIN.map((b) => { const m = new THREE.Mesh(new THREE.SphereGeometry(b.id === 'gon' ? 0.15 : 0.07, 12, 10), new THREE.MeshBasicMaterial({ visible: false })); m.position.copy(b.p); m.userData.pick = b.id; dr.add(m); return m; });
+  dr.add(new THREE.Mesh(ell3(0.34, 0.28, 0.4, V3(0, 4.25, 0)), new THREE.MeshPhysicalMaterial({ color: 0xe0b8c8, roughness: 0.6, transparent: true, opacity: 0.22, depthWrite: false })));
+  const zb = new THREE.Group(); zb.position.copy(CB); zb.scale.setScalar(KB); dr.add(zb);
+  brainShell(zb, { opacity: 0.04, rim: 0.6 });
+  // где лежат структуры в увеличенном мозге (покрышка — в среднем мозге, миндалина — в височной доле, прилежащее ядро — под головкой хвостатого)
+  const QB = { poa: V3(0.36, -0.44, 0.06), vta: V3(0.02, -0.6, 0.08), amy: V3(0.5, -0.6, 0.52), pfc: V3(1.25, 0.32, 0.3) };
+  const QW = (q) => q.clone().multiplyScalar(KB).add(CB);   // точка выноски в мире
+  const BN = Object.fromEntries(SH_BRAIN.map((b) => [b.id, { ...b, g: glowNucleus(QB[b.id] ? zb : dr, QB[b.id] || b.p, b.color, b.id === 'gon' ? 0.07 : 0.055, 7) }]));
+  const pickBrain = SH_BRAIN.map((b) => { const m = new THREE.Mesh(new THREE.SphereGeometry(b.id === 'gon' ? 0.15 : 0.13, 12, 10), new THREE.MeshBasicMaterial({ visible: false })); m.position.copy(QB[b.id] || b.p); m.userData.pick = b.id; (QB[b.id] ? zb : dr).add(m); return m; });
+  const NAC = V3(0.68, -0.26, 0.16), PITQ = V3(0.42, -0.84, 0);
+  glowNucleus(zb, NAC, '#F2C14E', 0.04, 6);
+  zb.add(new THREE.Mesh(ell3(0.07, 0.06, 0.07, PITQ), organMat('#C77DFF', 0.5, { emissiveIntensity: 0.4 })));
+  zb.add(new THREE.Mesh(taperTube(new THREE.CatmullRomCurve3([V3(0.33, -0.55, 0), V3(0.37, -0.68, 0), V3(0.41, -0.79, 0)]), (u) => 0.03 - 0.012 * u, 12, 8), organMat('#C77DFF', 0.5, { transparent: true, opacity: 0.6 })));
+  // в голове тела — маленькие гипоталамус и гипофиз, от головы к выноске — две тонкие линии
+  glowNucleus(dr, SH_BRAIN[0].p, '#C77DFF', 0.03, 6);
+  { const lm = new THREE.LineBasicMaterial({ color: 0xc8b0d8, transparent: true, opacity: 0.28 });
+    const H = V3(0, 4.25, 0), ends = MOB ? [V3(-1.1, 0, 0), V3(1.1, 0, 0)] : [V3(-0.6, 0.9, 0), V3(-0.4, -1.9, 0)];
+    ends.forEach((e) => { const a = MOB ? H.clone().add(V3(Math.sign(e.x) * 0.3, 0.25, 0)) : H.clone().add(V3(0.3, Math.sign(e.y) * 0.25, 0)); dr.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([a, QW(e)]), lm)); }); }
   [1, -1].forEach((s) => { const g = ell3(0.08, 0.05, 0.05); g.rotateZ(0.3 * s); g.translate(0.42 * s, 1.38, -0.33); dr.add(new THREE.Mesh(g, organMat('#F2C14E', 0.45, { transparent: true, opacity: 0.6 }))); });   // надпочечники — источник кортизола
   const PIT = V3(0, 3.98, 0.1);
   const flows = [];
-  const mkF = (pts, col) => { const c = new THREE.CatmullRomCurve3(pts); const f = flowTubeMat(col, 0.5, 2); f.uniforms.uOn.value = 0.4; dr.add(new THREE.Mesh(new THREE.TubeGeometry(c, 40, 0.012, 6), f)); flows.push(f); return { c, f }; };
-  const fDA = mkF([BN.vta.p, V3(0.02, 4.1, 0.1), V3(0.03, 4.25, 0.25), BN.pfc.p], '#F2C14E');
+  const mkF = (pts, col, par = dr, r = 0.012) => { const c = new THREE.CatmullRomCurve3(pts); const f = flowTubeMat(col, 0.5, 2); f.uniforms.uOn.value = 0.4; par.add(new THREE.Mesh(new THREE.TubeGeometry(c, 40, r, 6), f)); flows.push(f); return { c, f }; };
+  const fDA = mkF([QB.vta, V3(0.32, -0.46, 0.12), NAC, V3(1.0, 0.0, 0.26), QB.pfc], '#F2C14E', zb, 0.02);
   const fLH = mkF([PIT, V3(0.1, 3.5, 0.1), V3(0.12, 2.0, 0.0), V3(0.08, 0.6, 0.05), BN.gon.p], '#C77DFF');
   const fT = mkF([BN.gon.p, V3(-0.08, 0.6, 0.0), V3(-0.12, 2.0, -0.05), V3(-0.1, 3.5, 0.05), BN.poa.p], '#FF8AB0');
   /* ---------- возбудители ИППП ---------- */
@@ -102,8 +119,11 @@ function makeShealth() {
   }
   function drawScope(ctx, w, hgt) {
     ctx.clearRect(0, 0, w, hgt); const on = st.mode === 'drive'; scopeShow(on); if (!on) return;
-    const bw = (w - 20) / SH_LEV.length; ctx.font = '500 9px JetBrains Mono, monospace';
-    SH_LEV.forEach(([k, n, c], i) => { const v = st.lev[k], bh = v * (hgt - 34); ctx.fillStyle = c; ctx.globalAlpha = 0.85; ctx.fillRect(12 + i * bw, hgt - 16 - bh, bw * 0.62, bh); ctx.globalAlpha = 1; ctx.fillStyle = 'rgba(255,255,255,.6)'; ctx.save(); ctx.translate(12 + i * bw + bw * 0.3, hgt - 4); ctx.fillText(n.slice(0, 7), -16, 0); ctx.restore(); });
+    const bw = (w - 20) / SH_LEV.length; ctx.font = '500 9px JetBrains Mono, monospace'; ctx.textAlign = 'center';
+    // подпись под столбцом целиком: не влезает — в две строки (по пробелу или с переносом посередине)
+    const wrap = (n) => { if (ctx.measureText(n).width <= bw - 2) return [n]; const sp = n.indexOf(' '); if (sp > 0) return [n.slice(0, sp), n.slice(sp + 1)]; const V = /[aeiouy\u0430\u0435\u0451\u0438\u043e\u0443\u044b\u044d\u044e\u044f]/i, c0 = Math.ceil(n.length / 2); let m = c0; for (let d = 0; d <= 3; d++) { if ([c0 - d, c0 + d].some((j) => { if (j > 1 && j < n.length - 2 && !V.test(n[j]) && V.test(n[j + 1])) { m = j; return true; } return false; })) break; } return [n.slice(0, m) + '-', n.slice(m)]; };
+    SH_LEV.forEach(([k, n, c], i) => { const v = st.lev[k], bh = v * (hgt - 46), cx = 12 + i * bw + bw * 0.31; ctx.fillStyle = c; ctx.globalAlpha = 0.85; ctx.fillRect(12 + i * bw, hgt - 28 - bh, bw * 0.62, bh); ctx.globalAlpha = 1; ctx.fillStyle = 'rgba(255,255,255,.66)'; wrap(n).forEach((ln, j) => ctx.fillText(ln, cx, hgt - 17 + j * 10)); });
+    ctx.textAlign = 'left';
     ctx.fillStyle = '#ffd0e0'; ctx.font = '500 10px JetBrains Mono, monospace'; ctx.fillText('neurotransmitters and hormones', 10, 12);
   }
   const TXT = {
@@ -112,7 +132,9 @@ function makeShealth() {
     protect: '<b>Contraception</b> means ways to prevent an unwanted pregnancy. The bar height shows how many women out of 100 become pregnant within a year with typical (not perfect) use of the method. A green ring means the method also protects against STIs: of all methods, only the <b>condom</b> does this. It is best to discuss the choice of method with a gynecologist.<br><br><b>Consent.</b> Any sexual contact is possible only with the voluntary, informed consent of both partners, which can be withdrawn at any moment. Everyone has the right to say “no”. The law protects minors: in Russia the age of consent is 16.',
   };
   const labels = [
-    ...SH_BRAIN.map((b) => ({ text: b.name, pos: b.p.clone().add(V3(0.2, b.id === 'vta' ? -0.08 : b.id === 'amy' ? -0.2 : 0.04, 0.15)), color: b.color, show: () => st.labels && st.mode === 'drive' })),
+    ...SH_BRAIN.map((b) => ({ text: b.name, pos: QB[b.id] ? QW(QB[b.id].clone().add(V3(0.08, b.id === 'vta' ? -0.16 : b.id === 'amy' ? -0.14 : 0.06, 0.1))) : b.p.clone().add(V3(0.2, 0.04, 0.15)), color: b.color, left: b.id === 'vta', show: () => st.labels && st.mode === 'drive' })),
+    { text: 'Nucleus accumbens', pos: QW(NAC.clone().add(V3(0.06, 0.08, 0.1))), color: '#F2C14E', show: () => st.labels && st.mode === 'drive' && !MOB },
+    { text: 'Pituitary', pos: QW(PITQ.clone().add(V3(0.08, -0.06, 0.05))), color: '#C77DFF', show: () => st.labels && st.mode === 'drive' },
     ...SH_STI.map((p, i) => ({ text: p.name, pos: V3(0, 0, 0), color: p.color, show: () => st.labels && st.mode === 'sti', _i: i })),
     ...SH_CONTRA.map((c, i) => ({ text: c.name + ' · ' + c.typ + '%', pos: V3(60 - 3.2 + i * 0.8, -1.05 + Math.max(0.05, c.typ / 85 * 3.2), 0.1), color: c.color, show: () => st.labels && st.mode === 'protect' })),
   ];

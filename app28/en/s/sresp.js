@@ -1,4 +1,4 @@
-import { BODY, Sparks, THREE, V3, __set_rnd, bodyShell, ell3, envTex, flowTubeMat, flyStep, flyTarget, glowNucleus, group, infoBox, labLights, makeControls, mergeGeometries, mulberry, organMat, randUnit, rnd, scopeShow, seg, smooth, taperTube, toggle, tube } from '../core.js';
+import { BODY, Sparks, THREE, V3, __set_rnd, bodyShell, displaceGeo, ell3, envTex, flowTubeMat, flyStep, flyTarget, glowNucleus, group, infoBox, labLights, makeControls, mergeGeometries, mulberry, organMat, randUnit, rnd, scopeShow, seg, smooth, taperTube, toggle, tube } from '../core.js';
 
 
 /* =========================================================
@@ -14,7 +14,7 @@ function makeSresp() {
   __set_rnd(mulberry(2424));
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x08060a); scene.environment = envTex;
   labLights(scene, 0xff8ab0);
-  const HOME = flyTarget(V3(0, 1.0, 0), V3(-3.2, 2.2, 11.6));
+  const HOME = matchMedia('(max-width:700px)').matches ? flyTarget(V3(0.75, 2.1, 0), V3(-2.15, 3.15, 10.4)) : flyTarget(V3(0.05, 2.1, 0), V3(-2.85, 3.15, 10.4));   // телефон: тело левее — подписи справа помещаются
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(HOME.pos);
   const controls = makeControls(camera, HOME.target); controls.minDistance = 2; controls.maxDistance = 20;
   bodyShell(scene, { rim: 0.2 });
@@ -25,10 +25,14 @@ function makeSresp() {
   // спинной мозг и центры
   // спинной мозг взрослого кончается на уровне L1–L2 (конус: сегменты S2–S4), ниже — конский хвост из корешков
   const CORD = new THREE.CatmullRomCurve3([V3(0, 3.9, -0.1), V3(0, 3.3, -0.4), V3(0, 2.2, -0.5), V3(0, 1.45, -0.45), V3(0, 1.05, -0.42)]);
-  scene.add(new THREE.Mesh(taperTube(CORD, (u) => (u < 0.9 ? 0.035 : 0.035 * (1 - (u - 0.9) * 6)), 60, 10), organMat('#F2E6C8', 0.45)));
+  // толщина: шейное (u≈0.15) и поясничное (u≈0.8) утолщения, к концу — конус
+  scene.add(new THREE.Mesh(taperTube(CORD, (u) => (0.045 + 0.012 * Math.exp(-(((u - 0.15) / 0.08) ** 2)) + 0.01 * Math.exp(-(((u - 0.8) / 0.06) ** 2))) * (u < 0.9 ? 1 : 1 - (u - 0.9) * 6), 80, 12), organMat('#F2E6C8', 0.45)));
   scene.add(new THREE.Mesh(mergeGeometries([-2, -1, 0, 1, 2].map((k) => tube([V3(0.006 * k, 1.1, -0.42), V3(0.012 * k, 0.7, -0.41), V3(0.03 * k, 0.25, -0.36)], 0.006, 16, 4))), organMat('#F2E6C8', 0.45)));
   const SYM = V3(0, 1.45, -0.45), PARA = V3(0, 1.1, -0.425);
-  const gSym = glowNucleus(scene, SYM, '#FF6A5A', 0.04, 7), gPara = glowNucleus(scene, PARA, '#5CC48A', 0.04, 7);
+  const gSym = glowNucleus(scene, SYM, '#FF6A5A', 0.03, 6), gPara = glowNucleus(scene, PARA, '#5CC48A', 0.03, 6);
+  // сегменты-центры — светящиеся участки спинного мозга нужной длины (Th10–L2 — над поясничным утолщением, S2–S4 — в мозговом конусе)
+  const segM = (col, u0, u1) => { const pts = Array.from({ length: 9 }, (_, k) => CORD.getPointAt(u0 + (u1 - u0) * k / 8)); const m = new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.5, depthWrite: false, blending: THREE.AdditiveBlending }); scene.add(new THREE.Mesh(taperTube(new THREE.CatmullRomCurve3(pts), () => 0.068, 20, 12), m)); return m; };
+  const sSym = segM('#FF6A5A', 0.72, 0.87), sPara = segM('#5CC48A', 0.91, 0.975);
   const PEL = V3(0, 0.0, 0.08);
   const nSym = new THREE.CatmullRomCurve3([SYM, SYM.clone().add(V3(0.15, -0.3, 0.2)), V3(0.12, 0.35, 0.05), PEL]);
   const nPara = new THREE.CatmullRomCurve3([PARA, V3(0.02, 0.7, -0.41), V3(0.05, 0.28, -0.34), V3(0.1, 0.05, -0.1), PEL]);   // по конскому хвосту, из крестца — тазовые нервы
@@ -39,10 +43,18 @@ function makeSresp() {
   const pelvis = new THREE.Mesh(ell3(0.32, 0.22, 0.24), new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xe88a9a).multiplyScalar(0.4), roughness: 0.4, transparent: true, opacity: 0.45, depthWrite: false, emissive: 0xff4a6a, emissiveIntensity: 0.05 })); pelvis.position.copy(PEL); scene.add(pelvis);
   const PEL_C0 = pelvis.material.color.clone(), PEL_C1 = new THREE.Color(0xff3a6a).multiplyScalar(0.6);   // прилив крови: орган набухает и краснеет
   const gPel = glowNucleus(scene, PEL, '#FF5A7A', 0.08, 6);
-  const heart = new THREE.Mesh(ell3(0.25, 0.3, 0.22), new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xc84a50).multiplyScalar(0.5), roughness: 0.4, transparent: true, opacity: 0.7, emissive: 0x501010, emissiveIntensity: 0.3 })); heart.position.copy(BODY.heart); heart.rotation.z = 0.4; scene.add(heart);   // геометрия в нуле — пульсирует на месте
+  const heart = new THREE.Mesh(displaceGeo(new THREE.SphereGeometry(1, 36, 28), (v) => { const k = v.y < 0 ? 1 + 0.55 * v.y : 1; v.set(v.x * 0.27 * k, v.y * 0.34, v.z * 0.24 * k); }), new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xc84a50).multiplyScalar(0.5), roughness: 0.4, transparent: true, opacity: 0.7, emissive: 0x501010, emissiveIntensity: 0.3 })); heart.position.copy(BODY.heart).add(V3(0.06, 0, 0)); heart.rotation.z = 0.55; scene.add(heart);   // геометрия в нуле — пульсирует на месте
   const ART = new THREE.CatmullRomCurve3([BODY.heart, V3(0.1, 2.5, -0.2), V3(0.08, 1.4, -0.3), V3(0.15, 0.4, -0.15), PEL]);
   const fArt = mkN(ART, '#E0605A');
-  const lungs = [1, -1].map((s) => { const m = new THREE.Mesh(ell3(0.4, 0.66, 0.38), new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xe89aa8).multiplyScalar(0.35), roughness: 0.6, transparent: true, opacity: 0.16, depthWrite: false })); m.position.set(0.5 * s, 2.28, -0.04); scene.add(m); return m; });
+  // лёгкие — та же форма, что в теме «Дыхание»: узкая верхушка, плоская медиальная сторона, основание над диафрагмой, сердечная вырезка слева
+  const lungs = [1, -1].map((s) => { const r = s < 0 ? V3(0.45, 0.66, 0.44) : V3(0.4, 0.72, 0.42);
+    const g = displaceGeo(new THREE.SphereGeometry(1, 64, 48), (v) => { let x = v.x, y = v.y, z = v.z;
+      if (y > 0) { const k = 1 - 0.45 * y ** 2.2; x *= k; z *= k; }
+      if (y < -0.6) y = -0.6 + (y + 0.6) * 0.35 + 0.18 * (1 - x * x - z * z) * 0.3;
+      if (x * s < -0.3) x = s * (-0.3 + (x * s + 0.3) * 0.35);
+      if (s > 0 && x < -0.1 && z > 0.1 && y < 0.1 && y > -0.75) x += 0.25 * smooth(0.1, 0.6, z) * smooth(-0.1, -0.5, x);
+      v.set(x * r.x, y * r.y, z * r.z); });
+    const m = new THREE.Mesh(g, new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xe89aa8).multiplyScalar(0.45), roughness: 0.6, sheen: 0.4, transparent: true, opacity: 0.2, depthWrite: false })); m.position.set(0.5 * s, 2.25, -0.04); scene.add(m); return m; });
   const fx = new Sparks(1600, 0.05); scene.add(fx.obj);
   /* ---------- модель цикла ---------- */
   const TOT = SR_PH.reduce((a, p) => a + p.d, 0);
@@ -69,7 +81,7 @@ function makeSresp() {
     // нервы и центры
     fPara.uniforms.uOn.value = 0.15 + 0.85 * (ph <= 1 ? L : 0.2); fSym.uniforms.uOn.value = 0.15 + 0.85 * (isOrg ? 1 : 0.1); fDesc.uniforms.uOn.value = 0.2 + 0.7 * L;
     [fPara, fSym, fDesc, fArt].forEach((f) => { f.uniforms.uTime.value = t; }); fArt.uniforms.uOn.value = 0.2 + 0.8 * L; fArt.uniforms.uSpeed.value = 0.3 + hr / 150;
-    gPara.spr.material.opacity = 0.25 + 0.75 * (ph <= 1 ? L : 0.15); gSym.spr.material.opacity = 0.25 + 0.75 * (isOrg ? 1 : 0.1);
+    gPara.spr.material.opacity = 0.25 + 0.75 * (ph <= 1 ? L : 0.15); gSym.spr.material.opacity = 0.25 + 0.75 * (isOrg ? 1 : 0.1); sPara.opacity = 0.2 + 0.6 * (ph <= 1 ? L : 0.15); sSym.opacity = 0.2 + 0.6 * (isOrg ? 1 : 0.1);
     gLimb.spr.material.opacity = 0.3 + 0.7 * L; gCtx.spr.material.opacity = 0.3 + 0.4 * (ph === 0 ? 1 : 0.5); gHyp.spr.material.opacity = 0.3 + 0.7 * (isOrg || ph === 3 ? 1 : 0.3);
     gPel.spr.material.opacity = 0.2 + 0.8 * L; gPel.spr.scale.setScalar(0.08 * (5 + 6 * L) * (isOrg ? 1 + 0.15 * Math.max(0, Math.sin(t * Math.PI * 2 / 0.8)) : 1)); pelvis.material.emissiveIntensity = 0.05 + 0.5 * L; pelvis.scale.setScalar(1 + 0.25 * L); pelvis.material.color.copy(PEL_C0).lerp(PEL_C1, L);
     heart.scale.setScalar(1 + 0.06 * Math.max(0, Math.sin(t * Math.PI * 2 * hr / 60)) ** 6); lungs.forEach((m) => m.scale.setScalar(1 + 0.04 * Math.sin(t * Math.PI * 2 * rr / 60)));
@@ -91,7 +103,7 @@ function makeSresp() {
   const TXT_MJ = '<b>The sexual response cycle</b> is the sequence of physiological changes described by William Masters and Virginia Johnson (1966): excitement → plateau → orgasm → resolution. It is controlled by the brain (cortex, limbic system, hypothalamus) and the autonomic nervous system: the <b>parasympathetic</b> division (green, sacral) is responsible for blood inflow, and the <b>sympathetic</b> division (red, thoracolumbar) for orgasm.';
   const TXT_B = '<b>Rosemary Basson’s circular model</b> (2000). For many people, especially in long-term relationships, desire does not always come first: a person may start from a willingness to be intimate, and desire appears only in response to stimuli and arousal. Satisfaction (emotional and physical) sustains the motivation for the next cycle. The model complements Masters and Johnson’s linear scheme.';
   const labels = [
-    { text: 'cortex and limbic system', pos: V3(0.35, 4.5, 0.1), color: '#FF8AB0', show: () => st.labels },
+    { text: 'cortex and limbic system', pos: V3(0.35, 4.42, 0.1), color: '#FF8AB0', show: () => st.labels },
     { text: 'hypothalamus and pituitary', pos: V3(0.3, 4.0, 0.15), color: '#C77DFF', show: () => st.labels },
     { text: 'sympathetic center T10–L2', pos: SYM.clone().add(V3(0.2, 0.05, 0)), color: '#FF6A5A', show: () => st.labels },
     { text: 'parasympathetic center S2–S4', pos: PARA.clone().add(V3(0.2, -0.05, 0)), color: '#5CC48A', show: () => st.labels },

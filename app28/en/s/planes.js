@@ -52,11 +52,12 @@ function makePlanes() {
 
   /* ---------- 1. плоскости ---------- */
   const PL = new THREE.Group(); G.add(PL);
-  const planeMesh = (w, h, col) => { const g = new THREE.Group(); const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.07, side: THREE.DoubleSide, depthWrite: false })); const e = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.PlaneGeometry(w, h)), new THREE.LineBasicMaterial({ color: col, transparent: true, opacity: 0.8 })); g.add(m, e); PL.add(g); return g; };
-  const PLN = { sag: planeMesh(5.5, 18.6, '#7FE0A0'), front: planeMesh(5.5, 18.6, '#7FD6FF'), trans: planeMesh(5.5, 4.5, '#FF8AB0') };
+  const planeMesh = (w, h, col) => { const g = new THREE.Group(); const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.1, side: THREE.DoubleSide, depthWrite: false })); const e = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.PlaneGeometry(w, h)), new THREE.LineBasicMaterial({ color: col, transparent: true, opacity: 0.8 })); g.add(m, e); PL.add(g); return g; };
+  const PLN = { sag: planeMesh(5.5, 18.6, '#7FE0A0'), front: planeMesh(5.5, 18.6, '#9A8CFF'), trans: planeMesh(5.5, 4.5, '#FF8AB0') };
   PLN.sag.rotation.y = Math.PI / 2; PLN.sag.position.set(0, 9.1, 0.2); PLN.front.position.set(0, 9.1, 0.2); PLN.trans.rotation.x = -Math.PI / 2; PLN.trans.position.set(0, 12, 0.2);
   const PRANGE = { all: [0, 0, 0], sag: [-1.4, 1.4, 0.03], front: [-0.7, 0.9, 0.2], trans: [1.0, 17.0, 12.6] };
-  const PVIEW = { all: [V3(-2.0, 5.3, 0), V3(18, 11, 41)], sag: [V3(-1.6, 4.2, 0), V3(40, 7, 22)], front: [V3(-2.0, 4.2, 0), V3(10, 8, 46)], trans: [V3(-1.4, 5.0, 0), V3(10, 30, 28)] };
+  // «все три» — ракурс 3/4 сверху (азимут ~35°, возвышение ~20°): каждая плоскость читается как плоскость, а не ребро
+  const PVIEW = { all: [V3(0, 8.7, 0), V3(24.5, 24.0, 35.0)], sag: [V3(0, 8.7, 0), V3(38, 13, 25)], front: [V3(0, 8.7, 0), V3(13, 13, 44)], trans: [V3(0, 9.4, 0), V3(15, 34, 31)] };
 
   /* ---------- 2. направления ---------- */
   const DG = new THREE.Group(); G.add(DG);
@@ -116,7 +117,7 @@ function makePlanes() {
   function flyFor() {
     let v = VV(st.mode);
     if (st.mode === 'planes' && !mqm.matches) v = PVIEW[st.plane];
-    if (st.mode === 'planes' && mqm.matches) v = [V3(0, 8.6, 0), PVIEW[st.plane][1].clone().setX(PVIEW[st.plane][1].x * 0.62).setZ(PVIEW[st.plane][1].z * 0.62)];
+    if (st.mode === 'planes' && mqm.matches) v = [V3(0, 10.2, 0), PVIEW[st.plane][1].clone().sub(PVIEW[st.plane][0]).multiplyScalar(0.98).add(V3(0, 10.2, 0))];
     if (st.mode === 'cav' && (st.cav === 'all' || st.cav === 'dorsal')) v = mqm.matches ? [V3(0, 12.0, -1.5), V3(24, 12.5, 4)] : VIEW.cavSide;
     if (st.mode === 'cav' && st.cav === 'reg') v = mqm.matches ? VIEWM.reg : [V3(-1.7, 8.9, 0), V3(-0.4, 9.8, 14)];
     if (st.mode === 'dirs') v = mqm.matches ? [DIRS[st.dir].view[0].clone().setX(0).setY(Math.max(8.6, DIRS[st.dir].view[0].y)), DIRS[st.dir].view[1].clone().multiplyScalar(0.75)] : [DIRS[st.dir].view[0].clone().add(V3(-0.9, 0, 0)), DIRS[st.dir].view[1]];
@@ -209,7 +210,7 @@ function makePlanes() {
   const labels = [
     { text: 'median (midsagittal) plane', pos: () => V3(st.plane === 'all' ? 0.03 : st.pos, 18.0, 0.2), color: '#7FE0A0', show: () => L1() && (st.plane === 'all' || (st.plane === 'sag' && Math.abs(st.pos - 0.03) < 0.1)) },
     { text: 'parasagittal plane', pos: () => V3(st.pos, 18.0, 0.2), color: '#7FE0A0', show: () => L1() && st.plane === 'sag' && Math.abs(st.pos - 0.03) >= 0.1 },
-    { text: 'frontal (coronal)', pos: () => V3(2.4, 18.0, st.plane === 'all' ? 0.2 : st.pos), color: '#7FD6FF', show: () => L1() && (st.plane === 'front' || st.plane === 'all') },
+    { text: 'frontal (coronal)', pos: () => V3(2.4, 18.0, st.plane === 'all' ? 0.2 : st.pos), color: '#9A8CFF', show: () => L1() && (st.plane === 'front' || st.plane === 'all') },
     { text: 'transverse (axial)', pos: () => V3(2.6, (st.plane === 'all' ? 12.6 : st.pos) + 0.2, 2.4), color: '#FF8AB0', show: () => L1() && (st.plane === 'trans' || st.plane === 'all') },
     { text: 'right', pos: V3(-2.2, 15.8, 0.4), color: '#B8C4D8', show: () => (L1() || L2()) && Math.abs(camera.position.x - controls.target.x) < Math.abs(camera.position.z - controls.target.z) },
     { text: 'left', pos: V3(2.0, 15.8, 0.4), color: '#B8C4D8', show: () => (L1() || L2()) && Math.abs(camera.position.x - controls.target.x) < Math.abs(camera.position.z - controls.target.z) },

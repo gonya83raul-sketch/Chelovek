@@ -25,7 +25,7 @@ function makeCell() {
   __set_rnd(mulberry(31));
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x06070a); scene.environment = envTex; scene.fog = new THREE.FogExp2(0x06070a, 0.016);
   addLights(scene, 0x7aa8ff);
-  const camera = new THREE.PerspectiveCamera(38, 1, 0.05, 200); camera.position.set(11, 6.5, 13.5);
+  const camera = new THREE.PerspectiveCamera(38, 1, 0.05, 200); camera.position.set(12.4, 7.3, 15.2);
   const controls = makeControls(camera, V3(0, 0, 0)); controls.minDistance = 1.5; controls.maxDistance = 40; controls.autoRotate = true; controls.autoRotateSpeed = 0.3;
 
   const CELL_R = 6, YS = 0.82, NUC = V3(0.3, 0, 0.2), NUC_R = 2.0;
@@ -91,7 +91,7 @@ function makeCell() {
       scene.add(tag(new THREE.Mesh(g, rerMat), 'rer', si === 0 && k === 0));
     }
   });
-  { const N = 1800, rm = new THREE.InstancedMesh(new THREE.SphereGeometry(0.034, 8, 6), phys(0xe06a6a, { roughness: 0.6, emissive: 0x200404 }), N);
+  { const N = 1300, rm = new THREE.InstancedMesh(new THREE.SphereGeometry(0.034, 8, 6), phys(0xe06a6a, { roughness: 0.6, emissive: 0x200404 }), N);
     for (let i = 0; i < N; i++) { const p = rerVerts[Math.floor(rnd() * rerVerts.length)]; const out = p.clone().sub(NUC).normalize(); dummy.position.copy(p).addScaledVector(out, rnd() < 0.5 ? 0.04 : -0.04); dummy.quaternion.identity(); dummy.scale.setScalar(1); dummy.updateMatrix(); rm.setMatrixAt(i, dummy.matrix); }
     scene.add(tag(rm, 'rer', false)); }
   const sph = (r, ph, th) => V3(-r * Math.cos(ph) * Math.sin(th), r * Math.cos(th), r * Math.sin(ph) * Math.sin(th)).add(NUC);
@@ -174,13 +174,13 @@ function makeCell() {
   ORG.perox.anchor = peros[0].position.clone(); ORG.perox.dist = 2.2;
 
   /* free ribosomes */
-  { const N = 700, fm = new THREE.InstancedMesh(new THREE.SphereGeometry(0.032, 8, 6), phys(0xe06a6a, { roughness: 0.6, emissive: 0x200404 }), N); let first = null;
+  { const N = 440, fm = new THREE.InstancedMesh(new THREE.SphereGeometry(0.032, 8, 6), phys(0xe06a6a, { roughness: 0.6, emissive: 0x200404 }), N); let first = null;
     for (let i = 0; i < N; i++) { const p = sample((q) => inCell(q, 0.3) && q.distanceTo(NUC) > 2.15); if (!first && q2(p)) first = p.clone(); dummy.position.copy(p); dummy.quaternion.identity(); dummy.scale.setScalar(1); dummy.updateMatrix(); fm.setMatrixAt(i, dummy.matrix); }
     scene.add(tag(fm, 'ribo')); ORG.ribo.anchor = first || V3(2, -2, 3); ORG.ribo.dist = 2.4;
     function q2(p) { return p.distanceTo(NUC) > 3.6 && p.y < -1; } }
 
   /* cytosol */
-  const DN = 2200, dust = new Float32Array(DN * 3);
+  const DN = 1400, dust = new Float32Array(DN * 3);
   for (let i = 0; i < DN; i++) { const p = sample((q) => inCell(q, 0.2)); dust.set([p.x, p.y, p.z], i * 3); }
   const dustGeo = new THREE.BufferGeometry(); dustGeo.setAttribute('position', new THREE.BufferAttribute(dust, 3));
   scene.add(new THREE.Points(dustGeo, new THREE.PointsMaterial({ size: 0.05, map: GLOW, color: 0x6d86b8, transparent: true, opacity: 0.3, depthWrite: false, blending: THREE.AdditiveBlending })));
@@ -238,7 +238,7 @@ function makeCell() {
   function select(id) {
     if (st.sel) ORG[st.sel].mats.forEach((m) => { m.emissive.copy(m.userData.e0.c); m.emissiveIntensity = m.userData.e0.i; });
     st.sel = id === 'all' ? null : id; st.focusT = 1.8;
-    st.focus = st.sel ? { target: (LBL[st.sel] && LVIS[st.sel] ? LBL[st.sel] : ORG[st.sel].anchor).clone(), dist: ORG[st.sel].dist } : { target: V3(0, 0, 0), dist: 19 };
+    st.focus = st.sel ? { target: (LBL[st.sel] && LVIS[st.sel] ? LBL[st.sel] : ORG[st.sel].anchor).clone(), dist: ORG[st.sel].dist } : { target: V3(0, 0, 0), dist: 21 };
     accentSet(st.sel ? ORG[st.sel].color : '#9CC8FF');
     refs.setInfo && refs.setInfo(); refs.seg && refs.seg.sync();
   }
@@ -302,7 +302,9 @@ function makeCell() {
     if (hit) select(hit.object.userData.org);
   });
 
-  const labels = ORGANELLES.map((o) => ({ text: o.name, pos: LBL[o.id], color: o.color, show: () => st.labels && (st.sel === o.id || (LVIS[o.id] && (!st.sel || ['membrane', 'nucleus'].includes(o.id)))) }));
+  // телефон, обзор: не больше 8 подписей — главные органоиды; остальные — по выбору
+  const MOBL = ['membrane', 'nucleus', 'nucleolus', 'rer', 'ser', 'golgi', 'mito', 'lyso'], mqL = matchMedia('(max-width:700px)');
+  const labels = ORGANELLES.map((o) => ({ text: o.name, pos: LBL[o.id], color: o.color, show: () => st.labels && (st.sel === o.id || (LVIS[o.id] && (!st.sel || ['membrane', 'nucleus'].includes(o.id)) && (st.sel || !mqL.matches || MOBL.includes(o.id)))) }));
   const refs = {};
   function ui(el) {
     const info = h('div', { class: 'info' });
@@ -329,7 +331,7 @@ function makeCell() {
   }
   function stats() { return st.sel ? [['Размер', ORG[st.sel].size, '']] : [['Клетка', '≈ 20', 'мкм'], ['Органоидов', ORGANELLES.length, '']]; }
   const self = {
-    scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, get accent() { return st.sel ? ORG[st.sel].color : '#9CC8FF'; },
+    labelBg: true, mobZoom: 0.66, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, get accent() { return st.sel ? ORG[st.sel].color : '#9CC8FF'; },
     kicker: 'Клетка · строение', title: 'Живая клетка',
     lede: 'Ядро, ЭПС, Гольджи, митохондрии и цитоскелет в разрезе. Пузырьки везут белки к мембране, по микротрубочкам едут грузы, митохондрии выдают АТФ.',
     notes: `
