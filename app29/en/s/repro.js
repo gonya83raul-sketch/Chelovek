@@ -20,7 +20,7 @@ function makeRepro(initMode) {
   __set_rnd(mulberry(2121));
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x08060a); scene.environment = envTex;
   labLights(scene, 0xf2b0c8);
-  const VIEW = { female: flyTarget(V3(0, -0.3, 0), V3(1.38, 0.62, 4.2)), male: flyTarget(V3(0, -0.4, 0.1), V3(2.2, 0.3, 2.6)), cycle: flyTarget(V3(-0.08, 0.06, 0), V3(0.25, 0.3, 2.7)), dev: flyTarget(V3(0.1, -0.05, 0), V3(-0.9, 0.5, 2.8)) };
+  const VIEW = { female: flyTarget(V3(-0.25, -0.3, 0), V3(1.0, 0.5, 3.75)), male: flyTarget(V3(0, -0.4, 0.1), V3(2.2, 0.3, 2.6)), cycle: flyTarget(V3(-0.08, 0.06, 0), V3(0.25, 0.3, 2.7)), dev: flyTarget(V3(0.1, -0.05, 0), V3(-0.9, 0.5, 2.8)) };
   const V0 = VIEW[initMode || 'female']; const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(V0.pos);
   const controls = makeControls(camera, V0.target); controls.minDistance = 0.8; controls.maxDistance = 14;
   bodyShell(scene, { rim: 0.18, arms: false });
@@ -110,7 +110,7 @@ function makeRepro(initMode) {
   const parts = () => (st.mode === 'male' ? RP_M : st.mode === 'female' && st.realLoad === 2 ? RP_R : RP_F);
   const schem = () => st.mode === 'cycle' || st.mode === 'dev' || (st.mode === 'female' && st.realLoad !== 2);
   function select(id) { st.sel = id === 'all' ? null : id; refs.seg && refs.seg.sync(); dimOthers(parts().map((p) => PART[p.id]), st.sel); if (parts() === RP_F) ut.material.opacity = st.sel && st.sel !== 'ut' ? 0.12 : 0.55; boneGlass(); st.msg = null; refs.setInfo && refs.setInfo(); }
-  function setMode(m) { st.mode = m; refs.modeSeg && refs.modeSeg.sync(); st.msg = null; const real = m === 'female' && st.realLoad === 2; F.visible = m !== 'male' && !real; REAL.visible = real; M.visible = m === 'male'; if (m === 'female') loadReal(); if (real) { dimOthers(RP_R.map((p) => PART[p.id]), null); boneGlass(); } st.fly = VIEW[m]; st.sel = null; fGhosts.forEach((g) => { g.visible = m !== 'cycle'; }); refs.rebuild && refs.rebuild(); if (m === 'dev') { st.devT = st.t; st.devStage = -1; } refs.setInfo && refs.setInfo(); }
+  function setMode(m) { st.mode = m; refs.modeSeg && refs.modeSeg.sync(); st.msg = null; const real = m === 'female' && st.realLoad === 2; F.visible = m !== 'male' && !real; REAL.visible = real; M.visible = m === 'male'; if (m === 'female') loadReal(); if (real) { dimOthers(RP_R.map((p) => PART[p.id]), null); boneGlass(); } st.fly = VIEW[m]; st.sel = null; fGhosts.forEach((g) => { g.visible = m !== 'cycle'; }); refs.rebuild && refs.rebuild(); if (m === 'dev') { st.devT = st.t; st.devStage = -1; } refs.cycUI && refs.cycUI(); refs.setInfo && refs.setInfo(); }
   pickOn(() => self, camera, pick, (id) => { if (st.mode === 'female' || st.mode === 'male') select(id); });
   // гормоны цикла (день 1–28)
   const gau = (x, m, s) => Math.exp(-(((x - m) / s) ** 2));
@@ -198,7 +198,9 @@ function makeRepro(initMode) {
     refs.rot = toggle('Rotate', () => st.rot, (v) => { st.rot = v; });
     const lab = toggle('Labels', () => st.labels, (v) => { st.labels = v; });
     Object.assign(refs, { lab });
-    el.append(group('Mode', '1–4', refs.modeSeg), h('div', { class: 'grp', style: 'flex:1 1 440px' }, h('div', { class: 'glabel' }, 'Organs', h('kbd', {}, 'click')), segBox), group('Cycle phases', '', ...[['Menstruation', 1.5], ['Follicular', 8], ['Ovulation', 13.7], ['Luteal', 21]].map(([n, d], i) => button(n, () => { if (st.mode !== 'cycle') setMode('cycle'); st.day = d; st.msg = null; refs.setInfo(); }, i === 0)), toggle('Pause', () => st.pause, (v) => { st.pause = v; })), group('Cycle speed', '', sp), group('View', 'R · N', refs.rot, lab), ib.el);
+    el.append(group('Mode', '1–4', refs.modeSeg), h('div', { class: 'grp', style: 'flex:1 1 440px' }, h('div', { class: 'glabel' }, 'Organs', h('kbd', {}, 'click')), segBox), refs.phG = group('Cycle phases', '', ...[['Menstruation', 1.5], ['Follicular', 8], ['Ovulation', 13.7], ['Luteal', 21]].map(([n, d], i) => button(n, () => { if (st.mode !== 'cycle') setMode('cycle'); st.day = d; st.msg = null; refs.setInfo(); }, i === 0)), toggle('Pause', () => st.pause, (v) => { st.pause = v; })), refs.spG = group('Cycle speed', '', sp), group('View', 'R · N', refs.rot, lab), ib.el);
+    // фазы и скорость цикла нужны только в режиме «Цикл»: в остальных режимах пульт ниже — сцене больше места
+    refs.cycUI = () => { const on = st.mode === 'cycle'; refs.phG.style.display = refs.spG.style.display = on ? '' : 'none'; }; refs.cycUI();
     refs.setInfo();
   }
   const _upd = update; function update2(dt) { _upd(dt); if (st.mode === 'dev') embLabel.pos.copy(embryo.position).add(V3(0.04, 0.03, 0.03)); }
@@ -211,7 +213,7 @@ function makeRepro(initMode) {
   }
   function stats() { return st.mode === 'cycle' ? [['Cycle day', Math.floor(st.day), 'of 28']] : st.mode === 'dev' ? [['Day', Math.max(0, Math.floor(st.devDay || 0)), ''], ['Cells', (st.devDay || 0) < 1 ? 1 : (st.devDay || 0) < 4.5 ? Math.min(32, 2 ** Math.floor(1 + (st.devDay - 1) * 1.3)) : '≈100', '']] : [['Chromosomes per cell', 46, ''], ['In a germ cell', 23, '']]; }
   const self = {
-    mobZoom: initMode === 'cycle' ? 0.72 : 0.6, scene, camera, controls, update: update2, ui, onKey, stats, labels, drawScope, accent: '#F2B0C8',
+    labelBg: true, mobZoom: initMode === 'cycle' ? 0.72 : 0.52, scene, camera, controls, update: update2, ui, onKey, stats, labels, drawScope, accent: '#F2B0C8',
     kicker: 'Body · reproduction', title: 'Reproduction and development',
     lede: 'How the reproductive systems are built, how pituitary and ovarian hormones set the 28-day cycle, and what happens to a new life in its first week.',
     notes: `

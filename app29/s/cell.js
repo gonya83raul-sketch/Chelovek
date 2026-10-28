@@ -46,8 +46,8 @@ function makeCell() {
   scene.add(tag(new THREE.Mesh(memGeo, memSolid), 'membrane'));
   scene.add(new THREE.Mesh(memGeo, glassMat(0x9cc8ff, { rim: 0.85, base: 0.015, pow: 2.3 })));
   const memIn = new THREE.Mesh(memGeo, glassMat(0x9cc8ff, { rim: 0.35, base: 0.0, pow: 2.6 })); memIn.scale.setScalar(0.985); scene.add(memIn);
-  { const pos = memGeo.attributes.position, nor = memGeo.attributes.normal, N = 450;
-    const prot = new THREE.InstancedMesh(new THREE.SphereGeometry(0.05, 10, 8), phys(0xffffff, { roughness: 0.5 }), N);
+  { const pos = memGeo.attributes.position, nor = memGeo.attributes.normal, N = 240;
+    const prot = new THREE.InstancedMesh(new THREE.SphereGeometry(0.04, 10, 8), phys(0xc8d8f0, { roughness: 0.5 }), N);
     for (let i = 0; i < N; i++) { const k = Math.floor(rnd() * pos.count); const p = V3(pos.getX(k), pos.getY(k), pos.getZ(k)), n = V3(nor.getX(k), nor.getY(k), nor.getZ(k));
       dummy.position.copy(p); dummy.quaternion.setFromUnitVectors(Y, n); dummy.scale.set(1, rand(1.0, 1.6), 1); dummy.updateMatrix(); prot.setMatrixAt(i, dummy.matrix); prot.setColorAt(i, new THREE.Color(rnd() < 0.18 ? 0xffc77a : 0xd9e7ff)); }
     scene.add(tag(prot, 'membrane')); }
@@ -302,9 +302,9 @@ function makeCell() {
     if (hit) select(hit.object.userData.org);
   });
 
-  // телефон, обзор: не больше 8 подписей — главные органоиды; остальные — по выбору
+  // обзор: на компьютере 10 подписей, на телефоне 8 — главные органоиды; остальные — по выбору
   const MOBL = ['membrane', 'nucleus', 'nucleolus', 'rer', 'ser', 'golgi', 'mito', 'lyso'], mqL = matchMedia('(max-width:700px)');
-  const labels = ORGANELLES.map((o) => ({ text: o.name, pos: LBL[o.id], color: o.color, show: () => st.labels && (st.sel === o.id || (LVIS[o.id] && (!st.sel || ['membrane', 'nucleus'].includes(o.id)) && (st.sel || !mqL.matches || MOBL.includes(o.id)))) }));
+  const labels = ORGANELLES.map((o) => ({ text: o.name, pos: LBL[o.id], color: o.color, show: () => st.labels && (st.sel === o.id || (LVIS[o.id] && (!st.sel || ['membrane', 'nucleus'].includes(o.id)) && (st.sel || (mqL.matches ? MOBL : MOBL.concat(['perox', 'cyto'])).includes(o.id)))) }));
   const refs = {};
   function ui(el) {
     const info = h('div', { class: 'info' });

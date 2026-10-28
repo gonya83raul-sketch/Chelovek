@@ -14,10 +14,10 @@ function makeSresp() {
   __set_rnd(mulberry(2424));
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x08060a); scene.environment = envTex;
   labLights(scene, 0xff8ab0);
-  const HOME = matchMedia('(max-width:700px)').matches ? flyTarget(V3(0.75, 2.1, 0), V3(-2.15, 3.15, 10.4)) : flyTarget(V3(0.05, 2.1, 0), V3(-2.85, 3.15, 10.4));   // телефон: тело левее — подписи справа помещаются
+  const HOME = matchMedia('(max-width:700px)').matches ? flyTarget(V3(0.75, 2.1, 0), V3(-2.15, 3.15, 10.4)) : flyTarget(V3(0.3, 2.1, 0), V3(-2.6, 3.15, 10.4));   // телефон: тело левее — подписи справа помещаются
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(HOME.pos);
   const controls = makeControls(camera, HOME.target); controls.minDistance = 2; controls.maxDistance = 20;
-  bodyShell(scene, { rim: 0.2 });
+  bodyShell(scene, { rim: 0.4 });
   // мозг, гипоталамус, гипофиз
   const brain = new THREE.Mesh(ell3(0.34, 0.28, 0.4, V3(0, 4.25, 0)), new THREE.MeshPhysicalMaterial({ color: 0xe0b8c8, roughness: 0.6, transparent: true, opacity: 0.12, depthWrite: false })); scene.add(brain);
   const HYP = V3(0, 4.08, 0.08), LIMB = V3(0, 4.25, 0.0), CTX = V3(0, 4.42, 0.1);
@@ -26,12 +26,16 @@ function makeSresp() {
   // спинной мозг взрослого кончается на уровне L1–L2 (конус: сегменты S2–S4), ниже — конский хвост из корешков
   const CORD = new THREE.CatmullRomCurve3([V3(0, 3.9, -0.1), V3(0, 3.3, -0.4), V3(0, 2.2, -0.5), V3(0, 1.45, -0.45), V3(0, 1.05, -0.42)]);
   // толщина: шейное (u≈0.15) и поясничное (u≈0.8) утолщения, к концу — конус
-  scene.add(new THREE.Mesh(taperTube(CORD, (u) => (0.045 + 0.012 * Math.exp(-(((u - 0.15) / 0.08) ** 2)) + 0.01 * Math.exp(-(((u - 0.8) / 0.06) ** 2))) * (u < 0.9 ? 1 : 1 - (u - 0.9) * 6), 80, 12), organMat('#F2E6C8', 0.45)));
+  scene.add(new THREE.Mesh(taperTube(CORD, (u) => (0.045 + 0.02 * Math.exp(-(((u - 0.15) / 0.08) ** 2)) + 0.018 * Math.exp(-(((u - 0.8) / 0.06) ** 2))) * (u < 0.9 ? 1 : 1 - (u - 0.9) * 6), 80, 12), organMat('#F2E6C8', 0.45)));
   scene.add(new THREE.Mesh(mergeGeometries([-2, -1, 0, 1, 2].map((k) => tube([V3(0.006 * k, 1.1, -0.42), V3(0.012 * k, 0.7, -0.41), V3(0.03 * k, 0.25, -0.36)], 0.006, 16, 4))), organMat('#F2E6C8', 0.45)));
   const SYM = V3(0, 1.45, -0.45), PARA = V3(0, 1.1, -0.425);
   const gSym = glowNucleus(scene, SYM, '#FF6A5A', 0.03, 6), gPara = glowNucleus(scene, PARA, '#5CC48A', 0.03, 6);
   // сегменты-центры — светящиеся участки спинного мозга нужной длины (Th10–L2 — над поясничным утолщением, S2–S4 — в мозговом конусе)
-  const segM = (col, u0, u1) => { const pts = Array.from({ length: 9 }, (_, k) => CORD.getPointAt(u0 + (u1 - u0) * k / 8)); const m = new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.5, depthWrite: false, blending: THREE.AdditiveBlending }); scene.add(new THREE.Mesh(taperTube(new THREE.CatmullRomCurve3(pts), () => 0.068, 20, 12), m)); return m; };
+  const segM = (col, u0, u1) => { const pts = Array.from({ length: 9 }, (_, k) => CORD.getPointAt(u0 + (u1 - u0) * k / 8)); const m = new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.5, depthWrite: false, blending: THREE.AdditiveBlending }); scene.add(new THREE.Mesh(taperTube(new THREE.CatmullRomCurve3(pts), () => 0.085, 20, 12), m)); return m; };
+  // позвоночный столб: тела позвонков спереди от спинного мозга и межпозвонковые промежутки; ниже L2 — крестец, мозг кончается конусом
+  { const vg = [], vm = new THREE.MeshPhysicalMaterial({ color: 0xe8dcc0, roughness: 0.6, transparent: true, opacity: 0.22, depthWrite: false });
+    for (let k = 0; k < 24; k++) { const y = 3.85 - k * (3.85 - 0.62) / 23, u = Math.min(1, (3.9 - y) / (3.9 - 1.05)), c = y > 1.05 ? CORD.getPointAt(u) : V3(0, y, -0.42 + (1.05 - y) * 0.15); const g = new THREE.CylinderGeometry(0.1 + 0.05 * k / 23, 0.1 + 0.05 * k / 23, 0.09, 14); g.translate(c.x, y, c.z + 0.17); vg.push(g); }
+    scene.add(new THREE.Mesh(mergeGeometries(vg), vm)); }
   const sSym = segM('#FF6A5A', 0.72, 0.87), sPara = segM('#5CC48A', 0.91, 0.975);
   const PEL = V3(0, 0.0, 0.08);
   const nSym = new THREE.CatmullRomCurve3([SYM, SYM.clone().add(V3(0.15, -0.3, 0.2)), V3(0.12, 0.35, 0.05), PEL]);
@@ -40,9 +44,9 @@ function makeSresp() {
   const mkN = (c, col) => { const f = flowTubeMat(col, 0.6, 2); f.uniforms.uOn.value = 0.15; scene.add(new THREE.Mesh(new THREE.TubeGeometry(c, 40, 0.012, 6), f)); return f; };
   const fSym = mkN(nSym, '#FF6A5A'), fPara = mkN(nPara, '#5CC48A'), fDesc = mkN(nDesc, '#C77DFF');
   // органы малого таза (обобщённо) и сосуды
-  const pelvis = new THREE.Mesh(ell3(0.32, 0.22, 0.24), new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xe88a9a).multiplyScalar(0.4), roughness: 0.4, transparent: true, opacity: 0.45, depthWrite: false, emissive: 0xff4a6a, emissiveIntensity: 0.05 })); pelvis.position.copy(PEL); scene.add(pelvis);
+  const pelvis = new THREE.Mesh(ell3(0.25, 0.17, 0.19), new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xe88a9a).multiplyScalar(0.4), roughness: 0.4, transparent: true, opacity: 0.35, depthWrite: false, emissive: 0xff4a6a, emissiveIntensity: 0.03 })); pelvis.position.copy(PEL); scene.add(pelvis);
   const PEL_C0 = pelvis.material.color.clone(), PEL_C1 = new THREE.Color(0xff3a6a).multiplyScalar(0.6);   // прилив крови: орган набухает и краснеет
-  const gPel = glowNucleus(scene, PEL, '#FF5A7A', 0.08, 6);
+  const gPel = glowNucleus(scene, PEL, '#FF5A7A', 0.06, 5);
   const heart = new THREE.Mesh(displaceGeo(new THREE.SphereGeometry(1, 36, 28), (v) => { const k = v.y < 0 ? 1 + 0.55 * v.y : 1; v.set(v.x * 0.27 * k, v.y * 0.34, v.z * 0.24 * k); }), new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xc84a50).multiplyScalar(0.5), roughness: 0.4, transparent: true, opacity: 0.7, emissive: 0x501010, emissiveIntensity: 0.3 })); heart.position.copy(BODY.heart).add(V3(0.06, 0, 0)); heart.rotation.z = 0.55; scene.add(heart);   // геометрия в нуле — пульсирует на месте
   const ART = new THREE.CatmullRomCurve3([BODY.heart, V3(0.1, 2.5, -0.2), V3(0.08, 1.4, -0.3), V3(0.15, 0.4, -0.15), PEL]);
   const fArt = mkN(ART, '#E0605A');
@@ -81,7 +85,7 @@ function makeSresp() {
     // нервы и центры
     fPara.uniforms.uOn.value = 0.15 + 0.85 * (ph <= 1 ? L : 0.2); fSym.uniforms.uOn.value = 0.15 + 0.85 * (isOrg ? 1 : 0.1); fDesc.uniforms.uOn.value = 0.2 + 0.7 * L;
     [fPara, fSym, fDesc, fArt].forEach((f) => { f.uniforms.uTime.value = t; }); fArt.uniforms.uOn.value = 0.2 + 0.8 * L; fArt.uniforms.uSpeed.value = 0.3 + hr / 150;
-    gPara.spr.material.opacity = 0.25 + 0.75 * (ph <= 1 ? L : 0.15); gSym.spr.material.opacity = 0.25 + 0.75 * (isOrg ? 1 : 0.1); sPara.opacity = 0.2 + 0.6 * (ph <= 1 ? L : 0.15); sSym.opacity = 0.2 + 0.6 * (isOrg ? 1 : 0.1);
+    gPara.spr.material.opacity = 0.25 + 0.75 * (ph <= 1 ? L : 0.15); gSym.spr.material.opacity = 0.25 + 0.75 * (isOrg ? 1 : 0.1); sPara.opacity = 0.3 + 0.6 * (ph <= 1 ? L : 0.15); sSym.opacity = 0.3 + 0.6 * (isOrg ? 1 : 0.1);
     gLimb.spr.material.opacity = 0.3 + 0.7 * L; gCtx.spr.material.opacity = 0.3 + 0.4 * (ph === 0 ? 1 : 0.5); gHyp.spr.material.opacity = 0.3 + 0.7 * (isOrg || ph === 3 ? 1 : 0.3);
     gPel.spr.material.opacity = 0.2 + 0.8 * L; gPel.spr.scale.setScalar(0.08 * (5 + 6 * L) * (isOrg ? 1 + 0.15 * Math.max(0, Math.sin(t * Math.PI * 2 / 0.8)) : 1)); pelvis.material.emissiveIntensity = 0.05 + 0.5 * L; pelvis.scale.setScalar(1 + 0.25 * L); pelvis.material.color.copy(PEL_C0).lerp(PEL_C1, L);
     heart.scale.setScalar(1 + 0.06 * Math.max(0, Math.sin(t * Math.PI * 2 * hr / 60)) ** 6); lungs.forEach((m) => m.scale.setScalar(1 + 0.04 * Math.sin(t * Math.PI * 2 * rr / 60)));
@@ -105,8 +109,8 @@ function makeSresp() {
   const labels = [
     { text: 'кора и лимбическая система', pos: V3(0.35, 4.42, 0.1), color: '#FF8AB0', show: () => st.labels },
     { text: 'гипоталамус и гипофиз', pos: V3(0.3, 4.0, 0.15), color: '#C77DFF', show: () => st.labels },
-    { text: 'симпатический центр Th10–L2', pos: SYM.clone().add(V3(0.2, 0.05, 0)), color: '#FF6A5A', show: () => st.labels },
-    { text: 'парасимпатический центр S2–S4', pos: PARA.clone().add(V3(0.2, -0.05, 0)), color: '#5CC48A', show: () => st.labels },
+    { text: 'симпатический центр Th10–L2', pos: SYM.clone().add(V3(0.45, 0.05, 0)), color: '#FF6A5A', show: () => st.labels },
+    { text: 'парасимпатический центр S2–S4', pos: PARA.clone().add(V3(0.5, -0.08, 0)), color: '#5CC48A', show: () => st.labels },
     { text: 'органы малого таза', pos: PEL.clone().add(V3(0.35, -0.05, 0.1)), color: '#FF5A7A', show: () => st.labels },
     { text: 'сердце', pos: BODY.heart.clone().add(V3(0.3, 0, 0.2)), color: '#FF8A7A', show: () => st.labels },
   ];

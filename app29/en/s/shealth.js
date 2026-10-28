@@ -44,20 +44,20 @@ function makeShealth() {
   labLights(scene, 0xc77dff);
   const MOB = matchMedia('(max-width:700px)').matches;
   // выноска: увеличенный мозг (координаты brainKit: x — вперёд, z — вбок к зрителю) справа от тела; на телефоне — над головой
-  const CB = MOB ? V3(0.15, 5.95, 0) : V3(2.35, 3.15, 0), KB = MOB ? 0.68 : 0.6;
-  const VIEW = { drive: MOB ? flyTarget(V3(0.15, 3.75, 0), V3(0.9, 4.35, 13.6)) : flyTarget(V3(1.0, 2.05, 0), V3(1.7, 2.7, 10.2)), sti: flyTarget(V3(30, -0.6, 0), V3(30, 0.8, 8.4)), protect: flyTarget(V3(60, -0.9, 0), V3(60.4, 1.6, 12.4)) };
+  const CB = MOB ? V3(0.15, 6.15, 0) : V3(2.6, 3.2, 0), KB = MOB ? 0.82 : 0.8;
+  const VIEW = { drive: MOB ? flyTarget(V3(0.15, 3.9, 0), V3(0.9, 4.5, 15)) : flyTarget(V3(1.15, 2.05, 0), V3(1.85, 2.7, 10.4)), sti: flyTarget(V3(30, -0.6, 0), V3(30, 0.8, 8.4)), protect: flyTarget(V3(60, -0.9, 0), V3(60.4, 1.6, 12.4)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 140); camera.position.copy(VIEW.drive.pos);
   const controls = makeControls(camera, VIEW.drive.target); controls.minDistance = 1.5; controls.maxDistance = 22;
   /* ---------- влечение ---------- */
   const dr = new THREE.Group(); scene.add(dr);
-  bodyShell(dr, { rim: 0.18 });
+  bodyShell(dr, { rim: 0.34 });
   dr.add(new THREE.Mesh(ell3(0.34, 0.28, 0.4, V3(0, 4.25, 0)), new THREE.MeshPhysicalMaterial({ color: 0xe0b8c8, roughness: 0.6, transparent: true, opacity: 0.22, depthWrite: false })));
   const zb = new THREE.Group(); zb.position.copy(CB); zb.scale.setScalar(KB); dr.add(zb);
-  brainShell(zb, { opacity: 0.04, rim: 0.6 });
+  brainShell(zb, { opacity: 0.06, rim: 0.9 });
   // где лежат структуры в увеличенном мозге (покрышка — в среднем мозге, миндалина — в височной доле, прилежащее ядро — под головкой хвостатого)
   const QB = { poa: V3(0.36, -0.44, 0.06), vta: V3(0.02, -0.6, 0.08), amy: V3(0.5, -0.6, 0.52), pfc: V3(1.25, 0.32, 0.3) };
   const QW = (q) => q.clone().multiplyScalar(KB).add(CB);   // точка выноски в мире
-  const BN = Object.fromEntries(SH_BRAIN.map((b) => [b.id, { ...b, g: glowNucleus(QB[b.id] ? zb : dr, QB[b.id] || b.p, b.color, b.id === 'gon' ? 0.07 : 0.055, 7) }]));
+  const BN = Object.fromEntries(SH_BRAIN.map((b) => [b.id, { ...b, g: glowNucleus(QB[b.id] ? zb : dr, QB[b.id] || b.p, b.color, b.id === 'gon' ? 0.07 : 0.075, 7) }]));
   const pickBrain = SH_BRAIN.map((b) => { const m = new THREE.Mesh(new THREE.SphereGeometry(b.id === 'gon' ? 0.15 : 0.13, 12, 10), new THREE.MeshBasicMaterial({ visible: false })); m.position.copy(QB[b.id] || b.p); m.userData.pick = b.id; (QB[b.id] ? zb : dr).add(m); return m; });
   const NAC = V3(0.68, -0.26, 0.16), PITQ = V3(0.42, -0.84, 0);
   glowNucleus(zb, NAC, '#F2C14E', 0.04, 6);
