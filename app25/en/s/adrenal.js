@@ -13,6 +13,9 @@ function makeAdrenal() {
   __set_rnd(mulberry(8301));
   const scene = bioStage({ rim: 0xf2c14e });
   const VIEW = { steroid: [V3(0.5, -1.3, 0), V3(1.0, 0.4, 17.5)], stress: [V3(39.6, 1.2, 0), V3(40.1, 2.4, 12.5)], receptor: [V3(79.2, -1.7, 0), V3(79.6, 0.1, 15)] };
+  // телефон: путь стероидов сверху вниз (холестерин наверху, три ветви зон — колонками), железа скрыта
+  const MOB = matchMedia('(max-width:700px)').matches;
+  if (MOB) VIEW.steroid = [V3(0.15, -0.9, 0), V3(0.45, 0.2, 10.6)];
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VIEW.steroid[1]);
   const controls = makeControls(camera, VIEW.steroid[0]); controls.minDistance = 3; controls.maxDistance = 40;
   const fx = new Sparks(1800, 0.07); scene.add(fx.obj);
@@ -43,7 +46,8 @@ function makeAdrenal() {
     ohp: { m: 'ohprog', p: V3(X0 + 3 * DX, 0, 0), z: 'fasc' }, dcort: { m: 'deoxycortisol', p: V3(X0 + 4 * DX, 0, 0), z: 'fasc' }, cortisol: { m: 'cortisol', p: V3(X0 + 5 * DX, 0, 0), z: 'fasc' },
     dhea: { m: 'dhea', p: V3(X0 + 3 * DX, -RY, 0), z: 'ret' }, andro: { m: 'androstenedione', p: V3(X0 + 4 * DX, -RY, 0), z: 'ret' }, testo: { m: 'testosterone', p: V3(X0 + 5 * DX, -RY, 0), z: 'ret' },
   };
-  Object.values(NODE).forEach((n) => { n.g = fit(n.m, 0.56); n.g.position.copy(n.p); G1.add(n.g); n.glow = glowNucleus(G1, n.p.clone().add(V3(0, 0, -0.25)), '#FF6A5A', 0.08, 12); n.glow.core.visible = false; n.glow.spr.material.opacity = 0; });
+  if (MOB) Object.values(NODE).forEach((n) => { n.p.set(n.p.y * 1.25, -(n.p.x - X0) * 1.05 + 2.6, 0); });
+  Object.values(NODE).forEach((n) => { n.g = fit(n.m, MOB ? 0.62 : 0.56); n.g.position.copy(n.p); G1.add(n.g); n.glow = glowNucleus(G1, n.p.clone().add(V3(0, 0, -0.25)), '#FF6A5A', 0.08, 12); n.glow.core.visible = false; n.glow.spr.material.opacity = 0; });
   const ZC = { glom: '#7FE0A0', fasc: '#F2C14E', ret: '#FF8AB0' };
   const ST = [
     ['chol', 'preg', 'CYP11A1', null, '#C8C8D0'], ['preg', 'prog', '3β-HSD', null, '#C8C8D0'],
@@ -198,7 +202,7 @@ function makeAdrenal() {
   const SHORT = { doc: 'deoxycorticosterone', ohp: '17-OH-progesterone', dcort: '11-deoxycortisol', cort_b: 'corticosterone' };
   const labels = [
     // подписи зон — легендой слева от железы (на цветных кольцах бледный текст не читался)
-    ...ZONES.filter((z) => z.name).map((z) => ({ left: true, text: z.name, pos: V3(-4.75, { glom: 0.55, fasc: 0.18, ret: -0.19, med: -0.56 }[z.id], 0.3), color: z.col, show: () => st.labels && st.mode === 'steroid' && (st.zone === 'all' || st.zone === z.id) })),
+    ...ZONES.filter((z) => z.name && !MOB).map((z) => ({ left: true, text: z.name, pos: V3(-4.75, { glom: 0.55, fasc: 0.18, ret: -0.19, med: -0.56 }[z.id], 0.3), color: z.col, show: () => st.labels && st.mode === 'steroid' && (st.zone === 'all' || st.zone === z.id) })),
     ...Object.entries(NODE).map(([k, n]) => ({ text: SHORT[k] || MOL(n.m).name, pos: n.p.clone().add(V3(-0.35, -0.7, 0.3)), color: n.z ? ZC[n.z] : '#E8E0D8', show: () => st.labels && st.mode === 'steroid' && (st.zone === 'all' || !n.z || n.z === st.zone) })),
     ...ST.filter((s) => s.tag !== 'shunt').map((s) => ({ text: s.enz, pos: NODE[s.a].p.clone().lerp(NODE[s.b].p, s.a === 'preg' && s.b === 'dhea' ? 0.68 : 0.5).add(V3(-0.5, s.a === 'preg' && s.b === 'dhea' ? -0.3 : 0.32, 0.3)), color: st.cah && s.tag === 'h21' ? '#FF6A5A' : '#B8B0C0', show: () => st.labels && st.mode === 'steroid' && st.zone !== 'all' && (s.z === st.zone || (!s.z && st.zone !== 'all')) })),
     ...ST.filter((s) => s.tag === 'h21').map((s) => ({ text: '✕ 21-hydroxylase', pos: NODE[s.a].p.clone().lerp(NODE[s.b].p, 0.5).add(V3(-0.5, -0.1, 0.45)), color: '#FF6A5A', show: () => st.labels && st.mode === 'steroid' && st.cah })),

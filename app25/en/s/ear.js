@@ -17,7 +17,7 @@ function makeEar() {
   __set_rnd(mulberry(1818));
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x06070a); scene.environment = envTex;
   labLights(scene, 0x7fd6ff);
-  const VIEW = { anat: flyTarget(V3(-0.6, -0.75, 0), V3(-0.9, 0.9, 7.2)), coch: flyTarget(V3(30, -0.1, 0), V3(30.6, 2.2, 6.6)), vest: flyTarget(V3(0.1, -0.15, 0), V3(1.9, 1.5, 4.4)) };
+  const VIEW = { anat: flyTarget(V3(-1.5, -0.55, 0), V3(-1.8, 1.15, 8.8)), coch: flyTarget(V3(30, -0.1, 0), V3(30.6, 2.2, 6.6)), vest: flyTarget(V3(0.1, -0.15, 0), V3(1.9, 1.5, 4.4)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(VIEW.anat.pos);
   const controls = makeControls(camera, VIEW.anat.target); controls.minDistance = 1; controls.maxDistance = 18;
   const ear = new THREE.Group(); scene.add(ear);
@@ -103,7 +103,7 @@ function makeEar() {
     flyStep(st, camera, controls, dt);
     const f = freq(), A = st.vol, vis = Math.min(28, 2 + Math.log10(f) * 4), ph = Math.sin(t * vis * 2);
     // звуковые волны к уху
-    rings.forEach((rg) => { const k = (t * 0.45 + rg.ph) % 1; rg.r.position.set(-4.4 + k * 1.9, 0.0, 0.05); rg.r.scale.setScalar(1.3 - k * 1.0); rg.r.material.opacity = A * 0.5 * Math.sin(k * Math.PI); });
+    rings.forEach((rg) => { const k = (t * 0.45 + rg.ph) % 1; rg.r.position.set(-4.4 + k * 1.9, 0.0, 0.05); rg.r.scale.setScalar(0.9 - k * 0.65); rg.r.material.opacity = A * 0.5 * Math.sin(k * Math.PI); });
     drum.position.x = -0.93 + 0.012 * A * ph; drum.scale.setScalar(1);
     mall.rotation.z = 0.12 * A * ph; inc.rotation.z = 0.1 * A * ph; stap.position.x = -0.6 + 0.014 * A * ph;
     // место максимума на улитке

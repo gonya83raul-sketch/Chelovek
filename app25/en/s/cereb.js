@@ -44,7 +44,7 @@ function makeCereb() {
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x060509); scene.environment = envTex;
   labLights(scene, 0x7fd6c8);
   const VIEW = {
-    anat: flyTarget(V3(0.4, -0.4, 0), V3(3.0, 0.6, 5.2)),   // спереди-сбоку: видны ножки, олива, клочок
+    anat: flyTarget(V3(0.3, -0.1, 0), V3(3.55, 1.15, 6.5)),   // спереди-сбоку: видны ножки, олива, клочок
     nuc: flyTarget(V3(-0.6, -0.3, 0), V3(-2.0, 4.9, 0.3)),
     micro: flyTarget(V3(0, -0.75, 0), V3(6.3, 3.0, 7.6)),
   };
