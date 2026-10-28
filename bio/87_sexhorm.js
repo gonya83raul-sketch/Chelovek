@@ -29,7 +29,7 @@ function makeSexhorm() {
     andro: { m: 'androstenedione', p: V3(2.5, 0.25, 0), name: 'андростендион', col: '#9FB4FF' },
     testo: { m: 'testosterone', p: V3(5.0, 1.45, 0), name: 'тестостерон', col: ANDR },
     estrone: { m: 'estrone', p: V3(5.0, -0.95, 0), name: 'эстрон', col: ESTR },
-    dht: { m: 'dht', p: V3(7.7, 2.45, 0), name: 'дигидротестостерон', col: '#3A6CFF' },
+    dht: { m: 'dht', p: V3(7.7, 2.45, 0), name: 'ДГТ', col: '#3A6CFF' },
     e2: { m: 'estradiol', p: V3(7.7, -0.35, 0), name: 'эстрадиол', col: ESTR },
   };
   Object.values(NODE).forEach((n) => { n.g = fit(n.m, 0.7); n.g.position.copy(n.p); G1.add(n.g); n.glow = glowNucleus(G1, n.p.clone().add(V3(0, 0, -0.3)), n.col, 0.08, 14); n.glow.core.visible = false; n.lvl = 0.5; });
@@ -49,7 +49,7 @@ function makeSexhorm() {
     sh.moveTo(-w / 2 + r, -h / 2); sh.lineTo(w / 2 - r, -h / 2); sh.quadraticCurveTo(w / 2, -h / 2, w / 2, -h / 2 + r); sh.lineTo(w / 2, h / 2 - r); sh.quadraticCurveTo(w / 2, h / 2, w / 2 - r, h / 2); sh.lineTo(-w / 2 + r, h / 2); sh.quadraticCurveTo(-w / 2, h / 2, -w / 2, h / 2 - r); sh.lineTo(-w / 2, -h / 2 + r); sh.quadraticCurveTo(-w / 2, -h / 2, -w / 2 + r, -h / 2);
     const m = new THREE.Mesh(new THREE.ShapeGeometry(sh, 12), new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.05, depthWrite: false })); m.position.set((x0 + x1) / 2, (y0 + y1) / 2, -0.9);
     m.add(new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(sh.getPoints(12)), new THREE.LineBasicMaterial({ color: col, transparent: true, opacity: 0.35 }))); G1.add(m); return m; };
-  const CELLS = { f: [plate(-6.0, 3.3, -2.1, 2.6, '#9FB4FF'), plate(3.5, 8.6, -2.1, 2.6, '#FF6FA8')], m: [plate(-6.0, 6.2, -2.1, 2.6, '#9FB4FF'), plate(6.4, 9.0, 1.4, 3.3, '#3A6CFF'), plate(6.4, 9.0, -1.5, 0.7, '#F2D08A')] };
+  const CELLS = { f: [plate(-6.0, 3.3, -2.1, 2.3, '#9FB4FF'), plate(3.5, 8.6, -2.1, 2.3, '#FF6FA8')], m: [plate(-6.0, 6.2, -2.1, 2.3, '#9FB4FF'), plate(6.4, 9.0, 1.4, 3.3, '#3A6CFF'), plate(6.4, 9.0, -1.5, 0.7, '#F2D08A')] };
   const P1 = Array.from({ length: 60 }, () => ({ s: ball(0.06, '#fff', G1), on: false, t: 0, e: null }));
 
   /* ---------- 2. ось гипоталамус — гипофиз — гонады ---------- */
@@ -261,7 +261,7 @@ function makeSexhorm() {
     { text: 'клетка гранулёзы · ФСГ', pos: V3(3.7, -1.85, 0), color: '#FF6FA8', show: () => L1() && st.sex === 'f' },
     { text: 'клетка Лейдига · ЛГ', pos: V3(-5.7, -1.85, 0), color: '#9FB4FF', show: () => L1() && st.sex === 'm' },
     { text: 'простата, кожа', pos: V3(6.5, 3.15, 0), color: '#3A6CFF', show: () => L1() && st.sex === 'm' },
-    { text: 'жировая ткань', pos: V3(6.5, -1.05, 0), color: '#F2D08A', show: () => L1() && st.sex === 'm' },
+    { text: 'жировая ткань', pos: V3(6.5, -1.7, 0), color: '#F2D08A', show: () => L1() && st.sex === 'm' },
     { text: 'летрозол', pos: drugM.aro.position.clone().add(V3(0.6, -0.1, 0.3)), color: '#FF6A5A', show: () => L1() && st.aro },
     { text: 'финастерид', pos: drugM.fin.position.clone().add(V3(-0.3, 0.6, 0.3)), color: '#FF6A5A', show: () => L1() && st.fin },
     { text: 'гипоталамус (ГнРГ)', pos: HYP.clone().add(V3(40.25, 0.22, 0.1)), color: '#9F7BFF', show: L2 },
@@ -322,7 +322,7 @@ function makeSexhorm() {
     return [['Тестостерон', Math.round(st.lv.T), '% нормы'], ['Эстрадиол', Math.round(st.lv.E2), '% нормы'], ['ДГТ', Math.round(st.lv.DHT), '% нормы']];
   }
   const self = {
-    mobZoom: 0.95, scene, camera, controls, update: (dt) => { update(dt); G2.updateMatrixWorld(true); dyn.forEach((l) => { l.pos.copy(l.fn()); }); }, ui, onKey, stats, labels, drawScope, accent: '#FF6FA8',
+    labelBg: true, mobZoom: 0.95, scene, camera, controls, update: (dt) => { update(dt); G2.updateMatrixWorld(true); dyn.forEach((l) => { l.pos.copy(l.fn()); }); }, ui, onKey, stats, labels, drawScope, accent: '#FF6FA8',
     kicker: 'Биохимия · гормоны', title: 'Половые гормоны и беременность',
     lede: 'Тестостерон и эстрадиол отличаются всего одним углеродом и кольцом — но определяют, как растёт тело; а несколько миллиардов молекул ХГЧ в капле мочи дают вторую полоску на тесте.',
     notes: `

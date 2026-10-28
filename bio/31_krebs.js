@@ -42,7 +42,7 @@ function makeKrebs() {
   const tokMat = {}; Object.entries(KR_TOK).forEach(([k, [, c]]) => { tokMat[k] = new THREE.MeshBasicMaterial({ color: new THREE.Color(c), transparent: true }); });
   const toks = []; const tokPos = { nadh: V3(), fadh2: V3(), gtp: V3() }; // подписи следуют за последним жетоном
   function token(kind, p0, dir) { const m = kind === 'co2' ? molMesh(MOL('co2'), { scale: 0.2 }) : kind === 'h2o' ? molMesh(MOL('h2o'), { scale: 0.22 }) : new THREE.Mesh(new THREE.SphereGeometry(0.13, 16, 12), tokMat[kind]); m.position.copy(p0); scene.add(m); toks.push({ m, kind, v: dir, age: 0 }); return m; }
-  const ETC = V3(7.4, -1.0, 0);
+  const ETC = V3(6.6, -0.8, 0);
   const etcBar = new THREE.Mesh(new THREE.CapsuleGeometry(0.14, 2.9, 8, 20), new THREE.MeshPhysicalMaterial({ color: 0x8a5a40, emissive: 0xffb070, emissiveIntensity: 0.15, roughness: 0.5, transparent: true, opacity: 0.75 })); etcBar.position.copy(ETC); scene.add(etcBar);
   const piles = []; for (let k = 0; k < 6; k++) { const m = molMesh(MOL('succinate'), { scale: 0.11, hideH: true }); m.visible = false; scene.add(m); piles.push(m); }
   const malon = molMesh(MOL('malonate'), { scale: 0.16, hideH: true, tint: '#FF6A6A' }); malon.visible = false; scene.add(malon);
@@ -128,7 +128,7 @@ function makeKrebs() {
   }
   function stats() { return [['Реакция', st.step >= 0 ? `${(st.step + 1) % 8 + 1} из 8` : '', ''], ['НАДН', st.nadh, ''], ['ФАДН₂', st.fadh2, ''], ['ГТФ', st.gtp, '']]; }
   const self = {
-    scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#7FD6FF',
+    labelBg: true, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#7FD6FF',
     kicker: 'Биохимия · общий путь катаболизма', title: 'Пируватдегидрогеназа и цикл Кребса',
     lede: 'Восемь реакций в матриксе митохондрии разбирают «активную уксусную кислоту» на два CO₂ и снимают с неё водород для дыхательной цепи.',
     notes: `

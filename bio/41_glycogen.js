@@ -80,7 +80,7 @@ function makeGlycogen() {
       udp.forEach((u) => { if (u.age < 0.6) { u.age += dt; u.m.position.copy(u.a).lerp(u.b, u.age / 0.6); } else u.m.visible = false; });
       core.rotation.y += dt;
       // подписи следуют за объектами: ближайшая к зрителю видимая точка ветвления, последние УДФ-глюкоза и Г1Ф
-      let best = null, bz = -1e9; KIDS.forEach((r) => { if (r.ta > st.g) return; const wp = r.p.clone().applyQuaternion(G1.quaternion); if (wp.z > bz) { bz = wp.z; best = wp; } }); if (best) LB.br.copy(best).add(G1.position); st.brOn = !!best;
+      let best = null, bz = -1e9; KIDS.forEach((r) => { if (r.ta > st.g) return; const wp = r.p.clone().applyQuaternion(G1.quaternion); if (wp.z > bz) { bz = wp.z; best = wp; } }); if (best) LB.br.copy(best).add(G1.position).add(V3(0.45, 0.35, 0.4)); st.brOn = !!best;
       const lu = udp.filter((u) => u.m.visible).sort((a, b) => b.age - a.age)[0]; st.udpOn = !!lu; if (lu) LB.udp.copy(lu.m.position);
       const lg = g1p.filter((q) => q.m.visible).sort((a, b) => b.age - a.age).find((q) => q.age > 0.3); st.g1pOn = !!lg; if (lg) LB.g1p.copy(lg.m.position);
     }
@@ -157,7 +157,7 @@ function makeGlycogen() {
   }
   function stats() { return st.mode === 'blood' ? [['Глюкоза', st.glu.toFixed(1), 'ммоль/л'], ['Инсулин', Math.round(st.ins * 60), '%'], ['Гликоген печени', Math.round(st.glycL * 100), '%']] : [['Остатков глюкозы', st.res || 0, ''], ['В реальной грануле', '≈ 30 000', '']]; }
   const self = {
-    mobZoom: 0.62, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#F2C14E',
+    labelBg: true, mobZoom: 0.62, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#F2C14E',
     kicker: 'Биохимия · обмен углеводов', title: 'Гликоген и сахар крови',
     lede: 'Глюкоза — быстрое топливо, но хранить её в свободном виде нельзя: вода хлынула бы в клетку. Поэтому печень и мышцы запасают её в ветвистых гранулах гликогена.',
     notes: `
@@ -169,6 +169,6 @@ function makeGlycogen() {
       <div><h2>Условности и модели</h2><ul><li>Гранула показана упрощённо: несколько сотен остатков из ~30 000, каждая шестиугольная пластинка — один остаток глюкозы.</li><li>Модель сахара крови качественная: «8 часов» сжаты в полминуты.</li></ul></div>
       <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>3</code> режим</li><li><code>R</code> вращение · <code>N</code> подписи</li></ul></div>`,
   };
-  setMode('build'); st.fly = null;
+  setMode('build'); st.fly = null; st.g = T_ALL * 0.55;   // первый кадр — уже заметная гранула, а не редкий «ёжик»
   return self;
 }

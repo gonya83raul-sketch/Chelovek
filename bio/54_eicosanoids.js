@@ -8,7 +8,7 @@ function makeEicosanoids() {
   rnd = mulberry(5401);
   const scene = bioStage({ rim: 0xff8a5c });
   const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: кадр уходит из-под заголовка и описания (телефон — прежний ракурс)
-  const VIEW = { path: DK ? [V3(-1.0, -1.6, 0), V3(-0.4, 0.8, 22.5)] : [V3(0.4, -1.6, 0), V3(0.9, 0.2, 17)], platelet: [V3(39.2, -0.6, 0), V3(39.6, 1.4, 12.5)], organs: [V3(79.5, 1.1, 0), V3(80.0, 2.3, 12.5)] };
+  const VIEW = { path: DK ? [V3(-0.8, -1.2, 0), V3(-0.2, 0.8, 21)] : [V3(0.4, -1.6, 0), V3(0.9, 0.2, 17)], platelet: [V3(39.2, -0.6, 0), V3(39.6, 1.4, 12.5)], organs: [V3(79.5, 1.1, 0), V3(80.0, 2.3, 12.5)] };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VIEW.path[1]);
   const controls = makeControls(camera, VIEW.path[0]); controls.minDistance = 3; controls.maxDistance = 40;
   const fx = new Sparks(2200, 0.07); scene.add(fx.obj);
@@ -152,11 +152,11 @@ function makeEicosanoids() {
     para: '<b>Парацетамол</b> снижает жар и боль, действуя в основном в мозге (там мало перекисей, и он может подавлять ЦОГ), но почти не снимает воспаление и не трогает желудок и тромбоциты. Опасен передозировкой — печень (см. тему «Печень: обезвреживание, алкоголь, парацетамол»).',
   };
   const labels = [
-    { text: 'мембрана: фосфолипиды', pos: V3(-3.6 - 0.4, -1.75, 0.3), color: '#E8C07A', show: () => st.labels && st.mode === 'path' },
-    ...Object.entries(NODE).map(([k, n]) => ({ text: { aa: 'арахидоновая кислота', pgh2: 'простагландин H₂', pge2: 'простагландин E₂', pgi2: 'простациклин (PGI₂)', txa2: 'тромбоксан A₂', ltb4: 'лейкотриен B₄' }[k], pos: n.p.clone().add(V3(-0.45, -0.68, 0.3)), color: n.col, show: () => st.labels && st.mode === 'path' })),
+    { text: 'мембрана: фосфолипиды', pos: V3(-4.0, -2.0, 0.3), color: '#E8C07A', show: () => st.labels && st.mode === 'path' },
+    ...Object.entries(NODE).map(([k, n]) => ({ text: { aa: 'арахидоновая кислота', pgh2: DK ? 'простагландин H₂' : 'PGH₂', pge2: 'простагландин E₂', pgi2: DK ? 'простациклин (PGI₂)' : 'PGI₂', txa2: 'тромбоксан A₂', ltb4: 'лейкотриен B₄' }[k], pos: n.p.clone().add(V3(-0.45, -0.68, 0.3)), color: n.col, show: () => st.labels && st.mode === 'path' })),
     { text: 'фосфолипаза A₂', pos: ENZ.pla2.p.clone().add(V3(-0.7, 0.5, 0.2)), color: '#F2C14E', show: () => st.labels && st.mode === 'path' },
     { text: 'ЦОГ-1 / ЦОГ-2', pos: ENZ.cox.p.clone().add(V3(-0.9, 0.6, 0.2)), color: '#FF9A5C', show: () => st.labels && st.mode === 'path' },
-    { text: '5-липоксигеназа', pos: ENZ.lox.p.clone().add(V3(-0.5, -0.45, 0.2)), color: '#7FE0A0', show: () => st.labels && st.mode === 'path' },
+    { text: '5-липоксигеназа', pos: ENZ.lox.p.clone().add(V3(-1.0, -0.85, 0.2)), color: '#7FE0A0', show: () => st.labels && st.mode === 'path' },
     ...Object.entries(DRUG).map(([k, d]) => ({ text: d.name, pos: d.g.position.clone().add(V3(0.35, 0.3, 0.2)), color: '#FFFFFF', show: () => st.labels && st.mode === 'path' && st.drug === k })),
     { text: 'боль, жар; желудок', pos: NODE.pge2.p.clone().add(V3(0.6, 0.05, 0.2)), color: '#FF6A5A', show: () => DK && st.labels && st.mode === 'path' },
     { text: 'сосуды, против тромбов', pos: NODE.pgi2.p.clone().add(V3(0.6, 0.05, 0.2)), color: '#7FD6FF', show: () => DK && st.labels && st.mode === 'path' },
@@ -198,7 +198,7 @@ function makeEicosanoids() {
     const L = st.lv || {}; return [['Простагландины', Math.round(100 * clamp(L.pge2 || 0, 0, 1.5)), '%'], ['Лейкотриены', Math.round(100 * clamp(L.ltb4 || 0, 0, 1.5)), '%']];
   }
   const self = {
-    mobZoom: 0.84, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#FF8A5C',
+    labelBg: true, mobZoom: 0.84, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#FF8A5C',
     kicker: 'Биохимия · обмен липидов', title: 'Эйкозаноиды',
     lede: 'Из одной жирной кислоты мембраны клетка за секунды делает сигналы боли, жара, тромба и спазма — а аспирин и ибупрофен выключают один фермент на этом пути.',
     notes: `
