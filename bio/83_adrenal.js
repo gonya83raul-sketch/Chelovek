@@ -7,7 +7,7 @@
 function makeAdrenal() {
   rnd = mulberry(8301);
   const scene = bioStage({ rim: 0xf2c14e });
-  const VIEW = { steroid: [V3(0.5, -1.3, 0), V3(1.0, 0.4, 17.5)], stress: [V3(39.6, 1.2, 0), V3(40.1, 2.4, 12.5)], receptor: [V3(79.2, -1.7, 0), V3(79.6, 0.1, 15)] };
+  const VIEW = { steroid: [V3(0.5, -0.9, 0), V3(1.0, 0.8, 17.5)], stress: [V3(39.6, 1.2, 0), V3(40.1, 2.4, 12.5)], receptor: [V3(79.2, -1.7, 0), V3(79.6, 0.1, 15)] };
   // телефон: путь стероидов сверху вниз (холестерин наверху, три ветви зон — колонками), железа скрыта
   const MOB = matchMedia('(max-width:700px)').matches;
   if (MOB) VIEW.steroid = [V3(0.15, -0.9, 0), V3(0.45, 0.2, 10.6)];
@@ -20,7 +20,7 @@ function makeAdrenal() {
   /* ---------- 1. стероидогенез ---------- */
   const G1 = new THREE.Group(); scene.add(G1);
   // срез надпочечника: кольца зон коры и мозговое вещество
-  const GL = new THREE.Group(); GL.position.set(-3.2, 0, 0); GL.scale.set(1, 0.72, 1); G1.add(GL);
+  const GL = new THREE.Group(); GL.position.set(-3.2, 0, 0); GL.scale.set(1, 0.72, 1); GL.rotation.y = -0.45; G1.add(GL);
   const ZONES = [
     { id: 'cap', r0: 1.48, r1: 1.56, col: '#C8B8A8' },
     { id: 'glom', r0: 1.3, r1: 1.48, col: '#7FE0A0', name: 'клубочковая зона' },

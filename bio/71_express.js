@@ -30,7 +30,7 @@ function makeExpress() {
   const G1 = new THREE.Group(); scene.add(G1);
   const dna = duplex(16, '#8FA8C8', '#8FA8C8'); dna.position.set(-8, 0.4, 0); G1.add(dna);
   const tata = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.42, 0.6, 24, 1, true), new THREE.MeshBasicMaterial({ color: 0xf2c14e, transparent: true, opacity: 0.25, side: THREE.DoubleSide, depthWrite: false })); tata.rotation.z = Math.PI / 2; tata.position.set(-5.8, 0.4, 0); G1.add(tata);
-  const rnap = new THREE.Mesh(blobGeo(1.0, 0.85, 0.85, 31, 0.12, 4), glassMat(0xff9a50, { rim: 0.45, base: 0.012 })); G1.add(rnap);
+  const rnap = new THREE.Mesh(blobGeo(1.4, 1.15, 1.15, 31, 0.12, 4), glassMat(0xff9a50, { rim: 0.45, base: 0.012 })); G1.add(rnap);
   const rnapCore = new THREE.Mesh(blobGeo(0.85, 0.7, 0.7, 32, 0.12, 4), protMat('#FF9A50', 0.25, { transparent: true, opacity: 0.55 })); rnap.add(rnapCore);
   const MRN = 140; const mrnaPts = []; const mrnaM = new THREE.InstancedMesh(new THREE.SphereGeometry(0.075, 10, 8), new THREE.MeshPhysicalMaterial({ roughness: 0.35, clearcoat: 0.6 }), MRN); mrnaM.count = 0; G1.add(mrnaM);
   const GAL = new THREE.Group(); GAL.position.set(3.4, 2.5, 0.4); G1.add(GAL);   // врезка сверху — белок-регулятор на своём участке ДНК (другой ген)

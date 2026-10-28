@@ -23,7 +23,7 @@ function makePituitary() {
   const sonG = glowNucleus(G1, SON, '#7FD6FF', 0.07, 8), pvnG = glowNucleus(G1, PVN, '#7FE0A0', 0.07, 8), arcG = glowNucleus(G1, ARC, '#F2C14E', 0.07, 8);
   const translucent = (col, op) => organMat(col, 0.55, { transparent: true, opacity: op, depthWrite: false, emissiveIntensity: 0.06 });
   const stalkC = new THREE.CatmullRomCurve3([V3(0.18, 1.45, 0), V3(0.12, 0.65, 0), V3(0.0, -0.1, 0)]);
-  G1.add(new THREE.Mesh(taperTube(stalkC, (u) => 0.24 - 0.08 * u, 30, 14), translucent('#E8C0D0', 0.28)));
+  G1.add(new THREE.Mesh(taperTube(stalkC, (u) => 0.24 - 0.08 * u, 30, 14), translucent('#E8C0D0', 0.55)));
   const P_ANT = V3(0.8, -0.82, 0), P_POST = V3(-0.58, -0.88, 0);
   const ant = new THREE.Mesh(blobGeo(0.98, 0.7, 0.72, 7, 0.07), translucent('#E890A0', 0.32)); ant.position.copy(P_ANT); G1.add(ant);
   const post = new THREE.Mesh(blobGeo(0.6, 0.55, 0.55, 9, 0.07), translucent('#D8C8F0', 0.4)); post.position.copy(P_POST); G1.add(post);

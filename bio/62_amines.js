@@ -26,7 +26,7 @@ function makeAmines() {
   ];
   const STEPN = { his: ['гистидиндекарбоксилаза'], ser: ['гидроксилаза', 'декарбоксилаза', 'в эпифизе, ночью'], cat: ['тирозингидроксилаза', 'декарбоксилаза', 'гидроксилаза (вит. C)', 'метилирование (SAM)'], gaba: ['глутаматдекарбоксилаза'] };
   ROWS.forEach((r) => {
-    r.nodes = r.chain.map(([id], i) => { const g = fit(id, 0.6); g.position.copy(NP(r, i)); G1.add(g); return g; });
+    r.nodes = r.chain.map(([id], i) => { const g = fit(id, MOB ? 0.85 : 0.78); g.position.copy(NP(r, i)); G1.add(g); return g; });
     r.arr = r.chain.slice(1).map((_, i) => flowArrow(G1, NP(r, i).lerp(NP(r, i + 1), 0.3), NP(r, i).lerp(NP(r, i + 1), 0.7), r.col, { bend: 0.12, r: 0.02 }));
     r.b6 = r.dec.map((i) => { const m = new THREE.Mesh(new THREE.SphereGeometry(0.09, 14, 10), new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xff9a30).multiplyScalar(0.6), emissive: 0xff9a30, emissiveIntensity: 0.2, roughness: 0.3 })); m.position.copy(MP(r, i)).add(MOB ? V3(0.3, 0, 0.2) : V3(0, 0.3, 0.2)); G1.add(m); return m; });
   });
