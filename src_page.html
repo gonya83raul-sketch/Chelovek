@@ -3132,9 +3132,9 @@ function makeDevelop() {
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x07060a); scene.environment = envTex;
   addLights(scene, 0xff8fb0);
   // пока пользователь не вращал камеру: на ранних стадиях смотрим на пластинку сверху, к трубке опускаемся
-  const CAM_HI = V3(4, 14, 14), CAM_LO = V3(7, 9, 22);
+  const CAM_HI = V3(3.0, 17.5, 17.5), CAM_LO = V3(5.5, 9, 22);   // пластинка/трубка целиком, правее описания
   const camera = new THREE.PerspectiveCamera(36, 1, 0.1, 200); camera.position.copy(CAM_HI);
-  const controls = makeControls(camera, V3(0, -1.5, 0)); controls.minDistance = 4; controls.maxDistance = 40;
+  const controls = makeControls(camera, V3(-1.5, -1.5, 0)); controls.minDistance = 4; controls.maxDistance = 40;
   controls.addEventListener('start', () => { st.userCam = true; });
   const C = Object.fromEntries(Object.entries(DEV_COL).map(([k, v]) => [k, new THREE.Color(v)]));
   const cut = new THREE.Plane(V3(0, 0, -1), 0.0);
@@ -6276,7 +6276,7 @@ function makeHippo() {
   rnd = mulberry(909);
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x060509); scene.environment = envTex;
   labLights(scene, 0xff8a5c);
-  const VIEW = { papez: flyTarget(V3(-0.1, -0.72, 0.2), V3(1.3, 0.85, 6.6)), sec: flyTarget(V3(0.45, -0.6, 0), V3(0.5, 0.1, 7.6)) };
+  const VIEW = { papez: flyTarget(V3(-0.1, -0.35, 0.2), V3(1.47, 1.41, 7.37)), sec: flyTarget(V3(0.45, -0.6, 0), V3(0.5, 0.1, 7.6)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(VIEW.papez.pos);
   const controls = makeControls(camera, VIEW.papez.target); controls.minDistance = 1.5; controls.maxDistance = 14;
   const brain = new THREE.Group(); scene.add(brain);
@@ -8612,7 +8612,7 @@ function makeBlood() {
   rnd = mulberry(2020);
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x0a0507); scene.environment = envTex;
   labLights(scene, 0xff7a7a);
-  const VIEW = { flow: flyTarget(V3(-0.8, -1.2, 0), V3(1.9, 1.2, 12.9)), clot: flyTarget(V3(0.3, -0.4, 0), V3(1.4, 3.2, 7.4)), groups: flyTarget(V3(30, -0.9, 0), V3(30.6, 0.8, 7.2)), tube: flyTarget(V3(60.55, -0.55, 0), V3(61.7, 0.9, 12.4)) };
+  const VIEW = { flow: flyTarget(V3(-1.6, -0.4, 0), V3(1.4, 2.3, 14.4)), clot: flyTarget(V3(0.3, -0.4, 0), V3(1.4, 3.2, 7.4)), groups: flyTarget(V3(30, -0.9, 0), V3(30.6, 0.8, 7.2)), tube: flyTarget(V3(60.55, -0.55, 0), V3(61.7, 0.9, 12.4)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(VIEW.flow.pos);
   const controls = makeControls(camera, VIEW.flow.target); controls.minDistance = 1.5; controls.maxDistance = 18;
   const pick = [];
