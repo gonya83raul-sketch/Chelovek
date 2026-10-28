@@ -150,7 +150,7 @@ function makeHemoglobin() {
   const labels = [
     { text: 'α-цепь', get pos() { return scrOut(cenA.clone().applyMatrix4(dimer1.matrixWorld), 1.9); }, color: '#7FD6FF', show: () => st.labels && st.mode === 'o2' },
     { text: 'β-цепь', get pos() { return scrOut(cenB.clone().applyMatrix4(dimer1.matrixWorld), 1.9); }, color: '#FF8AB0', show: () => st.labels && st.mode === 'o2' },
-    { text: 'гем · Fe²⁺', get pos() { return scrOut(feP[2].clone().applyMatrix4(dimer2.matrixWorld), 0.7); }, color: '#FF5A5A', show: () => st.labels && st.mode === 'o2' },
+    { text: 'гем · Fe²⁺', get pos() { return scrOut(feP[2].clone().applyMatrix4(dimer2.matrixWorld), 1.6); }, color: '#FF9A9A', show: () => st.labels && st.mode === 'o2' },
     { text: 'O₂', get pos() { return o2m[3].getWorldPosition(V3(0, 0, 0)); }, color: '#F04848', show: () => st.labels && st.mode === 'o2' && st.S < 0.9 },
     { text: 'порфириновое кольцо', get pos() { return hG.localToWorld(ringEdge.clone()); }, color: '#9FB4FF', show: () => st.labels && st.mode === 'heme' },
     { text: 'Fe²⁺', get pos() { return hG.localToWorld(V3(0, 0, 0)).add(V3(0.45, -0.3, 0.3)); }, color: '#FF6A3A', show: () => st.labels && st.mode === 'heme' && st.lig !== 'met' },
