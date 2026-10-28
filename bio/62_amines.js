@@ -6,7 +6,7 @@
 function makeAmines() {
   rnd = mulberry(6201);
   const scene = bioStage({ rim: 0x9fe870 });
-  const VIEW = { decarb: [V3(3.9, -1.45, 0), V3(4.5, 0.5, 20)], fate: [V3(41.2, -0.2, 0), V3(41.8, 1.6, 17.5)], onec: [V3(81.0, -1.6, 0), V3(81.6, 0.3, 18.5)] };
+  const VIEW = { decarb: [V3(1.4, -0.35, 0), V3(2.0, 1.6, 19.5)], fate: [V3(41.2, -0.2, 0), V3(41.8, 1.6, 17.5)], onec: [V3(81.0, -1.6, 0), V3(81.6, 0.3, 18.5)] };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VIEW.decarb[1]);
   const controls = makeControls(camera, VIEW.decarb[0]); controls.minDistance = 3; controls.maxDistance = 40;
   const fx = new Sparks(1800, 0.08); scene.add(fx.obj);
@@ -160,7 +160,7 @@ function makeAmines() {
     const r = ROWS.find((x) => x.id === st.row); return [['Аминокислота', r.chain[0][1], ''], ['Шагов', r.chain.length - 1, '']];
   }
   const self = {
-    scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#9FE870',
+    mobZoom: 0.9, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#9FE870',
     kicker: 'Биохимия · обмен аминокислот', title: 'Биогенные амины',
     lede: 'Отщепив всего одну молекулу CO₂, клетка превращает обычную аминокислоту в мощный сигнал: гистамин, серотонин, дофамин, адреналин, ГАМК.',
     notes: `

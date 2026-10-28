@@ -14,7 +14,7 @@ const EX_AB = [
 function makeExpress() {
   rnd = mulberry(2001);
   const scene = bioStage({ rim: 0xff9a50 });
-  const VIEW = { tx: flyTarget(V3(0, -1.4, 0), V3(0.5, 0.6, 17)), splice: flyTarget(V3(40, -1.2, 0), V3(40.3, 0.6, 16)), tl: flyTarget(V3(80, -1.0, 0), V3(81.5, 1.2, 15)) };
+  const VIEW = { tx: flyTarget(V3(0, 0.2, 0), V3(0.5, 2.2, 17)), splice: flyTarget(V3(40, -1.2, 0), V3(40.3, 0.6, 16)), tl: flyTarget(V3(80, -1.0, 0), V3(81.5, 1.2, 15)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.tx.pos);
   const controls = makeControls(camera, VIEW.tx.target); controls.minDistance = 2; controls.maxDistance = 40;
   const fx = new Sparks(1400, 0.08); scene.add(fx.obj);
@@ -33,9 +33,9 @@ function makeExpress() {
   const rnap = new THREE.Mesh(blobGeo(1.0, 0.85, 0.85, 31, 0.12, 4), glassMat(0xff9a50, { rim: 0.45, base: 0.012 })); G1.add(rnap);
   const rnapCore = new THREE.Mesh(blobGeo(0.85, 0.7, 0.7, 32, 0.12, 4), protMat('#FF9A50', 0.25, { transparent: true, opacity: 0.55 })); rnap.add(rnapCore);
   const MRN = 140; const mrnaPts = []; const mrnaM = new THREE.InstancedMesh(new THREE.SphereGeometry(0.075, 10, 8), new THREE.MeshPhysicalMaterial({ roughness: 0.35, clearcoat: 0.6 }), MRN); mrnaM.count = 0; G1.add(mrnaM);
-  const GAL = new THREE.Group(); GAL.position.set(-4.6, -1.45, 0.4); G1.add(GAL);
+  const GAL = new THREE.Group(); GAL.position.set(3.4, 2.5, 0.4); G1.add(GAL);   // врезка сверху — белок-регулятор на своём участке ДНК (другой ген)
   const gp = proteinMesh('gal4', { scale: 0.035, colorBy: (c, ci) => ['#F2E6C8', '#F2E6C8', '#C77DFF', '#FF8AB0'][ci] || '#7FD6FF', nucColor: '#9FB4D8' }); GAL.add(gp);
-  const galLink = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.01, 1.6, 6), new THREE.MeshBasicMaterial({ color: 0x9fb4d8, transparent: true, opacity: 0.4 })); galLink.position.set(-5.3, -0.55, 0.2); galLink.rotation.z = 0.5; galLink.scale.y = 0.7; G1.add(galLink);
+  const galLink = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.01, 1.6, 6), new THREE.MeshBasicMaterial({ color: 0x9fb4d8, transparent: true, opacity: 0.4 })); galLink.position.set(3.0, 1.45, 0.2); galLink.rotation.z = 0.35; galLink.scale.y = 0.6; G1.add(galLink);
   /* ---------- 2. сплайсинг ---------- */
   const G2 = new THREE.Group(); G2.position.set(40, 0, 0); scene.add(G2);
   const EXONS = [[0, 1.6, '#FF8A5C'], [3.2, 4.6, '#F2C14E'], [6.6, 8.0, '#7FE0A0'], [9.4, 11.0, '#7FD6FF']];
@@ -123,7 +123,7 @@ function makeExpress() {
     { text: 'промотор · ТАТА-бокс', pos: V3(-6.4, -0.3, 0), color: '#F2C14E', show: () => st.labels && st.mode === 'tx' },
     { text: 'РНК-полимераза', pos: () => rnap.position.clone().add(V3(-0.6, -1.1, 0)), color: '#FF9A50', show: () => st.labels && st.mode === 'tx' },
     { text: 'мРНК', pos: V3(-1.0, 2.6, 0), color: '#F2E6C8', show: () => st.labels && st.mode === 'tx' && st.cyc % 18 > 6 },
-    { text: 'белок GAL4 на ДНК (PDB 1D66)', pos: V3(-3.4, -1.6, 0.4), color: '#C77DFF', show: () => st.labels && st.mode === 'tx' },
+    { text: 'белок GAL4 на ДНК (PDB 1D66)', pos: V3(4.4, 3.0, 0.4), color: '#C77DFF', show: () => st.labels && st.mode === 'tx' },
     { text: 'кэп', pos: V3(40 - 6.0, 1.1, 0), color: '#C77DFF', show: () => st.labels && st.mode === 'splice' && st.cyc % 14 > 8 },
     { text: 'поли-A', pos: V3(40 + 2.4, 1.1, 0), color: '#FF6A6A', show: () => st.labels && st.mode === 'splice' && st.cyc % 14 > 9.5 },
     { text: 'интроны', pos: V3(40 - 2.5, 2.2, 0), color: '#9FA8B8', show: () => st.labels && st.mode === 'splice' && st.cyc % 14 > 3 && st.cyc % 14 < 7 },
@@ -160,7 +160,7 @@ function makeExpress() {
   }
   function stats() { return st.mode === 'tx' ? [['Этап', st.txPh || '', '']] : st.mode === 'splice' ? [['Этап', st.spPh || '', '']] : [['Кодон', st.curCod || '', ''], ['Аминокислота', EX_AA[st.curAA] || '', ''], ['Скорость', '≈ 5', 'а.к./с']]; }
   const self = {
-    scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#FF9A50',
+    mobZoom: 0.85, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#FF9A50',
     kicker: 'Биохимия · молекулярная генетика', title: 'Транскрипция и трансляция',
     lede: 'Центральная догма: ДНК → РНК → белок. Ген переписывается в мРНК, мРНК созревает и уходит к рибосоме, где кодоны превращаются в аминокислоты.',
     notes: `
