@@ -41,8 +41,9 @@ const GL_MODES = {
 function makeGlycolysis() {
   rnd = mulberry(1201);
   const scene = bioStage({ rim: 0xff8ab0 });
-  const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 200); camera.position.set(-1.1, 0.8, 22);
-  const controls = makeControls(camera, V3(-1.1, -2.0, 0)); controls.minDistance = 4; controls.maxDistance = 40;
+  const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: кадр уходит из-под заголовка и описания (телефон — прежний ракурс)
+  const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 200); camera.position.set(-1.1, DK ? 1.5 : 0.8, DK ? 25 : 22);
+  const controls = makeControls(camera, V3(-1.1, DK ? -1.4 : -2.0, 0)); controls.minDistance = 4; controls.maxDistance = 40;
   controls.minAzimuthAngle = -0.6; controls.maxAzimuthAngle = 0.6; controls.minPolarAngle = 1.1; controls.maxPolarAngle = 2.0; // плоская схема: подписи не уходят к соседям
   const fx = new Sparks(1600, 0.09); scene.add(fx.obj);
   const NP = (id) => V3(GL_N[id][0], GL_N[id][1], 0);

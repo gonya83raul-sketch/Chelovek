@@ -13,7 +13,8 @@ const EM_LDH = { norm: [0.27, 0.36, 0.22, 0.09, 0.06], mi: [0.42, 0.32, 0.15, 0.
 function makeEnzmed() {
   rnd = mulberry(733);
   const scene = bioStage({ rim: 0xc77dff });
-  const VIEW = { allo: flyTarget(V3(0, -1.5, 0), V3(1.5, 0.2, 14.5)), phos: flyTarget(V3(40, -1, 0), V3(41, 1.0, 14)), prot: flyTarget(V3(80, -1.2, 0), V3(81.4, 1.6, 17)), ldh: flyTarget(V3(120, -0.6, 0), V3(120, 2.4, 13.5)), drug: flyTarget(V3(160, -1.2, 0), V3(160, 3.2, 18)) };
+  const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: кадр уходит из-под заголовка и описания (телефон — прежний ракурс)
+  const VIEW = { allo: DK ? flyTarget(V3(-0.4, -1.0, 0), V3(1.1, 0.7, 15)) : flyTarget(V3(0, -1.5, 0), V3(1.5, 0.2, 14.5)), phos: flyTarget(V3(40, -1, 0), V3(41, 1.0, 14)), prot: flyTarget(V3(80, -1.2, 0), V3(81.4, 1.6, 17)), ldh: flyTarget(V3(120, -0.6, 0), V3(120, 2.4, 13.5)), drug: flyTarget(V3(160, -1.2, 0), V3(160, 3.2, 18)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 500); camera.position.copy(VIEW.allo.pos);
   const controls = makeControls(camera, VIEW.allo.target); controls.minDistance = 2; controls.maxDistance = 40;
   const fx = new Sparks(1500, 0.08); scene.add(fx.obj);

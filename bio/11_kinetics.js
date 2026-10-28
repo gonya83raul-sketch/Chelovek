@@ -18,8 +18,9 @@ const KN_INH = {
 function makeKinetics() {
   rnd = mulberry(611);
   const scene = bioStage({ rim: 0xf2c14e });
-  const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 200); camera.position.set(0.3, 3.6, 18.5);
-  const controls = makeControls(camera, V3(-1.2, -1.4, 0)); controls.minDistance = 4; controls.maxDistance = 30;
+  const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: кадр уходит из-под заголовка и описания (телефон — прежний ракурс)
+  const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 200); camera.position.set(DK ? -1.6 : 0.3, 3.6, DK ? 21.5 : 18.5);
+  const controls = makeControls(camera, V3(DK ? -3.1 : -1.2, -1.4, 0)); controls.minDistance = 4; controls.maxDistance = 30;
   const BX = 5.2, BY = 2.0, BZ = 2.8, NE = 14, NP = 520, SC = 0.034;
   // контейнер-«кювета»
   const box = new THREE.Mesh(new THREE.BoxGeometry(BX * 2 + 0.6, BY * 2 + 0.6, BZ * 2 + 0.6), glassMat(0x9fd0ff, { rim: 0.25, base: 0.006, pow: 3 })); scene.add(box);
