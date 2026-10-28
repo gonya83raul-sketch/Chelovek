@@ -299,6 +299,7 @@ dialog.finder::backdrop{background:rgba(6,5,8,.72)}
   .stat b small{font-size:11px}
   .lbl{font-size:11px;letter-spacing:0}
   #scope{width:min(220px,58%);height:104px;right:10px}
+  #scope.sl{left:10px;right:auto}
   .console.out{position:static;margin-top:10px;background:var(--panel-solid);backdrop-filter:none;-webkit-backdrop-filter:none;padding:14px 12px;gap:14px 16px;border-color:var(--line)}
   .console.out .grp{flex:1 1 100%}
   .info{max-width:none;font-size:14px}
@@ -2084,9 +2085,9 @@ function makeSkeleton() {
   addLights(scene, 0x8fb0ff);
   const sun = new THREE.DirectionalLight(0xfff4e6, 1.5); sun.position.set(5, 22, 10); sun.castShadow = true;
   sun.shadow.mapSize.set(2048, 2048); Object.assign(sun.shadow.camera, { left: -6, right: 6, top: 20, bottom: -2, near: 1, far: 50 }); sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.02; scene.add(sun);
-  const camera = new THREE.PerspectiveCamera(36, 1, 0.05, 200); camera.position.set(11.3, 13.6, 31.5);   // весь рост, с черепом
-  const controls = makeControls(camera, V3(0.15, 9.0, 0)); controls.minDistance = 2.5; controls.maxDistance = 60; controls.autoRotate = true; controls.autoRotateSpeed = 0.5;
-  const floor = new THREE.Mesh(new THREE.CircleGeometry(9, 72), new THREE.ShadowMaterial({ opacity: 0.42 })); floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
+  const camera = new THREE.PerspectiveCamera(36, 1, 0.05, 200); camera.position.set(12.65, 13.2, 35.6);   // весь рост, с черепом
+  const controls = makeControls(camera, V3(0.15, 8.0, 0)); controls.minDistance = 2.5; controls.maxDistance = 60; controls.autoRotate = true; controls.autoRotateSpeed = 0.5;
+  const floor = new THREE.Mesh(new THREE.CircleGeometry(9, 72), new THREE.ShadowMaterial({ opacity: 0.2 })); floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
   const ring = new THREE.Mesh(new THREE.RingGeometry(5.9, 5.94, 128), new THREE.MeshBasicMaterial({ color: 0x3a3540, side: THREE.DoubleSide })); ring.rotation.x = -Math.PI / 2; ring.position.y = 0.01; scene.add(ring);
 
   const U = { uSel: { value: -1 }, uPulse: { value: 0 }, uSelColor: { value: new THREE.Color(0xffa45c) } };
@@ -2183,8 +2184,8 @@ function makeSkeleton() {
   function select(id) {
     st.sel = id === 'all' ? null : id; st.focusT = 1.6;
     U.uSel.value = st.sel ? BONES.findIndex((b) => b.id === st.sel) : -1;
-    const a = st.sel ? anchors[st.sel].getWorldPosition(V3(0, 0, 0)) : V3(0.15, 9.0, 0);
-    st.focus = { target: a, dist: st.sel ? (['skull', 'hand', 'foot'].includes(st.sel) ? 6 : 9) : 35 };
+    const a = st.sel ? anchors[st.sel].getWorldPosition(V3(0, 0, 0)) : V3(0.15, 8.0, 0);
+    st.focus = { target: a, dist: st.sel ? (['skull', 'hand', 'foot'].includes(st.sel) ? 6 : 9) : 38 };
     refs.setInfo && refs.setInfo(); refs.seg && refs.seg.sync();
   }
   const th0 = J.knL.clone().sub(J.hpL), sh0 = J.anL.clone().sub(J.knL), hipOff = J.hpL.clone().sub(hipC), XA = V3(1, 0, 0);
@@ -2236,12 +2237,13 @@ function makeSkeleton() {
     if (hit && hit.face) { const li = Math.round(hit.object.geometry.attributes.aLabel.getX(hit.face.a)); if (BONES[li]) select(BONES[li].id); }
   });
 
+  const MAINB = new Set(['Лобная', 'Нижняя челюсть', 'Ключица', 'Грудина', 'Поясничные позвонки', 'Лучевая', 'Бедренная', 'Надколенник', 'Большеберцовая', 'Предплюсна']);
   const BONE_LABELS = [{"t": "Лобная", "g": "skull", "p": [0.0796, 16.6407, 0.8868]}, {"t": "Теменная", "g": "skull", "p": [0.4548, 17.0452, 0.0984]}, {"t": "Затылочная", "g": "skull", "p": [0.1017, 16.184, -0.7654]}, {"t": "Височная", "g": "skull", "p": [0.7013, 16.0175, 0.1367]}, {"t": "Скуловая", "g": "skull", "p": [0.4967, 16.042, 0.8613]}, {"t": "Носовая", "g": "skull", "p": [0.0449, 16.0425, 1.0245]}, {"t": "Верхняя челюсть", "g": "skull", "p": [0.1309, 15.5483, 0.9699]}, {"t": "Нижняя челюсть", "g": "skull", "p": [0.2782, 15.1467, 0.8584]}, {"t": "Шейные позвонки", "g": "spine", "p": [0.0206, 14.7522, -0.1927]}, {"t": "Грудные позвонки", "g": "spine", "p": [-0.0235, 12.9833, -0.5546]}, {"t": "Поясничные позвонки", "g": "spine", "p": [-0.1043, 10.7833, 0.2957]}, {"t": "Крестец", "g": "pelvis", "p": [-0.033, 9.6459, -0.6107]}, {"t": "Копчик", "g": "pelvis", "p": [0.3686, 8.7181, -0.3489]}, {"t": "Грудина", "g": "ribs", "p": [0.0191, 13.0052, 1.3951]}, {"t": "I ребро", "g": "ribs", "p": [0.712, 13.907, 0.7677]}, {"t": "Рёбра · 12 пар", "g": "ribs", "p": [1.4023, 12.7026, 0.2037]}, {"t": "Ключица", "g": "girdle", "p": [0.7553, 14.0214, 0.7482]}, {"t": "Лопатка", "g": "girdle", "p": [0.9557, 13.2018, -0.5459]}, {"t": "Плечевая", "g": "arm", "p": [1.7736, 12.6054, 0.3168]}, {"t": "Лучевая", "g": "arm", "p": [1.7487, 9.9583, 0.4686]}, {"t": "Локтевая", "g": "arm", "p": [1.6089, 9.9973, 0.2577]}, {"t": "Запястье", "g": "hand", "p": [1.7824, 8.4845, 0.4016]}, {"t": "Пясть", "g": "hand", "p": [1.6081, 8.0102, 0.5156]}, {"t": "Фаланги пальцев", "g": "hand", "p": [1.3776, 7.4411, 0.5386]}, {"t": "Подвздошная", "g": "pelvis", "p": [1.178, 10.2722, 0.098]}, {"t": "Седалищная", "g": "pelvis", "p": [0.4501, 8.6117, -0.3217]}, {"t": "Лобковая", "g": "pelvis", "p": [0.2708, 8.9272, 0.5877]}, {"t": "Бедренная", "g": "femur", "p": [1.1301, 7.1449, -0.0205]}, {"t": "Надколенник", "g": "leg", "p": [0.9068, 5.3628, 0.4384]}, {"t": "Большеберцовая", "g": "leg", "p": [0.8002, 3.4136, 0.161]}, {"t": "Малоберцовая", "g": "leg", "p": [1.0927, 3.417, -0.1663]}, {"t": "Таранная", "g": "foot", "p": [0.9014, 1.3115, -0.3629]}, {"t": "Пяточная", "g": "foot", "p": [0.9726, 1.2409, -0.6265]}, {"t": "Предплюсна", "g": "foot", "p": [0.9148, 0.7604, 0.2839]}, {"t": "Плюсна", "g": "foot", "p": [0.8381, 0.2375, 0.7895]}, {"t": "Фаланги пальцев", "g": "foot", "p": [0.6721, 0.1678, 0.8411]}];
   const MUSCLE_LABELS = [["Грудино-ключично-сосцевидная", [0.43, 15.14, 0.26]], ["Дельтовидная", [2.39, 13.54, 0.09]], ["Большая грудная", [0.74, 12.85, 1.38]], ["Двуглавая плеча (бицепс)", [2.59, 11.63, -0.04]], ["Прямая мышца живота", [0.23, 10.79, 1.34]], ["Наружная косая", [1.33, 10.55, 0.74]], ["Четырёхглавая бедра", [1.01, 6.8, 0.98]], ["Передняя большеберцовая", [1.44, 3.38, -0.04]], ["Трапециевидная", [-0.46, 14.13, -1.21]], ["Широчайшая спины", [-1.33, 11.61, -0.83]], ["Трёхглавая плеча (трицепс)", [-2.55, 11.53, -1.26]], ["Большая ягодичная", [-0.6, 9.16, -1.26]], ["Задняя группа бедра", [-0.95, 6.75, -0.69]], ["Икроножная", [-1.15, 3.74, -1.1]]];
   // подпись точки за телом (дальше оси тела по лучу зрения) приглушается — не «висит» на тазу
   const camD = V3(0, 0, 0), behind = (p) => { camD.copy(controls.target).sub(camera.position).normalize(); return (p.x - 0.15) * camD.x + p.z * camD.z > 0.6 ? 0.3 : 1; };
   const labels = [...MUSCLE_LABELS.map(([t, p]) => ({ text: t, pos: V3(...p), color: '#ff9f8a', show: () => st.labels && st.mus && st.musLoad === 2, fade() { return behind(this.pos); } })),
-    ...BONE_LABELS.map((b) => ({ text: b.t, pos: V3(...b.p), show: () => st.loaded && st.labels && !st.mus && !((st.pulse || (st.vlabels && st.ves)) && !st.sel) && (!st.sel || st.sel === b.g), fade() { return behind(this.pos); } })),
+    ...BONE_LABELS.map((b) => ({ text: b.t, pos: V3(...b.p), show: () => st.loaded && st.labels && !st.mus && !((st.pulse || (st.vlabels && st.ves)) && !st.sel) && (st.sel ? st.sel === b.g : MAINB.has(b.t)), fade() { return behind(this.pos); } })),
     ...VES.labels.map((l) => ({ text: l.t, pos: l.p, color: l.k === 'v' ? '#8aa6ff' : '#ff8a7a', show: () => st.ves && st.vlabels && !st.pulse && !st.sel && !st.mus && !(l.k === 'v' && st.vmode === 'art') && !(l.k === 'a' && st.vmode === 'ven') })),
     ...VES.pulse.filter((q) => q.s === 1).map((q) => ({ text: q.t, pos: q.p.clone().add(q.med < 0 ? V3(0, 0.05, 0.16) : V3(0.12, 0.05, 0.1)), color: '#ffd27a', show: () => st.pulse && !st.sel && !st.mus, fade() { return behind(this.pos); } }))];
   const PULSE_TEXT = 'Пульс прощупывают там, где артерия лежит неглубоко и её можно прижать к кости или плотной ткани. Удар сердца гонит по стенкам артерий волну давления (5–10 м/с), поэтому на стопе толчок приходит примерно на 0,2 с позже, чем на шее, — видно по вспышкам. Обычно считают пульс на лучевой артерии: в покое 60–90 ударов в минуту. Сонную артерию щупают только с одной стороны и не сдавливают.';
@@ -2288,7 +2290,7 @@ function makeSkeleton() {
   }
   function stats() { return st.sel ? [['Состав', BONES.find((b) => b.id === st.sel).count, '']] : st.mus ? [['Мышц', '≈ 640', ''], ['Доля массы', '35–40', '%']] : [['Костей', 206, ''], ['Рост', 172, 'см']]; }
   const self = {
-    labelBg: true, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#E8D8BB',
+    labelBg: true, mobZoom: 0.55, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#E8D8BB',
     kicker: 'Тело · кости, мышцы, сосуды', title: 'Скелет, мышцы и сосуды',
     lede: 'Трёхмерный скан настоящего скелета с кровеносной системой поверх него. Вращайте его, приближайте и нажимайте на кости; в рентгене видно, как они соединяются в суставах.',
     notes: `
@@ -6872,7 +6874,7 @@ function makeHeart() {
   rnd = mulberry(1212);
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x07060a); scene.environment = envTex;
   labLights(scene, 0xff7a6a);
-  const VIEW = { heart: flyTarget(V3(0.0, -0.15, 0), V3(2.2, 0.55, 9.9)), cond: flyTarget(V3(0.05, -0.85, 0), V3(-1.6, -0.2, 8.8)), circ: flyTarget(V3(0.1, 0.9, 0), V3(3.6, 3.4, 13.5)) };
+  const VIEW = { heart: flyTarget(V3(0.0, -0.05, 0), V3(2.2, 0.65, 9.9)), cond: flyTarget(V3(0.05, -0.85, 0), V3(-1.6, -0.2, 8.8)), circ: flyTarget(V3(0.1, 0.9, 0), V3(3.6, 3.4, 13.5)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(VIEW.heart.pos);
   const controls = makeControls(camera, VIEW.heart.target); controls.minDistance = 2; controls.maxDistance = 25;
   const hg = new THREE.Group(); scene.add(hg);
@@ -6903,7 +6905,7 @@ function makeHeart() {
   const septum = add('lv', (() => { const g = new THREE.CylinderGeometry(0.42, 0.06, 1.15, 24, 1); g.scale(1, 1, 0.18); g.rotateY(-0.9); g.rotateZ(0.42); g.translate(0.18, -0.42, 0.14); return g; })(), { k: 0.35, mat: { color: new THREE.Color(0x9a3a40).multiplyScalar(0.5) } });
   /* ---------- сосуды ---------- */
   const vesC = {
-    svc: [V3(-0.56, 1.5, -0.05), V3(-0.56, 1.0, -0.02), V3(-0.55, 0.62, 0.02)],
+    svc: [V3(-0.56, 1.36, -0.05), V3(-0.56, 1.0, -0.02), V3(-0.55, 0.62, 0.02)],
     ivc: [V3(-0.5, -0.02, -0.12), V3(-0.52, -0.45, -0.2), V3(-0.52, -0.95, -0.25)],
     aorta: [V3(0.1, 0.12, 0.02), V3(0.02, 0.62, 0.08), V3(0.0, 1.05, 0.02), V3(0.18, 1.3, -0.25), V3(0.36, 1.15, -0.6), V3(0.38, 0.5, -0.72), V3(0.36, -1.0, -0.7)],
     pt: [V3(0.0, 0.3, 0.46), V3(0.12, 0.62, 0.4), V3(0.3, 0.85, 0.18)],   // ствол уходит влево от восходящей аорты
@@ -6915,7 +6917,7 @@ function makeHeart() {
   const VES = {};
   Object.entries(vesC).forEach(([k, pts]) => { const c = new THREE.CatmullRomCurve3(pts); VES[k] = c; const m = add('ves', taperTube(c, (u) => VR[k] * (k === 'aorta' ? 1 - 0.25 * u : 1), 80, 16), { k: 0.5, mat: { color: new THREE.Color(VCOL[k]).multiplyScalar(0.45) } }); });
   // ветви дуги аорты
-  [[V3(0.0, 1.25, -0.05), V3(-0.1, 1.75, 0.0)], [V3(0.12, 1.32, -0.18), V3(0.18, 1.8, -0.15)], [V3(0.25, 1.28, -0.35), V3(0.5, 1.7, -0.4)]].forEach((pts) => add('ves', tube(pts, 0.055, 16, 10), { k: 0.5, mat: { color: new THREE.Color('#E0605A').multiplyScalar(0.45) } }));
+  [[V3(0.0, 1.25, -0.05), V3(-0.1, 1.5, 0.0)], [V3(0.12, 1.32, -0.18), V3(0.18, 1.52, -0.15)], [V3(0.25, 1.28, -0.35), V3(0.5, 1.48, -0.4)]].forEach((pts) => add('ves', tube(pts, 0.055, 16, 10), { k: 0.5, mat: { color: new THREE.Color('#E0605A').multiplyScalar(0.45) } }));
   // лёгочные вены
   const PV = [[V3(1.05, 0.62, -0.45), V3(0.6, 0.55, -0.48)], [V3(1.05, 0.32, -0.5), V3(0.6, 0.4, -0.5)], [V3(-0.75, 0.62, -0.55), V3(-0.2, 0.55, -0.5), V3(0.05, 0.5, -0.45)], [V3(-0.75, 0.3, -0.6), V3(-0.2, 0.35, -0.52), V3(0.05, 0.4, -0.45)]].map((pts) => { const c = new THREE.CatmullRomCurve3(pts); add('ves', taperTube(c, () => 0.075, 20, 10), { k: 0.5, mat: { color: new THREE.Color('#E0605A').multiplyScalar(0.42) } }); return c; });
   // венечные артерии
@@ -7073,7 +7075,7 @@ function makeHeart() {
     const x = (tt) => 8 + (1 - (st.t - tt) / 4) * (w - 16), y0 = hgt * 0.62, sc = hgt * 0.42;
     ctx.lineWidth = 2; ctx.strokeStyle = '#7FE0A0'; ctx.beginPath(); st.ecg.forEach(([tt, v], i) => { const yy = y0 - v * sc; i ? ctx.lineTo(x(tt), yy) : ctx.moveTo(x(tt), yy); }); ctx.stroke();
     ctx.font = '500 10px JetBrains Mono, monospace'; ctx.fillStyle = '#7FE0A0'; ctx.fillText('ЭКГ · ' + st.hr + ' уд/мин', 10, 13);
-    let last = -9; st.ecg.forEach(([tt, , s]) => { if (s && tt - last > 0.08) { last = tt; ctx.fillStyle = s === 1 ? '#F2E6C8' : '#c8b8a0'; ctx.fillText(s === 1 ? 'лаб' : 'даб', x(tt) - 8, hgt - 6); } });
+    let last = -9; st.ecg.forEach(([tt, , s]) => { if (s && tt - last > 0.08) { last = tt; ctx.fillStyle = s === 1 ? '#F2E6C8' : '#c8b8a0'; ctx.fillText(s === 1 ? 'лаб' : 'даб', x(tt) - 8, s === 1 ? hgt - 6 : hgt - 18); } });
   }
   const TXT = {
     heart: '<b>Сердце</b> — мышечный насос размером с кулак (около 300 г). Четыре камеры: два предсердия сверху и два желудочка снизу. Правая половина (синяя) качает бедную кислородом кровь в лёгкие, левая (красная) — насыщенную кислородом кровь ко всему телу. Цикл при 75 ударах в минуту длится 0,8 с: систола предсердий 0,1 с, систола желудочков 0,3 с, общая пауза (диастола) 0,4 с. Нажмите на часть сердца.',
@@ -7083,9 +7085,9 @@ function makeHeart() {
   };
   const labels = [
     ...[['ra', V3(-0.95, 0.45, 0.2)], ['rv', V3(-0.35, -0.75, 0.55)], ['la', V3(0.8, 0.62, -0.4)], ['lv', V3(0.85, -0.55, 0.2)]].map(([id, p]) => ({ text: PART[id].name, pos: p, color: id[0] === 'r' ? '#A8BCFF' : PART[id].color, show: () => st.labels && st.mode !== 'circ' && (!st.sel || st.sel === id) })),
-    { text: 'аорта', pos: V3(0.45, 1.55, -0.35), color: '#E0605A', show: () => st.labels && st.mode === 'heart' },
+    { text: 'аорта', pos: V3(0.45, 1.4, -0.35), color: '#E0605A', show: () => st.labels && st.mode === 'heart' },
     { text: 'лёгочный ствол', pos: V3(0.3, 0.75, 0.45), color: '#8CA0F0', show: () => st.labels && st.mode === 'heart' },
-    { text: 'верхняя полая вена', pos: V3(-0.75, 1.5, 0.0), color: '#8CA0F0', show: () => st.labels && st.mode === 'heart' },
+    { text: 'верхняя полая вена', pos: V3(-0.75, 1.35, 0.0), color: '#8CA0F0', show: () => st.labels && st.mode === 'heart' },
     { text: 'нижняя полая вена', pos: V3(-0.6, -1.0, -0.22), color: '#8CA0F0', show: () => st.labels && st.mode === 'heart' },
     { text: 'лёгочные вены', pos: V3(1.1, 0.5, -0.45), color: '#E0605A', show: () => st.labels && st.mode === 'heart' },
     ...VALVES.map((v) => ({ text: v.name + ' клапан', pos: v.p.clone().add(V3(0.05, 0.03, 0.12)), color: '#F2E6C8', show: () => st.labels && st.mode === 'heart' && (st.sel === 'valve') })),
@@ -7127,7 +7129,7 @@ function makeHeart() {
   }
   function stats() { const mok = (st.hr * 70 / 1000).toFixed(1); return st.mode === 'circ' ? [['Оборот крови', '20–25', 'с'], ['Объём крови', '≈5', 'л']] : [['ЧСС', st.block ? 38 : st.hr, 'уд/мин'], ['Фаза', phaseInfo(st.pv), ''], ['Минутный объём', mok, 'л/мин']]; }
   const self = {
-    labelBg: true, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#E0605A',
+    labelBg: true, mobZoom: 0.66, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#E0605A',
     kicker: 'Тело · кровообращение', title: 'Сердце и кровообращение',
     lede: 'Четыре камеры, четыре клапана и собственный водитель ритма. За жизнь сердце сокращается около 3 миллиардов раз и перекачивает 5 литров крови каждую минуту.',
     notes: `
@@ -7393,7 +7395,8 @@ function makeDigest() {
   rnd = mulberry(1414);
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x07060a); scene.environment = envTex;
   labLights(scene, 0xffb08a);
-  const VIEW = { org: flyTarget(V3(0.0, 1.3, 0), V3(2.35, 2.6, 11.0)), path: flyTarget(V3(0.0, 1.1, 0), V3(-2.4, 2.2, 10.2)), villi: flyTarget(V3(30, -1.0, 0), V3(32.6, 1.3, 8.4)) };
+  const MOBD = matchMedia('(max-width:700px)').matches;
+  const VIEW = { org: flyTarget(V3(0.0, 1.72, 0), V3(2.75, 3.24, 12.87)), path: flyTarget(V3(0.0, 1.1, 0), V3(-2.4, 2.2, 10.2)), villi: flyTarget(V3(30, -1.0, 0), V3(32.6, 1.3, 8.4)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(VIEW.org.pos);
   const controls = makeControls(camera, VIEW.org.target); controls.minDistance = 1.5; controls.maxDistance = 22;
   const body = new THREE.Group(); scene.add(body);
@@ -7418,7 +7421,7 @@ function makeDigest() {
   // стенки органов
   add('mouth', taperTube(CUR.mouth, (u) => 0.1 - 0.03 * u, 30, 14), { mat: { transparent: true, opacity: 0.8 } });
   add('eso', taperTube(CUR.eso, () => 0.045, 60, 12));
-  const stomR = (u) => 0.06 + 0.2 * Math.sin(Math.min(1, u * 1.15) * Math.PI) * (u < 0.3 ? 0.85 + u : 1.15 - 0.3 * u) + (u > 0.85 ? -0.03 : 0);
+  const stomR = (u) => 0.06 + 0.26 * Math.sin(Math.min(1, u * 1.15) * Math.PI) * (u < 0.3 ? 0.85 + u : 1.15 - 0.3 * u) + (u > 0.85 ? -0.03 : 0);
   const stomG = displaceGeo(taperTube(CUR.stom, stomR, 90, 28), (v) => { v.addScaledVector(V3(0, 0, 0), 0); });
   add('stom', stomG, { k: 0.45 });
   add('si', taperTube(CUR.duo, () => 0.055, 40, 12));
@@ -7560,10 +7563,10 @@ function makeDigest() {
     { text: 'печень', pos: V3(-0.75, 1.62, 0.2), color: '#F0A890', show: () => st.labels && st.mode !== 'villi' && !realOn() },
     { text: 'желчный пузырь', pos: V3(-0.6, 1.25, 0.4), color: '#9FD080', show: () => st.labels && st.mode !== 'villi' && !realOn() },
     { text: 'поджелудочная', pos: V3(0.75, 1.15, 0.1), color: '#F2C88A', show: () => st.labels && st.mode !== 'villi' && !realOn() },
-    { text: '12-перстная кишка', pos: V3(-0.42, 0.95, 0.0), color: '#F0B8A8', left: true, show: () => st.labels && st.mode !== 'villi' && !realOn() },
+    { text: '12-перстная кишка', pos: V3(-0.42, 0.95, 0.0), color: '#F0B8A8', left: true, show: () => st.labels && st.mode !== 'villi' && !realOn() && !MOBD },
     { text: 'тонкая кишка', pos: V3(0.1, 0.5, 0.35), color: '#F0B8A8', show: () => st.labels && st.mode !== 'villi' && !realOn() },
     { text: 'толстая кишка', pos: V3(0.95, 0.45, 0.1), color: '#C8A090', show: () => st.labels && st.mode !== 'villi' && !realOn() },
-    { text: 'аппендикс', pos: V3(-0.5, -0.04, 0.25), color: '#C8A090', show: () => st.labels && st.mode !== 'villi' && !realOn() },
+    { text: 'аппендикс', pos: V3(-0.5, -0.04, 0.25), color: '#C8A090', show: () => st.labels && st.mode !== 'villi' && !realOn() && !MOBD },
     { text: 'прямая кишка', pos: V3(0.1, -0.35, -0.1), color: '#C8A090', show: () => st.labels && st.mode !== 'villi' && !realOn() },
     { text: 'ворсинка', pos: V3(29.0, 0.3, 1.2), color: '#F0B8A8', show: () => st.labels && st.mode === 'villi' },
     { text: 'капилляры → печень', pos: V3(28.4, -1.0, 1.25), color: '#E0605A', show: () => st.labels && st.mode === 'villi' },
@@ -7653,7 +7656,8 @@ function makeKidney() {
   rnd = mulberry(1515);
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x07060a); scene.environment = envTex;
   labLights(scene, 0xffc080);
-  const VIEW = { sys: flyTarget(V3(0.0, 0.45, 0), V3(1.15, 1.06, -5.5)), kid: flyTarget(V3(29.6, -0.75, 0), V3(30.5, 0.1, 6.9)), neph: flyTarget(V3(60.2, -1.3, 0), V3(62.6, 0.0, 10.8)) };
+  const MOBK = matchMedia('(max-width:700px)').matches;
+  const VIEW = { sys: MOBK ? flyTarget(V3(0.0, 0.72, 0), V3(1.15, 1.33, -5.5)) : flyTarget(V3(0.0, 0.55, 0), V3(1.15, 1.16, -5.5)), kid: flyTarget(V3(29.6, -0.75, 0), V3(30.5, 0.1, 6.9)), neph: flyTarget(V3(60.2, -1.3, 0), V3(62.6, 0.0, 10.8)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 120); camera.position.copy(VIEW.sys.pos);
   const controls = makeControls(camera, VIEW.sys.target); controls.minDistance = 1.5; controls.maxDistance = 22;
   const body = new THREE.Group(); scene.add(body);
@@ -7681,8 +7685,8 @@ function makeKidney() {
   // мочеточник почти отвесно по большой поясничной мышце, в малом тазу заходит в пузырь сзади-снизу
   const URE = KID.map((K) => new THREE.CatmullRomCurve3([K.c.clone().add(V3(-0.16 * K.s, -0.1, 0.0)), V3(0.2 * K.s, 0.55, -0.3), V3(0.17 * K.s, 0.18, -0.12), V3(0.1 * K.s, -0.02, 0.08)]));
   URE.forEach((c) => add('ure', taperTube(c, () => 0.025, 40, 8), { k: 0.5 }));
-  const bladG = ell3(0.2, 0.16, 0.17); const blad = add('blad', bladG, { k: 0.45, mat: { transparent: true, opacity: 0.85 } }); blad.position.set(0, 0.0, 0.18);
-  const urine = new THREE.Mesh(ell3(0.18, 0.14, 0.15), new THREE.MeshPhysicalMaterial({ color: 0xf2d860, emissive: 0x403000, emissiveIntensity: 0.4, transparent: true, opacity: 0.7, roughness: 0.2 })); urine.position.set(0, -0.0, 0.18); body.add(urine);
+  const bladG = ell3(0.26, 0.2, 0.2); const blad = add('blad', bladG, { k: 0.45, mat: { transparent: true, opacity: 0.85 } }); blad.position.set(0, -0.03, 0.18);
+  const urine = new THREE.Mesh(ell3(0.24, 0.18, 0.18), new THREE.MeshPhysicalMaterial({ color: 0xf2d860, emissive: 0x403000, emissiveIntensity: 0.4, transparent: true, opacity: 0.7, roughness: 0.2 })); urine.position.set(0, -0.03, 0.18); body.add(urine);
   add('blad', tube([V3(0, -0.15, 0.2), V3(0, -0.4, 0.22)], 0.014, 10, 6), { k: 0.5 });
   /* ---------- разрез почки ---------- */
   const kid = new THREE.Group(); kid.position.set(30, 0, 0); scene.add(kid); kid.visible = false;
@@ -7770,8 +7774,8 @@ function makeKidney() {
     void: '<b>Мочеиспускание.</b> Растяжение стенки пузыря → сигнал по нервам в крестцовый отдел спинного мозга → сокращение мышцы пузыря и расслабление внутреннего сфинктера. Кора разрешает или запрещает расслабить наружный сфинктер.',
   };
   const labels = [
-    { text: 'левая почка', pos: V3(0.8, 0.5, -0.35), color: '#D07060', show: () => st.labels && st.mode === 'sys' },
-    { text: 'правая почка', pos: V3(-0.75, 0.95, -0.35), color: '#D07060', show: () => st.labels && st.mode === 'sys' },
+    { text: 'левая почка', pos: V3(0.72, 0.6, -0.35), color: '#D07060', show: () => st.labels && st.mode === 'sys' },
+    { text: 'правая почка', pos: V3(-0.7, 0.62, -0.35), color: '#D07060', show: () => st.labels && st.mode === 'sys' },
     { text: 'надпочечник', pos: V3(0.5, 1.45, -0.35), color: '#F2C14E', show: () => st.labels && st.mode === 'sys' },
     { text: 'аорта', pos: V3(0.12, 1.45, -0.4), color: '#E0605A', show: () => st.labels && st.mode === 'sys' },
     { text: 'нижняя полая вена', pos: V3(-0.2, 1.5, -0.35), left: true, color: '#8CA0F0', show: () => st.labels && st.mode === 'sys' },
@@ -7850,7 +7854,8 @@ function makeEndo() {
   rnd = mulberry(1616);
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x07060a); scene.environment = envTex;
   labLights(scene, 0xc77dff);
-  const VIEW = { map: flyTarget(V3(0.0, 1.45, 0), V3(2.3, 2.2, 12.8)), sugar: flyTarget(V3(-0.1, 0.75, 0), V3(1.8, 1.8, 6.2)), stress: flyTarget(V3(0.1, 1.9, 0), V3(-2.6, 3.0, 8.4)), thy: flyTarget(V3(0.0, 3.25, 0.1), V3(1.3, 3.6, 3.6)) };
+  const MOBE = matchMedia('(max-width:700px)').matches;
+  const VIEW = { map: flyTarget(V3(0.0, 1.55, 0), V3(2.05, 2.22, 11.4)), sugar: flyTarget(V3(-0.1, 0.75, 0), V3(1.8, 1.8, 6.2)), stress: flyTarget(V3(0.1, 1.9, 0), V3(-2.6, 3.0, 8.4)), thy: flyTarget(V3(0.0, 3.25, 0.1), V3(1.3, 3.6, 3.6)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(VIEW.map.pos);
   const controls = makeControls(camera, VIEW.map.target); controls.minDistance = 1.2; controls.maxDistance = 22;
   bodyShell(scene, { rim: 0.36 });
@@ -7941,7 +7946,7 @@ function makeEndo() {
     iod: '<b>Нехватка йода.</b> Без йода железа не может сделать T4 → обратная связь ослабевает → гипофиз выделяет всё больше ТТГ → ТТГ заставляет железу расти: развивается эндемический зоб. Поэтому соль йодируют.',
   };
   const labels = [
-    ...EN_GL.map((g) => ({ text: g.name, pos: g.p.clone().add({ para: V3(0.25, -0.14, 0.1), pin: V3(0.14, 0.16, 0.1), hyp: V3(0.14, -0.06, 0.12) }[g.id] || V3(0.14, 0.04, 0.12)), color: g.color, show: () => st.labels && (st.mode === 'map' ? (!st.sel || st.sel === g.id) : (st.mode === 'sugar' ? g.id === 'panc' : st.mode === 'stress' ? ['hyp', 'adr'].includes(g.id) : ['hyp', 'thy'].includes(g.id))) })),
+    ...EN_GL.map((g) => ({ text: g.id === 'panc' ? 'Островки Лангерганса' : g.name, pos: g.p.clone().add({ para: V3(0.25, -0.14, 0.1), pin: V3(0.14, 0.16, 0.1), hyp: V3(0.14, -0.06, 0.12), gut: V3(0.2, 0.22, 0.12), panc: V3(0.34, -0.14, 0.12) }[g.id] || V3(0.14, 0.04, 0.12)), color: g.color, show: () => st.labels && (st.mode === 'map' ? (!st.sel ? !(MOBE && ['fat', 'gut'].includes(g.id)) : st.sel === g.id) : (st.mode === 'sugar' ? g.id === 'panc' : st.mode === 'stress' ? ['hyp', 'adr'].includes(g.id) : ['hyp', 'thy'].includes(g.id))) })),
     { text: 'Печень', pos: V3(-0.8, 1.6, 0.25), color: '#c88a70', show: () => st.labels && st.mode !== 'thy' },
     { text: 'Мышцы', pos: V3(-0.75, -1.0, 0.2), color: '#c86a6a', show: () => st.labels && (st.mode === 'sugar' || (st.mode === 'map' && st.sel)) },
     { text: 'Кость', pos: V3(0.62, -1.0, 0.1), color: '#e8d8bb', show: () => st.labels && st.mode === 'map' && st.sel && GL[st.sel].targets.includes('bone') },
@@ -7998,14 +8003,15 @@ const IM_PARTS = [
   { id: 'ton', name: 'Миндалины', color: '#F2A0B0', text: '<b>Миндалины</b> образуют кольцо вокруг входа в глотку и встречают микробов, приходящих с воздухом и пищей.' },
 ];
 function makeImmune() {
+  const MOBI = matchMedia('(max-width:700px)').matches;
   rnd = mulberry(1717);
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x06080a); scene.environment = envTex;
   labLights(scene, 0x7fd6ff);
-  const VIEW = { sys: flyTarget(V3(0.0, 0.8, 0), V3(2.75, 1.7, 14.6)), node: flyTarget(V3(30, -0.8, 0), V3(31.6, 0.6, 8.0)), resp: flyTarget(V3(30, -0.8, 0), V3(28.4, 0.7, 8.0)) };
+  const VIEW = { sys: MOBI ? flyTarget(V3(0.0, 0.8, 0), V3(2.75, 1.7, 14.6)) : flyTarget(V3(-0.9, 0.8, 0), V3(1.85, 1.7, 14.6)), node: flyTarget(V3(30, -0.8, 0), V3(31.6, 0.6, 8.0)), resp: flyTarget(V3(30, -0.8, 0), V3(28.4, 0.7, 8.0)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(VIEW.sys.pos);
   const controls = makeControls(camera, VIEW.sys.target); controls.minDistance = 1.5; controls.maxDistance = 22;
   const body = new THREE.Group(); scene.add(body);
-  const shell = bodyShell(body, { rim: 0.2 });
+  const shell = bodyShell(body, { rim: 0.34 });
   // зоны оттока: правый лимфатический проток (правая половина головы, шеи, груди и правая рука) и грудной проток (всё остальное)
   const zoneM = new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.13, depthWrite: false });
   const zones = new THREE.Group(); zones.visible = false; body.add(zones);
@@ -8026,7 +8032,7 @@ function makeImmune() {
     branch([V3(0.18 * s, 4.0, 0.05), V3(0.2 * s, 3.55, 0.08), V3(0.22 * s, 3.2, 0.06), s > 0 ? DUCT_L : DUCT_R]);                                    // голова → шея
   });
   branch([V3(0.0, 0.75, 0.2), V3(0.0, 0.8, 0.0), V3(0.05, 0.9, -0.28)]);
-  const lvG = []; LYM.forEach((c, i) => { lvG.push(taperTube(c, () => (i === 0 ? 0.03 : 0.018), 80, 6)); for (let k = 0; k < 6; k++) { const arr = []; branchTree(arr, c.getPointAt(0.1 + k * 0.14), randUnit(), 0.22, 0.008, 1, { segs: 6, rad: 4 }); lvG.push(...arr); } });
+  const lvG = []; LYM.forEach((c, i) => { lvG.push(taperTube(c, () => (i === 0 ? 0.04 : 0.026), 80, 6)); for (let k = 0; k < 6; k++) { const arr = []; branchTree(arr, c.getPointAt(0.1 + k * 0.14), randUnit(), 0.22, 0.008, 1, { segs: 6, rad: 4 }); lvG.push(...arr); } });
   add('lv', mergeGeometries(lvG), { k: 0.4, mat: { transparent: true, opacity: 0.75 } });
   add('lv', ell3(0.055, 0.13, 0.05, V3(0.05, 0.98, -0.28)), { k: 0.5 });   // цистерна грудного протока (L1–L2)
   // венозные углы: внутренняя яремная + подключичная → плечеголовная → верхняя полая вена
@@ -8036,7 +8042,7 @@ function makeImmune() {
     g.push(tube([V3(-0.1, 2.62, 0.14), V3(-0.1, 2.38, 0.14), V3(-0.08, 2.15, 0.1)], 0.055, 12, 8)); return mergeGeometries(g); })();
   body.add(new THREE.Mesh(VEN_ANG, organMat('#5C7CE8', 0.5, { transparent: true, opacity: 0.8 })));
   const NODES = [];
-  const cluster = (c, n, r) => { for (let i = 0; i < n; i++) { const p = c.clone().add(randUnit().multiplyScalar(r * rnd())); const g = ell3(0.035 + rnd() * 0.02, 0.025 + rnd() * 0.015, 0.03, p, 14); add('ln', g, { k: 0.5 }); NODES.push(p); } };
+  const cluster = (c, n, r) => { for (let i = 0; i < n; i++) { const p = c.clone().add(randUnit().multiplyScalar(r * rnd())); const g = ell3(0.05 + rnd() * 0.025, 0.034 + rnd() * 0.02, 0.04, p, 14); add('ln', g, { k: 0.6, mat: { emissiveIntensity: 0.3 } }); NODES.push(p); } };
   [1, -1].forEach((s) => { cluster(V3(0.2 * s, 3.4, 0.08), 6, 0.12); cluster(V3(0.85 * s, 2.6, 0.0), 6, 0.12); cluster(V3(0.34 * s, -0.12, 0.2), 6, 0.1); });
   cluster(V3(0.0, 0.8, 0.1), 9, 0.18); cluster(V3(0.0, 2.35, -0.05), 5, 0.12);
   [1, -1].forEach((s) => { cluster(V3(0.13 * s, 0.6, -0.2), 5, 0.1); cluster(V3(0.25 * s, 0.2, 0.0), 4, 0.08); });   // поясничные и подвздошные
@@ -8139,14 +8145,14 @@ function makeImmune() {
     { text: 'шейные узлы', pos: V3(0.35, 3.45, 0.12), color: '#7FD6FF', show: () => st.labels && st.mode === 'sys' },
     { text: 'подмышечные', pos: V3(1.05, 2.7, 0.05), color: '#7FD6FF', show: () => st.labels && st.mode === 'sys' },
     { text: 'паховые', pos: V3(0.55, -0.1, 0.25), color: '#7FD6FF', show: () => st.labels && st.mode === 'sys' },
-    { text: 'брыжеечные', pos: V3(0.25, 0.75, 0.25), color: '#7FD6FF', show: () => st.labels && st.mode === 'sys' },
+    { text: 'брыжеечные', pos: V3(0.25, 0.75, 0.25), color: '#7FD6FF', show: () => st.labels && st.mode === 'sys' && !MOBI },
     { text: 'грудной проток', pos: V3(0.1, 1.8, -0.35), color: '#9FE8C0', show: () => st.labels && st.mode === 'sys' },
     { text: 'селезёнка', pos: V3(0.85, 1.4, -0.15), color: '#D0708A', show: () => st.labels && st.mode === 'sys' },
     { text: 'тимус', pos: V3(0.2, 2.75, 0.35), color: '#7FD6C8', show: () => st.labels && st.mode === 'sys' },
     { text: 'миндалины', pos: V3(0.15, 3.82, 0.12), color: '#F2A0B0', show: () => st.labels && st.mode === 'sys' },
     { text: 'костный мозг', pos: V3(0.62, -0.6, 0.05), color: '#E06A6A', show: () => st.labels && st.mode === 'sys' },
-    { text: 'средостенные', pos: V3(0.2, 2.4, -0.05), color: '#7FD6FF', show: () => st.labels && st.mode === 'sys' },
-    { text: 'поясничные', pos: V3(-0.3, 0.62, -0.2), color: '#7FD6FF', show: () => st.labels && st.mode === 'sys' },
+    { text: 'средостенные', pos: V3(0.2, 2.4, -0.05), color: '#7FD6FF', show: () => st.labels && st.mode === 'sys' && !MOBI },
+    { text: 'поясничные', pos: V3(-0.3, 0.62, -0.2), color: '#7FD6FF', show: () => st.labels && st.mode === 'sys' && !MOBI },
     { text: 'подвздошные', pos: V3(-0.42, 0.18, 0.0), color: '#7FD6FF', show: () => st.labels && st.mode === 'sys' },
     { text: 'цистерна протока', pos: V3(0.16, 0.98, -0.3), color: '#9FE8C0', show: () => st.labels && st.mode === 'sys' },
     { text: 'левый венозный угол', pos: V3(0.42, 2.92, 0.08), color: '#8AA6FF', show: () => st.labels && st.mode === 'sys' },
@@ -8185,7 +8191,7 @@ function makeImmune() {
   }
   function stats() { return st.mode === 'resp' && st.titre.length ? [['День', Math.min(40, Math.floor(st.days)), ''], ['Память', st.mem || st.second ? 'есть' : 'нет', '']] : [['Лимфоузлов', '500–700', ''], ['Лимфы', '2–3', 'л/сут']]; }
   const self = {
-    labelBg: true, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#7FD6FF',
+    labelBg: true, mobZoom: 0.6, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#7FD6FF',
     kicker: 'Тело · иммунитет', title: 'Лимфа и иммунитет',
     lede: 'Сеть сосудов и узлов, где триллион лимфоцитов патрулирует тело, узнаёт чужое и запоминает его на годы вперёд.',
     notes: `
@@ -8414,7 +8420,7 @@ function makeSkin() {
   rnd = mulberry(1919);
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x07060a); scene.environment = envTex;
   labLights(scene, 0xffb08a);
-  const HOME = flyTarget(V3(-0.45, -0.6, 0), V3(4.1, 2.6, 10.2));
+  const HOME = flyTarget(V3(-0.3, -0.7, 0), V3(4.25, 2.5, 10.2));
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(HOME.pos);
   const controls = makeControls(camera, HOME.target); controls.minDistance = 1.5; controls.maxDistance = 16;
   const sk = new THREE.Group(); scene.add(sk);
@@ -8460,7 +8466,7 @@ function makeSkin() {
   const VESA = [], VESV = [];
   // два сплетения (Неттер, BP 1): глубокое на границе дермы и клетчатки, подсосочковое под сосочками; подкожные артерия и вена снизу
   { const a = [], v = []; const YD = Y_DER + 0.04, YS = 0.68, ZA = 0.1, ZV = -0.65, ZSA = 0.3, ZSV = -0.22;
-    const line = (y, z, w) => new THREE.CatmullRomCurve3([V3(-W / 2, y, z), V3(-0.5, y + 0.02, z + 0.03), V3(0.6, y - 0.01, z - 0.02), V3(W / 2, y, z)]);
+    const line = (y, z, w) => new THREE.CatmullRomCurve3([0, 1, 2, 3, 4, 5].map((k) => { const e = k === 0 || k === 5 ? 0 : 1; return V3(-W / 2 + (W * k) / 5, y + e * 0.03 * Math.cos(k * 2.1 + z * 3), z + e * 0.12 * Math.sin(k * 1.7 + y * 4)); }));
     a.push(taperTube(line(YD, ZA), () => 0.04, 40, 8), taperTube(line(YS, ZSA), () => 0.022, 40, 6)); v.push(taperTube(line(YD - 0.02, ZV), () => 0.05, 40, 8), taperTube(line(YS - 0.02, ZSV), () => 0.028, 40, 6));
     [-1.25, -0.35, 0.5, 1.35].forEach((x, i) => { a.push(tube([V3(x, YD, ZA), V3(x + 0.05, (YD + YS) / 2, (ZA + ZSA) / 2 + 0.03), V3(x + 0.1, YS, ZSA)], 0.016, 14, 5)); v.push(tube([V3(x + 0.15, YD - 0.02, ZV), V3(x + 0.12, (YD + YS) / 2, (ZV + ZSV) / 2), V3(x + 0.1, YS - 0.02, ZSV)], 0.02, 14, 5)); });
     a.push(tube([V3(-1.45, Y_BOT, 0.2), V3(-1.4, (Y_BOT + YD) / 2, 0.15), V3(-1.3, YD, ZA)], 0.045, 16, 8)); v.push(tube([V3(1.45, Y_BOT, -0.6), V3(1.42, (Y_BOT + YD) / 2, -0.62), V3(1.35, YD - 0.02, ZV)], 0.055, 16, 8));
@@ -8493,7 +8499,7 @@ function makeSkin() {
   const NTRUNK = new THREE.CatmullRomCurve3([V3(-W / 2, Y_DER - 0.32, -0.15), V3(-0.6, Y_DER - 0.36, -0.05), V3(0.5, Y_DER - 0.3, -0.12), V3(W / 2, Y_DER - 0.34, -0.05)]);
   sk.add(new THREE.Mesh(taperTube(NTRUNK, () => 0.035, 60, 8), nerveMat));
   const trunkAt = (x) => NTRUNK.getPointAt(Math.min(0.98, Math.max(0.02, (x - 0.2 + W / 2) / W)));
-  const nerveTo = (id, p) => { const T = trunkAt(p.x); const c = new THREE.CatmullRomCurve3([T, V3((T.x + p.x) / 2, (T.y + p.y) / 2, (T.z + p.z) / 2 + 0.04), p]); sk.add(new THREE.Mesh(new THREE.TubeGeometry(c, 16, 0.012, 5), nerveMat)); NERV[id].push(c); return c; };
+  const nerveTo = (id, p) => { const T = trunkAt(p.x); const c = new THREE.CatmullRomCurve3([T, V3((T.x + p.x) / 2 + 0.07 * Math.sin(p.x * 5), (T.y + p.y) / 2, (T.z + p.z) / 2 + 0.04), p]); sk.add(new THREE.Mesh(new THREE.TubeGeometry(c, 16, 0.012, 5), nerveMat)); NERV[id].push(c); return c; };
   // симпатические веточки (тоньше, оранжевые): к мышце волоса и к потовой железе
   { const sm = new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xf09040).multiplyScalar(0.5), emissive: 0x402000, emissiveIntensity: 0.2, roughness: 0.4 }), arr = [];
     [ARR.getPointAt(0.3), V3(0.9, -0.3, 0.5)].forEach((p) => { const T = trunkAt(p.x); arr.push(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([T, V3((T.x + p.x) / 2 + 0.1, (T.y + p.y) / 2, (T.z + p.z) / 2), p]), 16, 0.008, 4)); });
@@ -8580,7 +8586,7 @@ function makeSkin() {
     { text: 'сальная железа', pos: V3(-0.6, 0.18, -0.05), color: '#F2E08A', show: () => st.labels },
     { text: 'мышца волоса', pos: ARR.getPointAt(0.75).add(V3(0.05, 0.05, 0)), color: '#E07070', show: () => st.labels },
     { text: 'потовая железа', pos: V3(1.1, -0.35, 0.6), color: '#9FD8F0', show: () => st.labels },
-    { text: 'Мейсснер', pos: V3(-0.95, Y_EPI - 0.2, -0.55), color: '#7FD6FF', show: () => st.labels },
+    { text: 'Мейсснер', pos: V3(-0.95, Y_EPI - 0.12, -0.55), color: '#7FD6FF', show: () => st.labels },
     { text: 'Меркель', pos: V3(-0.3, Y_EPI + 0.12, 0.62), color: '#7FE0A0', show: () => st.labels },
     { text: 'Пачини', pos: V3(0.5, -0.95, 0.35), color: '#C77DFF', show: () => st.labels },
     { text: 'Руффини', pos: V3(0.32, 0.32, -0.45), color: '#F2C14E', show: () => st.labels },
@@ -8607,7 +8613,7 @@ function makeSkin() {
   }
   function stats() { return [['Площадь кожи', '1,5–2', 'м²'], ['Температура', st.temp > 0.3 ? 'жарко' : st.temp < -0.3 ? 'холодно' : 'норма', '']]; }
   const self = {
-    labelBg: true, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#FFB08A',
+    labelBg: true, mobZoom: 0.6, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#FFB08A',
     kicker: 'Органы чувств · осязание', title: 'Кожа и осязание',
     lede: 'Кусочек кожи в разрезе: три слоя, волос, железы, сосуды и пять видов рецепторов, каждый из которых отвечает на своё — касание, давление, вибрацию, растяжение или боль.',
     notes: `
@@ -8631,10 +8637,11 @@ const BL_CELLS = [
 ];
 const BL_GROUPS = { O: { a: [], ab: ['A', 'B'] }, A: { a: ['A'], ab: ['B'] }, B: { a: ['B'], ab: ['A'] }, AB: { a: ['A', 'B'], ab: [] } };
 function makeBlood() {
+  const MOBB = matchMedia('(max-width:700px)').matches;
   rnd = mulberry(2020);
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x0a0507); scene.environment = envTex;
   labLights(scene, 0xff7a7a);
-  const VIEW = { flow: flyTarget(V3(-1.6, -0.4, 0), V3(1.4, 2.3, 14.4)), clot: flyTarget(V3(0.3, -0.4, 0), V3(1.4, 3.2, 7.4)), groups: flyTarget(V3(30, -0.9, 0), V3(30.6, 0.8, 7.2)), tube: flyTarget(V3(60.55, -0.55, 0), V3(61.7, 0.9, 12.4)) };
+  const VIEW = { flow: MOBB ? flyTarget(V3(0, -0.4, 0), V3(3.0, 2.3, 14.4)) : flyTarget(V3(-2.6, -0.4, 0), V3(0.4, 2.3, 15.2)), clot: flyTarget(V3(0.3, -0.4, 0), V3(1.4, 3.2, 7.4)), groups: flyTarget(V3(30, -0.9, 0), V3(30.6, 0.8, 7.2)), tube: flyTarget(V3(60.55, -0.55, 0), V3(61.7, 0.9, 12.4)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(VIEW.flow.pos);
   const controls = makeControls(camera, VIEW.flow.target); controls.minDistance = 1.5; controls.maxDistance = 18;
   const pick = [];
@@ -8643,8 +8650,8 @@ function makeBlood() {
   const ves = new THREE.Group(); scene.add(ves);
   const wallG = new THREE.CylinderGeometry(R, R, L, 64, 1, true, Math.PI * 0.15, Math.PI * 1.7); wallG.rotateZ(Math.PI / 2);
   const wallG2 = new THREE.CylinderGeometry(R + 0.18, R + 0.18, L, 64, 1, true, Math.PI * 0.15, Math.PI * 1.7); wallG2.rotateZ(Math.PI / 2);
-  const endo = new THREE.Mesh(wallG, new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xe8a0a8).multiplyScalar(0.4), roughness: 0.35, clearcoat: 0.7, transparent: true, opacity: 0.2, side: THREE.DoubleSide, depthWrite: false, sheen: 0.3, sheenColor: new THREE.Color(0xffc0c8) }));
-  const musc = new THREE.Mesh(wallG2, new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xb05050).multiplyScalar(0.4), roughness: 0.5, transparent: true, opacity: 0.18, side: THREE.DoubleSide, depthWrite: false }));
+  const endo = new THREE.Mesh(wallG, new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xe8a0a8).multiplyScalar(0.4), roughness: 0.35, clearcoat: 0.7, transparent: true, opacity: 0.12, side: THREE.DoubleSide, depthWrite: false, sheen: 0.3, sheenColor: new THREE.Color(0xffc0c8) }));
+  const musc = new THREE.Mesh(wallG2, new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xb05050).multiplyScalar(0.4), roughness: 0.5, transparent: true, opacity: 0.1, side: THREE.DoubleSide, depthWrite: false }));
   ves.add(endo, musc);
   // стенка артерии: интима (эндотелий + волнистая внутренняя эластическая мембрана), медия (гладкие мышцы), адвентиция (коллаген, vasa vasorum, нерв)
   const TH0 = Math.PI * 0.15, TH1 = Math.PI * 1.7;
@@ -8670,7 +8677,7 @@ function makeBlood() {
   const rbcProf = []; for (let i = 0; i <= 24; i++) { const q = Math.sin(i / 24 * Math.PI / 2); rbcProf.push(new THREE.Vector2(q * 0.42, -rbcH(q))); }
   for (let i = 23; i >= 0; i--) { const p = rbcProf[i]; rbcProf.push(new THREE.Vector2(p.x, -p.y)); }
   const rbcG = new THREE.LatheGeometry(rbcProf, 32); rbcG.computeVertexNormals();
-  const rbcMat = new THREE.MeshPhysicalMaterial({ color: 0x9a2028, roughness: 0.55, sheen: 0.45, sheenColor: new THREE.Color(0xff9090), emissive: 0x4a0a10, emissiveIntensity: 0.25, envMapIntensity: 0.35 });   /* без лака: впадина в центре не чернеет */
+  const rbcMat = new THREE.MeshPhysicalMaterial({ color: 0xb02a32, roughness: 0.55, sheen: 0.45, sheenColor: new THREE.Color(0xff9090), emissive: 0x4a0a10, emissiveIntensity: 0.4, envMapIntensity: 0.35 });   /* без лака: впадина в центре не чернеет */
   const NR = 110, rbcI = new THREE.InstancedMesh(rbcG, rbcMat, NR); rbcI.userData.pick = 'rbc'; pick.push(rbcI); ves.add(rbcI);
   const RBC = Array.from({ length: NR }, () => { const r = Math.sqrt(rnd()) * (R - 0.5), a = rnd() * Math.PI * 2; return { x: rand(-L / 2, L / 2), y: Math.cos(a) * r, z: Math.sin(a) * r, q: new THREE.Quaternion().setFromAxisAngle(randUnit(), rnd() * 6), w: randUnit(), sp: rnd() * 2, stuck: 0, out: 0 }; });  // диск r 0.42 не выходит за стенку
   // тромбоциты
@@ -8812,12 +8819,12 @@ function makeBlood() {
   const grpTxt = () => { const ok = compatible(); return `<b>Донор ${st.donor} → реципиент ${st.recip}: ${ok ? 'совместимо' : 'несовместимо!'}</b> ${ok ? 'В плазме реципиента нет антител к антигенам донора — эритроциты свободно плавают.' : 'Антитела реципиента (' + BL_GROUPS[st.recip].ab.join(' и ') + ') связывают антигены донора — эритроциты склеиваются в комки.'} Группа 0 (I) — «универсальный донор» эритроцитов, AB (IV) — «универсальный реципиент». На практике переливают только одногруппную кровь и учитывают ещё резус-фактор (Rh).`; };
   const labels = [
     { text: 'эритроцит', pos: V3(-1.6, 0.4, 0.9), color: '#E0505A', show: () => st.labels && st.mode === 'flow' },
-    ...[['neu', 'нейтрофил · 50–70%', '#E8E8F8'], ['lym', 'лимфоцит · 20–30%', '#E8E8F8'], ['mon', 'моноцит · 2–8%', '#E8E8F8'], ['eos', 'эозинофил · 1–4%', '#FFB08A'], ['bas', 'базофил · <1%', '#B8A0F0']].map(([k, tx, c]) => { const w = WBC.find((q) => q.kind === k); w.lab = { text: tx, pos: V3(0, 0, 0), color: c, show: () => st.labels && st.mode === 'flow' }; return w.lab; }),
+    ...[['neu', 'нейтрофил · 50–70%', '#E8E8F8'], ['lym', 'лимфоцит · 20–30%', '#E8E8F8'], ['mon', 'моноцит · 2–8%', '#E8E8F8'], ['eos', 'эозинофил · 1–4%', '#FFB08A'], ['bas', 'базофил · <1%', '#B8A0F0']].map(([k, tx, c]) => { const w = WBC.find((q) => q.kind === k); w.lab = { text: tx, pos: V3(0, 0, 0), color: c, show: () => st.labels && st.mode === 'flow' && !(MOBB && (k === 'eos' || k === 'bas')) }; return w.lab; }),
     { text: 'интима', pos: V3(-3.6, Math.sin(Math.PI * 1.85) * R, Math.cos(Math.PI * 1.85) * R + 0.05), color: '#F2C0C8', show: () => st.labels && st.mode === 'flow' },
     { text: 'медия: гладкие мышцы', pos: V3(-3.6, Math.sin(Math.PI * 1.85) * (R + 0.13), Math.cos(Math.PI * 1.85) * (R + 0.13) + 0.05), color: '#E08080', show: () => st.labels && st.mode === 'flow' },
     { text: 'адвентиция', pos: V3(-3.6, Math.sin(Math.PI * 1.85) * (R + 0.3), Math.cos(Math.PI * 1.85) * (R + 0.3) + 0.05), color: '#E0D0A8', show: () => st.labels && st.mode === 'flow' },
-    { text: 'сосуды стенки', pos: V3(2.6, Math.sin(Math.PI * 0.55) * (R + 0.35), Math.cos(Math.PI * 0.55) * (R + 0.35)), color: '#E0505A', show: () => st.labels && st.mode === 'flow' },
-    { text: 'нерв стенки', pos: V3(-1.6, Math.sin(Math.PI * 1.25) * (R + 0.32), Math.cos(Math.PI * 1.25) * (R + 0.32)), color: '#F2D060', show: () => st.labels && st.mode === 'flow' },
+    { text: 'сосуды стенки', pos: V3(2.6, Math.sin(Math.PI * 0.55) * (R + 0.35), Math.cos(Math.PI * 0.55) * (R + 0.35)), color: '#E0505A', show: () => st.labels && st.mode === 'flow' && !MOBB },
+    { text: 'нерв стенки', pos: V3(-1.6, Math.sin(Math.PI * 1.25) * (R + 0.32), Math.cos(Math.PI * 1.25) * (R + 0.32)), color: '#F2D060', show: () => st.labels && st.mode === 'flow' && !MOBB },
     { text: 'стенка сосуда', pos: V3(3.6, R + 0.2, -0.5), color: '#E8A0A8', show: () => st.labels && st.mode === 'clot' },
     { text: 'плазма ≈ 55%', pos: V3(60.45, 1.9, 0.2), color: '#F2E08A', show: () => st.labels && st.mode === 'tube' && st.spin > 0.95 },
     { text: 'лейкоциты и тромбоциты < 1%', pos: V3(60.45, HR + 0.03, 0.2), color: '#F4F0E8', show: () => st.labels && st.mode === 'tube' && st.spin > 0.95 },
@@ -8852,7 +8859,7 @@ function makeBlood() {
   }
   function stats() { return st.mode === 'tube' ? [['Гематокрит', '40–45', '%'], ['Плазма', '≈ 55', '%'], ['Белок плазмы', '65–80', 'г/л']] : st.mode === 'groups' ? [['Совместимость', compatible() ? 'да' : 'нет', '']] : [['Эритроцитов', '4–5', 'млн/мкл'], ['Лейкоцитов', '4–9', 'тыс/мкл'], ['Тромбоцитов', '150–400', 'тыс/мкл']]; }
   const self = {
-    labelBg: true, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#E0505A',
+    labelBg: true, mobZoom: 0.9, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#E0505A',
     kicker: 'Тело · кровь', title: 'Кровь',
     lede: 'Пять литров жидкой ткани: 25 триллионов эритроцитов, армия лейкоцитов и тромбоциты, которые за минуты закрывают любую ранку.',
     notes: `
@@ -9287,11 +9294,11 @@ function makeChest() {
   rnd = mulberry(2323);
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x07060a); scene.environment = envTex;
   labLights(scene, 0xf2b0c8);
-  const VIEW = { chest: flyTarget(V3(0, 1.75, 0), V3(2.4, 2.8, 7.4)), breast: flyTarget(V3(30.0, -0.5, 0), V3(33.4, 0.5, 5.6)), lact: flyTarget(V3(30.0, -0.8, 0), V3(30.8, 0.4, 6.6)) };
+  const VIEW = { chest: flyTarget(V3(0, 1.75, 0), V3(2.25, 2.7, 6.95)), breast: flyTarget(V3(30.0, -0.5, 0), V3(33.4, 0.5, 5.6)), lact: flyTarget(V3(30.0, -0.8, 0), V3(30.8, 0.4, 6.6)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(VIEW.chest.pos);
   const controls = makeControls(camera, VIEW.chest.target); controls.minDistance = 1; controls.maxDistance = 18;
   const body = new THREE.Group(); scene.add(body);
-  bodyShell(body, { rim: 0.18 });
+  bodyShell(body, { rim: 0.28 });
   const PART = Object.fromEntries([...CH_PARTS, ...BR_PARTS].map((p) => [p.id, { ...p, mats: [] }])), pick = [];
   const add = (id, g, parent, o = {}) => { const m = organMat(PART[id].color, o.k ?? 0.42, o.mat || {}); PART[id].mats.push(m); const me = new THREE.Mesh(g, m); me.userData.pick = id; pick.push(me); parent.add(me); return me; };
   /* ---------- грудная клетка ---------- */
@@ -9302,7 +9309,7 @@ function makeChest() {
       const front = i < 10 ? 1 : 0.35;
       const pts = [V3(0.07 * s, y, -0.42), V3(w * 0.72 * s, y - 0.04, -0.38), V3(w * s, y - 0.16, 0.0), V3(w * 0.82 * s, y - drop * 0.75, 0.42 * front)];
       if (i < 10) pts.push(V3(w * 0.45 * s, y - drop, 0.56));
-      const c = new THREE.CatmullRomCurve3(pts); ribG.push(taperTube(c, () => 0.026, 40, 6));
+      const c = new THREE.CatmullRomCurve3(pts); ribG.push(taperTube(c, (u) => 0.02 + 0.014 * Math.sin(Math.PI * Math.min(1, u * 1.15)), 40, 8));
       if (i < 7) { const cc = new THREE.CatmullRomCurve3([pts[pts.length - 1], V3(0.06 * s, 2.82 - i * 0.12, 0.58)]); cartC[s][i] = cc; cartG.push(taperTube(cc, (u) => 0.03 - 0.008 * u, 10, 8)); }
       else if (i < 10) {   // 8–10 рёбра: хрящ сливается с хрящом вышележащего ребра — сплошная рёберная дуга
         const a = pts[pts.length - 1], b = cartC[s][i - 1].getPointAt(0.45), cc = new THREE.CatmullRomCurve3([a, a.clone().lerp(b, 0.5).add(V3(0, 0.05, 0.02)), b]);
@@ -9446,7 +9453,7 @@ function makeChest() {
   }
   function stats() { return st.mode === 'chest' ? [['Пар рёбер', 12, ''], ['Грудных позвонков', 12, '']] : st.mode === 'lact' ? [['Пролактин', Math.round(st.prl * 100), '%'], ['Окситоцин', Math.round(st.oxy * 100), '%']] : [['Долей', '15–20', '']]; }
   const self = {
-    labelBg: true, mobZoom: 0.6, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#F2B0C8',
+    labelBg: true, mobZoom: 0.54, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#F2B0C8',
     kicker: 'Тело · грудь', title: 'Грудная клетка и молочная железа',
     lede: 'Костный каркас, который защищает сердце и лёгкие и помогает дышать, и устройство молочной железы — от долек до протоков и гормонов кормления.',
     notes: `
@@ -9653,13 +9660,13 @@ function makeShealth() {
   labLights(scene, 0xc77dff);
   const MOB = matchMedia('(max-width:700px)').matches;
   // выноска: увеличенный мозг (координаты brainKit: x — вперёд, z — вбок к зрителю) справа от тела; на телефоне — над головой
-  const CB = MOB ? V3(0.15, 6.15, 0) : V3(2.6, 3.2, 0), KB = MOB ? 0.82 : 0.8;
-  const VIEW = { drive: MOB ? flyTarget(V3(0.15, 3.9, 0), V3(0.9, 4.5, 15)) : flyTarget(V3(1.15, 2.05, 0), V3(1.85, 2.7, 10.4)), sti: flyTarget(V3(30, -0.6, 0), V3(30, 0.8, 8.4)), protect: flyTarget(V3(60, -0.9, 0), V3(60.4, 1.6, 12.4)) };
+  const CB = MOB ? V3(0.15, 6.15, 0) : V3(2.3, 3.2, 0), KB = MOB ? 0.82 : 0.8;
+  const VIEW = { drive: MOB ? flyTarget(V3(-1.6, 3.9, 0), V3(-0.85, 4.5, 15)) : flyTarget(V3(0.45, 2.05, 0), V3(1.15, 2.7, 10.4)), sti: flyTarget(V3(30, -0.6, 0), V3(30, 0.8, 8.4)), protect: flyTarget(V3(60, -0.9, 0), V3(60.4, 1.6, 12.4)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 140); camera.position.copy(VIEW.drive.pos);
   const controls = makeControls(camera, VIEW.drive.target); controls.minDistance = 1.5; controls.maxDistance = 22;
   /* ---------- влечение ---------- */
   const dr = new THREE.Group(); scene.add(dr);
-  bodyShell(dr, { rim: 0.34 });
+  bodyShell(dr, { rim: 0.5 });
   dr.add(new THREE.Mesh(ell3(0.34, 0.28, 0.4, V3(0, 4.25, 0)), new THREE.MeshPhysicalMaterial({ color: 0xe0b8c8, roughness: 0.6, transparent: true, opacity: 0.22, depthWrite: false })));
   const zb = new THREE.Group(); zb.position.copy(CB); zb.scale.setScalar(KB); dr.add(zb);
   brainShell(zb, { opacity: 0.06, rim: 0.9 });
@@ -9768,7 +9775,7 @@ function makeShealth() {
   }
   function stats() { return st.mode === 'drive' ? [['Состояние', SH_STATES[st.state].name, '']] : st.mode === 'sti' ? [['Новых случаев ИППП в мире', '>1', 'млн/день']] : [['Защищает от ИППП', 'презерватив', '']]; }
   const self = {
-    scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#C77DFF',
+    scopeLeft: true, mobZoom: 0.78, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#C77DFF',
     kicker: 'Тело · сексуальное здоровье', title: 'Влечение и сексуальное здоровье',
     lede: 'Откуда берётся половое влечение, какие системы мозга и гормоны им управляют, и как сделать сексуальные контакты безопасными: инфекции, контрацепция и согласие.',
     notes: `
@@ -10023,9 +10030,11 @@ function activate(id) {
   $('#kicker').textContent = cur.kicker; $('#title').textContent = cur.title; $('#lede').textContent = cur.lede;
   consoleEl.innerHTML = ''; cur.ui(consoleEl);
   notesEl.innerHTML = cur.notes;
+  scopeEl.classList.toggle('sl', !!cur.scopeLeft);   /* график слева (телефон), если сцена просит: scopeLeft: true */
   labelsEl.classList.toggle('bg', cur.labelBg !== false);   // подложка под подписями — по умолчанию у всех сцен (сцена может отключить: labelBg: false)
   labelsEl.innerHTML = ''; labelEls = cur.labels.map((l) => { const e = h('div', { class: 'lbl' }, l.text); if (l.color) e.style.color = l.color; labelsEl.append(e); return e; });
   scopeEl.hidden = !cur.drawScope;
+  if (!scopeEl.hidden) { const d = Math.min(window.devicePixelRatio || 1, 2); scopeEl.width = scopeEl.clientWidth * d; scopeEl.height = scopeEl.clientHeight * d; sctx.setTransform(d, 0, 0, d, 0, 0); }   /* ширина графика могла смениться (scopeLeft) */
   accentSet(cur.accent);
   try {
     if (PAGES) {   // адрес страницы темы; главная остаётся главной, пока человек не перешёл на другую тему

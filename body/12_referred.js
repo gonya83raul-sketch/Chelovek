@@ -52,10 +52,10 @@ function makeReferred() {
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x08060a); scene.environment = envTex;
   labLights(scene, 0xff9a8a);
   // ракурс: центр C виден в правой верхней части холста (слева — заголовок, снизу — панель)
-  const VW = (C, dir, d, fx = 0.14, fy = 0.1) => { const dn = dir.clone().normalize(), r = V3(0, 1, 0).cross(dn).normalize(), sh = r.multiplyScalar(-fx * d).add(V3(0, -fy * d, 0)); return flyTarget(C.clone().add(sh), C.clone().add(sh).addScaledVector(dn, d)); };
+  const VW = (C, dir, d, fx = 0.14, fy = 0.05) => { const dn = dir.clone().normalize(), r = V3(0, 1, 0).cross(dn).normalize(), sh = r.multiplyScalar(-fx * d).add(V3(0, -fy * d, 0)); return flyTarget(C.clone().add(sh), C.clone().add(sh).addScaledVector(dn, d)); };
   const BC = V3(0.1, 12.0, 0.2), MC = V3(36.9, 0.3, 0);
-  const VIEW = { front: VW(BC, V3(0.1, 0.08, 1), 26), back: VW(BC, V3(-0.1, 0.08, -1), 26), rback: VW(BC, V3(-0.75, 0.08, -0.66), 26), lback: VW(BC, V3(0.75, 0.08, -0.66), 26), lfront: VW(BC.clone().add(V3(0, -0.6, 0)), V3(0.55, 0.05, 0.85), 26), mech: VW(MC, V3(0.02, 0.04, 1), 31) };
-  const VIEWM = { front: VW(BC, V3(0.1, 0.05, 1), 13.5, 0, 0.02), back: VW(BC, V3(-0.1, 0.05, -1), 13.5, 0, 0.02), rback: VW(BC, V3(-0.75, 0.05, -0.66), 13.5, 0, 0.02), lback: VW(BC, V3(0.75, 0.05, -0.66), 13.5, 0, 0.02), lfront: VW(BC, V3(0.55, 0.05, 0.85), 13.5, 0, 0.02),
+  const VIEW = { front: VW(BC, V3(0.1, 0.08, 1), 26), back: VW(BC, V3(-0.1, 0.08, -1), 26), rback: VW(BC, V3(-0.75, 0.08, -0.66), 26), lback: VW(BC, V3(0.75, 0.08, -0.66), 26), lfront: VW(BC.clone().add(V3(0, -0.6, 0)), V3(0.55, 0.05, 0.85), 26), mech: VW(MC, V3(0.02, 0.04, 1), 31, 0.14, 0.1) };
+  const VIEWM = { front: VW(BC, V3(0.1, 0.05, 1), 13.5, 0, -0.03), back: VW(BC, V3(-0.1, 0.05, -1), 13.5, 0, -0.03), rback: VW(BC, V3(-0.75, 0.05, -0.66), 13.5, 0, -0.03), lback: VW(BC, V3(0.75, 0.05, -0.66), 13.5, 0, -0.03), lfront: VW(BC, V3(0.55, 0.05, 0.85), 13.5, 0, -0.03),
     mech: VW(MC, V3(0, 0.03, 1), 17.5, -0.06, 0) }, mqm = window.matchMedia('(max-width:700px)'), VV = (m) => (mqm.matches && VIEWM[m]) || VIEW[m];
   const FT = VIEW.front.target;
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300);
@@ -194,9 +194,9 @@ function makeReferred() {
   const refs = {};
   const labels = [
     // подписи органов: в обзоре — у самих органов (справа или слева по стороне тела), при выборе — у выбранного
-    ...RF_ORG.map((o) => { const op = ORG[o.id].meshes[0].position.lengthSq() > 0 ? ORG[o.id].meshes[0].position.clone() : ({ eso: V3(0.03, 13.9, 0.0), colon: V3(0.88, 10.3, 0.5), appendix: V3(-0.6, 9.36, 0.68), small: V3(0.05, 10.0, 0.75), kidney: V3(0.6, 11.2, -0.32) }[o.id] || V3(0, 10, 0));
+    ...RF_ORG.map((o) => { const OV = { spleen: V3(0.95, 11.5, -0.1) }, op = OV[o.id] ? OV[o.id].clone() : ORG[o.id].meshes[0].position.lengthSq() > 0 ? ORG[o.id].meshes[0].position.clone() : ({ eso: V3(0.03, 13.9, 0.0), colon: V3(0.95, 9.7, 0.5), appendix: V3(-0.6, 9.36, 0.68), small: V3(0.05, 10.0, 0.75), kidney: V3(0.6, 11.2, -0.32) }[o.id] || V3(0, 10, 0));
       const side = { heart: 1, eso: -1, stomach: 1, liver: -1, gall: -1, pancreas: 1, spleen: 1, small: 1, appendix: -1, colon: 1, kidney: 1, bladder: -1 }[o.id];
-      return { text: o.name.toLowerCase(), pos: op.clone().add(V3(side * 0.05, 0, 0.35)), color: o.col, show: () => st.labels && st.mode === 'map' && (st.sel ? st.sel === o.id : st.side !== 'back') }; }),
+      return { text: o.name.toLowerCase(), pos: op.clone().add(V3(side * 0.05 + (side > 0 && !mqm.matches ? 0.55 : 0), 0, 0.35)), color: o.col, show: () => st.labels && st.mode === 'map' && (st.sel ? st.sel === o.id : st.side !== 'back') }; }),
     ...Object.entries(ZONES).map(([zid, arr]) => ({ text: 'боль ощущается здесь', pos: arr[0].p.clone().add(V3(0.1, 0.05, Math.sign(arr[0].p.z - 0.18) * 0.12)), color: '#FFD0A0', show: () => st.labels && ((st.mode === 'map' && st.sel && (ORG[st.sel].lz || ORG[st.sel].z[0]) === zid) || (st.mode === 'cases' && RF_CASES[st.cs].st[st.stage].z[RF_CASES[st.cs].st[st.stage].z.length - 1] === zid)) })),
     { text: 'спинной мозг, срез', pos: Q(0.0, -1.55, 0.3), color: '#F2E6C8', show: () => st.labels && st.mode === 'mech' },
     { text: 'нейрон заднего рога', pos: NRN.clone().add(V3(-0.2, 0.45, 0.3)), color: '#FFD27A', show: () => st.labels && st.mode === 'mech' },

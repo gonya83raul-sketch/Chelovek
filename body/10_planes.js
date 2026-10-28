@@ -90,11 +90,11 @@ function makePlanes() {
   /* ---------- 1. плоскости ---------- */
   const PL = new THREE.Group(); G.add(PL);
   const planeMesh = (w, h, col, op = 0.1) => { const g = new THREE.Group(); const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: op, side: THREE.DoubleSide, depthWrite: false })); const e = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.PlaneGeometry(w, h)), new THREE.LineBasicMaterial({ color: col, transparent: true, opacity: 0.8 })); g.add(m, e); PL.add(g); return g; };
-  const PLN = { sag: planeMesh(5.5, 18.6, '#7FE0A0', 0.16), front: planeMesh(5.5, 18.6, '#9A8CFF'), trans: planeMesh(5.5, 4.5, '#FF8AB0') };
+  const PLN = { sag: planeMesh(5.5, 18.6, '#7FE0A0', 0.16), front: planeMesh(5.5, 18.6, '#9A8CFF', 0.14), trans: planeMesh(5.5, 4.5, '#FF8AB0', 0.22) };
   PLN.sag.rotation.y = Math.PI / 2; PLN.sag.position.set(0, 9.1, 0.2); PLN.front.position.set(0, 9.1, 0.2); PLN.trans.rotation.x = -Math.PI / 2; PLN.trans.position.set(0, 12, 0.2);
   const PRANGE = { all: [0, 0, 0], sag: [-1.4, 1.4, 0.03], front: [-0.7, 0.9, 0.2], trans: [1.0, 17.0, 12.6] };
-  // «все три» — ракурс 3/4 сверху (азимут ~35°, возвышение ~20°): каждая плоскость читается как плоскость, а не ребро
-  const PVIEW = { all: [V3(-1.0, 8.7, 1.0), V3(29.0, 24.0, 31.0)], sag: [V3(0, 8.7, 0), V3(38, 13, 25)], front: [V3(0, 8.7, 0), V3(13, 13, 44)], trans: [V3(0, 9.4, 0), V3(15, 34, 31)] };
+  // «все три» — ракурс 3/4 сверху (азимут ~28° от лица, возвышение ~25°: фронтальная почти анфас, сагиттальная под углом): каждая плоскость читается как плоскость, а не ребро
+  const PVIEW = { all: [V3(-1.0, 8.7, 1.0), V3(19.0, 24.0, 39.0)], sag: [V3(0, 8.7, 0), V3(38, 13, 25)], front: [V3(0, 8.7, 0), V3(13, 13, 44)], trans: [V3(0, 9.4, 0), V3(15, 34, 31)] };
 
   /* ---------- 2. направления ---------- */
   const DG = new THREE.Group(); G.add(DG);
@@ -245,11 +245,11 @@ function makePlanes() {
   };
   const L1 = () => st.labels && st.mode === 'planes', L2 = () => st.labels && st.mode === 'dirs', L3 = () => st.labels && st.mode === 'cav' && st.cav !== 'reg', L4 = () => st.labels && st.mode === 'cav' && st.cav === 'reg';
   const labels = [
-    { text: 'срединная (медианная) плоскость', pos: () => V3(st.plane === 'all' ? 0.03 : st.pos, 19.0, 0.2), color: '#7FE0A0', show: () => L1() && (st.plane === 'all' || (st.plane === 'sag' && Math.abs(st.pos - 0.03) < 0.1)) },
-    { text: 'парасагиттальная плоскость', pos: () => V3(st.pos, 18.0, 0.2), color: '#7FE0A0', show: () => L1() && st.plane === 'sag' && Math.abs(st.pos - 0.03) >= 0.1 },
-    { text: 'фронтальная (корональная)', pos: () => V3(2.75, 16.9, st.plane === 'all' ? 0.2 : st.pos), color: '#9A8CFF', show: () => L1() && (st.plane === 'front' || st.plane === 'all') },
-    { text: 'поперечная (аксиальная)', pos: () => V3(2.6, (st.plane === 'all' ? 12.6 : st.pos) + 0.2, 2.4), color: '#FF8AB0', show: () => L1() && (st.plane === 'trans' || st.plane === 'all') },
-    { text: 'справа', pos: V3(-3.5, 15.8, 0.4), color: '#B8C4D8', show: () => (L1() || L2()) && Math.abs(camera.position.x - controls.target.x) < Math.abs(camera.position.z - controls.target.z) },
+    { text: mqm.matches ? 'срединная' : 'срединная (медианная) плоскость', left: mqm.matches, pos: () => V3(st.plane === 'all' ? 0.03 : st.pos, 19.0, 0.2), color: '#7FE0A0', show: () => L1() && (st.plane === 'all' || (st.plane === 'sag' && Math.abs(st.pos - 0.03) < 0.1)) },
+    { text: mqm.matches ? 'парасагиттальная' : 'парасагиттальная плоскость', pos: () => V3(st.pos, 18.0, 0.2), color: '#7FE0A0', show: () => L1() && st.plane === 'sag' && Math.abs(st.pos - 0.03) >= 0.1 },
+    { text: mqm.matches ? 'фронтальная' : 'фронтальная (корональная)', pos: () => V3(2.75, 16.9, st.plane === 'all' ? 0.2 : st.pos), color: '#9A8CFF', show: () => L1() && (st.plane === 'front' || st.plane === 'all') },
+    { text: mqm.matches ? 'поперечная' : 'поперечная (аксиальная)', pos: () => V3(2.6, (st.plane === 'all' ? 12.6 : st.pos) + 0.2, 2.4), color: '#FF8AB0', show: () => L1() && (st.plane === 'trans' || st.plane === 'all') },
+    { text: 'справа', left: true, pos: V3(-3.5, 15.8, 0.4), color: '#B8C4D8', show: () => (L1() || L2()) && Math.abs(camera.position.x - controls.target.x) < Math.abs(camera.position.z - controls.target.z) },
     { text: 'слева', pos: V3(3.5, 15.8, 0.4), color: '#B8C4D8', show: () => (L1() || L2()) && Math.abs(camera.position.x - controls.target.x) < Math.abs(camera.position.z - controls.target.z) },
     { text: 'верхний', pos: V3(-3.0, 18.0, 0.3), color: '#F2C14E', show: () => L2() && st.dir === 'sup' },
     { text: 'нижний', pos: V3(-3.0, 0.1, 0.3), color: '#F2C14E', show: () => L2() && st.dir === 'sup' },
