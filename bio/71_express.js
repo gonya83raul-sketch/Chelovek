@@ -28,7 +28,7 @@ function makeExpress() {
   }
   /* ---------- 1. транскрипция ---------- */
   const G1 = new THREE.Group(); scene.add(G1);
-  const dna = duplex(16, '#8FA8C8', '#8FA8C8'); dna.position.set(-8, 0.4, 0); G1.add(dna);
+  const dna = duplex(14.5, '#8FA8C8', '#8FA8C8'); dna.position.set(-7.3, 0.4, 0); G1.add(dna);
   const tata = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.42, 0.6, 24, 1, true), new THREE.MeshBasicMaterial({ color: 0xf2c14e, transparent: true, opacity: 0.25, side: THREE.DoubleSide, depthWrite: false })); tata.rotation.z = Math.PI / 2; tata.position.set(-5.8, 0.4, 0); G1.add(tata);
   const rnap = new THREE.Mesh(blobGeo(1.4, 1.15, 1.15, 31, 0.12, 4), glassMat(0xff9a50, { rim: 0.45, base: 0.012 })); G1.add(rnap);
   const rnapCore = new THREE.Mesh(blobGeo(0.85, 0.7, 0.7, 32, 0.12, 4), protMat('#FF9A50', 0.25, { transparent: true, opacity: 0.55 })); rnap.add(rnapCore);
