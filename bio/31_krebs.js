@@ -74,7 +74,7 @@ function makeKrebs() {
     // пируват → ПДГ → ацетил-КоА (перед шагом 0)
     const pu = (st.ph + 1.5) % 8 / 1.5;
     if (pu < 1) { pyr.visible = true; acetyl.visible = false; pyr.position.copy(V3(-7.8, -2.6, 0).lerp(V3(-5.3, -0.7, 0), smooth(0, 1, pu))); }
-    else if (pu < 2) { pyr.visible = false; acetyl.visible = true; acetyl.position.copy(pdhA.curve.getPoint(smooth(0, 1, pu - 1))); if (pu < 1.05 && rnd() < 0.5) { token('co2', V3(-5.3, 0.6, 0), V3(-0.2, 1.2, 0.3)); token('nadh', V3(-4.6, -1.6, 0), ETC.clone().sub(V3(-4.6, -1.6, 0)).normalize().multiplyScalar(3.2)); } }
+    else if (pu < 2) { pyr.visible = false; acetyl.visible = true; acetyl.position.copy(pdhA.curve.getPoint(smooth(0, 1, pu - 1))); if (pu < 1.05 && rnd() < 0.5) { token('co2', V3(-5.3, 0.6, 0), V3(0.3, 0.45, 0.5)); token('nadh', V3(-4.6, -1.6, 0), ETC.clone().sub(V3(-4.6, -1.6, 0)).normalize().multiplyScalar(3.2)); } }
     else { pyr.visible = acetyl.visible = false; }
     [pyr, acetyl].forEach((m) => { m.rotation.y += dt; });
     PDH.rotation.y += dt * 0.15;
@@ -99,7 +99,7 @@ function makeKrebs() {
   const TXT = '<b>Цикл трикарбоновых кислот</b> (цикл Кребса, цитратный цикл) в матриксе митохондрий — «котёл», где сгорают остатки всех видов топлива. Ацетил-КоА (C2) соединяется с оксалоацетатом (C4) в цитрат (C6); за оборот уходят <b>2 CO₂</b>, образуются <b>3 НАДН, 1 ФАДН₂ и 1 ГТФ</b>, а оксалоацетат возвращается. Восстановленные коферменты (золотые шарики) летят в дыхательную цепь (справа). Слева — <b>пируватдегидрогеназный комплекс</b>, превращающий пируват в ацетил-КоА. Нажмите на молекулу или комплекс.';
   const PDHT = '<b>Пируватдегидрогеназный комплекс</b> — гигантский ансамбль (больше рибосомы) из трёх ферментов: E1 (декарбоксилаза, кофермент <b>ТПФ</b> — витамин B1), E2 (трансацетилаза, <b>липоевая кислота</b> и <b>КоА</b> — B5), E3 (дегидрогеназа, <b>ФАД</b> — B2 и <b>НАД⁺</b> — PP). Пируват + НАД⁺ + HS-КоА → ацетил-КоА + CO₂ + НАДН. Реакция необратима: из ацетил-КоА глюкозу уже не получить. Тормозится АТФ, ацетил-КоА, НАДН; при дефиците B1 (алкоголизм) пируват и лактат копятся в крови.';
   const labels = [
-    ...NODES.map((n) => ({ text: `${n.d.name} · C${n.d.c}`, pos: n.m.position.clone().add(pos(n.k, R + 1.0).sub(n.m.position).multiplyScalar(0.9)).add(V3(-0.4, 0, 0)), color: '#EFEAE6', show: () => st.labels })),
+    ...NODES.map((n) => ({ text: `${n.d.name} · C${n.d.c}`, pos: n.k === 3 ? n.m.position.clone().add(V3(-0.6, -0.6, 0)) : n.k === 4 ? n.m.position.clone().add(V3(-0.5, 0.55, 0)) : n.m.position.clone().add(pos(n.k, R + 1.0).sub(n.m.position).multiplyScalar(0.9)).add(V3(-0.4, 0, 0)), left: n.k === 3 || n.k === 4, color: '#EFEAE6', show: () => st.labels })),
     ...KR.map((d, k) => ({ text: KR[(k + 1) % 8].enz, pos: V3(C.x + Math.cos(ang(k) - 0.39) * (R - 1.15), C.y + Math.sin(ang(k) - 0.39) * (R - 1.15), 0.3).add(V3(-0.55, 0, 0)), color: '#7FD6FF', show: () => st.labels && st.step === k })),
     { text: 'пируватдегидрогеназа', pos: V3(-6.6, -2.2, 0), color: '#F2C14E', show: () => st.labels },
     { text: 'пируват', pos: V3(-8.2, -3.2, 0), color: '#FF8A5C', show: () => st.labels },
