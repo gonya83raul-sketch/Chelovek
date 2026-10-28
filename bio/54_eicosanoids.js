@@ -17,7 +17,7 @@ function makeEicosanoids() {
 
   /* ---------- 1. арахидоновый каскад ---------- */
   const G1 = new THREE.Group(); scene.add(G1);
-  const mem = schemBilayer({ w: 2.5, d: 2.2, thick: 0.6, step: 0.17, seed: 54 }); mem.rotation.z = Math.PI / 2; mem.position.set(-3.6, -0.35, 0); G1.add(mem);
+  const mem = schemBilayer({ w: 2.5, d: 2.2, thick: 0.6, step: 0.17, seed: 54 }); mem.rotation.z = Math.PI / 2; mem.rotation.x = 0.5; mem.position.set(-3.6, -0.35, 0); G1.add(mem);   // бислой чуть развёрнут к зрителю: видно головки и хвосты, а не «барабан»
   rnd = mulberry(5402);
   const NODE = {
     aa: { m: 'arachidonic', p: V3(-1.5, 0, 0), col: '#F2C14E' },
