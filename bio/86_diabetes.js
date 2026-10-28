@@ -304,8 +304,8 @@ function makeDiabetes() {
   const L1 = () => st.labels && st.mode === 'beta', L2 = () => st.labels && st.mode === 'day', L3 = () => st.labels && st.mode === 'glyc';
   const labels = [
     { text: 'GLUT2', pos: onMem(180, 1.12).add(V3(-0.15, 0.35, 0.2)), color: '#7FE0A0', left: true, show: L1 },
-    { text: 'глюкокиназа', pos: gk.position.clone().add(V3(-0.3, -0.45, 0.2)), color: GLU, show: L1 },
-    { text: 'митохондрии → АТФ', pos: V3(-1.3, -1.25, 0.4), color: '#FF8A5C', show: L1 },
+    { text: 'глюкокиназа', pos: gk.position.clone().add(V3(-0.9, -0.45, 0.2)), color: GLU, show: L1 },
+    { text: 'митохондрии → АТФ', pos: V3(-2.3, -1.45, 0.4), color: '#FF8A5C', show: L1 },
     { text: 'K-АТФ-канал (Kir6.2 + SUR1)', pos: onMem(KD, 1.2).add(V3(-0.1, 0.1, 0.2)), color: '#B090FF', show: L1 },
     { text: 'глибенкламид', pos: onMem(KD, 1.35).add(V3(-1.0, 0.0, 0.2)), color: '#E8E8E8', show: () => L1() && st.su },
     { text: 'Ca²⁺-канал', pos: onMem(CD, 1.12).add(V3(0.15, 0.2, 0.2)), color: '#5BC8FF', show: L1 },
