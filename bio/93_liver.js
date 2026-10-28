@@ -8,7 +8,7 @@ function makeLiver() {
   rnd = mulberry(2701);
   const scene = bioStage({ bg: 0x0a0807, rim: 0xc87a4a });
   const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: кадр уходит из-под заголовка и описания (телефон — прежний ракурс)
-  const VIEW = { lob: DK ? flyTarget(V3(-1.6, -1.4, 0), V3(-1.2, 3.4, 20)) : flyTarget(V3(0.6, -2.0, 0), V3(1.0, 2.6, 18.5)), detox: flyTarget(V3(40.4, -2.3, 0), V3(40.9, -0.4, 17)), alc: flyTarget(V3(79.0, -2.4, 0), V3(79.5, -0.7, 17)), para: flyTarget(V3(119.1, -2.4, 0), V3(119.6, -0.7, 17)) };
+  const VIEW = { lob: DK ? flyTarget(V3(-1.6, -1.2, 0), V3(-1.2, 3.6, 18.7)) : flyTarget(V3(0.6, -2.0, 0), V3(1.0, 2.6, 18.5)), detox: flyTarget(V3(40.4, -2.3, 0), V3(40.9, -0.4, 17)), alc: flyTarget(V3(79.0, -2.4, 0), V3(79.5, -0.7, 17)), para: flyTarget(V3(119.1, -2.4, 0), V3(119.6, -0.7, 17)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.lob.pos);
   const controls = makeControls(camera, VIEW.lob.target); controls.minDistance = 3; controls.maxDistance = 40;
   const fx = new Sparks(1600, 0.08); scene.add(fx.obj);
@@ -236,7 +236,7 @@ function makeLiver() {
     return [['Время', st.ph.toFixed(0), 'ч'], ['Глутатион', Math.round(st.gsh * 100), '%'], ['Повреждение', Math.round(st.dmg * 100), '%']];
   }
   const self = {
-    scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#E07A4A',
+    mobZoom: 0.78, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#E07A4A',
     kicker: 'Биохимия · печень', title: 'Печень: обезвреживание',
     lede: 'Главная химическая фабрика тела: всё, что всосалось в кишечнике, сначала проходит через неё — и лекарства, и алкоголь, и яды.',
     notes: `

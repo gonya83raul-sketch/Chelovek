@@ -8,7 +8,7 @@ function makeCalcium() {
   rnd = mulberry(8401);
   const scene = bioStage({ rim: 0xf2e6c8 });
   const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: кадр уходит из-под заголовка и описания (телефон — прежний ракурс)
-  const VIEW = { reg: DK ? [V3(-1.0, 0.5, 0), V3(-0.5, 1.7, 19.5)] : [V3(-1.0, -0.1, 0), V3(-0.5, 1.0, 18.5)], vitd: [V3(39.9, -0.9, 0), V3(40.4, 0.6, 17)], bone: [V3(80.3, -1.8, 0), V3(80.3, 4.5, 10.5)] };
+  const VIEW = { reg: DK ? [V3(-1.0, 0.1, 0), V3(-0.5, 1.3, 21.5)] : [V3(-1.0, 0.0, 0), V3(-0.5, 1.0, 15.0)], vitd: [V3(39.9, -0.9, 0), V3(40.4, 0.6, 17)], bone: [V3(80.3, -1.8, 0), V3(80.3, 4.5, 10.5)] };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VIEW.reg[1]);
   const controls = makeControls(camera, VIEW.reg[0]); controls.minDistance = 3; controls.maxDistance = 40;
   const fx = new Sparks(2000, 0.07); scene.add(fx.obj);
@@ -18,11 +18,11 @@ function makeCalcium() {
 
   /* ---------- 1. регуляция в организме ---------- */
   const G1 = new THREE.Group(); scene.add(G1);
-  bodyShell(G1, { rim: 0.14, keep: true, legs: true });
+  bodyShell(G1, { rim: 0.28, keep: true, legs: true });
   const THY = V3(0, 3.28, 0.24), HRT = BODY.heart.clone(), LIV = V3(-0.35, 1.5, 0.18), KID = [V3(0.33, 1.12, -0.12), V3(-0.33, 1.12, -0.12)], GUT = V3(0.02, 0.45, 0.22), BONE = V3(0.5, -1.0, 0.05), SKIN = V3(1.15, 2.6, 0.15);
   const thyMat = organMat('#D86A8A', 0.45, { emissiveIntensity: 0.05, transparent: true, opacity: 0.6 });
   [-1, 1].forEach((s) => { const l = new THREE.Mesh(blobGeo(0.075, 0.15, 0.06, 2 + s, 0.08), thyMat); l.position.copy(THY).add(V3(s * 0.085, 0.01, 0)); l.rotation.z = -s * 0.25; G1.add(l); });
-  const PTG = [V3(0.1, 3.35, 0.17), V3(-0.1, 3.35, 0.17), V3(0.1, 3.2, 0.17), V3(-0.1, 3.2, 0.17)].map((p) => { const m = new THREE.Mesh(new THREE.SphereGeometry(0.03, 12, 8), organMat('#F2C14E', 0.7, { emissiveIntensity: 0.3 })); m.position.copy(p); G1.add(m); return m; });
+  const PTG = [V3(0.1, 3.35, 0.17), V3(-0.1, 3.35, 0.17), V3(0.1, 3.2, 0.17), V3(-0.1, 3.2, 0.17)].map((p) => { const m = new THREE.Mesh(new THREE.SphereGeometry(0.05, 12, 8), organMat('#F2C14E', 0.7, { emissiveIntensity: 0.3 })); m.position.copy(p); G1.add(m); return m; });
   const ptgG = glowNucleus(G1, V3(0, 3.28, 0.2), '#F2C14E', 0.03, 10);
   KID.forEach((p) => G1.add(new THREE.Mesh(ell3(0.13, 0.22, 0.1, p), organMat('#9A4A4A', 0.5))));
   const kidG = glowNucleus(G1, KID[0].clone().add(V3(0, 0, 0.12)), '#FF9A5C', 0.03, 10);

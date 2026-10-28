@@ -8,7 +8,7 @@ function makeSexhorm() {
   rnd = mulberry(8701);
   const scene = bioStage({ rim: 0xff6fa8 });
   const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: кадр уходит из-под заголовка и описания (телефон — прежний ракурс)
-  const VIEW = { synth: DK ? [V3(-1.5, -0.35, 0), V3(-1.5, 0.6, 25)] : [V3(1.0, -0.35, 0), V3(1.0, 0.5, 22)], axis: [V3(40.0, -0.2, 0), V3(40.6, 1.1, 20)], preg: [V3(81.3, -1.3, -0.4), V3(81.3, 7.0, 12.0)] };
+  const VIEW = { synth: DK ? [V3(-2.0, 0.65, 0), V3(-2.0, 1.6, 23)] : [V3(1.0, -0.35, 0), V3(1.0, 0.5, 22)], axis: [V3(40.0, -0.2, 0), V3(40.6, 1.1, 20)], preg: [V3(81.3, -1.3, -0.4), V3(81.3, 7.0, 12.0)] };
   const VIEWM = { synth: [V3(1.3, 0.45, 0), V3(1.7, 1.45, 25)], preg: [V3(80.5, -0.6, -0.4), V3(80.5, 8.0, 14.5)], axis: [V3(40.0, 0.6, 0), V3(40.4, 1.3, 13)] }, mqm = window.matchMedia('(max-width:700px)'), VV = (m) => (mqm.matches && VIEWM[m]) || VIEW[m];
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VIEW.synth[1]);
   const controls = makeControls(camera, VIEW.synth[0]); controls.minDistance = 3; controls.maxDistance = 45;

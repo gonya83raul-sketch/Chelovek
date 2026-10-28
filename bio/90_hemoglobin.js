@@ -7,7 +7,7 @@
 function makeHemoglobin() {
   rnd = mulberry(2401);
   const scene = bioStage({ bg: 0x0a0608, rim: 0xff5a5a });
-  const VIEW = { o2: flyTarget(V3(-0.4, -1.7, 0), V3(1.0, 0.2, 20.5)), heme: flyTarget(V3(39.0, -1.6, 0), V3(40, 5.2, 12.2)), sick: flyTarget(V3(79.8, -1.7, 0), V3(80.4, 0.0, 18.5)) };
+  const VIEW = { o2: flyTarget(V3(-0.6, -1.6, 0), V3(0.8, 0.3, 21.2)), heme: flyTarget(V3(39.0, -1.6, 0), V3(40, 5.2, 12.2)), sick: flyTarget(V3(79.8, -1.7, 0), V3(80.4, 0.0, 18.5)) };
   // цель камеры — в центре модели, место под нижнюю панель — сдвигом кадра: вращение и приближение идут вокруг модели
   const VOFF = 0.16; Object.values(VIEW).forEach((v) => { const d = VOFF * 2 * Math.tan(17 * Math.PI / 180) * v.pos.distanceTo(v.target); v.target.y += d; v.pos.y += d; });
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.o2.pos); camera.setViewOffset(1, 1, 0, VOFF, 1, 1);
@@ -40,7 +40,7 @@ function makeHemoglobin() {
   });
   const qO2 = hemeN.map((n) => new THREE.Quaternion().setFromUnitVectors(V3(0, 1, 0), n));
   const o2m = feP.map((p, k) => { const m = molMesh(O2M, { scale: SC * O2K, bondR: 0.16 }); molGlow(m, 0.35); G1.add(m); return m; });
-  const surf = surfaceMesh(caPoints('hb', SC), { radius: 0.5, res: 56, mat: glassMat(0xff7a7a, { rim: 0.12, base: 0.003, pow: 3.0, keep: true }) }); G1.add(surf);
+  const surf = surfaceMesh(caPoints('hb', SC), { radius: 0.34, res: 56, mat: glassMat(0xff7a7a, { rim: 0.12, base: 0.003, pow: 3.0, keep: true }) }); G1.add(surf);
   const cenA = caCen(['A']), cenB = caCen(['B']);
   // подпись: от центра тетрамера наружу в плоскости экрана
   const scrOut = (pW, k) => { const c = G1.localToWorld(hC.clone()), v = camera.getWorldDirection(V3(0, 0, 0)); const d = pW.clone().sub(c); d.addScaledVector(v, -d.dot(v)); if (d.length() < 0.2) d.set(0, 1, 0); return pW.add(d.normalize().multiplyScalar(k)); };
@@ -197,7 +197,7 @@ function makeHemoglobin() {
   }
   function stats() { return st.mode === 'o2' ? [['Насыщение', Math.round((st.S || 0) * 100), '%'], ['P50', P50().toFixed(0), 'мм рт. ст.'], ['O₂ на гемах', Math.round((st.S || 0) * 4), 'из 4']] : st.mode === 'sick' ? [['Полимеризация', Math.round((st.poly || 0) * 100), '%']] : [['Hb в крови', '120–160', 'г/л']]; }
   const self = {
-    scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#FF5A5A',
+    mobZoom: 0.6, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#FF5A5A',
     kicker: 'Биохимия · кровь', title: 'Гемоглобин и перенос кислорода',
     lede: 'Около 270 миллионов молекул гемоглобина в каждом эритроците. Как этот белок забирает кислород в лёгких и вовремя отдаёт его тканям.',
     notes: `

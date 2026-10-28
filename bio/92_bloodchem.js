@@ -8,7 +8,7 @@ function makeBloodchem() {
   rnd = mulberry(2601);
   const scene = bioStage({ bg: 0x0a0709, rim: 0xff6a6a });
   const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: кадр уходит из-под заголовка и описания (телефон — прежний ракурс)
-  const VIEW = { ph: DK ? flyTarget(V3(-0.7, -1.5, 0), V3(-0.2, 0.2, 18)) : flyTarget(V3(0.3, -2.3, 0), V3(0.8, -0.6, 17)), prot: flyTarget(V3(40.4, -2.6, 0), V3(40.9, -0.8, 19)), coag: flyTarget(V3(79.6, -2.3, 0), V3(80.2, -0.5, 18.5)) };
+  const VIEW = { ph: DK ? flyTarget(V3(-1.3, -1.5, 0), V3(-0.8, 0.2, 18)) : flyTarget(V3(0.3, -2.3, 0), V3(0.8, -0.6, 17)), prot: flyTarget(V3(40.4, -2.6, 0), V3(40.9, -0.8, 19)), coag: flyTarget(V3(79.6, -2.3, 0), V3(80.2, -0.5, 18.5)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.ph.pos);
   const controls = makeControls(camera, VIEW.ph.target); controls.minDistance = 3; controls.maxDistance = 40;
   const fx = new Sparks(1600, 0.08); scene.add(fx.obj);
@@ -21,7 +21,7 @@ function makeBloodchem() {
   const eqM = EQ.map(([id, x]) => {
     if (id === 'hp') { const g = new THREE.Group(); g.position.set(x, eqY, 0); G1.add(g); glowNucleus(g, V3(0, 0, 0), '#FFE070', 0.12, 6); return g; }
     if (id === 'hco3') { const m = MOL('h2co3'); return molAt(G1, m, V3(x, eqY, 0), 0.62, { idx: new Set([0, 1, 2, 3, 4]) }); }
-    return molAt(G1, MOL(id), V3(x, eqY, 0), id === 'h2o' ? 0.36 : 0.55);
+    return molAt(G1, MOL(id), V3(x, eqY, 0), id === 'h2o' ? 0.45 : 0.68);
   });
   const eqArrows = [[-2.15, -1.25], [0.15, 1.15]].map(([a, b]) => [flowArrow(G1, V3(a, eqY + 0.12, 0), V3(b, eqY + 0.12, 0), '#9FB4FF', { bend: 0, r: 0.02 }), flowArrow(G1, V3(b, eqY - 0.12, 0), V3(a, eqY - 0.12, 0), '#9FB4FF', { bend: 0, r: 0.02 })]);
   // «пробирка крови» с частицами: CO₂ (серые), H⁺ (жёлтые), HCO₃⁻ (голубые)
@@ -29,7 +29,7 @@ function makeBloodchem() {
   const NPa = 240; const pts = new THREE.InstancedMesh(new THREE.SphereGeometry(1, 8, 6), new THREE.MeshBasicMaterial({ color: 0xffffff }), NPa); G1.add(pts);
   const pp = Array.from({ length: NPa }, () => ({ p: V3(rand(-2.8, 0.8), rand(-1.9, -0.4), rand(-0.6, 0.6)), v: randUnit().multiplyScalar(0.3), k: 0 }));
   // шкала pH
-  const gauge = new THREE.Group(); gauge.position.set(3.1, -1.3, 0); G1.add(gauge);
+  const gauge = new THREE.Group(); gauge.position.set(3.1, -1.05, 0); G1.add(gauge);
   for (let i = 0; i < 40; i++) { const u = i / 39, a = Math.PI * (0.95 - 0.9 * u); const c = new THREE.Color().setHSL(0.0 + 0.62 * u, 0.75, 0.5); const s = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.22, 0.05), new THREE.MeshBasicMaterial({ color: c, transparent: true, opacity: (u > 0.5 && u < 0.6) ? 1 : 0.55 })); s.position.set(Math.cos(a) * 1.3, Math.sin(a) * 1.3, 0); s.rotation.z = a - Math.PI / 2; gauge.add(s); }
   const needle = new THREE.Mesh(new THREE.BoxGeometry(0.04, 1.15, 0.04), new THREE.MeshBasicMaterial({ color: 0xffffff })); needle.geometry.translate(0, 0.57, 0); gauge.add(needle);
   glowNucleus(gauge, V3(0, 0, 0), '#FFFFFF', 0.06, 4);

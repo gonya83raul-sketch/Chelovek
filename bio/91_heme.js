@@ -8,7 +8,7 @@ function makeHeme() {
   rnd = mulberry(2501);
   const scene = bioStage({ bg: 0x09080a, rim: 0xf2c14e });
   const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: кадр уходит из-под заголовка и описания (телефон — прежний ракурс)
-  const VIEW = { synth: DK ? flyTarget(V3(-2.1, -2.3, 0), V3(-1.3, -0.4, 23)) : flyTarget(V3(0.2, -2.3, 0), V3(1.0, -0.5, 20.5)), chem: flyTarget(V3(41.2, -2.2, 0), V3(41.6, -0.6, 19)), body: flyTarget(V3(80.3, -0.75, 0), V3(80.9, 0.5, 11.2)) };
+  const VIEW = { synth: DK ? flyTarget(V3(-2.3, -1.8, 0), V3(-1.5, 0.1, 22.0)) : flyTarget(V3(0.2, -2.3, 0), V3(1.0, -0.5, 20.5)), chem: flyTarget(V3(41.2, -2.2, 0), V3(41.6, -0.6, 19)), body: flyTarget(V3(80.3, -0.75, 0), V3(80.9, 0.5, 11.2)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.synth.pos);
   const controls = makeControls(camera, VIEW.synth.target); controls.minDistance = 3; controls.maxDistance = 40;
   const fx = new Sparks(1600, 0.08); scene.add(fx.obj);
@@ -200,12 +200,12 @@ function makeHeme() {
     '<b>Физиологическая желтуха новорождённых</b> (2–5-й дни): после рождения разрушается фетальный гемоглобин, а УДФ-глюкуронилтрансфераза печени ещё незрелая — растёт <b>непрямой</b> билирубин. Опасность — ядерная желтуха (непрямой билирубин проникает в мозг). Лечение — <b>фототерапия</b>: синий свет (~460 нм) превращает билирубин в водорастворимые изомеры, которые выводятся без конъюгации.'];
   const labels = [
     ...NODES.map((n, i) => ({ text: n.name, pos: n.pos.clone().add(G1.position).add(V3([-0.5, 0.3, 0, 0, 0, 0, 0, -0.3][i], i <= 1 ? -0.95 : i >= 6 ? 0.85 : i === 4 ? 1.05 : i === 5 ? 0.95 : -0.85, 0.2)), color: i === 7 ? '#FF6A3A' : i >= 4 ? '#D08AFF' : '#F2C14E', show: () => st.labels && st.mode === 'synth' })),
-    ...ENZ.map((e, i) => ({ text: e, get pos() { return EDGE[i].curve.getPoint(0.5).add(G1.position).add(V3([0, 0, 0, 0, -0.3, 0, -0.85][i], [0.32, 0.3, -0.3, -0.25, 1.0, 0.3, 0.85][i], 0.4)); }, color: BLOCK[st.block] && BLOCK[st.block].includes(i) ? '#FF4A5A' : 'rgba(239,234,230,.62)', show: () => st.labels && st.mode === 'synth' })),
+    ...ENZ.map((e, i) => ({ text: e, get pos() { return EDGE[i].curve.getPoint(0.5).add(G1.position).add(V3([0, 0, 0, 0, -0.3, 0, -0.85][i], [0.32, 0.3, -0.3, -0.25, 1.0, 0.3, 0.85][i], 0.4)); }, color: BLOCK[st.block] && BLOCK[st.block].includes(i) ? '#FF4A5A' : 'rgba(239,234,230,.86)', show: () => st.labels && st.mode === 'synth' })),
     { text: 'митохондрия', pos: V3(-5.0, -1.25, 0.4), color: '#FF9A5C', show: () => st.labels && st.mode === 'synth' },
     { text: 'цитоплазма', pos: V3(4.6 + 1.7, -1.6, 0.4), color: '#9FB4FF', show: () => st.labels && st.mode === 'synth' },
     { text: 'гем подавляет АЛК-синтазу', pos: V3(-3.3 + 1.7, 1.6, 0.4), color: '#FF4A6A', show: () => st.labels && st.mode === 'synth' && st.fb },
     ...[['гем', 0, '#FF6A3A'], ['биливердин', 1, '#5CC48A'], ['билирубин (непрямой)', 2, '#FF9A3A'], ['билирубин-диглюкуронид (прямой)', 3, '#F2E05A']].map(([n, i, c]) => ({ text: n, pos: CH[i].clone().add(V3(40, i ? -1.8 : -1.45, 0.3)).add(V3(i === 0 ? -0.35 : i === 3 ? -0.4 : 0, 0, 0)), color: c, show: () => st.labels && st.mode === 'chem' })),
-    ...[['гемоксигеназа · O₂, НАДФН', 0], ['биливердинредуктаза · НАДФН', 1], ['УДФ-глюкуронилтрансфераза', 2]].map(([n, i]) => ({ text: n, pos: CH[i].clone().lerp(CH[i + 1], 0.5).add(V3(40, 0.75, 0.3)), color: 'rgba(239,234,230,.62)', show: () => st.labels && st.mode === 'chem' })),
+    ...[['гемоксигеназа · O₂, НАДФН', 0], ['биливердинредуктаза · НАДФН', 1], ['УДФ-глюкуронилтрансфераза', 2]].map(([n, i]) => ({ text: n, pos: CH[i].clone().lerp(CH[i + 1], 0.5).add(V3(40, 0.75, 0.3)), color: 'rgba(239,234,230,.86)', show: () => st.labels && st.mode === 'chem' })),
     { text: 'CO', pos: V3(40 - 1.75, 1.25, 0.3), color: '#F2CC3A', show: () => st.labels && st.mode === 'chem' }, { text: 'Fe²⁺', pos: V3(40 - 0.75, 1.25, 0.3), color: '#E0773A', show: () => st.labels && st.mode === 'chem' },
     { text: 'глюкуроновая кислота', get pos() { return (GLU[1] || GLU[0] ? (GLU[1] || GLU[0]).getWorldPosition(V3(0, 0, 0)) : V3(45.6, -1.6, 0)).add(V3(0.5, -0.1, 0.3)); }, color: '#7FE0A0', show: () => st.labels && st.mode === 'chem' && GLU.length > 0 },
     { text: 'O₂', get pos() { return side[1].getWorldPosition(V3(0, 0, 0)).add(V3(0.3, -0.05, 0)); }, color: '#F04848', show: () => st.labels && st.mode === 'chem' },
@@ -250,7 +250,7 @@ function makeHeme() {
     const C = COND[st.cond]; return [['Общий билирубин', C.tot, 'мкмоль/л'], ['Прямой', C.dir, 'мкмоль/л'], ['Моча', C.us, ''], ['Кал', C.ss, '']];
   }
   const self = {
-    scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#F2C14E',
+    mobZoom: 0.78, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#F2C14E',
     kicker: 'Биохимия · кровь и печень', title: 'Обмен гема и желтухи',
     lede: 'Как клетка собирает гем из глицина и сукцинил-КоА — и во что он превращается, когда эритроцит отслужил свои 120 дней.',
     notes: `

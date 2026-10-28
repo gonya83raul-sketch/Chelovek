@@ -7,7 +7,7 @@ function makeThyroid() {
   rnd = mulberry(8201);
   const scene = bioStage({ rim: 0xc77dff });
   const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: кадр уходит из-под заголовка и описания (телефон — прежний ракурс)
-  const VIEW = { synth: DK ? [V3(-2.1, -1.5, 0), V3(-1.7, 0.5, 15.5)] : [V3(-1.2, -1.6, 0), V3(-0.8, 0.4, 14.5)], axis: [V3(39.6, 2.1, 0), V3(40.1, 3.2, 13.5)], cell: [V3(78.3, -1.9, 0), V3(78.7, 0.2, 17.5)] };
+  const VIEW = { synth: DK ? [V3(-1.7, -1.5, 0), V3(-1.3, 0.5, 15.5)] : [V3(-1.2, -1.6, 0), V3(-0.8, 0.4, 14.5)], axis: [V3(39.6, 2.1, 0), V3(40.1, 3.2, 13.5)], cell: [V3(78.3, -1.9, 0), V3(78.7, 0.2, 17.5)] };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VIEW.synth[1]);
   const controls = makeControls(camera, VIEW.synth[0]); controls.minDistance = 3; controls.maxDistance = 40;
   const fx = new Sparks(2000, 0.07); scene.add(fx.obj);
@@ -47,7 +47,7 @@ function makeThyroid() {
   G1.add(new THREE.Mesh(new THREE.TubeGeometry(tgCurve, 200, 0.045, 8), organMat('#F2D27A', 0.55, { emissiveIntensity: 0.08 })));
   const TYR = Array.from({ length: 12 }, (_, i) => { const p = tgCurve.getPoint((i + 0.5) / 12); const m = new THREE.Mesh(new THREE.SphereGeometry(0.075, 14, 10), new THREE.MeshPhysicalMaterial({ color: 0x999999, emissive: 0xffffff, emissiveIntensity: 0.05, roughness: 0.3 })); m.position.copy(p); G1.add(m); const io = [0, 1].map((k) => { const s = new THREE.Mesh(new THREE.SphereGeometry(0.05, 10, 8), new THREE.MeshBasicMaterial({ color: ICOL })); s.position.copy(p).add(V3(k ? 0.08 : -0.08, 0.07, 0.03)); s.visible = false; G1.add(s); return s; }); return { p, m, io, n: 0, hormone: null }; });
   // готовые гормоны справа: настоящие молекулы
-  const t4m = fit('thyroxine', 0.62), t3m = fit('t3', 0.58); t4m.position.set(4.1, 0.95, 0); t3m.position.set(4.1, -0.65, 0); G1.add(t4m, t3m);
+  const t4m = fit('thyroxine', 0.85), t3m = fit('t3', 0.8); t4m.position.set(4.1, 0.95, 0); t3m.position.set(4.1, -0.65, 0); G1.add(t4m, t3m);
   // частицы йодида и гормонов
   const iodI = Array.from({ length: 26 }, () => { const s = new THREE.Mesh(new THREE.SphereGeometry(0.055, 10, 8), new THREE.MeshBasicMaterial({ color: ICOL })); s.visible = false; G1.add(s); return { s, t: 0, on: false, path: null }; });
   const horI = Array.from({ length: 10 }, () => { const s = new THREE.Mesh(new THREE.SphereGeometry(0.075, 12, 8), new THREE.MeshBasicMaterial({ color: '#F2C14E' })); s.visible = false; G1.add(s); return { s, t: 0, on: false, path: null }; });

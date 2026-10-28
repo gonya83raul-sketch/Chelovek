@@ -7,7 +7,7 @@
 function makeDiabetes() {
   rnd = mulberry(8601);
   const scene = bioStage({ rim: 0x5b8cff });
-  const VIEW = { beta: [V3(-1.5, -1.5, 0), V3(-1.0, -0.3, 20)], day: [V3(39.3, 0.6, 0), V3(39.7, 1.4, 10.5)], glyc: [V3(78.9, -1.9, 0), V3(79.4, -0.8, 17)] };
+  const VIEW = { beta: [V3(-1.9, -1.4, 0), V3(-1.4, -0.2, 21.5)], day: [V3(39.3, 0.6, 0), V3(39.7, 1.4, 10.5)], glyc: [V3(78.9, -1.9, 0), V3(79.4, -0.8, 17)] };
   const VIEWM = { beta: [V3(0.3, -1.5, 0), V3(0.8, -0.3, 20)], day: [V3(40, 1.0, 0), V3(40.3, 1.6, 8.5)], glyc: [V3(80.6, -0.4, 0), V3(81, 0.4, 14)] }, mqm = window.matchMedia('(max-width:700px)'), VV = (m) => (mqm.matches && VIEWM[m]) || VIEW[m];
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VIEW.beta[1]);
   const controls = makeControls(camera, VIEW.beta[0]); controls.minDistance = 3; controls.maxDistance = 40;
@@ -303,7 +303,7 @@ function makeDiabetes() {
   const hbL = (ch, out) => { const p = caPoints('hb', HSC, [ch]); const c = p.reduce((v, q) => v.add(q), V3(0, 0, 0)).multiplyScalar(1 / p.length); const d = c.clone().sub(hbCen).normalize(); c.addScaledVector(d, out); return () => hbG.localToWorld(c.clone()); };
   const L1 = () => st.labels && st.mode === 'beta', L2 = () => st.labels && st.mode === 'day', L3 = () => st.labels && st.mode === 'glyc';
   const labels = [
-    { text: 'GLUT2', pos: onMem(180, 1.12).add(V3(0, 0.35, 0.2)), color: '#7FE0A0', show: L1 },
+    { text: 'GLUT2', pos: onMem(180, 1.12).add(V3(-0.15, 0.35, 0.2)), color: '#7FE0A0', left: true, show: L1 },
     { text: 'глюкокиназа', pos: gk.position.clone().add(V3(-0.3, -0.45, 0.2)), color: GLU, show: L1 },
     { text: 'митохондрии → АТФ', pos: V3(-1.3, -1.25, 0.4), color: '#FF8A5C', show: L1 },
     { text: 'K-АТФ-канал (Kir6.2 + SUR1)', pos: onMem(KD, 1.2).add(V3(-0.1, 0.1, 0.2)), color: '#B090FF', show: L1 },
@@ -377,7 +377,7 @@ function makeDiabetes() {
     return [['HbA1c', f1(st.a1c), '%'], ['Средний сахар', f1(A1C[st.lvl]), 'ммоль/л'], ['Сорбит в хрусталике', Math.round(st.sorb * 100), '%']];
   }
   const self = {
-    mobZoom: 0.75, scene, camera, controls, update: (dt) => { update(dt); G3.updateMatrixWorld(true); dyn.forEach((l) => { l.pos.copy(l.fn()); }); }, ui, onKey, stats, labels, drawScope, accent: '#5B8CFF',
+    mobZoom: 0.78, scene, camera, controls, update: (dt) => { update(dt); G3.updateMatrixWorld(true); dyn.forEach((l) => { l.pos.copy(l.fn()); }); }, ui, onKey, stats, labels, drawScope, accent: '#5B8CFF',
     kicker: 'Биохимия · гормоны', title: 'Инсулин и сахарный диабет',
     lede: 'Одна клетка поджелудочной меряет сахар крови с точностью до долей миллимоля — и полмиллиарда людей живут с диабетом, когда этот датчик ломается.',
     notes: `

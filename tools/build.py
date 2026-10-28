@@ -75,7 +75,7 @@ ledes = [f'{t}: {mm["lede"]}' for t, mm in META.items() if 'lede' in mm]
 L0 = 'const TOPIC_LEDE = {}; // заполняет tools/build.py'
 assert page.count(L0) == 1
 page = page.replace(L0, 'const TOPIC_LEDE = { ' + ', '.join(ledes) + ' };', 1)
-APP = 'app31'   # меняется при каждой публикации со старой структурой кэша
+APP = 'app32'   # меняется при каждой публикации со старой структурой кэша
 # модели: сайт грузит models/<имя>.bin; если есть только старые .txt — перепаковать, без .bin сборку не выпускать
 MODELS = ['skeleton', 'muscles', 'vision', 'digest', 'repro']
 MDIR = os.path.join(ROOT, 'out', 'models')

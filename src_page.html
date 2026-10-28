@@ -646,8 +646,9 @@ function makeNeuron() {
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x07060a); scene.fog = new THREE.FogExp2(0x07060a, 0.03); scene.environment = envTex;
   addLights(scene);
-  const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 300); camera.position.set(7.5, 6.5, 31.5);
-  const controls = makeControls(camera, V3(7.5, 0, 0)); controls.minDistance = 4; controls.maxDistance = 50;
+  const NDX = matchMedia('(max-width:700px)').matches ? 0 : 2.0;   // компьютер: нейрон правее — дендриты не под описанием
+  const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 300); camera.position.set(7.5 - NDX, 6.5, 32.5);
+  const controls = makeControls(camera, V3(7.5 - NDX, 0, 0)); controls.minDistance = 4; controls.maxDistance = 50;
 
   const memMat = new THREE.MeshPhysicalMaterial({ color: 0xcdb0c4, roughness: 0.46, metalness: 0, clearcoat: 0.55, clearcoatRoughness: 0.35, sheen: 1, sheenColor: new THREE.Color(0x8f6dff), sheenRoughness: 0.5, emissive: 0x12081a, envMapIntensity: 0.6 });
   const somaMat = memMat.clone(); somaMat.emissive = new THREE.Color(0xff8a3c); somaMat.emissiveIntensity = 0;
@@ -3544,8 +3545,9 @@ function makeVision() {
   rnd = mulberry(51);
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x07060a); scene.environment = envTex;
   addLights(scene, 0x7fb8ff);
-  const camera = new THREE.PerspectiveCamera(38, 1, 0.05, 200); camera.position.set(10, 6, 11);
-  const controls = makeControls(camera, V3(0, -0.4, -0.3)); controls.minDistance = 1.2; controls.maxDistance = 40;
+  const VSX = matchMedia('(max-width:700px)').matches ? 0 : 1;   // компьютер: мозг правее — не под описанием
+  const camera = new THREE.PerspectiveCamera(38, 1, 0.05, 200); camera.position.set(10 - 0.45 * VSX, 6, 11 + 0.4 * VSX);
+  const controls = makeControls(camera, V3(-0.45 * VSX, -0.4, -0.3 + 0.4 * VSX)); controls.minDistance = 1.2; controls.maxDistance = 40;
 
   // модель нормирована: мир = (исходные координаты − центр) × K, перед — +z, верх — +y, правая сторона тела — −x
   const K = 48.586, C0 = V3(0.2129, 0.3555, 0.0345);
@@ -4351,10 +4353,11 @@ function makeVentricles() {
   rnd = mulberry(202);
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x060509); scene.environment = envTex;
   labLights(scene, 0x6fc3ff);
-  const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.set(2.2, 1.6, 6.4);
-  const controls = makeControls(camera, V3(-0.15, -0.35, 0)); controls.minDistance = 1.2; controls.maxDistance = 14;
+  const VDK = !matchMedia('(max-width:700px)').matches, VT0 = VDK ? V3(-0.62, -0.22, 0.17) : V3(-0.15, -0.35, 0), VP0 = VDK ? V3(1.97, 1.93, 7.21) : V3(2.2, 1.6, 6.4);   // компьютер: мозг правее и чуть дальше — не под заголовком
+  const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(VP0);
+  const controls = makeControls(camera, VT0); controls.minDistance = 1.2; controls.maxDistance = 14;
   const shell = brainShell(scene, { opacity: 0.05, rim: 0.5 });
-  const HOME = flyTarget(V3(-0.15, -0.35, 0), V3(2.2, 1.6, 6.4));
+  const HOME = flyTarget(VT0, VP0);
 
   /* ---------- система желудочков ---------- */
   const csf = new THREE.MeshPhysicalMaterial({ color: 0x2f7fc0, roughness: 0.15, clearcoat: 1, transmission: 0, transparent: true, opacity: 0.55, emissive: 0x06204a, emissiveIntensity: 0.5, envMapIntensity: 0.9, depthWrite: false });

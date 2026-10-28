@@ -218,3 +218,9 @@ C. Новые темы (п.1 ниже + сверить оглавление data
 - r3g: enzyme 4,5; protein, membrane 4,0; lipogen, vitamins, radicals, lipoprot 3,5; eicosanoids 3,0.
 - Исправлено: protein — подписи под кольцом, крупнее, телефон 4×5 с шагом 2,45; membrane — подписи справа от модели (DK); enzyme — ниже и дальше (пульт RU выше), подписи с атомов; lipogen — крупнее, подписи капли/ЛПОНП под шаром; radicals — сферы ближе по вертикали, подписи продуктов под сферами, O₂ крупнее; lipoprot — подписи вернулись, телефон шире; eicosanoids — молекулы крупнее, короткие пояснения только на компьютере (b36_r3g.json); vitamins — молекулы крупнее.
 - bio4 (sexhorm, calcium, bloodchem, liver, thyroid, heme): стартовый кадр на компьютере (DK) вынесен из-под заголовка.
+
+## app32 (28.10): биохимия-4 по рецензии r3h, биохимия-3 и мозг — кадр
+- r3h: bloodchem, antibiotics 4,0; calcium, liver, nitrogen, thyroid, diabetes, hemoglobin, heme 3,5; sexhorm 3,0.
+- Исправлено по r3h: кадры (sexhorm ниже описания, calcium целиком, bloodchem с CO₂, antibiotics ниже и крупнее, liver, thyroid, diabetes, hemoglobin, heme, nitrogen — DK), молекулы крупнее (bloodchem, thyroid T₄/T₃), околощитовидные железы крупнее, тело кальция с контуром, поверхность Hb плотнее (radius 0.34), GLUT2 слева, ярче подписи ферментов гема.
+- Осторожно: рецензенты путают mobZoom — меньше значит крупнее (для биохимии по умолчанию 0,7).
+- dna, mutations, hormsig: стартовый кадр на компьютере (DK). neuron, ventricles, vision: на компьютере объект правее (NDX, VDK, VSX).

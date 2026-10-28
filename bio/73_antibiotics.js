@@ -6,7 +6,7 @@
 function makeAntibiotics() {
   rnd = mulberry(7301);
   const scene = bioStage({ rim: 0x7fd6ff });
-  const VIEW = { ribo: [V3(-2.0, -2.3, 0), V3(-1.4, -0.6, 20.5)], cycle: [V3(38.2, -1.5, 0), V3(38.8, 0.3, 17.5)], resist: [V3(78.9, -2.6, 1.7), V3(78.9, 7.4, 10.8)] };
+  const VIEW = { ribo: [V3(-2.0, -1.5, 0), V3(-1.4, 0.2, 18.8)], cycle: [V3(38.2, -1.5, 0), V3(38.8, 0.3, 17.5)], resist: [V3(78.9, -2.6, 1.7), V3(78.9, 7.4, 10.8)] };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VIEW.ribo[1]);
   const controls = makeControls(camera, VIEW.ribo[0]); controls.minDistance = 3; controls.maxDistance = 40;
   const fx = new Sparks(1600, 0.07); scene.add(fx.obj);
@@ -314,7 +314,7 @@ function makeAntibiotics() {
     const a = ABX.find((x) => x.id === st.abx); return [['Субъединица', a.sub === 's30' ? '30S' : '50S', ''], ['Шаг', { aa: 'вход тРНК', err: 'точность', ptc: 'пептидная связь', exit: 'туннель' }[a.step], '']];
   }
   const self = {
-    scene, camera, controls, update: update2, ui, onKey, stats, labels, drawScope, accent: '#7FD6FF',
+    mobZoom: 0.55, scene, camera, controls, update: update2, ui, onKey, stats, labels, drawScope, accent: '#7FD6FF',
     kicker: 'Биохимия · синтез белка', title: 'Антибиотики и синтез белка',
     lede: 'Рибосома бактерий чуть отличается от нашей — и этого хватает, чтобы маленькая молекула остановила микроба, не тронув человека.',
     notes: `
