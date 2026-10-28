@@ -25,12 +25,12 @@ function makeAminoacid() {
   const typeC = { np: '#F2C14E', pol: '#7FE0A0', acid: '#FF6A6A', base: '#7FA8FF', aro: '#C77DFF' };
   const beadM = new THREE.InstancedMesh(new THREE.SphereGeometry(0.17, 16, 12), new THREE.MeshPhysicalMaterial({ roughness: 0.35, clearcoat: 0.6, envMapIntensity: 0.5 }), NB); G1.add(beadM);
   seqT.forEach((ty, i) => beadM.setColorAt(i, new THREE.Color(typeC[ty]).multiplyScalar(0.55)));
-  const home = Array.from({ length: NB }, (_, i) => V3(-5.0 + i * 0.27, 0.9 + 0.35 * Math.sin(i * 0.55), 0.3 * Math.cos(i * 0.8)));
+  const home = Array.from({ length: NB }, (_, i) => V3(-5.0 + i * 0.27, 0.9 + 0.7 * Math.sin(i * 0.42), 0.3 * Math.cos(i * 0.8)));
   const cut = new Array(NB).fill(0); // разрезы после i (время разреза)
   const cutPlan = [[8, 'pep'], [21, 'pep'], [33, 'pep'], [4, 'try'], [14, 'try'], [27, 'try'], [40, 'try'], [11, 'chy'], [18, 'chy'], [30, 'chy'], [37, 'chy'], [44, 'chy']];
   const enzB = AM_PEP.map((p, k) => { const m = new THREE.Mesh(blobGeo(0.32, 0.26, 0.28, k + 5, 0.12, 3), protMat(p.color, 0.4)); m.visible = false; G1.add(m); return m; });
-  const stomach = new THREE.Mesh(new THREE.SphereGeometry(1.0, 32, 24), glassMat(0xff8a5c, { rim: 0.25, base: 0.004 })); stomach.scale.set(4.5, 1.6, 1.2); stomach.position.set(-3.6, 0.9, 0); G1.add(stomach);
-  const gutT = new THREE.Mesh(new THREE.CylinderGeometry(1.3, 1.3, 7.5, 32, 1, true), glassMat(0x7fd6ff, { rim: 0.25, base: 0.004 })); gutT.rotation.z = Math.PI / 2; gutT.position.set(3.8, 0.9, 0); G1.add(gutT);
+  const stomach = new THREE.Mesh(new THREE.SphereGeometry(1.0, 32, 24), glassMat(0xff8a5c, { rim: 0.55, base: 0.03 })); stomach.scale.set(4.5, 1.6, 1.2); stomach.position.set(-3.6, 0.9, 0); G1.add(stomach);
+  const gutT = new THREE.Mesh(new THREE.CylinderGeometry(1.3, 1.3, 7.5, 32, 1, true), glassMat(0x7fd6ff, { rim: 0.55, base: 0.03 })); gutT.rotation.z = Math.PI / 2; gutT.position.set(3.8, 0.9, 0); G1.add(gutT);
   /* ---------- 2. трансаминирование ---------- */
   const G2 = new THREE.Group(); G2.position.set(40, 0, 0); scene.add(G2);
   const TM = { ala: [-4.2, 1.6], akg: [-4.2, -0.6], pyruvate: [-0.6, 1.6], glu: [-0.6, -0.6], akg2: [3.6, 1.6], nh3: [3.6, -0.6] };

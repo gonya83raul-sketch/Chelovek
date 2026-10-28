@@ -6,7 +6,8 @@
 function makeGlycogen() {
   rnd = mulberry(1301);
   const scene = bioStage({ rim: 0xf2c14e });
-  const VIEW = { build: flyTarget(V3(0, -1.2, 0), V3(1.0, 0.4, 13.5)), break: flyTarget(V3(0, -1.2, 0), V3(1.0, 0.4, 13.5)), blood: flyTarget(V3(40, -0.9, 0), V3(40.6, 1.2, 18.5)) };
+  const GX = matchMedia("(max-width:700px)").matches ? 0 : -1.6;   // компьютер: гранула правее описания
+  const VIEW = { build: flyTarget(V3(GX, -1.2, 0), V3(GX + 1.0, 0.4, 13.5)), break: flyTarget(V3(GX, -1.2, 0), V3(GX + 1.0, 0.4, 13.5)), blood: flyTarget(V3(40, -0.9, 0), V3(40.6, 1.2, 18.5)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VIEW.build.pos);
   const controls = makeControls(camera, VIEW.build.target); controls.minDistance = 3; controls.maxDistance = 40;
   const fx = new Sparks(1800, 0.08); scene.add(fx.obj);
@@ -19,7 +20,7 @@ function makeGlycogen() {
   const crowded = (p, cid) => { const cx = Math.floor(p.x / 0.1), cy = Math.floor(p.y / 0.1), cz = Math.floor(p.z / 0.1); for (let a = -1; a <= 1; a++) for (let b = -1; b <= 1; b++) for (let c = -1; c <= 1; c++) { const L = GRID.get(gk(cx + a, cy + b, cz + c)); if (L && L.some((r) => r.cid !== cid && r.p.distanceTo(p) < 0.09)) return true; } return false; };
   const gridAdd = (r) => { const k = gk(Math.floor(r.p.x / 0.1), Math.floor(r.p.y / 0.1), Math.floor(r.p.z / 0.1)); if (!GRID.has(k)) GRID.set(k, []); GRID.get(k).push(r); };
   function chain(start, dir, tier, t0) {
-    const n = tier === 0 ? 6 : 9 + Math.floor(rnd() * 4); let p = start.clone(); const d = dir.clone().normalize();
+    const n = tier === 0 ? 8 : 12 + Math.floor(rnd() * 2); let p = start.clone(); const d = dir.clone().normalize();
     const kids = []; const cid = ++CID;
     for (let i = 0; i < n; i++) {
       const rad = p.lengthSq() > 1e-6 ? p.clone().normalize() : d.clone(); d.add(randUnit().multiplyScalar(0.25)).addScaledVector(rad, 0.4).normalize(); if (p.length() > 2.0) d.addScaledVector(rad, -0.9).normalize(); const tw = V3(-d.y, d.x, 0).normalize().multiplyScalar(0.03 * Math.sin(i * 1.7));
@@ -27,14 +28,14 @@ function makeGlycogen() {
       const q = new THREE.Quaternion().setFromUnitVectors(V3(0, 1, 0), d);
       const r = { p: p.clone(), q, tier, ta: t0 + i * 0.09, end: i === n - 1, n: i, len: n, kidAt: false };
       r.cid = cid; RES.push(r); gridAdd(r);
-      if (tier < 4 && (i === 2 || (i === 5 && tier > 0) || (i === 8 && tier > 1))) { r.kidAt = true; const ax = randUnit().cross(d).normalize(); kids.push([p.clone(), d.clone().applyAxisAngle(ax, rand(0.52, 0.7)).normalize(), tier + 1, t0 + i * 0.09 + 0.25]); } // ветвь отходит под 30–40°
+      if (tier < 3 && (i === 4 || (i === 8 && tier > 0))) { r.kidAt = true; const ax = randUnit().cross(d).normalize(); kids.push([p.clone(), d.clone().applyAxisAngle(ax, rand(0.52, 0.7)).normalize(), tier + 1, t0 + i * 0.09 + 0.25]); } // ветвь отходит под 30–40°
     }
     kids.forEach((k) => { if (RES.length < 1700) chain(...k); });
   }
   // цепи от гликогенина расходятся во все стороны (точки Фибоначчи на сфере) — гранула растёт шаром, а не крестом
   for (let k = 0; k < 12; k++) { const y = 1 - 2 * (k + 0.5) / 12, rr = Math.sqrt(1 - y * y), a = k * 2.39996; const d = V3(Math.cos(a) * rr, y, Math.sin(a) * rr); chain(d.clone().multiplyScalar(0.22), d, 0, k * 0.04); }
   const NR = RES.length; const T_ALL = Math.max(...RES.map((r) => r.ta)) + 0.5;
-  const HX = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.06, 0.06, 0.035, 6), new THREE.MeshPhysicalMaterial({ roughness: 0.35, clearcoat: 0.6, envMapIntensity: 0.5 }), NR); G1.add(HX);
+  const HX = new THREE.InstancedMesh(new THREE.SphereGeometry(0.056, 10, 8), new THREE.MeshPhysicalMaterial({ roughness: 0.35, clearcoat: 0.6, envMapIntensity: 0.5 }), NR); G1.add(HX);
   const dm = new THREE.Object3D(), col = new THREE.Color();
   const tierCol = ['#FF8AB0', '#FF9A70', '#FFB060', '#F2C14E', '#E8D27A', '#F2E6C8', '#FFF0D0'];
   RES.forEach((r, i) => { HX.setColorAt(i, r.kidAt ? col.set('#FF6A6A').multiplyScalar(0.8) : col.set(tierCol[r.tier]).multiplyScalar(0.42)); }); // точки ветвления α-1,6 — красные
@@ -156,7 +157,7 @@ function makeGlycogen() {
   }
   function stats() { return st.mode === 'blood' ? [['Глюкоза', st.glu.toFixed(1), 'ммоль/л'], ['Инсулин', Math.round(st.ins * 60), '%'], ['Гликоген печени', Math.round(st.glycL * 100), '%']] : [['Остатков глюкозы', st.res || 0, ''], ['В реальной грануле', '≈ 30 000', '']]; }
   const self = {
-    mobZoom: 1.0, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#F2C14E',
+    mobZoom: 0.62, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#F2C14E',
     kicker: 'Биохимия · обмен углеводов', title: 'Гликоген и сахар крови',
     lede: 'Глюкоза — быстрое топливо, но хранить её в свободном виде нельзя: вода хлынула бы в клетку. Поэтому печень и мышцы запасают её в ветвистых гранулах гликогена.',
     notes: `

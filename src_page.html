@@ -1259,7 +1259,7 @@ function makeSynapse() {
   function stats() { return [['В щели', st.cleft, 'мол.'], ['Рецепторы', Math.round(st.occ * 100), '%'], ['Ответ', Math.round(st.resp * 100), '%']]; }
   applyMediator();
   return {
-    scene, camera, controls, update, ui, onKey, stats, labels, drawScope, get accent() { return M.color; },
+    labelBg: true, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, get accent() { return M.color; },
     kicker: 'Мозг · синапс и медиаторы', title: 'Синапс и медиаторы',
     lede: 'Импульс открывает кальциевые каналы, пузырьки выплёскивают медиатор, молекулы находят рецепторы, и сигнал выключают ферменты или переносчики.',
     notes: `
@@ -4328,7 +4328,7 @@ function makeSoma() {
   }
   function stats() { return [['Холмик', Math.round(st.vm), 'мВ'], ['Синапсов', syns.length, ''], ['Тело', '20–30', 'мкм']]; }
   const self = {
-    scene, camera, controls, update, ui, onKey, stats, labels, drawScope, get accent() { return st.sel ? PART[st.sel].color : '#C9A6E8'; },
+    labelBg: true, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, get accent() { return st.sel ? PART[st.sel].color : '#C9A6E8'; },
     kicker: 'Мозг · нейрон', title: 'Строение нервной клетки',
     lede: 'Тело нейрона в разрезе: ядро, субстанция Ниссля, аппарат Гольджи, митохондрии и нити цитоскелета. Сигналы с синапсов сходятся к аксонному холмику, где решается, будет ли импульс.',
     notes: `
@@ -5178,7 +5178,7 @@ function makeCranial() {
   function stats() { if (st.sel !== null) { const nv = nerves[st.sel]; return [['Пара', nv.n, ''], ['Тип', CN_TYPES[nv.type].name.split(' ')[0], '']]; } return [['Пар', 12, ''], ['Чувствительных', 3, ''], ['Смешанных', 4, '']]; }
   apply();
   const self = {
-    scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, get accent() { return st.sel !== null ? CN_TYPES[nerves[st.sel].type].color : '#C77DFF'; },
+    labelBg: true, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, get accent() { return st.sel !== null ? CN_TYPES[nerves[st.sel].type].color : '#C77DFF'; },
     kicker: 'Мозг · черепные нервы', title: 'Черепные нервы',
     lede: 'Двенадцать пар нервов головного мозга. Каждый уникален: одни только чувствуют, другие только управляют мышцами, третьи делают и то и другое.',
     notes: `
@@ -5907,7 +5907,7 @@ function makeHemis() {
   }
   function stats() { return st.mode === 'tracts' ? [['Передняя комиссура', '≈3', 'млн волокон']] : [['Моторная часть', '≈80', '%'], ['Лимбическая', '≈20', '%']]; }
   const self = {
-    scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#5E8FEF',
+    labelBg: true, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#5E8FEF',
     kicker: 'Мозг · конечный мозг', title: 'Полушария и базальные ганглии',
     lede: 'Под корой — белое вещество и ядра базальных ганглиев. Они собирают отдельные движения в программы и вместе с лимбической системой решают, что нам нужно.',
     notes: `
@@ -6474,7 +6474,7 @@ function makeHippo() {
   }
   function stats() { return st.mode === 'sec' ? [['Сила синапсов Шаффера', '×' + st.w.toFixed(1), ''], ['Синапсов в петле', 3, '']] : [['Звеньев круга', 6, ''], ['Новая кора', '≈96', '% коры']]; }
   const self = {
-    scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#FF8A5C',
+    labelBg: true, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#FF8A5C',
     kicker: 'Мозг · старая кора', title: 'Гиппокамп и память',
     lede: 'Гиппокамп держит память текущего дня: сигнал бегает по кругу Пейпеза и по трисинаптической петле, а частая стимуляция усиливает синапсы — так рождается память.',
     notes: `

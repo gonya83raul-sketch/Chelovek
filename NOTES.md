@@ -224,3 +224,9 @@ C. Новые темы (п.1 ниже + сверить оглавление data
 - Исправлено по r3h: кадры (sexhorm ниже описания, calcium целиком, bloodchem с CO₂, antibiotics ниже и крупнее, liver, thyroid, diabetes, hemoglobin, heme, nitrogen — DK), молекулы крупнее (bloodchem, thyroid T₄/T₃), околощитовидные железы крупнее, тело кальция с контуром, поверхность Hb плотнее (radius 0.34), GLUT2 слева, ярче подписи ферментов гема.
 - Осторожно: рецензенты путают mobZoom — меньше значит крупнее (для биохимии по умолчанию 0,7).
 - dna, mutations, hormsig: стартовый кадр на компьютере (DK). neuron, ventricles, vision: на компьютере объект правее (NDX, VDK, VSX).
+
+## app33 (28.10): биохимия-1 по рецензии r3i; мозг и почки
+- r3i: etc, kinetics, enzmed 3,5; glycolysis, atp, betaox, aminoacid, krebs 3,0; glycogen 2,5 (до правок этой версии).
+- Исправлено по r3i: glycogen — гранула правее (GX), ветвление через 4–8 остатков (ближе к «каждые 8–12»), остатки-бусины, телефон крупнее; krebs — кадр правее (KX); etc, kinetics — дальше; enzmed — крупнее активные центры, телефон ближе; glycolysis — ферментные метки над стрелками; atp — станции разнесены; betaox — метка адреналина едет с гормоном; aminoacid — желудок и кишка видны, цепь волной.
+- labelBg (подложка подписей) у cortex, dien, glia, stem, chemo, synapse, soma, cranial, hippo, hemis.
+- types: кадр правее и дальше, mobZoom 0.66; spinal: оболочка прозрачнее; kidney, endo: контур тела ярче, подписаны обе почки, сосуды без «игл», телефон крупнее.

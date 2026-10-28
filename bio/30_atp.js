@@ -21,7 +21,7 @@ const CAT_ST = [
 function makeAtp() {
   rnd = mulberry(901);
   const scene = bioStage({ rim: 0x7fd6ff });
-  const VIEW = { cycle: flyTarget(V3(0, -1.0, 0), V3(0.5, 1.4, 15.5)), funnel: flyTarget(V3(40, -0.6, 0), V3(40.4, 1.4, 16.5)) };
+  const VIEW = { cycle: flyTarget(V3(-0.4, -1.0, 0), V3(0.1, 1.4, 15.5)), funnel: flyTarget(V3(40, -0.6, 0), V3(40.4, 1.4, 16.5)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VIEW.cycle.pos);
   const controls = makeControls(camera, VIEW.cycle.target); controls.minDistance = 3; controls.maxDistance = 40;
   const fx = new Sparks(2000, 0.09); scene.add(fx.obj);
@@ -54,8 +54,8 @@ function makeAtp() {
     stations.push({ d, g, p, kind }); return g;
   };
   // потребители — колонкой справа над графиком, источники — слева под описанием
-  ATP_USE.forEach((d, k) => addSt(d, [V3(4.8, 2.15, -0.8), V3(4.8, 0.95, -0.8), V3(4.6, -0.2, -0.8)][k], 'use'));
-  ATP_SRC.forEach((d, k) => addSt(d, [V3(-3.4, -1.3, -0.8), V3(-0.9, -2.3, -0.8)][k], 'src'));
+  ATP_USE.forEach((d, k) => addSt(d, [V3(4.8, 1.9, -0.8), V3(4.8, 0.95, -0.8), V3(4.6, -0.2, -0.8)][k], 'use'));
+  ATP_SRC.forEach((d, k) => addSt(d, [V3(-4.0, -1.3, -0.8), V3(-0.6, -2.0, -0.8)][k], 'src'));
   const packet = glowNucleus(G1, V3(0, 0, 0), '#FFD070', 0.1, 10);
   /* ---------- 2. воронка катаболизма ---------- */
   const G2 = new THREE.Group(); G2.position.set(40, 0, 0); scene.add(G2);

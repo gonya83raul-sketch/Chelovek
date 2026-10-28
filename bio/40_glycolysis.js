@@ -100,7 +100,7 @@ function makeGlycolysis() {
   }
   const labels = [
     ...Object.keys(GL_N).map((id) => ({ text: MOL(id).name, pos: NP(id).add(id === 'dhap' ? V3(-3.3, 0.2, 0) : id === 'gap' ? V3(-3.4, -0.1, 0) : V3(-MOL(id).name.length * 0.058, ['f6p', 'pg3', 'pep'].includes(id) ? -1.06 : -0.74, 0)), color: '#EFEAE6', show: () => st.labels && (GL_MODES[st.mode].route.map(edgeOf).some((e) => e.a === id || e.b === id) || (id === 'dhap' && st.mode !== 'gng' && st.mode !== 'ppp')) })),
-    ...GL_E.map(([id, a, b, name, n]) => ({ text: `${n <= 11 ? n + '. ' : n > 20 ? ['I', 'II', 'III', 'IV'][n - 21] + '. ' : ''}${name}`, pos: NP(a).lerp(NP(b), 0.5).add(id === 'e15' ? V3(-4.25, -0.5, 0.3) : id === 'e4b' ? V3(-1.0, 0.25, 0.3) : V3(-0.5, 0.3, 0.3)), color: id.startsWith('b') ? '#FF8A8A' : '#9FD0FF', show: () => st.labels && st.cur && (st.cur.id === id) })),
+    ...GL_E.map(([id, a, b, name, n]) => ({ text: `${n <= 11 ? n + '. ' : n > 20 ? ['I', 'II', 'III', 'IV'][n - 21] + '. ' : ''}${name}`, pos: NP(a).lerp(NP(b), 0.5).add(id === 'e15' ? V3(-4.25, -0.5, 0.3) : id === 'e4b' ? V3(-1.0, 0.25, 0.3) : V3(-0.5, 0.95, 0.3)), color: id.startsWith('b') ? '#FF8A8A' : '#9FD0FF', show: () => st.labels && st.cur && (st.cur.id === id) })),
     { text: 'енолаза (PDB 3ENL)', pos: V3(1.4, -3.4, 0.4), color: '#7FE0A0', show: () => st.labels && st.mode !== 'ppp' },
     { text: 'фторид блокирует', pos: NP('pg2').lerp(NP('pep'), 0.5).add(V3(-0.4, -0.5, 0.5)), color: '#FF6A6A', show: () => st.labels && st.fluor },
   ];

@@ -13,7 +13,7 @@ const ETC_POIS = [
 function makeEtc() {
   rnd = mulberry(1101);
   const scene = bioStage({ bg: 0x08060a, rim: 0xffb070 });
-  const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 200); camera.position.set(-1.6, 5.0, 23);
+  const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 200); camera.position.set(-1.6, 5.0, 25);
   const controls = makeControls(camera, V3(-2.0, -1.0, 0)); controls.minDistance = 4; controls.maxDistance = 40;
   const fx = new Sparks(2600, 0.08); scene.add(fx.obj);
   const MEMY = 0, TH = 0.95;

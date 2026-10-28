@@ -14,7 +14,7 @@ function makeEnzmed() {
   rnd = mulberry(733);
   const scene = bioStage({ rim: 0xc77dff });
   const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: кадр уходит из-под заголовка и описания (телефон — прежний ракурс)
-  const VIEW = { allo: DK ? flyTarget(V3(-0.4, -1.0, 0), V3(1.1, 0.7, 15)) : flyTarget(V3(0, -1.5, 0), V3(1.5, 0.2, 14.5)), phos: flyTarget(V3(40, -1, 0), V3(41, 1.0, 14)), prot: flyTarget(V3(80, -1.2, 0), V3(81.4, 1.6, 17)), ldh: flyTarget(V3(120, -0.6, 0), V3(120, 2.4, 13.5)), drug: flyTarget(V3(160, -1.2, 0), V3(160, 3.2, 18)) };
+  const VIEW = { allo: DK ? flyTarget(V3(-0.4, -1.0, 0), V3(1.1, 0.7, 15)) : flyTarget(V3(0, -1.5, 0), V3(1.08, -0.28, 10.4)), phos: flyTarget(V3(40, -1, 0), V3(41, 1.0, 14)), prot: flyTarget(V3(80, -1.2, 0), V3(81.4, 1.6, 17)), ldh: flyTarget(V3(120, -0.6, 0), V3(120, 2.4, 13.5)), drug: flyTarget(V3(160, -1.2, 0), V3(160, 3.2, 18)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 500); camera.position.copy(VIEW.allo.pos);
   const controls = makeControls(camera, VIEW.allo.target); controls.minDistance = 2; controls.maxDistance = 40;
   const fx = new Sparks(1500, 0.08); scene.add(fx.obj);
@@ -26,7 +26,7 @@ function makeEnzmed() {
     const mat = protMat(k % 2 ? '#7FD6FF' : '#9FB4FF', 0.26);
     const body = new THREE.Mesh(blobGeo(0.92, 0.92, 0.85, k + 11, 0.12), mat); g.add(body);
     const cleft = V3(Math.cos(a) * 0.78, Math.sin(a) * 0.78, 0.55);
-    const site = new THREE.Mesh(new THREE.SphereGeometry(0.16, 16, 12), new THREE.MeshBasicMaterial({ color: 0x7fd6ff, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending, depthWrite: false })); site.position.copy(cleft); g.add(site);
+    const site = new THREE.Mesh(new THREE.SphereGeometry(0.24, 16, 12), new THREE.MeshBasicMaterial({ color: 0x7fd6ff, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending, depthWrite: false })); site.position.copy(cleft); g.add(site);
     const sub = molMesh(MOL('f6p'), { scale: 0.11, hideH: true }); sub.visible = false; g.add(sub); sub.position.copy(cleft);
     return { g, home, a, mat, site, sub, cleft, occ: 0 };
   });

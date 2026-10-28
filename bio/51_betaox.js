@@ -156,7 +156,7 @@ function makeBetaox() {
   };
   const labels = [
     { text: 'липидная капля (ТАГ)', pos: V3(-1.4, 0.6, 2.4), color: '#F2C14E', show: () => st.labels && st.mode === 'lipo' },
-    { text: 'адреналин', pos: V3(3.6, 3.5, 0), color: '#FF8A5C', show: () => st.labels && st.mode === 'lipo' && !st.ins },
+    { text: 'адреналин', pos: horm.position, color: '#FF8A5C', show: () => st.labels && st.mode === 'lipo' && !st.ins },
     { text: 'ТАГ-липаза', pos: V3(0.75, 2.75, 0.5), color: '#7FD6FF', show: () => st.labels && st.mode === 'lipo' },
     { text: 'β-адренорецептор', pos: V3(2.45, 1.95, 0.4), color: '#FF8A5C', show: () => st.labels && st.mode === 'lipo' },
     { text: 'жирные кислоты → кровь', pos: V3(2.6, -1.4, 0.4), color: '#F2E6C8', show: () => st.labels && st.mode === 'lipo' && !st.ins },

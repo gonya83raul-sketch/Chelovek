@@ -17,8 +17,9 @@ const KR_TOK = { nadh: ['НАДН', '#FFD070'], fadh2: ['ФАДН₂', '#FFE45A'
 function makeKrebs() {
   rnd = mulberry(1001);
   const scene = bioStage({ rim: 0x7fd6ff });
-  const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 200); camera.position.set(-1.2, 0.5, 24);
-  const controls = makeControls(camera, V3(-1.2, -2.2, 0)); controls.minDistance = 4; controls.maxDistance = 35;
+  const KX = matchMedia('(max-width:700px)').matches ? -1.2 : -4.3;   // компьютер: митохондрия правее длинного заголовка
+  const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 200); camera.position.set(KX, 0.5, KX < -2 ? 26.5 : 24);
+  const controls = makeControls(camera, V3(KX, -2.2, 0)); controls.minDistance = 4; controls.maxDistance = 35;
   const fx = new Sparks(1800, 0.09); scene.add(fx.obj);
   // митохондрия на фоне: оболочка и кристы
   const mito = new THREE.Mesh(new THREE.CapsuleGeometry(4.2, 9.5, 12, 48), glassMat(0xffb070, { rim: 0.2, base: 0.002, pow: 2.4, keep: true })); mito.rotation.z = Math.PI / 2; mito.scale.set(0.95, 0.85, 0.4); mito.position.set(0.5, -0.2, -5.5); scene.add(mito);
