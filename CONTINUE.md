@@ -54,6 +54,8 @@ SEO — по review/seo.md (код: tools/build.py — head_tags, topic_ld, shor
 - [ ] картинки превью 1200×630 (часть 2 review/seo.md: tools/ogshots.py, кэш ogcache/, og:image + twitter large)
 - [ ] рецензент (sonnet) по SEO-правкам → внести → коммит
 - Вручную (пользователь): отправить sitemap в Google Search Console и Яндекс.Вебмастер (robots.txt в подпапке не работает).
+3D: в src_page.html внесены (не проверены сборкой/sweep, если ниже не отмечено) Б1 (стекло с нулевым вкладом не рисуется — цикл в frame), Б2 (forceSinglePass у аддитивного стекла), Б3 (antialias:false), Б4 частично (карта теней 1024 на телефоне; autoUpdate не трогал), Б5 (dispose света и InstancedMesh), Б6 (не рисовать под #heartpanel, закрывать её в activate), Б7 (статистика только при изменении), Б8 (DPR телефона 1,25).
+Превью: tools/ogshots.py (+ ogcache/, build.py og_img) — сделан, снимки всех тем; проверить глазами выборку.
 3D — по review/3d-perf.md, раздел 7: быстрые Б1–Б8 → С2 (рендер по требованию) → С1 (лёгкий режим) → С3–С5. Проверка: sweep + снимки; рецензент; затем публикация партии (app38) вместе с накопленным.
 
 ### Прежний план доводки сцен (после SEO и 3D)

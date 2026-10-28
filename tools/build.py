@@ -246,14 +246,26 @@ DESC_EN = 'Free interactive 3D human atlas: anatomy, the cell, the brain and bio
 JSONLD_EN = json.dumps({**json.loads(JSONLD), 'name': 'Who are we? From molecule to mind', 'alternateName': 'Кто мы? — от молекулы до мысли', 'url': BASE + 'index.en.html', 'description': DESC_EN, 'inLanguage': ['en', 'ru']}, ensure_ascii=False)
 import ast, html as H, datetime
 TODAY = datetime.date.today().isoformat()
-OG_COMMON = lambda lang: f'<meta property="og:image" content="{BASE}icons/icon-512.png">\n<meta property="og:site_name" content="{"Кто мы? 3D-атлас человека" if lang == "ru" else "Who are we? 3D human atlas"}">\n<meta name="twitter:card" content="summary">\n'
-def head_tags(title, desc, canon, ru, en, lang, ogtype, extra=''):
+# картинки превью 1200×630 (tools/ogshots.py → ogcache/); нет своей — общая главной, нет и её — иконка
+OGC = os.path.join(ROOT, 'ogcache'); OGMAN = json.load(open(os.path.join(OGC, 'manifest.json'))) if os.path.exists(os.path.join(OGC, 'manifest.json')) else {}
+OG_USED = set()
+def og_img(i, lang):
+    for k in (i, 'home'):
+        f = k + ('.en' if lang == 'en' else '') + '.jpg'
+        if k in OGMAN and os.path.exists(os.path.join(OGC, f)): OG_USED.add(f); return f'{BASE}og/{f}?v={OGMAN[k][:8]}'
+    return None
+def OG_COMMON(lang, img=None, alt=''):
+    if not img: return f'<meta property="og:image" content="{BASE}icons/icon-512.png">\n<meta property="og:site_name" content="{"Кто мы? 3D-атлас человека" if lang == "ru" else "Who are we? 3D human atlas"}">\n<meta name="twitter:card" content="summary">\n'
+    return (f'<meta property="og:image" content="{img}">\n<meta property="og:image:type" content="image/jpeg">\n<meta property="og:image:width" content="1200">\n<meta property="og:image:height" content="630">\n'
+            f'<meta property="og:image:alt" content="{H.escape(alt)}">\n<meta property="og:site_name" content="{"Кто мы? 3D-атлас человека" if lang == "ru" else "Who are we? 3D human atlas"}">\n'
+            f'<meta property="og:locale:alternate" content="{"en_US" if lang == "ru" else "ru_RU"}">\n<meta name="twitter:card" content="summary_large_image">\n<meta name="twitter:image" content="{img}">\n')
+def head_tags(title, desc, canon, ru, en, lang, ogtype, extra='', img=None):
     return (f'<title>{H.escape(title)}</title>\n<meta name="description" content="{H.escape(desc)}">\n<link rel="canonical" href="{canon}">\n'
             f'<link rel="alternate" hreflang="ru" href="{ru}">\n<link rel="alternate" hreflang="en" href="{en}">\n<link rel="alternate" hreflang="x-default" href="{ru}">\n'
             f'<meta property="og:type" content="{ogtype}">\n<meta property="og:title" content="{H.escape(title)}">\n<meta property="og:description" content="{H.escape(desc)}">\n<meta property="og:url" content="{canon}">\n'
-            f'<meta property="og:locale" content="{"ru_RU" if lang == "ru" else "en_US"}">\n' + OG_COMMON(lang) + extra)
-SEO_HEAD = head_tags('Кто мы? — от молекулы до мысли · 3D-атлас человека', DESC, BASE, BASE, BASE + 'index.en.html', 'ru', 'website', f'<script type="application/ld+json">{JSONLD}</script>\n')
-SEO_HEAD_EN = head_tags('Who are we? From molecule to mind · 3D human atlas', DESC_EN, BASE + 'index.en.html', BASE, BASE + 'index.en.html', 'en', 'website', f'<script type="application/ld+json">{JSONLD_EN}</script>\n<script>window.__PAGE = {{ id: "", lang: "en" }};</script>\n')
+            f'<meta property="og:locale" content="{"ru_RU" if lang == "ru" else "en_US"}">\n' + OG_COMMON(lang, img, title) + extra)
+SEO_HEAD = head_tags('Кто мы? — от молекулы до мысли · 3D-атлас человека', DESC, BASE, BASE, BASE + 'index.en.html', 'ru', 'website', f'<script type="application/ld+json">{JSONLD}</script>\n', og_img('home', 'ru'))
+SEO_HEAD_EN = head_tags('Who are we? From molecule to mind · 3D human atlas', DESC_EN, BASE + 'index.en.html', BASE, BASE + 'index.en.html', 'en', 'website', f'<script type="application/ld+json">{JSONLD_EN}</script>\n<script>window.__PAGE = {{ id: "", lang: "en" }};</script>\n', og_img('home', 'en'))
 # сайт-приложение (PWA) для своего хостинга: manifest, иконки, офлайн-кэш
 PWA_HEAD = lambda lang: ('<meta name="theme-color" content="#08070A">\n<meta name="mobile-web-app-capable" content="yes">\n'
     f'<link rel="manifest" href="manifest{".en" if lang == "en" else ""}.webmanifest">\n<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">\n<link rel="apple-touch-icon" href="icons/apple-180.png">\n'
@@ -326,7 +338,7 @@ def topic_ld(i, lang, t, desc):   # schema.org: учебный материал 
     home_url, atlas = (BASE + 'index.en.html', 'Who are we? From molecule to mind') if lang == 'en' else (BASE, 'Кто мы? — от молекулы до мысли')
     ld = [{'@context': 'https://schema.org', '@type': 'LearningResource', 'name': t, 'description': desc, 'url': canon(i, lang), 'inLanguage': lang,
            'learningResourceType': 'interactive 3D model' if lang == 'en' else 'интерактивная 3D-модель', 'isAccessibleForFree': True,
-           'about': trsec(SEC_NAME.get(i, ''), lang), 'publisher': PUBLISHER, 'isPartOf': {'@type': 'WebApplication', 'name': atlas, 'url': home_url}},
+           'about': trsec(SEC_NAME.get(i, ''), lang), 'publisher': PUBLISHER, **({'image': og_img(i, lang)} if og_img(i, lang) else {}), 'isPartOf': {'@type': 'WebApplication', 'name': atlas, 'url': home_url}},
           {'@context': 'https://schema.org', '@type': 'BreadcrumbList', 'itemListElement': [
            {'@type': 'ListItem', 'position': 1, 'name': atlas, 'item': home_url}, {'@type': 'ListItem', 'position': 2, 'name': t, 'item': canon(i, lang)}]}]
     return '<script type="application/ld+json">' + json.dumps(ld, ensure_ascii=False).replace('</', '<\\/') + '</script>\n'
@@ -337,7 +349,7 @@ for _, _, it in secs:
         k, t, l, nm = topic_texts(i, lang)
         desc = short(l) if l else nm + '. ' + (DESC if lang == 'ru' else DESC_EN)
         ttl = t + TAIL[lang] if len(t + TAIL[lang]) <= 60 else t + TAIL_SHORT[lang]
-        hd = head_tags(ttl, desc, canon(i, lang), canon(i, 'ru'), canon(i, 'en'), lang, 'article', ('' if i == 'skeleton' else topic_ld(i, lang, t, desc)) + f'<script>window.__PAGE = {{ id: {json.dumps(i)}, lang: {json.dumps(lang)} }};</script>\n')
+        hd = head_tags(ttl, desc, canon(i, lang), canon(i, 'ru'), canon(i, 'en'), lang, 'article', ('' if i == 'skeleton' else topic_ld(i, lang, t, desc)) + f'<script>window.__PAGE = {{ id: {json.dumps(i)}, lang: {json.dumps(lang)} }};</script>\n', og_img(i, lang))
         PAGES[(i, lang)] = prefill(mkdoc(lang, hd, topics_html(lang), pid=i), k, t, l, notes_of(i, lang))
 full = full.replace('<!--TOPICS-->', topics_html('ru', hashes=True), 1)
 SITE = os.path.join(OUT, 'site'); shutil.rmtree(SITE, ignore_errors=True); os.makedirs(SITE)
@@ -349,6 +361,9 @@ P404 = ('<!doctype html>\n<html lang="ru"><head><meta charset="utf-8"><meta name
   '<title>Страница не найдена — Кто мы?</title><style>body{background:#121117;color:#ECE7E2;font:16px/1.6 system-ui,sans-serif;margin:0;padding:48px 20px}main{max-width:640px;margin:0 auto}a{color:#FFB070}h1{font:600 30px Georgia,serif;margin:0 0 12px}</style></head>'
   f'<body><main><h1>Страница не найдена</h1><p>Такой страницы в атласе «Кто мы?» нет. <a href="{BASE}">Открыть атлас</a>.</p><p lang="en">Page not found. <a href="{BASE}index.en.html">Open the atlas in English</a>.</p></main></body></html>\n')
 open(os.path.join(SITE, '404.html'), 'w', encoding='utf8').write(P404)
+if OG_USED:   # картинки превью — не в офлайн-кэш
+    os.makedirs(os.path.join(SITE, 'og'))
+    for f in OG_USED: shutil.copy(os.path.join(OGC, f), os.path.join(SITE, 'og'))
 shutil.copytree(os.path.join(OUT, APP), os.path.join(SITE, APP))
 os.makedirs(os.path.join(SITE, 'models', DRACO.split('/')[1]))
 for m in MODELS: shutil.copy(os.path.join(MDIR, m + '.bin'), os.path.join(SITE, 'models'))

@@ -481,13 +481,13 @@ const stageEl = $('#stage'), canvas = $('#gl');
 /* без WebGL (старый браузер, сбой драйвера) оболочка всё равно строится: навигация, язык, поиск и текст темы работают, вместо сцены — объяснение */
 let renderer = null;
 try {
-  renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+  renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance' });   /* сцена идёт через композер — MSAA холста ничего не сглаживал */
 } catch (e) { renderer = null; }
 const NOGL = !renderer;
 let envTex = null, composer = null, renderPass = null, bloom = null;
 function makeEnv() { const pm = new THREE.PMREMGenerator(renderer), t = pm.fromScene(new RoomEnvironment(), 0.04).texture; pm.dispose(); return t; }
 if (renderer) {
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, matchMedia('(pointer:coarse)').matches ? 1.5 : 2));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, matchMedia('(pointer:coarse)').matches ? 1.25 : 2));   /* телефон: 1,25 — на треть меньше пикселей, чем 1,5 */
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.05;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -544,7 +544,7 @@ function makeGlass(color, rim, base, pow, additive) {
       void main(){
       #include <clipping_planes_fragment>
       float f = pow(1.0-abs(dot(normalize(vN),normalize(vV))), uPow); float a = uBase + f*uRim + uFlash*0.25; vec3 c = (uColor*(0.25+f*1.35) + uColor*uFlash)*uGain; gl_FragColor = vec4(c, clamp(a,0.0,1.0)); }`,
-    transparent: true, depthWrite: false, side: THREE.DoubleSide, blending: additive ? THREE.AdditiveBlending : THREE.NormalBlending
+    transparent: true, depthWrite: false, side: THREE.DoubleSide, forceSinglePass: !!additive, blending: additive ? THREE.AdditiveBlending : THREE.NormalBlending
   });
 }
 
@@ -1972,7 +1972,8 @@ function openHeartPanel() {
   const pauseB = button('Пауза', () => { st.play = !st.play; pauseB.textContent = st.play ? 'Пауза' : 'Пуск'; });
   const speed = seg([{ id: 0.18, label: 'Медленно' }, { id: 0.35, label: 'Обычно' }, { id: 1.17, label: 'Как в жизни' }], () => st.speed, (v) => { st.speed = v; });
   const labT = toggle('Подписи', () => st.labels, (v) => { st.labels = v; });
-  const close = () => { cancelAnimationFrame(st.raf); window.removeEventListener('keydown', onEsc, true); panel.remove(); };
+  const close = () => { cancelAnimationFrame(st.raf); window.removeEventListener('keydown', onEsc, true); panel.remove(); clock.getDelta(); };
+  panel.__close = close;
   const onEsc = (e) => { if (e.key === 'Escape') { e.stopPropagation(); e.preventDefault(); close(); } };
   window.addEventListener('keydown', onEsc, true);
   const side = h('div', { style: 'flex:1 1 280px;min-width:0;max-width:420px;display:flex;flex-direction:column;gap:14px' },
@@ -2084,7 +2085,7 @@ function makeSkeleton() {
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x07070a); scene.environment = envTex; scene.fog = new THREE.FogExp2(0x07070a, 0.014);
   addLights(scene, 0x8fb0ff);
   const sun = new THREE.DirectionalLight(0xfff4e6, 1.5); sun.position.set(5, 22, 10); sun.castShadow = true;
-  sun.shadow.mapSize.set(2048, 2048); Object.assign(sun.shadow.camera, { left: -6, right: 6, top: 20, bottom: -2, near: 1, far: 50 }); sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.02; scene.add(sun);
+  { const ms = matchMedia('(pointer:coarse)').matches ? 1024 : 2048; sun.shadow.mapSize.set(ms, ms); }   /* телефон: карта теней 1024 — вчетверо меньше памяти */ Object.assign(sun.shadow.camera, { left: -6, right: 6, top: 20, bottom: -2, near: 1, far: 50 }); sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.02; scene.add(sun);
   const camera = new THREE.PerspectiveCamera(36, 1, 0.05, 200); camera.position.set(12.65, 13.2, 35.6);   // весь рост, с черепом
   const controls = makeControls(camera, V3(0.15, 8.0, 0)); controls.minDistance = 2.5; controls.maxDistance = 60; controls.autoRotate = true; controls.autoRotateSpeed = 0.5;
   const floor = new THREE.Mesh(new THREE.CircleGeometry(9, 72), new THREE.ShadowMaterial({ opacity: 0.2 })); floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
@@ -9978,6 +9979,7 @@ function disposeScene(sc) {
   sc.scene.traverse((o) => { if (o.geometry) geos.add(o.geometry); const m = o.material; if (m) (Array.isArray(m) ? m : [m]).forEach((x) => mats.add(x)); });
   mats.forEach((m) => { Object.values(m).forEach((v) => { if (v && v.isTexture) texs.add(v); }); if (m.uniforms) Object.values(m.uniforms).forEach((u) => { if (u && u.value && u.value.isTexture) texs.add(u.value); }); });
   texs.delete(GLOW); texs.delete(envTex);
+  sc.scene.traverse((o) => { if (o.isInstancedMesh) o.dispose(); else if (o.isLight && o.shadow && o.shadow.map) o.dispose(); });   /* карта теней (до 32 МБ) и буферы инстансов — сразу, не ждать сборки мусора */
   geos.forEach((g) => g.dispose()); mats.forEach((m) => m.dispose()); texs.forEach((t) => t.dispose());
   for (let i = GLASS.length - 1; i >= 0; i--) if (mats.has(GLASS[i])) GLASS.splice(i, 1);
   (sc.__listen || []).forEach(([t, f, o]) => canvas.removeEventListener(t, f, o));
@@ -10021,6 +10023,7 @@ function noglShow(id) {
 }
 function activate(id) {
   loadEl.hidden = true;
+  { const hp = document.getElementById('heartpanel'); if (hp && hp.__close) hp.__close(); }
   const i = recent.indexOf(id); if (i >= 0) recent.splice(i, 1); recent.push(id);
   if (cur) cur.controls.enabled = false;
   cur = built[id]; curId = id; cur.controls.enabled = true;
@@ -10368,8 +10371,9 @@ function updateLabels() {
 let lastStats = 0;
 function updateStats(now) {
   if (now - lastStats < 150) return; lastStats = now;
+  const sv = cur.stats(), key = JSON.stringify(sv); if (key === statsEl.__k) return; statsEl.__k = key;
   statsEl.innerHTML = '';
-  cur.stats().forEach(([k, v, u]) => statsEl.append(h('div', { class: 'stat' }, h('i', {}, k), h('b', {}, String(v), u ? h('small', {}, u) : null))));
+  sv.forEach(([k, v, u]) => statsEl.append(h('div', { class: 'stat' }, h('i', {}, k), h('b', {}, String(v), u ? h('small', {}, u) : null))));
 }
 
 const clock = new THREE.Clock();
@@ -10424,13 +10428,14 @@ if (renderer) {
 
 function frame(now) {
   requestAnimationFrame(frame);
-  if (!visible || !cur || !onScreen || ctxLost || document.querySelector('dialog[open]')) return;
+  if (!visible || !cur || !onScreen || ctxLost || document.querySelector('dialog[open]') || document.getElementById('heartpanel')) return;
   const dt = Math.min(clock.getDelta(), 0.05);
   ANIM.dt = dt;
   cur.update(ANIM.paused ? 0 : dt);
   camStep(dt);
   if (REC) recStep(dt);
   cur.controls.update(dt);
+  for (let i = 0; i < GLASS.length; i++) { const u = GLASS[i].uniforms; GLASS[i].visible = u.uRim.value > 0 || u.uBase.value > 0 || u.uFlash.value > 0; }
   composer.render();
   updateLabels();
   if (REC) recDraw();
