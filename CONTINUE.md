@@ -42,6 +42,21 @@ python3 tools/build.py       # сборка → out/site и lt/; должно б
 - Изменил русскую строку текста — перенеси перевод в data/i18n/en/b36_r3g.json (ключ — новая русская строка).
 
 ## 5. Что делать дальше
+**СЕЙЧАС (28.10, задание пользователя): сначала SEO-правки, потом 3D-производительность.** Готовое отмечать здесь [x].
+SEO — по review/seo.md (код: tools/build.py — head_tags, topic_ld, short, canon, topics_html, sitemap, llms.txt):
+- [x] «Body» в оглавлении/JSON-LD, перевод однобуквенных единиц, текст menses (коммит 6fee3ef)
+- [ ] skeleton: ссылки оглавления → ./ и index.en.html; страницы skeleton — noindex,follow; без дублей в крошках
+- [ ] описания: общие (главные) через short(); short() не обрывать на первом предложении < ~110 знаков
+- [ ] lastmod в sitemap — только при реальном изменении (хеш страницы без номера appN + файл сцены; хранить в data/lastmod.json)
+- [ ] хвост title короче (« — 3D-атлас «Кто мы?»» / EN), то же в рантайме (pageTitle в src_page.html)
+- [ ] ссылка <a hreflang> на другой язык в подвале; llms.txt: «- [Название](url): описание», блок ## English, ссылка на sitemap, без skeleton
+- [ ] schema.org: WebSite + publisher Organization, без offers/RUB; LearningResource: dateModified, publisher, image
+- [ ] картинки превью 1200×630 (часть 2 review/seo.md: tools/ogshots.py, кэш ogcache/, og:image + twitter large)
+- [ ] рецензент (sonnet) по SEO-правкам → внести → коммит
+- Вручную (пользователь): отправить sitemap в Google Search Console и Яндекс.Вебмастер (robots.txt в подпапке не работает).
+3D — по review/3d-perf.md, раздел 7: быстрые Б1–Б8 → С2 (рендер по требованию) → С1 (лёгкий режим) → С3–С5. Проверка: sweep + снимки; рецензент; затем публикация партии (app38) вместе с накопленным.
+
+### Прежний план доводки сцен (после SEO и 3D)
 1. Опубликовать накопленное можно вместе со следующей партией.
 2. Рецензенты r4e и r4f отработали (review/score-r4e.md, score-r4f.md), высокие и средние правки внесены. Не сделано из них: крупное 3D (bodyShell вместо манекена в referred, позвоночник/psoas в kidney, печень/сердце в endo, выноски в shealth), неосновные режимы сцен не снимались.
 3. Дальше: опубликовать партию (app38), затем переоценить самые слабые (≈3,0): glycogen, glycolysis, krebs, amines, express, adrenal, mutations, fedfast, vision, stem, types — многие правки по ним уже внесены после последней оценки.
