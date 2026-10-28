@@ -5,19 +5,19 @@ import { Sparks, THREE, V3, __set_rnd, bodyShell, branchTree, button, dimOthers,
    ТЕЛО · ЛИМФАТИЧЕСКАЯ И ИММУННАЯ СИСТЕМА
    ========================================================= */
 const IM_PARTS = [
-  { id: 'lv', name: 'Лимфатические сосуды', color: '#9FE8C0', text: '<b>Лимфатические сосуды</b> собирают из тканей жидкость, вышедшую из капилляров (около 2–3 л в сутки), вместе с белками, жирами из кишечника и микробами. Лимфа течёт медленно, только к сердцу: её толкают сокращения мышц, а клапаны не дают вернуться. Грудной проток впадает в левую подключичную вену.' },
-  { id: 'ln', name: 'Лимфоузлы', color: '#7FD6FF', text: '<b>Лимфатические узлы</b> (500–700 штук) — фильтры на пути лимфы и места встречи лимфоцитов с чужаками. Самые крупные группы — шейные, подмышечные, паховые, брыжеечные. При инфекции узел увеличивается и болит: в нём размножаются лимфоциты.' },
-  { id: 'spl', name: 'Селезёнка', color: '#B0506A', text: '<b>Селезёнка</b> (около 150 г) фильтрует кровь, а не лимфу: удаляет старые эритроциты, хранит запас тромбоцитов и моноцитов, в её белой пульпе встречаются лимфоциты и антигены из крови.' },
-  { id: 'thym', name: 'Тимус', color: '#7FD6C8', text: '<b>Тимус</b> — центральный орган иммунитета: здесь T-лимфоциты «учатся». Выживают только те, что распознают чужое и не нападают на своё — до 95% погибают в отборе.' },
-  { id: 'bm', name: 'Костный мозг', color: '#E06A6A', text: '<b>Красный костный мозг</b> (в плоских костях, позвонках, концах трубчатых костей) — фабрика всех клеток крови: эритроцитов, тромбоцитов и лейкоцитов. Здесь созревают B-лимфоциты.' },
-  { id: 'galt', name: 'Лимфоидная ткань кишки', color: '#E8C070', text: '<b>Лимфоидная ткань кишки</b> — самая большая часть иммунной системы: в стенке кишки живёт больше лимфоцитов, чем во всех лимфоузлах. Скопления фолликулов в подвздошной кишке называют <b>пейеровыми бляшками</b>: особые M-клетки над ними пропускают внутрь образцы содержимого кишки, и иммунитет учится отличать еду и полезные бактерии от возбудителей. Отсюда же выходят плазматические клетки, выделяющие в просвет кишки антитела IgA.' },
-  { id: 'ton', name: 'Миндалины', color: '#F2A0B0', text: '<b>Миндалины</b> образуют кольцо вокруг входа в глотку и встречают микробов, приходящих с воздухом и пищей.' },
+  { id: 'lv', name: 'Lymphatic vessels', color: '#9FE8C0', text: '<b>Lymphatic vessels</b> collect the fluid that has leaked out of capillaries into the tissues (about 2–3 L per day), along with proteins, fats from the intestine and microbes. Lymph flows slowly and only toward the heart: it is pushed by muscle contractions, and valves prevent backflow. The thoracic duct empties into the left subclavian vein.' },
+  { id: 'ln', name: 'Lymph nodes', color: '#7FD6FF', text: '<b>Lymph nodes</b> (500–700 of them) are filters along the lymph route and meeting places where lymphocytes encounter invaders. The largest groups are the cervical, axillary, inguinal and mesenteric nodes. During an infection a node swells and becomes tender: lymphocytes are multiplying inside it.' },
+  { id: 'spl', name: 'Spleen', color: '#B0506A', text: '<b>The spleen</b> (about 150 g) filters blood, not lymph: it removes old red blood cells, stores a reserve of platelets and monocytes, and in its white pulp lymphocytes meet antigens from the blood.' },
+  { id: 'thym', name: 'Thymus', color: '#7FD6C8', text: '<b>The thymus</b> is a central organ of immunity: this is where T lymphocytes are “trained”. Only those that recognize foreign antigens and do not attack the body’s own survive — up to 95% die during selection.' },
+  { id: 'bm', name: 'Bone marrow', color: '#E06A6A', text: '<b>Red bone marrow</b> (in flat bones, vertebrae and the ends of long bones) is the factory of all blood cells: red blood cells, platelets and white blood cells. B lymphocytes mature here.' },
+  { id: 'galt', name: 'Gut lymphoid tissue', color: '#E8C070', text: '<b>Gut lymphoid tissue</b> is the largest part of the immune system: the intestinal wall holds more lymphocytes than all lymph nodes together. Clusters of follicles in the ileum are called <b>Peyer\'s patches</b>: special M cells above them let samples of gut contents in, and the immune system learns to tell food and friendly bacteria from pathogens. Plasma cells that secrete IgA antibodies into the gut lumen also come from here.' },
+  { id: 'ton', name: 'Tonsils', color: '#F2A0B0', text: '<b>The tonsils</b> form a ring around the entrance to the pharynx and meet microbes arriving with air and food.' },
 ];
 function makeImmune() {
   __set_rnd(mulberry(1717));
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x06080a); scene.environment = envTex;
   labLights(scene, 0x7fd6ff);
-  const VIEW = { sys: flyTarget(V3(0.0, 0.45, 0), V3(2.6, 1.3, 13.6)), node: flyTarget(V3(30, -0.8, 0), V3(31.6, 0.6, 8.0)), resp: flyTarget(V3(30, -0.8, 0), V3(28.4, 0.7, 8.0)) };
+  const VIEW = { sys: flyTarget(V3(0.0, 0.8, 0), V3(2.75, 1.7, 14.6)), node: flyTarget(V3(30, -0.8, 0), V3(31.6, 0.6, 8.0)), resp: flyTarget(V3(30, -0.8, 0), V3(28.4, 0.7, 8.0)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(VIEW.sys.pos);
   const controls = makeControls(camera, VIEW.sys.target); controls.minDistance = 1.5; controls.maxDistance = 22;
   const body = new THREE.Group(); scene.add(body);
@@ -136,57 +136,57 @@ function makeImmune() {
   function drawScope(ctx, w, hgt) {
     ctx.clearRect(0, 0, w, hgt); const on = st.mode === 'resp' && st.titre.length > 0; scopeShow(on); if (!on) return;
     const x = (d) => 10 + d / 40 * (w - 20), Y = (v) => hgt - 12 - Math.min(1, v / 9.5) * (hgt - 28);
-    ctx.fillStyle = 'rgba(255,255,255,.4)'; ctx.font = '500 9px JetBrains Mono, monospace'; [0, 10, 20, 30, 40].forEach((d) => ctx.fillText(d + ' дн', x(d) - 8, hgt - 2));
+    ctx.fillStyle = 'rgba(255,255,255,.4)'; ctx.font = '500 9px JetBrains Mono, monospace'; [0, 10, 20, 30, 40].forEach((d) => ctx.fillText(d + ' d', x(d) - 8, hgt - 2));
     ctx.strokeStyle = '#FFD34A'; ctx.lineWidth = 2; ctx.beginPath(); st.titre.forEach(([d, v], i) => (i ? ctx.lineTo(x(d), Y(v)) : ctx.moveTo(x(d), Y(v)))); ctx.stroke();
-    ctx.fillStyle = '#FFD34A'; ctx.font = '500 10px JetBrains Mono, monospace'; ctx.fillText(st.second ? 'антитела · вторичный ответ' : 'антитела · первичный ответ', 10, 13);
+    ctx.fillStyle = '#FFD34A'; ctx.font = '500 10px JetBrains Mono, monospace'; ctx.fillText(st.second ? 'antibodies · secondary response' : 'antibodies · primary response', 10, 13);
   }
   const TXT = {
-    sys: '<b>Лимфатическая и иммунная система.</b> Центральные органы — <b>костный мозг</b> и <b>тимус</b>, где рождаются и созревают лимфоциты. Периферические — <b>лимфоузлы</b>, <b>селезёнка</b>, миндалины, лимфоидная ткань кишечника: здесь лимфоциты встречают чужаков. Лимфатические сосуды (зелёные частицы) возвращают тканевую жидкость в кровь. Нажмите на орган.',
-    node: '<b>Лимфатический узел.</b> Лимфа входит по нескольким приносящим сосудам (выпуклая сторона), просачивается через узел и выходит по выносящему в воротах. В корковом слое — шаровидные <b>фолликулы с B-лимфоцитами</b> (синие), глубже — <b>T-зона</b> (зелёная), в центре — мозговые тяжи с плазматическими клетками. Макрофаги (фиолетовый) поедают всё лишнее.',
-    resp: '<b>Иммунный ответ.</b> Нажмите «Инфекция», чтобы увидеть первую встречу с микробом, а потом повторите — это будет уже вторичный ответ.',
-    first: '<b>Первая встреча.</b> Бактерии (зелёные палочки) приносятся лимфой. Неспецифическая защита — макрофаги — уже работает, но микробов много.',
-    present: '<b>Предъявление антигена.</b> Дендритная клетка (оранжевая звезда) захватила кусочки бактерий и принесла их в T-зону. T-хелперы, узнавшие антиген, активируют подходящие B-лимфоциты — в фолликулах вспыхивают герминативные центры.',
-    ab: '<b>Антитела.</b> B-лимфоциты размножаются и превращаются в плазматические клетки, выпускающие тысячи антител в секунду (жёлтые Y). Антитела склеивают бактерии и метят их для макрофагов. При первой встрече на это уходит 1–2 недели — поэтому мы болеем. Часть клеток остаётся клетками памяти.',
-    zones: '<b>Куда стекает лимфа.</b> <span style="color:#4ab8ff">Правый лимфатический проток</span> — с правой половины головы, шеи, груди и правой руки. <span style="color:#ffb040">Грудной проток</span> — примерно с ¾ тела: начинается цистерной на уровне L1–L2 и впадает в левый венозный угол, где сливаются яремная и подключичная вены.',
-    second: '<b>Повторная встреча (или после прививки).</b> Клетки памяти узнают тот же антиген сразу.',
-    ab2: '<b>Вторичный ответ</b> — быстрее (2–4 дня) и в разы сильнее, антитела более точные (IgG). Микроб уничтожается раньше, чем успевает вызвать болезнь. На этом основаны прививки: вакцина знакомит иммунитет с безопасной частью возбудителя.',
+    sys: '<b>The lymphatic and immune system.</b> The central organs are the <b>bone marrow</b> and <b>thymus</b>, where lymphocytes are born and mature. The peripheral organs are the <b>lymph nodes</b>, <b>spleen</b>, tonsils and gut-associated lymphoid tissue: here lymphocytes meet invaders. Lymphatic vessels (green particles) return tissue fluid to the blood. Click an organ.',
+    node: '<b>A lymph node.</b> Lymph enters through several afferent vessels (on the convex side), seeps through the node and leaves through the efferent vessel at the hilum. The cortex contains round <b>follicles with B lymphocytes</b> (blue); deeper lies the <b>T zone</b> (green), and in the center are the medullary cords with plasma cells. Macrophages (purple) eat up everything unwanted.',
+    resp: '<b>The immune response.</b> Click “Infection” to see the first encounter with a microbe, then repeat it — this time it will be a secondary response.',
+    first: '<b>First encounter.</b> Bacteria (green rods) are carried in with the lymph. Nonspecific defense — macrophages — is already at work, but there are many microbes.',
+    present: '<b>Antigen presentation.</b> A dendritic cell (orange star) has captured bits of bacteria and brought them to the T zone. Helper T cells that recognize the antigen activate matching B lymphocytes — germinal centers light up in the follicles.',
+    ab: '<b>Antibodies.</b> B lymphocytes multiply and turn into plasma cells that release thousands of antibodies per second (yellow Ys). Antibodies clump bacteria together and tag them for macrophages. On first encounter this takes 1–2 weeks — that is why we get sick. Some cells remain as memory cells.',
+    zones: '<b>Where lymph drains.</b> <span style="color:#4ab8ff">The right lymphatic duct</span> drains the right half of the head, neck and chest and the right arm. <span style="color:#ffb040">The thoracic duct</span> drains about ¾ of the body: it starts as the cisterna chyli at L1–L2 and empties into the left venous angle, where the jugular and subclavian veins join.',
+    second: '<b>Second encounter (or after vaccination).</b> Memory cells recognize the same antigen immediately.',
+    ab2: '<b>The secondary response</b> is faster (2–4 days) and many times stronger, and the antibodies are more precise (IgG). The microbe is destroyed before it can cause disease. Vaccination is based on this: a vaccine introduces the immune system to a harmless part of the pathogen.',
   };
   const labels = [
-    { text: 'шейные узлы', pos: V3(0.35, 3.45, 0.12), color: '#7FD6FF', show: () => st.labels && st.mode === 'sys' },
-    { text: 'подмышечные', pos: V3(1.05, 2.7, 0.05), color: '#7FD6FF', show: () => st.labels && st.mode === 'sys' },
-    { text: 'паховые', pos: V3(0.55, -0.1, 0.25), color: '#7FD6FF', show: () => st.labels && st.mode === 'sys' },
-    { text: 'брыжеечные', pos: V3(0.25, 0.75, 0.25), color: '#7FD6FF', show: () => st.labels && st.mode === 'sys' },
-    { text: 'грудной проток', pos: V3(0.1, 1.8, -0.35), color: '#9FE8C0', show: () => st.labels && st.mode === 'sys' },
-    { text: 'селезёнка', pos: V3(0.85, 1.4, -0.15), color: '#D0708A', show: () => st.labels && st.mode === 'sys' },
-    { text: 'тимус', pos: V3(0.2, 2.75, 0.35), color: '#7FD6C8', show: () => st.labels && st.mode === 'sys' },
-    { text: 'миндалины', pos: V3(0.15, 3.82, 0.12), color: '#F2A0B0', show: () => st.labels && st.mode === 'sys' },
-    { text: 'костный мозг', pos: V3(0.62, -0.6, 0.05), color: '#E06A6A', show: () => st.labels && st.mode === 'sys' },
-    { text: 'средостенные', pos: V3(0.2, 2.4, -0.05), color: '#7FD6FF', show: () => st.labels && st.mode === 'sys' },
-    { text: 'поясничные', pos: V3(-0.3, 0.62, -0.2), color: '#7FD6FF', show: () => st.labels && st.mode === 'sys' },
-    { text: 'подвздошные', pos: V3(-0.42, 0.18, 0.0), color: '#7FD6FF', show: () => st.labels && st.mode === 'sys' },
-    { text: 'цистерна протока', pos: V3(0.16, 0.98, -0.3), color: '#9FE8C0', show: () => st.labels && st.mode === 'sys' },
-    { text: 'левый венозный угол', pos: V3(0.42, 2.92, 0.08), color: '#8AA6FF', show: () => st.labels && st.mode === 'sys' },
-    { text: 'правый лимфатический проток', pos: V3(-0.55, 3.1, 0.1), color: '#9FE8C0', show: () => st.labels && st.mode === 'sys' && (!st.sel || st.sel === 'lv') },
-    { text: 'пейеровы бляшки', pos: V3(-0.25, 0.3, 0.42), color: '#E8C070', show: () => st.labels && st.mode === 'sys' && st.sel === 'galt' },
-    { text: 'фолликул (B-клетки)', pos: V3(31.0, 0.8, 0.3), color: '#8FB8FF', show: () => st.labels && st.mode !== 'sys' },
-    { text: 'T-зона', pos: V3(30.4, -0.1, 0.5), color: '#7FE0A0', show: () => st.labels && st.mode !== 'sys' },
-    { text: 'приносящие сосуды', pos: AFF[0].getPointAt(0.4).add(V3(30.1, 0.1, 0)), color: '#9FE8C0', show: () => st.labels && st.mode !== 'sys' },
-    { text: 'выносящий сосуд', pos: V3(28.0, -0.5, 0.2), color: '#9FE8C0', show: () => st.labels && st.mode !== 'sys' },
-    { text: 'макрофаг', pos: V3(29.5, 0.55, 0.45), color: '#E0A0FF', show: () => st.labels && st.mode !== 'sys' },
-    { text: 'мозговые тяжи', pos: V3(29.4, -0.25, 0.1), color: '#E8B0C0', show: () => st.labels && st.mode !== 'sys' },
+    { text: 'cervical nodes', pos: V3(0.35, 3.45, 0.12), color: '#7FD6FF', show: () => st.labels && st.mode === 'sys' },
+    { text: 'axillary', pos: V3(1.05, 2.7, 0.05), color: '#7FD6FF', show: () => st.labels && st.mode === 'sys' },
+    { text: 'inguinal', pos: V3(0.55, -0.1, 0.25), color: '#7FD6FF', show: () => st.labels && st.mode === 'sys' },
+    { text: 'mesenteric', pos: V3(0.25, 0.75, 0.25), color: '#7FD6FF', show: () => st.labels && st.mode === 'sys' },
+    { text: 'thoracic duct', pos: V3(0.1, 1.8, -0.35), color: '#9FE8C0', show: () => st.labels && st.mode === 'sys' },
+    { text: 'spleen', pos: V3(0.85, 1.4, -0.15), color: '#D0708A', show: () => st.labels && st.mode === 'sys' },
+    { text: 'thymus', pos: V3(0.2, 2.75, 0.35), color: '#7FD6C8', show: () => st.labels && st.mode === 'sys' },
+    { text: 'tonsils', pos: V3(0.15, 3.82, 0.12), color: '#F2A0B0', show: () => st.labels && st.mode === 'sys' },
+    { text: 'bone marrow', pos: V3(0.62, -0.6, 0.05), color: '#E06A6A', show: () => st.labels && st.mode === 'sys' },
+    { text: 'mediastinal', pos: V3(0.2, 2.4, -0.05), color: '#7FD6FF', show: () => st.labels && st.mode === 'sys' },
+    { text: 'lumbar', pos: V3(-0.3, 0.62, -0.2), color: '#7FD6FF', show: () => st.labels && st.mode === 'sys' },
+    { text: 'iliac', pos: V3(-0.42, 0.18, 0.0), color: '#7FD6FF', show: () => st.labels && st.mode === 'sys' },
+    { text: 'cisterna chyli', pos: V3(0.16, 0.98, -0.3), color: '#9FE8C0', show: () => st.labels && st.mode === 'sys' },
+    { text: 'left venous angle', pos: V3(0.42, 2.92, 0.08), color: '#8AA6FF', show: () => st.labels && st.mode === 'sys' },
+    { text: 'right lymphatic duct', pos: V3(-0.55, 3.1, 0.1), color: '#9FE8C0', show: () => st.labels && st.mode === 'sys' && (!st.sel || st.sel === 'lv') },
+    { text: 'Peyer\'s patches', pos: V3(-0.25, 0.3, 0.42), color: '#E8C070', show: () => st.labels && st.mode === 'sys' && st.sel === 'galt' },
+    { text: 'follicle (B cells)', pos: V3(31.0, 0.8, 0.3), color: '#8FB8FF', show: () => st.labels && st.mode !== 'sys' },
+    { text: 'T zone', pos: V3(30.4, -0.1, 0.5), color: '#7FE0A0', show: () => st.labels && st.mode !== 'sys' },
+    { text: 'afferent vessels', pos: AFF[0].getPointAt(0.4).add(V3(30.1, 0.1, 0)), color: '#9FE8C0', show: () => st.labels && st.mode !== 'sys' },
+    { text: 'efferent vessel', pos: V3(28.0, -0.5, 0.2), color: '#9FE8C0', show: () => st.labels && st.mode !== 'sys' },
+    { text: 'macrophage', pos: V3(29.5, 0.55, 0.45), color: '#E0A0FF', show: () => st.labels && st.mode !== 'sys' },
+    { text: 'medullary cords', pos: V3(29.4, -0.25, 0.1), color: '#E8B0C0', show: () => st.labels && st.mode !== 'sys' },
   ];
   const refs = {};
   function ui(el) {
     const ib = infoBox('1 1 340px');
     refs.setInfo = () => { ib.info.innerHTML = st.msg || (st.mode === 'sys' && st.sel ? PART[st.sel].text : TXT[st.mode]); };
-    refs.modeSeg = seg([{ id: 'sys', label: 'Органы' }, { id: 'node', label: 'Лимфоузел' }, { id: 'resp', label: 'Иммунный ответ' }], () => st.mode, (v) => setMode(v));
-    refs.seg = seg([{ id: 'all', label: 'Все' }, ...IM_PARTS.map((p) => ({ id: p.id, label: p.name, color: p.color }))], () => st.sel || 'all', (v) => { if (st.mode !== 'sys') setMode('sys'); select(v); });
-    refs.rot = toggle('Вращение', () => st.rot, (v) => { st.rot = v; });
-    const lab = toggle('Подписи', () => st.labels, (v) => { st.labels = v; });
-    const zt = toggle('Зоны оттока', () => zones.visible, (v) => { zones.visible = v; if (v && st.mode !== 'sys') setMode('sys'); st.msg = v ? TXT.zones : null; refs.setInfo(); });
+    refs.modeSeg = seg([{ id: 'sys', label: 'Organs' }, { id: 'node', label: 'Lymph node' }, { id: 'resp', label: 'Immune response' }], () => st.mode, (v) => setMode(v));
+    refs.seg = seg([{ id: 'all', label: 'All' }, ...IM_PARTS.map((p) => ({ id: p.id, label: p.name, color: p.color }))], () => st.sel || 'all', (v) => { if (st.mode !== 'sys') setMode('sys'); select(v); });
+    refs.rot = toggle('Rotate', () => st.rot, (v) => { st.rot = v; });
+    const lab = toggle('Labels', () => st.labels, (v) => { st.labels = v; });
+    const zt = toggle('Drainage zones', () => zones.visible, (v) => { zones.visible = v; if (v && st.mode !== 'sys') setMode('sys'); st.msg = v ? TXT.zones : null; refs.setInfo(); });
     Object.assign(refs, { lab, zt });
-    el.append(group('Режим', '1–3', refs.modeSeg), h('div', { class: 'grp', style: 'flex:1 1 480px' }, h('div', { class: 'glabel' }, 'Органы', h('kbd', {}, 'клик')), h('div', { class: 'gctl' }, refs.seg)),
-      group('Опыт', 'I · M', button('Инфекция', infect, true), button('Сбросить память', () => { st.mem = false; st.msg = '<b>Память сброшена:</b> следующая инфекция снова вызовет первичный ответ.'; refs.setInfo(); })), group('Вид', 'Z · R · N', zt, refs.rot, lab), ib.el);
+    el.append(group('Mode', '1–3', refs.modeSeg), h('div', { class: 'grp', style: 'flex:1 1 480px' }, h('div', { class: 'glabel' }, 'Organs', h('kbd', {}, 'click')), h('div', { class: 'gctl' }, refs.seg)),
+      group('Experiment', 'I · M', button('Infection', infect, true), button('Reset memory', () => { st.mem = false; st.msg = '<b>Memory reset:</b> the next infection will trigger a primary response again.'; refs.setInfo(); })), group('View', 'Z · R · N', zt, refs.rot, lab), ib.el);
     refs.setInfo();
   }
   function onKey(e) {
@@ -194,22 +194,22 @@ function makeImmune() {
     if (n >= 1 && n <= 3) { setMode(['sys', 'node', 'resp'][n - 1]); return true; }
     if (k === 'i' || k === 'ш') { infect(); return true; }
     if (k === 'z' || k === 'я') { refs.zt.click(); return true; }
-    if (k === 'm' || k === 'ь') { st.mem = false; st.msg = '<b>Память сброшена:</b> следующая инфекция снова вызовет первичный ответ.'; refs.setInfo(); return true; }
+    if (k === 'm' || k === 'ь') { st.mem = false; st.msg = '<b>Memory reset:</b> the next infection will trigger a primary response again.'; refs.setInfo(); return true; }
     if (k === 'r' || k === 'к') { refs.rot.click(); return true; } if (k === 'n' || k === 'т') { refs.lab.click(); return true; }
     if (e.key === 'Escape') { select('all'); return true; }
     return false;
   }
-  function stats() { return st.mode === 'resp' && st.titre.length ? [['День', Math.min(40, Math.floor(st.days)), ''], ['Память', st.mem || st.second ? 'есть' : 'нет', '']] : [['Лимфоузлов', '500–700', ''], ['Лимфы', '2–3', 'л/сут']]; }
+  function stats() { return st.mode === 'resp' && st.titre.length ? [['Day', Math.min(40, Math.floor(st.days)), ''], ['Memory', st.mem || st.second ? 'yes' : 'no', '']] : [['Lymph nodes', '500–700', ''], ['Lymph', '2–3', 'L/day']]; }
   const self = {
     scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#7FD6FF',
-    kicker: 'Тело · иммунитет', title: 'Лимфа и иммунитет',
-    lede: 'Сеть сосудов и узлов, где триллион лимфоцитов патрулирует тело, узнаёт чужое и запоминает его на годы вперёд.',
+    kicker: 'Body · immunity', title: 'Lymph and immunity',
+    lede: 'A network of vessels and nodes where a trillion lymphocytes patrol the body, recognize what is foreign and remember it for years to come.',
     notes: `
-      <div><h2>Два уровня защиты</h2>
-        <p><b>Врождённый иммунитет</b> работает сразу и одинаково против всех: кожа и слизистые, фагоциты (нейтрофилы, макрофаги), воспаление, интерфероны. <b>Приобретённый</b> — специфичный и с памятью: B-лимфоциты выпускают антитела, T-киллеры убивают заражённые клетки, T-хелперы координируют ответ.</p>
-        <h3>Вакцинация</h3><p>Вакцина создаёт клетки памяти без болезни. Первую вакцину (от оспы) предложил Эдвард Дженнер в 1796 году, теорию фагоцитоза — И. И. Мечников (Нобелевская премия 1908 г.).</p></div>
-      <div><h2>Условности</h2><ul><li>Узел увеличен примерно в 500 раз, бактерии и антитела — ещё сильнее.</li><li>Сутки сжаты до долей секунды; кривая антител — схема.</li></ul></div>
-      <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>3</code> режим</li><li>клик: орган</li><li><code>I</code> инфекция · <code>M</code> сбросить память</li><li><code>Z</code> зоны оттока</li><li><code>R</code> вращение · <code>N</code> подписи</li></ul></div>`,
+      <div><h2>Two levels of defense</h2>
+        <p><b>Innate immunity</b> works immediately and in the same way against everything: skin and mucous membranes, phagocytes (neutrophils, macrophages), inflammation, interferons. <b>Adaptive immunity</b> is specific and has memory: B lymphocytes release antibodies, killer T cells destroy infected cells, helper T cells coordinate the response.</p>
+        <h3>Vaccination</h3><p>A vaccine creates memory cells without the disease. The first vaccine (against smallpox) was introduced by Edward Jenner in 1796; the theory of phagocytosis was proposed by Ilya Mechnikov (Nobel Prize, 1908).</p></div>
+      <div><h2>Simplifications</h2><ul><li>The node is magnified about 500 times, and the bacteria and antibodies even more.</li><li>Days are compressed into fractions of a second; the antibody curve is schematic.</li></ul></div>
+      <div class="keys"><h2>Keys</h2><ul><li><code>1</code>–<code>3</code> mode</li><li>click: organ</li><li><code>I</code> infection · <code>M</code> reset memory</li><li><code>Z</code> drainage zones</li><li><code>R</code> rotate · <code>N</code> labels</li></ul></div>`,
   };
   return self;
 }

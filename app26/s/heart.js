@@ -5,19 +5,19 @@ import { BODY, Sparks, THREE, V3, __set_rnd, bodyShell, branchTree, dimOthers, d
    ТЕЛО · СЕРДЦЕ И КРОВООБРАЩЕНИЕ
    ========================================================= */
 const HT_PARTS = [
-  { id: 'ra', name: 'Right atrium', color: '#5B7CE0', text: 'The <b>right atrium</b> receives venous blood from the whole body via the superior and inferior venae cavae. Its wall contains the sinoatrial node, the heart’s pacemaker.' },
-  { id: 'rv', name: 'Right ventricle', color: '#4A68D0', text: 'The <b>right ventricle</b> pumps oxygen-poor blood through the pulmonary trunk to the lungs — the pulmonary circulation. Pressure here is low (about 25 mmHg), so the wall is thin, 3–5 mm.' },
-  { id: 'la', name: 'Left atrium', color: '#E0605A', text: 'The <b>left atrium</b> receives oxygen-rich blood from the lungs via the four pulmonary veins.' },
-  { id: 'lv', name: 'Left ventricle', color: '#D04848', text: 'The <b>left ventricle</b> ejects blood into the aorta — the systemic circulation. Pressure reaches 120 mmHg; the wall is the thickest, 10–15 mm.' },
-  { id: 'valve', name: 'Valves', color: '#F2E6C8', text: '<b>Valves</b> let blood flow in one direction only. Between the atria and ventricles are the tricuspid valve (right) and the bicuspid, or mitral, valve (left); their cusps are held by the chordae tendineae. At the outlets are the semilunar valves of the pulmonary trunk and aorta. The valves snapping shut produce the heart sounds, “lub-dub”.' },
-  { id: 'ves', name: 'Great vessels', color: '#C8A0A8', text: '<b>Great vessels.</b> The aorta (from the left ventricle) is the largest artery, about 2.5 cm in diameter. The pulmonary trunk divides into the right and left pulmonary arteries. The superior and inferior venae cavae empty into the right atrium, and the four pulmonary veins into the left.' },
-  { id: 'cor', name: 'Coronary arteries', color: '#FF6A4A', text: 'The <b>coronary arteries</b> arise from the very beginning of the aorta and supply the heart muscle. Their blockage by a clot is a myocardial infarction: the patch of muscle deprived of oxygen dies.' },
+  { id: 'ra', name: 'Правое предсердие', color: '#5B7CE0', text: '<b>Правое предсердие</b> принимает венозную кровь от всего тела по верхней и нижней полым венам. В его стенке — синусовый узел, водитель ритма сердца.' },
+  { id: 'rv', name: 'Правый желудочек', color: '#4A68D0', text: '<b>Правый желудочек</b> через лёгочный ствол гонит бедную кислородом кровь в лёгкие — малый круг. Давление здесь невысокое (около 25 мм рт. ст.), поэтому стенка тонкая, 3–5 мм.' },
+  { id: 'la', name: 'Левое предсердие', color: '#E0605A', text: '<b>Левое предсердие</b> принимает насыщенную кислородом кровь из лёгких по четырём лёгочным венам.' },
+  { id: 'lv', name: 'Левый желудочек', color: '#D04848', text: '<b>Левый желудочек</b> выбрасывает кровь в аорту — большой круг. Давление до 120 мм рт. ст., стенка самая толстая, 10–15 мм.' },
+  { id: 'valve', name: 'Клапаны', color: '#F2E6C8', text: '<b>Клапаны</b> пропускают кровь только в одну сторону. Между предсердиями и желудочками — трёхстворчатый (справа) и двустворчатый, митральный (слева); их створки удерживают сухожильные нити. На выходе — полулунные клапаны лёгочного ствола и аорты. Захлопывание клапанов — это тоны сердца, «лаб-даб».' },
+  { id: 'ves', name: 'Крупные сосуды', color: '#C8A0A8', text: '<b>Крупные сосуды.</b> Аорта (из левого желудочка) — самая большая артерия, около 2,5 см в диаметре. Лёгочный ствол делится на правую и левую лёгочные артерии. В правое предсердие впадают верхняя и нижняя полые вены, в левое — четыре лёгочные вены.' },
+  { id: 'cor', name: 'Венечные артерии', color: '#FF6A4A', text: '<b>Венечные (коронарные) артерии</b> отходят от самого начала аорты и питают сердечную мышцу. Их закупорка тромбом — инфаркт миокарда: участок мышцы без кислорода погибает.' },
 ];
 function makeHeart() {
   __set_rnd(mulberry(1212));
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x07060a); scene.environment = envTex;
   labLights(scene, 0xff7a6a);
-  const VIEW = { heart: flyTarget(V3(0.05, -0.85, 0), V3(2.0, -0.2, 8.9)), cond: flyTarget(V3(0.05, -0.85, 0), V3(-1.6, -0.2, 8.8)), circ: flyTarget(V3(0.1, 0.9, 0), V3(3.6, 3.4, 13.5)) };
+  const VIEW = { heart: flyTarget(V3(0.0, -0.15, 0), V3(2.2, 0.55, 9.9)), cond: flyTarget(V3(0.05, -0.85, 0), V3(-1.6, -0.2, 8.8)), circ: flyTarget(V3(0.1, 0.9, 0), V3(3.6, 3.4, 13.5)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(VIEW.heart.pos);
   const controls = makeControls(camera, VIEW.heart.target); controls.minDistance = 2; controls.maxDistance = 25;
   const hg = new THREE.Group(); scene.add(hg);
@@ -72,10 +72,10 @@ function makeHeart() {
   corPaths.forEach((pts) => { const c = new THREE.CatmullRomCurve3(pts); add('cor', taperTube(c, (u) => 0.03 * (1 - 0.5 * u), 40, 8), { k: 0.6, mat: { emissiveIntensity: 0.15 } }); for (let j = 0; j < 5; j++) { const p = c.getPointAt(0.25 + j * 0.15); const g = []; branchTree(g, p, randUnit().add(V3(0, -0.6, 0)), 0.25, 0.012, 1, { segs: 6, rad: 4 }); g.forEach((gg) => add('cor', gg, { k: 0.6 })); } });
   /* ---------- клапаны ---------- */
   const VALVES = [
-    { id: 'tri', name: 'tricuspid', p: V3(-0.33, -0.02, 0.2), n: V3(0.45, -0.85, 0.2), r: 0.2, n2: 3, kind: 'av' },
-    { id: 'mit', name: 'mitral', p: V3(0.33, 0.1, -0.22), n: V3(0.15, -0.95, 0.25), r: 0.19, n2: 2, kind: 'av' },
-    { id: 'pul', name: 'pulmonary', p: V3(0.0, 0.3, 0.46), n: V3(0.05, 1, -0.1), r: 0.14, n2: 3, kind: 'sl' },
-    { id: 'aor', name: 'aortic', p: V3(0.1, 0.12, 0.02), n: V3(-0.1, 1, 0.1), r: 0.15, n2: 3, kind: 'sl' },
+    { id: 'tri', name: 'трёхстворчатый', p: V3(-0.33, -0.02, 0.2), n: V3(0.45, -0.85, 0.2), r: 0.2, n2: 3, kind: 'av' },
+    { id: 'mit', name: 'митральный', p: V3(0.33, 0.1, -0.22), n: V3(0.15, -0.95, 0.25), r: 0.19, n2: 2, kind: 'av' },
+    { id: 'pul', name: 'лёгочный', p: V3(0.0, 0.3, 0.46), n: V3(0.05, 1, -0.1), r: 0.14, n2: 3, kind: 'sl' },
+    { id: 'aor', name: 'аортальный', p: V3(0.1, 0.12, 0.02), n: V3(-0.1, 1, 0.1), r: 0.15, n2: 3, kind: 'sl' },
   ];
   VALVES.forEach((v) => {
     const grp = new THREE.Group(); grp.position.copy(v.p); grp.quaternion.setFromUnitVectors(V3(0, 1, 0), v.n.clone().normalize()); hg.add(grp);
@@ -126,15 +126,15 @@ function makeHeart() {
   const DESC = (y) => V3(0.08, y, -0.3);
   const SVC = [V3(-0.12, 2.6, 0.02), RA0], IVC = (y) => V3(-0.1, y, -0.22);
   const CIRC = [
-    { name: 'brain', big: true, pts: [...ARCH, V3(0.14, 3.3, 0.05), V3(0.05, 4.15, 0.05)], back: [V3(-0.05, 4.15, 0.05), V3(-0.16, 3.3, 0.02), ...SVC] },
-    { name: 'arm', big: true, pts: [...ARCH, V3(0.55, 2.78, -0.02), V3(1.25, 2.3, -0.05), V3(1.44, 1.25, 0.02)], back: [V3(1.4, 1.25, 0.0), V3(1.3, 2.2, -0.1), V3(0.55, 2.72, -0.08), ...SVC] },
-    { name: 'arm', big: true, pts: [...ARCH, V3(-0.4, 2.75, -0.02), V3(-1.25, 2.3, -0.05), V3(-1.44, 1.25, 0.02)], back: [V3(-1.4, 1.25, 0.0), V3(-1.3, 2.2, -0.1), V3(-0.5, 2.72, -0.06), ...SVC] },
-    { name: 'intestines and liver', big: true, pts: [...ARCH, DESC(1.9), DESC(1.2), V3(0.1, 0.8, 0.25)], back: [V3(-0.1, 0.85, 0.25), V3(-0.38, 1.35, 0.15), IVC(1.6), RA0] },
-    { name: 'kidney', big: true, pts: [...ARCH, DESC(1.9), DESC(1.1), V3(0.47, 1.02, -0.32)], back: [V3(0.45, 0.97, -0.3), IVC(1.0), IVC(1.6), RA0] },
-    { name: 'leg', big: true, pts: [...ARCH, DESC(1.9), DESC(0.4), V3(0.3, -0.15, -0.1), V3(0.48, -2.0, 0.05)], back: [V3(0.44, -2.0, 0.0), V3(0.4, -0.5, -0.05), IVC(0.3), IVC(1.6), RA0] },
-    { name: 'leg', big: true, pts: [...ARCH, DESC(1.9), DESC(0.4), V3(-0.3, -0.15, -0.1), V3(-0.48, -2.0, 0.05)], back: [V3(-0.44, -2.0, 0.0), V3(-0.4, -0.5, -0.05), IVC(0.3), IVC(1.6), RA0] },
-    { name: 'lung', big: false, pts: [RV0, V3(0.1, 2.35, 0.2), V3(0.3, 2.42, 0.0), V3(0.62, 2.3, -0.05)], back: [V3(0.6, 2.2, -0.1), V3(0.35, 2.18, -0.15), LA0] },
-    { name: 'lung', big: false, pts: [RV0, V3(0.1, 2.35, 0.2), V3(-0.2, 2.42, 0.0), V3(-0.62, 2.3, -0.05)], back: [V3(-0.6, 2.2, -0.1), V3(-0.2, 2.18, -0.15), LA0] },
+    { name: 'мозг', big: true, pts: [...ARCH, V3(0.14, 3.3, 0.05), V3(0.05, 4.15, 0.05)], back: [V3(-0.05, 4.15, 0.05), V3(-0.16, 3.3, 0.02), ...SVC] },
+    { name: 'рука', big: true, pts: [...ARCH, V3(0.55, 2.78, -0.02), V3(1.25, 2.3, -0.05), V3(1.44, 1.25, 0.02)], back: [V3(1.4, 1.25, 0.0), V3(1.3, 2.2, -0.1), V3(0.55, 2.72, -0.08), ...SVC] },
+    { name: 'рука', big: true, pts: [...ARCH, V3(-0.4, 2.75, -0.02), V3(-1.25, 2.3, -0.05), V3(-1.44, 1.25, 0.02)], back: [V3(-1.4, 1.25, 0.0), V3(-1.3, 2.2, -0.1), V3(-0.5, 2.72, -0.06), ...SVC] },
+    { name: 'кишечник и печень', big: true, pts: [...ARCH, DESC(1.9), DESC(1.2), V3(0.1, 0.8, 0.25)], back: [V3(-0.1, 0.85, 0.25), V3(-0.38, 1.35, 0.15), IVC(1.6), RA0] },
+    { name: 'почка', big: true, pts: [...ARCH, DESC(1.9), DESC(1.1), V3(0.47, 1.02, -0.32)], back: [V3(0.45, 0.97, -0.3), IVC(1.0), IVC(1.6), RA0] },
+    { name: 'нога', big: true, pts: [...ARCH, DESC(1.9), DESC(0.4), V3(0.3, -0.15, -0.1), V3(0.48, -2.0, 0.05)], back: [V3(0.44, -2.0, 0.0), V3(0.4, -0.5, -0.05), IVC(0.3), IVC(1.6), RA0] },
+    { name: 'нога', big: true, pts: [...ARCH, DESC(1.9), DESC(0.4), V3(-0.3, -0.15, -0.1), V3(-0.48, -2.0, 0.05)], back: [V3(-0.44, -2.0, 0.0), V3(-0.4, -0.5, -0.05), IVC(0.3), IVC(1.6), RA0] },
+    { name: 'лёгкое', big: false, pts: [RV0, V3(0.1, 2.35, 0.2), V3(0.3, 2.42, 0.0), V3(0.62, 2.3, -0.05)], back: [V3(0.6, 2.2, -0.1), V3(0.35, 2.18, -0.15), LA0] },
+    { name: 'лёгкое', big: false, pts: [RV0, V3(0.1, 2.35, 0.2), V3(-0.2, 2.42, 0.0), V3(-0.62, 2.3, -0.05)], back: [V3(-0.6, 2.2, -0.1), V3(-0.2, 2.18, -0.15), LA0] },
   ].map((c) => { const a = new THREE.CatmullRomCurve3(c.pts), b = new THREE.CatmullRomCurve3([c.pts[c.pts.length - 1], ...c.back]); const la = a.getLength(), lb = b.getLength(); const ca = c.big ? '#E0605A' : '#6C86E0', cb = c.big ? '#6C86E0' : '#E0605A';
     const fa = flowTubeMat(ca, 0.3, la * 1.2), fb = flowTubeMat(cb, 0.3, lb * 1.2); fa.uniforms.uOn.value = 0.55; fb.uniforms.uOn.value = 0.55;
     body.add(new THREE.Mesh(new THREE.TubeGeometry(a, 80, 0.03, 6), fa), new THREE.Mesh(new THREE.TubeGeometry(b, 80, 0.03, 6), fb));
@@ -147,7 +147,7 @@ function makeHeart() {
 
   /* ---------- состояние ---------- */
   const st = { t: 0, mode: 'heart', sel: null, labels: true, rot: false, fly: null, hr: 72, inside: true, block: false, circ: 'all', pa: 0, pv: 0, ecg: [], msg: null, beat: 0 };
-  const phaseInfo = (ph) => (ph < 0.08 ? 'diastole (filling)' : ph < 0.2 ? 'atrial systole' : ph < 0.5 ? 'ventricular systole' : 'diastole (filling)');
+  const phaseInfo = (ph) => (ph < 0.08 ? 'диастола (наполнение)' : ph < 0.2 ? 'систола предсердий' : ph < 0.5 ? 'систола желудочков' : 'диастола (наполнение)');
   const gau = (x, m, s) => Math.exp(-(((x - m) / s) ** 2));
   function ecgAt(pa, pv) { return 0.15 * gau(pa, 0.07, 0.025) - 0.12 * gau(pv, 0.165, 0.008) + 1.0 * gau(pv, 0.18, 0.01) - 0.22 * gau(pv, 0.197, 0.01) + 0.3 * gau(pv, 0.42, 0.045); }
   function select(id) { st.sel = id === 'all' ? null : id; refs.seg && refs.seg.sync(); dimOthers(HT_PARTS.map((p) => PART[p.id]), st.sel); myoMat.opacity = st.sel ? 0.08 : (st.inside ? 0.32 : 0.95); myoMat.depthWrite = !st.sel && !st.inside; st.msg = null; refs.setInfo && refs.setInfo(); }
@@ -205,9 +205,9 @@ function makeHeart() {
   function drawScope(ctx, w, hgt) {
     ctx.clearRect(0, 0, w, hgt); scopeShow(true);
     if (st.mode === 'circ') {   // Неттер, BP 14: доля минутного объёма (Q) и потребления кислорода по органам, %
-      const ORGQ = [['brain', 13, 21], ['heart', 4, 11], ['GI tract', 24, 23], ['kidneys', 20, 7], ['muscles', 21, 27], ['skin', 18, 11]];
-      ctx.font = '500 10px JetBrains Mono, monospace'; ctx.fillStyle = '#FF6A5A'; ctx.fillRect(8, 5, 8, 8); ctx.fillStyle = 'rgba(255,255,255,.75)'; ctx.fillText('blood flow, %', 20, 12);
-      const x2 = 30 + ctx.measureText('blood flow, %').width; ctx.fillStyle = '#7FD6FF'; ctx.fillRect(x2, 5, 8, 8); ctx.fillStyle = 'rgba(255,255,255,.75)'; ctx.fillText('oxygen, %', x2 + 12, 12);
+      const ORGQ = [['мозг', 13, 21], ['сердце', 4, 11], ['ЖКТ', 24, 23], ['почки', 20, 7], ['мышцы', 21, 27], ['кожа', 18, 11]];
+      ctx.font = '500 10px JetBrains Mono, monospace'; ctx.fillStyle = '#FF6A5A'; ctx.fillRect(8, 5, 8, 8); ctx.fillStyle = 'rgba(255,255,255,.75)'; ctx.fillText('кровоток, %', 20, 12);
+      const x2 = 30 + ctx.measureText('кровоток, %').width; ctx.fillStyle = '#7FD6FF'; ctx.fillRect(x2, 5, 8, 8); ctx.fillStyle = 'rgba(255,255,255,.75)'; ctx.fillText('кислород, %', x2 + 12, 12);
       const top = 30, bh = hgt - top - 16, gw = (w - 16) / ORGQ.length, Y = (v) => top + bh * (1 - v / 28);
       ORGQ.forEach(([n, q, o], i) => { const x = 8 + i * gw + gw * 0.16, bw = gw * 0.3;
         ctx.fillStyle = '#FF6A5A'; ctx.fillRect(x, Y(q), bw, top + bh - Y(q)); ctx.fillStyle = '#7FD6FF'; ctx.fillRect(x + bw + 2, Y(o), bw, top + bh - Y(o));
@@ -217,49 +217,49 @@ function makeHeart() {
     }
     const x = (tt) => 8 + (1 - (st.t - tt) / 4) * (w - 16), y0 = hgt * 0.62, sc = hgt * 0.42;
     ctx.lineWidth = 2; ctx.strokeStyle = '#7FE0A0'; ctx.beginPath(); st.ecg.forEach(([tt, v], i) => { const yy = y0 - v * sc; i ? ctx.lineTo(x(tt), yy) : ctx.moveTo(x(tt), yy); }); ctx.stroke();
-    ctx.font = '500 10px JetBrains Mono, monospace'; ctx.fillStyle = '#7FE0A0'; ctx.fillText('ECG · ' + st.hr + ' bpm', 10, 13);
-    let last = -9; st.ecg.forEach(([tt, , s]) => { if (s && tt - last > 0.08) { last = tt; ctx.fillStyle = s === 1 ? '#F2E6C8' : '#c8b8a0'; ctx.fillText(s === 1 ? 'lub' : 'dub', x(tt) - 8, hgt - 6); } });
+    ctx.font = '500 10px JetBrains Mono, monospace'; ctx.fillStyle = '#7FE0A0'; ctx.fillText('ЭКГ · ' + st.hr + ' уд/мин', 10, 13);
+    let last = -9; st.ecg.forEach(([tt, , s]) => { if (s && tt - last > 0.08) { last = tt; ctx.fillStyle = s === 1 ? '#F2E6C8' : '#c8b8a0'; ctx.fillText(s === 1 ? 'лаб' : 'даб', x(tt) - 8, hgt - 6); } });
   }
   const TXT = {
-    heart: 'The <b>heart</b> is a muscular pump the size of a fist (about 300 g). It has four chambers: two atria on top and two ventricles below. The right half (blue) pumps oxygen-poor blood to the lungs, the left half (red) pumps oxygen-rich blood to the whole body. At 75 beats per minute a cycle lasts 0.8 s: atrial systole 0.1 s, ventricular systole 0.3 s, general diastole (pause) 0.4 s. Click a part of the heart.',
-    cond: '<b>Conduction system.</b> The heart contracts on its own, without commands from the brain (automaticity). The impulse arises in the <b>sinoatrial node</b> (60–80 times a minute) → spreads as a wave across the atria (the P wave on the ECG) → is delayed in the <b>atrioventricular node</b> for 0.1 s so the atria can finish pushing blood in → through the <b>bundle of His</b>, its branches and the <b>Purkinje fibers</b> it almost instantly spreads through the ventricles (the QRS complex). The T wave is ventricular repolarization. Nerves and hormones only speed up or slow down the rhythm.',
-    circ: '<b>Two circulations</b> (discovered by William Harvey, 1628). <b>Systemic circulation:</b> left ventricle → aorta → arteries → organ capillaries (blood gives up oxygen and becomes venous) → veins → venae cavae → right atrium. <b>Pulmonary circulation:</b> right ventricle → pulmonary arteries → lung capillaries (blood picks up oxygen) → pulmonary veins → left atrium. A full circuit of the blood takes about 20–25 seconds.',
-    block: '<b>Complete atrioventricular block.</b> The impulse from the sinoatrial node does not reach the ventricles. The atria beat at their own rhythm (P waves), while the ventricles are driven by a backup pacemaker at only 35–40 beats a minute, and the QRS complexes are no longer linked to the P waves. The organs receive too little blood; the treatment is an implanted pacemaker.',
+    heart: '<b>Сердце</b> — мышечный насос размером с кулак (около 300 г). Четыре камеры: два предсердия сверху и два желудочка снизу. Правая половина (синяя) качает бедную кислородом кровь в лёгкие, левая (красная) — насыщенную кислородом кровь ко всему телу. Цикл при 75 ударах в минуту длится 0,8 с: систола предсердий 0,1 с, систола желудочков 0,3 с, общая пауза (диастола) 0,4 с. Нажмите на часть сердца.',
+    cond: '<b>Проводящая система.</b> Сердце сокращается само, без команд мозга (автоматия). Импульс рождается в <b>синусовом узле</b> (60–80 раз в минуту) → волной бежит по предсердиям (зубец P на ЭКГ) → задерживается в <b>атриовентрикулярном узле</b> на 0,1 с, чтобы предсердия успели дотолкнуть кровь → по <b>пучку Гиса</b>, его ножкам и <b>волокнам Пуркинье</b> мгновенно охватывает желудочки (комплекс QRS). Зубец T — восстановление желудочков. Нервы и гормоны лишь ускоряют или замедляют ритм.',
+    circ: '<b>Два круга кровообращения</b> (открыл Уильям Гарвей, 1628). <b>Большой круг:</b> левый желудочек → аорта → артерии → капилляры органов (кровь отдаёт кислород и становится венозной) → вены → полые вены → правое предсердие. <b>Малый круг:</b> правый желудочек → лёгочные артерии → капилляры лёгких (кровь забирает кислород) → лёгочные вены → левое предсердие. Полный оборот крови занимает около 20–25 секунд.',
+    block: '<b>Полная атриовентрикулярная блокада.</b> Импульс из синусового узла не проходит в желудочки. Предсердия бьются в своём ритме (зубцы P), а желудочки запускает запасной водитель ритма — всего 35–40 раз в минуту, и комплексы QRS уже не связаны с P. Человеку не хватает кровотока; лечат имплантацией электрокардиостимулятора.',
   };
   const labels = [
     ...[['ra', V3(-0.95, 0.45, 0.2)], ['rv', V3(-0.35, -0.75, 0.55)], ['la', V3(0.8, 0.62, -0.4)], ['lv', V3(0.85, -0.55, 0.2)]].map(([id, p]) => ({ text: PART[id].name, pos: p, color: id[0] === 'r' ? '#A8BCFF' : PART[id].color, show: () => st.labels && st.mode !== 'circ' && (!st.sel || st.sel === id) })),
-    { text: 'aorta', pos: V3(0.45, 1.55, -0.35), color: '#E0605A', show: () => st.labels && st.mode === 'heart' },
-    { text: 'pulmonary trunk', pos: V3(0.3, 0.75, 0.45), color: '#8CA0F0', show: () => st.labels && st.mode === 'heart' },
-    { text: 'superior vena cava', pos: V3(-0.75, 1.5, 0.0), color: '#8CA0F0', show: () => st.labels && st.mode === 'heart' },
-    { text: 'inferior vena cava', pos: V3(-0.6, -1.0, -0.22), color: '#8CA0F0', show: () => st.labels && st.mode === 'heart' },
-    { text: 'pulmonary veins', pos: V3(1.1, 0.5, -0.45), color: '#E0605A', show: () => st.labels && st.mode === 'heart' },
-    ...VALVES.map((v) => ({ text: v.name + ' valve', pos: v.p.clone().add(V3(0.05, 0.03, 0.12)), color: '#F2E6C8', show: () => st.labels && st.mode === 'heart' && (st.sel === 'valve') })),
-    { text: 'sinoatrial node', pos: SA.clone().add(V3(-0.1, 0.1, 0.05)), color: '#FFD34A', show: () => st.labels && st.mode === 'cond' },
-    { text: 'AV node', pos: AV.clone().add(V3(-0.15, -0.05, 0.1)), color: '#FFB04A', show: () => st.labels && st.mode === 'cond' },
-    { text: 'bundle of His', pos: HIS.clone().add(V3(0.1, 0.0, 0.1)), color: '#FFD080', show: () => st.labels && st.mode === 'cond' },
-    { text: 'Purkinje fibers', pos: V3(0.75, -0.8, 0.3), color: '#FFB060', show: () => st.labels && st.mode === 'cond' },
-    { text: 'brain', pos: V3(0.2, 4.3, 0.1), color: '#F2C14E', show: () => st.labels && st.mode === 'circ' },
-    { text: 'lungs · pulmonary circulation', pos: V3(0.85, 2.6, 0.0), color: '#7FD6FF', show: () => st.labels && st.mode === 'circ' },
-    { text: 'liver', pos: V3(-0.75, 1.4, 0.2), color: '#c88a70', show: () => st.labels && st.mode === 'circ' },
-    { text: 'intestines', pos: V3(0.3, 0.6, 0.4), color: '#e0b0a0', show: () => st.labels && st.mode === 'circ' },
-    { text: 'kidney', pos: V3(0.7, 1.0, -0.3), color: '#c87070', show: () => st.labels && st.mode === 'circ' },
-    { text: 'heart', pos: H0.clone().add(V3(0.3, 0.05, 0.2)), color: '#FF8A7A', show: () => st.labels && st.mode === 'circ' },
+    { text: 'аорта', pos: V3(0.45, 1.55, -0.35), color: '#E0605A', show: () => st.labels && st.mode === 'heart' },
+    { text: 'лёгочный ствол', pos: V3(0.3, 0.75, 0.45), color: '#8CA0F0', show: () => st.labels && st.mode === 'heart' },
+    { text: 'верхняя полая вена', pos: V3(-0.75, 1.5, 0.0), color: '#8CA0F0', show: () => st.labels && st.mode === 'heart' },
+    { text: 'нижняя полая вена', pos: V3(-0.6, -1.0, -0.22), color: '#8CA0F0', show: () => st.labels && st.mode === 'heart' },
+    { text: 'лёгочные вены', pos: V3(1.1, 0.5, -0.45), color: '#E0605A', show: () => st.labels && st.mode === 'heart' },
+    ...VALVES.map((v) => ({ text: v.name + ' клапан', pos: v.p.clone().add(V3(0.05, 0.03, 0.12)), color: '#F2E6C8', show: () => st.labels && st.mode === 'heart' && (st.sel === 'valve') })),
+    { text: 'синусовый узел', pos: SA.clone().add(V3(-0.1, 0.1, 0.05)), color: '#FFD34A', show: () => st.labels && st.mode === 'cond' },
+    { text: 'АВ-узел', pos: AV.clone().add(V3(-0.15, -0.05, 0.1)), color: '#FFB04A', show: () => st.labels && st.mode === 'cond' },
+    { text: 'пучок Гиса', pos: HIS.clone().add(V3(0.1, 0.0, 0.1)), color: '#FFD080', show: () => st.labels && st.mode === 'cond' },
+    { text: 'волокна Пуркинье', pos: V3(0.75, -0.8, 0.3), color: '#FFB060', show: () => st.labels && st.mode === 'cond' },
+    { text: 'мозг', pos: V3(0.2, 4.3, 0.1), color: '#F2C14E', show: () => st.labels && st.mode === 'circ' },
+    { text: 'лёгкие · малый круг', pos: V3(0.85, 2.6, 0.0), color: '#7FD6FF', show: () => st.labels && st.mode === 'circ' },
+    { text: 'печень', pos: V3(-0.75, 1.4, 0.2), color: '#c88a70', show: () => st.labels && st.mode === 'circ' },
+    { text: 'кишечник', pos: V3(0.3, 0.6, 0.4), color: '#e0b0a0', show: () => st.labels && st.mode === 'circ' },
+    { text: 'почка', pos: V3(0.7, 1.0, -0.3), color: '#c87070', show: () => st.labels && st.mode === 'circ' },
+    { text: 'сердце', pos: H0.clone().add(V3(0.3, 0.05, 0.2)), color: '#FF8A7A', show: () => st.labels && st.mode === 'circ' },
   ];
   const refs = {};
   function ui(el) {
     const ib = infoBox('1 1 340px');
     refs.setInfo = () => { ib.info.innerHTML = st.msg || (st.mode === 'cond' && st.block ? TXT.block : st.mode !== 'circ' && st.sel ? PART[st.sel].text : TXT[st.mode]); };
-    refs.modeSeg = seg([{ id: 'heart', label: 'Structure and cycle' }, { id: 'cond', label: 'Conduction system' }, { id: 'circ', label: 'Circulations' }], () => st.mode, (v) => setMode(v));
-    refs.seg = seg([{ id: 'all', label: 'All' }, ...HT_PARTS.map((p) => ({ id: p.id, label: p.name, color: p.color }))], () => st.sel || 'all', (v) => { if (st.mode === 'circ') setMode('heart'); select(v); });
-    refs.circSeg = seg([{ id: 'all', label: 'Both circulations' }, { id: 'big', label: 'Systemic', color: '#E0605A' }, { id: 'small', label: 'Pulmonary', color: '#6C86E0' }], () => st.circ, (v) => setCirc(v));
-    const hr = range('hr', 40, 180, 1, () => st.hr, (v) => { st.hr = v; }, (v) => v + ' bpm');
-    const inside = toggle('Chambers inside', () => st.inside, (v) => { st.inside = v; select(st.sel || 'all'); });
-    const blk = toggle('AV block', () => st.block, (v) => { st.block = v; if (v && st.mode !== 'cond') setMode('cond'); refs.setInfo(); });
-    refs.rot = toggle('Rotate', () => st.rot, (v) => { st.rot = v; });
-    const lab = toggle('Labels', () => st.labels, (v) => { st.labels = v; });
+    refs.modeSeg = seg([{ id: 'heart', label: 'Строение и цикл' }, { id: 'cond', label: 'Проводящая система' }, { id: 'circ', label: 'Круги кровообращения' }], () => st.mode, (v) => setMode(v));
+    refs.seg = seg([{ id: 'all', label: 'Все' }, ...HT_PARTS.map((p) => ({ id: p.id, label: p.name, color: p.color }))], () => st.sel || 'all', (v) => { if (st.mode === 'circ') setMode('heart'); select(v); });
+    refs.circSeg = seg([{ id: 'all', label: 'Оба круга' }, { id: 'big', label: 'Большой', color: '#E0605A' }, { id: 'small', label: 'Малый', color: '#6C86E0' }], () => st.circ, (v) => setCirc(v));
+    const hr = range('hr', 40, 180, 1, () => st.hr, (v) => { st.hr = v; }, (v) => v + ' уд/мин');
+    const inside = toggle('Камеры внутри', () => st.inside, (v) => { st.inside = v; select(st.sel || 'all'); });
+    const blk = toggle('АВ-блокада', () => st.block, (v) => { st.block = v; if (v && st.mode !== 'cond') setMode('cond'); refs.setInfo(); });
+    refs.rot = toggle('Вращение', () => st.rot, (v) => { st.rot = v; });
+    const lab = toggle('Подписи', () => st.labels, (v) => { st.labels = v; });
     Object.assign(refs, { inside, blk, lab, hr });
-    el.append(group('Mode', '1–3', refs.modeSeg), h('div', { class: 'grp', style: 'flex:1 1 520px' }, h('div', { class: 'glabel' }, 'Parts', h('kbd', {}, 'click')), h('div', { class: 'gctl' }, refs.seg)),
-      group('Pulse', '', hr, blk), group('Loops', '', refs.circSeg), group('View', 'I · R · N', inside, refs.rot, lab), ib.el);
+    el.append(group('Режим', '1–3', refs.modeSeg), h('div', { class: 'grp', style: 'flex:1 1 520px' }, h('div', { class: 'glabel' }, 'Части', h('kbd', {}, 'клик')), h('div', { class: 'gctl' }, refs.seg)),
+      group('Пульс', '', hr, blk), group('Круги', '', refs.circSeg), group('Вид', 'I · R · N', inside, refs.rot, lab), ib.el);
     refs.setInfo();
   }
   function onKey(e) {
@@ -270,19 +270,19 @@ function makeHeart() {
     if (e.key === 'Escape') { select('all'); return true; }
     return false;
   }
-  function stats() { const mok = (st.hr * 70 / 1000).toFixed(1); return st.mode === 'circ' ? [['Circulation time', '20–25', 'с'], ['Blood volume', '≈5', 'л']] : [['Heart rate', st.block ? 38 : st.hr, 'bpm'], ['Phase', phaseInfo(st.pv), ''], ['Cardiac output', mok, 'L/min']]; }
+  function stats() { const mok = (st.hr * 70 / 1000).toFixed(1); return st.mode === 'circ' ? [['Оборот крови', '20–25', 'с'], ['Объём крови', '≈5', 'л']] : [['ЧСС', st.block ? 38 : st.hr, 'уд/мин'], ['Фаза', phaseInfo(st.pv), ''], ['Минутный объём', mok, 'л/мин']]; }
   const self = {
     scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#E0605A',
-    kicker: 'Body · circulation', title: 'Heart and circulation',
-    lede: 'Four chambers, four valves and a pacemaker of its own. Over a lifetime the heart beats about 3 billion times, pumping 5 liters of blood every minute.',
+    kicker: 'Тело · кровообращение', title: 'Сердце и кровообращение',
+    lede: 'Четыре камеры, четыре клапана и собственный водитель ритма. За жизнь сердце сокращается около 3 миллиардов раз и перекачивает 5 литров крови каждую минуту.',
     notes: `
-      <div><h2>How the pump works</h2>
-        <p>In diastole, blood from the veins flows freely through the open atrioventricular valves into the ventricles. Atrial systole pushes in the last 20–30%. In ventricular systole the pressure rises, the atrioventricular valve cusps snap shut (first heart sound, “lub”), the semilunar valves open, and blood leaves into the aorta and pulmonary trunk. When the ventricles relax, the semilunar valves close (second heart sound, “dub”).</p>
-        <h3>Stroke volume and cardiac output</h3><p>With each contraction, each ventricle ejects about 70 mL. At 70 beats per minute that is ~5 L/min; during exercise, up to 25–30 L/min.</p></div>
-      <div><h2>Regulation</h2><ul>
-        <li>Sympathetic nerves and epinephrine (adrenaline) increase the rate and force of contraction.</li><li>The vagus nerve (parasympathetic) slows the rhythm.</li><li>The more the ventricle is stretched by incoming blood, the more forcefully it contracts (the Frank–Starling law).</li></ul>
-        <h2 style="margin-top:22px">Simplifications</h2><ul><li>The shape of the heart is simplified; chambers are shown as volumes of blood.</li><li>The circulation diagram shows the main routes, not every vessel.</li></ul></div>
-      <div class="keys"><h2>Keys</h2><ul><li><code>1</code>–<code>3</code> mode</li><li>click: part of the heart</li><li><code>I</code> chambers inside</li><li><code>B</code> block</li><li><code>R</code> rotate · <code>N</code> labels</li></ul></div>`,
+      <div><h2>Как работает насос</h2>
+        <p>В диастолу кровь из вен свободно стекает через открытые предсердно-желудочковые клапаны в желудочки. Систола предсердий дотолкивает последние 20–30%. В систолу желудочков давление растёт, створки захлопываются (I тон, «лаб»), открываются полулунные клапаны — кровь уходит в аорту и лёгочный ствол. Когда желудочки расслабляются, полулунные клапаны закрываются (II тон, «даб»).</p>
+        <h3>Ударный и минутный объём</h3><p>За одно сокращение каждый желудочек выбрасывает около 70 мл. При 70 ударах в минуту это ~5 л/мин, при нагрузке — до 25–30 л/мин.</p></div>
+      <div><h2>Регуляция</h2><ul>
+        <li>Симпатические нервы и адреналин учащают и усиливают сокращения.</li><li>Блуждающий нерв (парасимпатический) замедляет ритм.</li><li>Чем сильнее растянут желудочек притекающей кровью, тем сильнее он сокращается (закон Франка — Старлинга).</li></ul>
+        <h2 style="margin-top:22px">Условности</h2><ul><li>Форма сердца упрощена, камеры показаны как объёмы крови.</li><li>Схема кругов показывает главные пути, а не все сосуды.</li></ul></div>
+      <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>3</code> режим</li><li>клик: часть сердца</li><li><code>I</code> камеры внутри</li><li><code>B</code> блокада</li><li><code>R</code> вращение · <code>N</code> подписи</li></ul></div>`,
   };
   return self;
 }

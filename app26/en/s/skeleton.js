@@ -311,8 +311,8 @@ function makeSkeleton() {
   addLights(scene, 0x8fb0ff);
   const sun = new THREE.DirectionalLight(0xfff4e6, 1.5); sun.position.set(5, 22, 10); sun.castShadow = true;
   sun.shadow.mapSize.set(2048, 2048); Object.assign(sun.shadow.camera, { left: -6, right: 6, top: 20, bottom: -2, near: 1, far: 50 }); sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.02; scene.add(sun);
-  const camera = new THREE.PerspectiveCamera(36, 1, 0.05, 200); camera.position.set(10, 12, 28);   // весь рост, с черепом
-  const controls = makeControls(camera, V3(0.15, 8.0, 0)); controls.minDistance = 2.5; controls.maxDistance = 60; controls.autoRotate = true; controls.autoRotateSpeed = 0.5;
+  const camera = new THREE.PerspectiveCamera(36, 1, 0.05, 200); camera.position.set(11.3, 13.6, 31.5);   // весь рост, с черепом
+  const controls = makeControls(camera, V3(0.15, 9.0, 0)); controls.minDistance = 2.5; controls.maxDistance = 60; controls.autoRotate = true; controls.autoRotateSpeed = 0.5;
   const floor = new THREE.Mesh(new THREE.CircleGeometry(9, 72), new THREE.ShadowMaterial({ opacity: 0.42 })); floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
   const ring = new THREE.Mesh(new THREE.RingGeometry(5.9, 5.94, 128), new THREE.MeshBasicMaterial({ color: 0x3a3540, side: THREE.DoubleSide })); ring.rotation.x = -Math.PI / 2; ring.position.y = 0.01; scene.add(ring);
 
@@ -410,8 +410,8 @@ function makeSkeleton() {
   function select(id) {
     st.sel = id === 'all' ? null : id; st.focusT = 1.6;
     U.uSel.value = st.sel ? BONES.findIndex((b) => b.id === st.sel) : -1;
-    const a = st.sel ? anchors[st.sel].getWorldPosition(V3(0, 0, 0)) : V3(0.15, 8.0, 0);
-    st.focus = { target: a, dist: st.sel ? (['skull', 'hand', 'foot'].includes(st.sel) ? 6 : 9) : 30 };
+    const a = st.sel ? anchors[st.sel].getWorldPosition(V3(0, 0, 0)) : V3(0.15, 9.0, 0);
+    st.focus = { target: a, dist: st.sel ? (['skull', 'hand', 'foot'].includes(st.sel) ? 6 : 9) : 35 };
     refs.setInfo && refs.setInfo(); refs.seg && refs.seg.sync();
   }
   const th0 = J.knL.clone().sub(J.hpL), sh0 = J.anL.clone().sub(J.knL), hipOff = J.hpL.clone().sub(hipC), XA = V3(1, 0, 0);
