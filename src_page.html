@@ -2342,8 +2342,8 @@ function makeTypes() {
   const BG = 0x07060a, GOLGI_BG = 0x8a5420;
   const scene = new THREE.Scene(); scene.background = new THREE.Color(BG); scene.fog = new THREE.FogExp2(BG, 0.011); scene.environment = envTex;
   addLights(scene);
-  const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 400); camera.position.set(-6.0, 2.0, 50);
-  const controls = makeControls(camera, V3(-6.0, 0.0, 0)); controls.minDistance = 3; controls.maxDistance = 90;
+  const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 400); camera.position.set(-8.5, 2.5, 55);
+  const controls = makeControls(camera, V3(-8.5, 0.5, 0)); controls.minDistance = 3; controls.maxDistance = 90;
 
   const baseMat = new THREE.MeshPhysicalMaterial({ color: 0xcdb0c4, roughness: 0.46, clearcoat: 0.55, clearcoatRoughness: 0.35, sheen: 1, sheenColor: new THREE.Color(0x8f6dff), sheenRoughness: 0.5, emissive: 0x12081a, envMapIntensity: 0.6 });
   const myelinMat = new THREE.MeshPhysicalMaterial({ color: 0xf1e7d6, roughness: 0.28, clearcoat: 1, clearcoatRoughness: 0.18, envMapIntensity: 0.9 });
@@ -2627,7 +2627,7 @@ function makeTypes() {
   }
 
   /* ---------- камера ---------- */
-  const views = { all: { tgt: V3(-6.0, 0.0, 0), pos: V3(-6.0, 2.0, 50) }, net: { tgt: NET.clone().add(NC).add(V3(0, -3, 0)), pos: NET.clone().add(NC).add(V3(0, 1, 40)) } };
+  const views = { all: { tgt: V3(-8.5, 0.5, 0), pos: V3(-8.5, 2.5, 55) }, net: { tgt: NET.clone().add(NC).add(V3(0, -3, 0)), pos: NET.clone().add(NC).add(V3(0, 1, 40)) } };
   cells.slice(0, 7).forEach((c) => { views[c.def.id] = { tgt: c.origin.clone().add(V3(0, -2.6, 0)), pos: c.origin.clone().add(V3(4.5, 0.5, 24)) }; });
   views.purk.pos = byId.purk.origin.clone().add(V3(13, 1.5, 20));
   const st = { view: 'all', stain: 'live', auto: true, labels: true, t: 0, next: 0.8, fly: 1, twitch: 0, twitchT: -9, touchT: -9 };
@@ -2740,8 +2740,8 @@ function makeGlia() {
   rnd = mulberry(31);
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x07060a); scene.fog = new THREE.FogExp2(0x07060a, 0.022); scene.environment = envTex;
   addLights(scene, 0x7fd6c8);
-  const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 200); camera.position.set(13.6, 6.4, 34);
-  const controls = makeControls(camera, V3(0.6, -1.2, 0)); controls.minDistance = 4; controls.maxDistance = 50;
+  const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 200); camera.position.set(10.1, 6.6, 34);
+  const controls = makeControls(camera, V3(-2.9, -0.4, 0)); controls.minDistance = 4; controls.maxDistance = 50;
 
   const TY = Object.fromEntries(GLIA.map((g) => [g.id, { ...g, mats: [], objs: [] }]));
   function mat(type, extra = {}) {
@@ -2895,7 +2895,7 @@ function makeGlia() {
   function feed() { let n = 0; for (const g of glu) { if (g.s) continue; g.s = 1; g.x = -CX - rand(0, 6); g.r = rand(0, 0.6); g.a = rand(0, 6.28); g.v.set(rand(1.6, 2.2), 0, 0); if (++n >= 140) break; } }
 
   const st = { focus: 'all', bbb: true, trauma: false, labels: true, t: 0, glu: 0, flash: [-9, -9], wrap: 1, nextFeed: 2.5, auto: true, fly: null, msg: null };
-  const HOME = { target: V3(0.6, -1.2, 0), pos: V3(13.6, 6.4, 34) };
+  const HOME = { target: V3(-2.9, -0.4, 0), pos: V3(10.1, 6.6, 34) };
   function flyTo(target, dist, dir) {
     const d = dir ? dir.clone().normalize() : camera.position.clone().sub(controls.target).normalize();
     st.fly = { target: target.clone(), pos: target.clone().addScaledVector(d, dist), t: 0 };
@@ -4994,7 +4994,7 @@ function makeSpinal() {
     return [['Время дуги', Math.round(st.ms), 'мс'], ['Синапсов', st.syn, ''], ['Нейронов', '13,5', 'млн']];
   }
   const self = {
-    scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#FFB070',
+    mobZoom: 0.9, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#FFB070',
     kicker: 'Мозг · спинной мозг', title: 'Спинной мозг',
     lede: 'Трубка из нервной ткани в позвоночном канале: 31 сегмент, рефлекторные дуги и проводящие пути между телом и головным мозгом.',
     notes: `
@@ -5210,7 +5210,7 @@ function makeStem() {
   rnd = mulberry(505);
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x060509); scene.environment = envTex;
   labLights(scene, 0x9fb0ff);
-  const HOME = flyTarget(V3(0, -0.6, 0), V3(-7.0, 2.9, 8.7));
+  const HOME = flyTarget(V3(0, -0.75, 0), V3(-7.7, 3.1, 9.6));
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 200); camera.position.copy(HOME.pos);
   const controls = makeControls(camera, HOME.target); controls.minDistance = 2.5; controls.maxDistance = 30;
   const mat = (c, o = {}) => tissue(new THREE.Color(c).multiplyScalar(0.4), o);
@@ -5495,7 +5495,7 @@ function makeDien() {
   rnd = mulberry(606);
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x060509); scene.environment = envTex;
   labLights(scene, 0xb9a4ff);
-  const VIEW = { thal: flyTarget(V3(-0.1, -0.2, 0), V3(7.8, 4.4, 11.4)), hypo: flyTarget(V3(0.35, -2.15, 0), V3(4.6, -0.9, 6.2)) };
+  const VIEW = { thal: flyTarget(V3(-0.6, -0.55, 0), V3(7.3, 4.05, 11.4)), hypo: flyTarget(V3(0.35, -2.15, 0), V3(4.6, -0.9, 6.2)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 200); camera.position.copy(VIEW.thal.pos);
   const controls = makeControls(camera, VIEW.thal.target); controls.minDistance = 2; controls.maxDistance = 25;
   const mat = (c, o = {}) => tissue(new THREE.Color(c).multiplyScalar(0.4), o);
@@ -5994,7 +5994,7 @@ function makeCortex() {
   labLights(scene, 0xe58fc4);
   { const k2 = new THREE.DirectionalLight(0xfff1e6, 1.15); k2.position.set(5, 8, -7); scene.add(k2); }   // ключевой свет и для левого полушария (z<0)
   const VIEWS = {
-    lat: flyTarget(V3(-0.22, -0.3, -0.55), V3(-0.5, 0.75, -9.4)),   // левое полушарие (z<0) снаружи
+    lat: flyTarget(V3(0.55, -0.3, -0.55), V3(0.27, 0.75, -8.2)),   // левое полушарие (z<0) снаружи
     med: flyTarget(V3(-0.22, -0.3, -0.3), V3(-0.5, 0.55, 8.4)),      // его медиальная стенка, правое скрыто
     top: flyTarget(V3(-0.3, -0.1, 0), V3(-3.4, 7.4, 0.01)),
     col: flyTarget(V3(0.2, -0.75, 0), V3(4.4, 0.9, 8.0)),
@@ -6245,7 +6245,7 @@ function makeCortex() {
   }
   function stats() { return st.mode === 'zones' ? [['Полей Бродмана', 52, ''], ['Год карты', 1909, '']] : st.mode === 'layers' ? [['Слоёв', 6, ''], ['Пирамид', '≈75', '%']] : [['Доли', 5, ''], ['Главные борозды', 3, '']]; }
   const self = {
-    labelBg: true, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#E9785F', mobZoom: 0.68,
+    labelBg: true, mobZoom: 0.62, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#E9785F', mobZoom: 0.68,
     kicker: 'Мозг · новая кора', title: 'Кора больших полушарий',
     lede: 'Пять долей, 52 поля Бродмана, шесть слоёв и колонки-процессоры. Посмотрите, где говорит, видит и двигается кора и как сигнал проходит через её слои.',
     notes: `
@@ -7312,7 +7312,7 @@ function makeLungs() {
     { text: 'носовая полость', pos: V3(0.1, 4.2, 0.42), color: '#E8A890', show: () => st.labels && st.mode !== 'alv' },
     { text: 'гортань', pos: V3(0.15, 3.5, 0.22), color: '#F2D18A', show: () => st.labels && st.mode !== 'alv' },
     { text: 'трахея', pos: V3(0.12, 2.95, 0.12), color: '#E8DCC8', show: () => st.labels && st.mode !== 'alv' },
-    { text: 'правое лёгкое · 3 доли', pos: V3(-1.05, 2.9, 0.2), left: true, color: '#E89AA8', show: () => st.labels && st.mode !== 'alv' },
+    { text: 'правое лёгкое · 3 доли', pos: V3(-0.95, 1.9, 0.2), left: true, color: '#E89AA8', show: () => st.labels && st.mode !== 'alv' },
     { text: 'левое лёгкое · 2 доли', pos: V3(1.05, 2.9, 0.2), color: '#E89AA8', show: () => st.labels && st.mode !== 'alv' },
     { text: 'диафрагма', pos: V3(0.45, 1.45, 0.45), color: '#E89090', show: () => st.labels && st.mode !== 'alv' },
     { text: 'сердце', pos: BODY.heart.clone().add(V3(0.1, -0.05, 0.3)), color: '#FF8A7A', show: () => st.labels && st.mode === 'tract' },
@@ -7348,7 +7348,7 @@ function makeLungs() {
   }
   function stats() { return st.mode === 'alv' ? [['Альвеол', '300–500', 'млн'], ['Площадь', '70–100', 'м²']] : [['Объём лёгких', Math.round(st.V), 'мл'], ['Частота', st.rr, '/мин']]; }
   const self = {
-    mobZoom: 0.6, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#9FE0FF',
+    labelBg: true, mobZoom: 0.6, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#9FE0FF',
     kicker: 'Тело · дыхание', title: 'Дыхательная система',
     lede: 'Около 20 000 вдохов в сутки. Воздух проходит по ветвящемуся дереву бронхов к сотням миллионов альвеол, где кислород за доли секунды переходит в кровь.',
     notes: `
@@ -7547,7 +7547,7 @@ function makeDigest() {
     { text: 'печень', pos: V3(-0.75, 1.62, 0.2), color: '#F0A890', show: () => st.labels && st.mode !== 'villi' && !realOn() },
     { text: 'желчный пузырь', pos: V3(-0.6, 1.25, 0.4), color: '#9FD080', show: () => st.labels && st.mode !== 'villi' && !realOn() },
     { text: 'поджелудочная', pos: V3(0.75, 1.15, 0.1), color: '#F2C88A', show: () => st.labels && st.mode !== 'villi' && !realOn() },
-    { text: '12-перстная кишка', pos: V3(-0.42, 0.95, 0.0), color: '#F0B8A8', show: () => st.labels && st.mode !== 'villi' && !realOn() },
+    { text: '12-перстная кишка', pos: V3(-0.42, 0.95, 0.0), color: '#F0B8A8', left: true, show: () => st.labels && st.mode !== 'villi' && !realOn() },
     { text: 'тонкая кишка', pos: V3(0.1, 0.5, 0.35), color: '#F0B8A8', show: () => st.labels && st.mode !== 'villi' && !realOn() },
     { text: 'толстая кишка', pos: V3(0.75, 0.75, 0.1), color: '#C8A090', show: () => st.labels && st.mode !== 'villi' && !realOn() },
     { text: 'аппендикс', pos: V3(-0.5, -0.04, 0.25), color: '#C8A090', show: () => st.labels && st.mode !== 'villi' && !realOn() },
@@ -7584,7 +7584,7 @@ function makeDigest() {
   }
   function stats() { return st.mode === 'path' && st.stage >= 0 ? [['Этап', STAGES[st.stage].key === 'si' ? 'тонкая кишка' : DG_PARTS.find((p) => p.id === STAGES[st.stage].key)?.name || '12-перстная', ''], ['В жизни', STAGES[st.stage].real, '']] : st.mode === 'villi' ? [['Площадь всасывания', '≈30', 'м²']] : [['Длина тракта', '8–10', 'м'], ['Соков в сутки', '≈7', 'л']]; }
   const self = {
-    mobZoom: 0.6, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#F2C88A',
+    labelBg: true, mobZoom: 0.6, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#F2C88A',
     kicker: 'Тело · пищеварение', title: 'Пищеварительная система',
     lede: 'От бутерброда до глюкозы в крови — около суток пути по трубке длиной 8–10 метров, с кислотой, ферментами, желчью и триллионами бактерий.',
     notes: `
@@ -7755,7 +7755,7 @@ function makeKidney() {
     void: '<b>Мочеиспускание.</b> Растяжение стенки пузыря → сигнал по нервам в крестцовый отдел спинного мозга → сокращение мышцы пузыря и расслабление внутреннего сфинктера. Кора разрешает или запрещает расслабить наружный сфинктер.',
   };
   const labels = [
-    { text: 'левая почка', pos: V3(0.75, 1.05, -0.35), color: '#D07060', show: () => st.labels && st.mode === 'sys' },
+    { text: 'левая почка', pos: V3(0.8, 0.5, -0.35), color: '#D07060', show: () => st.labels && st.mode === 'sys' },
     { text: 'правая почка', pos: V3(-0.75, 0.95, -0.35), color: '#D07060', left: true, show: () => st.labels && st.mode === 'sys' },
     { text: 'надпочечник', pos: V3(0.5, 1.45, -0.35), color: '#F2C14E', show: () => st.labels && st.mode === 'sys' },
     { text: 'аорта', pos: V3(0.12, 1.45, -0.4), color: '#E0605A', show: () => st.labels && st.mode === 'sys' },
@@ -7800,7 +7800,7 @@ function makeKidney() {
   }
   function stats() { const out = (0.5 + (1 - st.adh) * 2.5).toFixed(1); return [['Первичная моча', '≈180', 'л/сут'], ['Конечная', out, 'л/сут'], ['Пузырь', Math.round(st.fill * 500), 'мл']]; }
   const self = {
-    mobZoom: 0.5, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#F2D860',
+    labelBg: true, mobZoom: 0.5, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#F2D860',
     kicker: 'Тело · выделение', title: 'Почки и мочевыделение',
     lede: 'Каждые сутки почки пропускают через себя всю кровь около 300 раз, отфильтровывают 180 литров жидкости и возвращают обратно в кровь 99% её.',
     notes: `
@@ -7957,7 +7957,7 @@ function makeEndo() {
   }
   function stats() { const S = SIM; return st.mode === 'sugar' ? [['Глюкоза', S.G.toFixed(1), 'ммоль/л'], ['Инсулин', Math.round(S.I), 'мкЕд/мл']] : st.mode === 'stress' ? [['Пульс', Math.round(S.HR), 'уд/мин'], ['Кортизол', Math.round(S.C * 30), 'нмоль/л']] : st.mode === 'thy' ? [['ТТГ', S.TSH.toFixed(1), 'мЕд/л'], ['T4', (S.T4 * 15).toFixed(0), 'пмоль/л']] : [['Желёз', 8, ''], ['Гормонов', '>50', '']]; }
   const self = {
-    mobZoom: 0.5, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#C77DFF',
+    labelBg: true, mobZoom: 0.5, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#C77DFF',
     kicker: 'Тело · гормоны', title: 'Эндокринная система',
     lede: 'Крошечные железы управляют ростом, обменом веществ, сном, стрессом и сахаром крови, рассылая по кровотоку химические письма — гормоны.',
     notes: `
@@ -8885,7 +8885,7 @@ function makeRepro(initMode) {
     return mergeGeometries(a); })(), new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xe8d8bb).multiplyScalar(0.3), roughness: 0.6, transparent: true, opacity: 0.1, depthWrite: false })); scene.add(pelvis);
   /* ---------- женская система ---------- */
   const fGhosts = [ghost(ell3(0.12, 0.09, 0.09, V3(0, -0.02, 0.24)), '#F2D860', F)]; fGhosts.push(ghost(tube([V3(0, 0.4, -0.3), V3(0.02, 0.0, -0.28), V3(0, -0.4, -0.18)], 0.06, 20, 10), '#C8A090', F));   // пузырь и прямая кишка — ориентиры; в «Цикле» спрятаны, чтобы не заслонять матку
-  fGhosts.forEach((g) => { g.visible = initMode !== 'cycle'; });
+  fGhosts.push(pelvis); fGhosts.forEach((g) => { g.visible = initMode !== 'cycle'; });   // и таз-призрак: в «Цикле» не нужен
   const utG = displaceGeo(new THREE.SphereGeometry(1, 48, 36), (v) => { let k = v.y < 0 ? 1 - 0.55 * (-v.y) : 1; v.set(v.x * 0.17 * k, v.y * 0.2, v.z * 0.1 * k); }); utG.rotateX(0.35); utG.translate(0, 0.17, 0.04);   // антеверсия: дно наклонено вперёд, над мочевым пузырём
   const ut = add('ut', utG, F, { mat: { transparent: true, opacity: 0.55, depthWrite: false } });
   const endoG = displaceGeo(new THREE.SphereGeometry(1, 40, 30), (v) => { let k = v.y < 0 ? 1 - 0.6 * (-v.y) : 1; v.set(v.x * 0.11 * k, v.y * 0.14, v.z * 0.02 * k + 0.0); });
@@ -9024,7 +9024,7 @@ function makeRepro(initMode) {
     { text: 'маточная труба', pos: V3(0.38, 0.36, 0.05), color: '#F2C88A', show: () => st.labels && schem() },
     { text: 'матка', pos: V3(0.0, 0.36, 0.1), color: '#E88A9A', show: () => st.labels && schem() },
     { text: 'эндометрий', pos: V3(-0.06, 0.12, 0.12), color: '#ff7a8a', show: () => st.labels && st.mode === 'cycle' },
-    { text: 'шейка и влагалище', pos: V3(0.08, -0.3, -0.02), color: '#D8A0B0', show: () => st.labels && schem() },
+    { text: 'шейка и влагалище', pos: V3(0.08, -0.3, -0.02), color: '#D8A0B0', left: true, show: () => st.labels && schem() },
     { text: 'мочевой пузырь', pos: V3(0.1, -0.02, 0.36), color: '#F2D860', show: () => st.labels && ((st.mode === 'female' && schem()) || st.mode === 'male') },
     { text: 'яичко', pos: V3(0.16, -0.6, 0.36), color: '#C8D8F0', show: () => st.labels && st.mode === 'male' },
     { text: 'семявыносящий проток', pos: V3(0.24, 0.25, 0.18), color: '#9FD0FF', show: () => st.labels && st.mode === 'male' },
@@ -9239,7 +9239,7 @@ function makeChemo() {
   }
   function stats() { return st.mode === 'smell' ? [['Типов рецепторов', '≈400', ''], ['Активных клубочков', GLOM.filter((g) => g.act > 0.5).length, '']] : [['Вкусовых почек', '2–8', 'тыс.'], ['Базовых вкусов', 5, '']]; }
   const self = {
-    labelBg: true, mobZoom: 0.72, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#7FE0A0',
+    labelBg: true, mobZoom: 0.85, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#7FE0A0',
     kicker: 'Органы чувств · химические', title: 'Обоняние и вкус',
     lede: 'Два химических чувства: нос различает тысячи запахов по узору сотен рецепторов, язык — пять базовых вкусов. Вместе они дают то, что мы называем вкусом еды.',
     notes: `
@@ -9284,7 +9284,7 @@ function makeChest() {
   for (let i = 0; i < 12; i++) {
     const y = 2.92 - i * 0.15, w = 0.5 + 0.48 * Math.sin(Math.min(1, (i + 1) / 6) * Math.PI / 2) - (i > 7 ? (i - 7) * 0.05 : 0), drop = 0.32 + i * 0.03;
     [1, -1].forEach((s) => {
-      const front = i < 10 ? 1 : 0.55;
+      const front = i < 10 ? 1 : 0.35;
       const pts = [V3(0.07 * s, y, -0.42), V3(w * 0.72 * s, y - 0.04, -0.38), V3(w * s, y - 0.16, 0.0), V3(w * 0.82 * s, y - drop * 0.75, 0.42 * front)];
       if (i < 10) pts.push(V3(w * 0.45 * s, y - drop, 0.56));
       const c = new THREE.CatmullRomCurve3(pts); ribG.push(taperTube(c, () => 0.026, 40, 6));
@@ -9428,7 +9428,7 @@ function makeChest() {
   }
   function stats() { return st.mode === 'chest' ? [['Пар рёбер', 12, ''], ['Грудных позвонков', 12, '']] : st.mode === 'lact' ? [['Пролактин', Math.round(st.prl * 100), '%'], ['Окситоцин', Math.round(st.oxy * 100), '%']] : [['Долей', '15–20', '']]; }
   const self = {
-    mobZoom: 0.6, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#F2B0C8',
+    labelBg: true, mobZoom: 0.6, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#F2B0C8',
     kicker: 'Тело · грудь', title: 'Грудная клетка и молочная железа',
     lede: 'Костный каркас, который защищает сердце и лёгкие и помогает дышать, и устройство молочной железы — от долек до протоков и гормонов кормления.',
     notes: `
