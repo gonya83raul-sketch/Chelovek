@@ -2288,7 +2288,7 @@ function makeSkeleton() {
   }
   function stats() { return st.sel ? [['Состав', BONES.find((b) => b.id === st.sel).count, '']] : st.mus ? [['Мышц', '≈ 640', ''], ['Доля массы', '35–40', '%']] : [['Костей', 206, ''], ['Рост', 172, 'см']]; }
   const self = {
-    scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#E8D8BB',
+    labelBg: true, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#E8D8BB',
     kicker: 'Тело · кости, мышцы, сосуды', title: 'Скелет, мышцы и сосуды',
     lede: 'Трёхмерный скан настоящего скелета с кровеносной системой поверх него. Вращайте его, приближайте и нажимайте на кости; в рентгене видно, как они соединяются в суставах.',
     notes: `
@@ -7125,7 +7125,7 @@ function makeHeart() {
   }
   function stats() { const mok = (st.hr * 70 / 1000).toFixed(1); return st.mode === 'circ' ? [['Оборот крови', '20–25', 'с'], ['Объём крови', '≈5', 'л']] : [['ЧСС', st.block ? 38 : st.hr, 'уд/мин'], ['Фаза', phaseInfo(st.pv), ''], ['Минутный объём', mok, 'л/мин']]; }
   const self = {
-    scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#E0605A',
+    labelBg: true, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#E0605A',
     kicker: 'Тело · кровообращение', title: 'Сердце и кровообращение',
     lede: 'Четыре камеры, четыре клапана и собственный водитель ритма. За жизнь сердце сокращается около 3 миллиардов раз и перекачивает 5 литров крови каждую минуту.',
     notes: `
@@ -8183,7 +8183,7 @@ function makeImmune() {
   }
   function stats() { return st.mode === 'resp' && st.titre.length ? [['День', Math.min(40, Math.floor(st.days)), ''], ['Память', st.mem || st.second ? 'есть' : 'нет', '']] : [['Лимфоузлов', '500–700', ''], ['Лимфы', '2–3', 'л/сут']]; }
   const self = {
-    scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#7FD6FF',
+    labelBg: true, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#7FD6FF',
     kicker: 'Тело · иммунитет', title: 'Лимфа и иммунитет',
     lede: 'Сеть сосудов и узлов, где триллион лимфоцитов патрулирует тело, узнаёт чужое и запоминает его на годы вперёд.',
     notes: `
@@ -8605,7 +8605,7 @@ function makeSkin() {
   }
   function stats() { return [['Площадь кожи', '1,5–2', 'м²'], ['Температура', st.temp > 0.3 ? 'жарко' : st.temp < -0.3 ? 'холодно' : 'норма', '']]; }
   const self = {
-    scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#FFB08A',
+    labelBg: true, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#FFB08A',
     kicker: 'Органы чувств · осязание', title: 'Кожа и осязание',
     lede: 'Кусочек кожи в разрезе: три слоя, волос, железы, сосуды и пять видов рецепторов, каждый из которых отвечает на своё — касание, давление, вибрацию, растяжение или боль.',
     notes: `
@@ -8668,7 +8668,7 @@ function makeBlood() {
   const rbcProf = []; for (let i = 0; i <= 24; i++) { const q = Math.sin(i / 24 * Math.PI / 2); rbcProf.push(new THREE.Vector2(q * 0.42, -rbcH(q))); }
   for (let i = 23; i >= 0; i--) { const p = rbcProf[i]; rbcProf.push(new THREE.Vector2(p.x, -p.y)); }
   const rbcG = new THREE.LatheGeometry(rbcProf, 32); rbcG.computeVertexNormals();
-  const rbcMat = new THREE.MeshPhysicalMaterial({ color: 0x7a1420, roughness: 0.4, clearcoat: 0.4, clearcoatRoughness: 0.4, sheen: 0.25, sheenColor: new THREE.Color(0xff8080), emissive: 0x300508, emissiveIntensity: 0.12, envMapIntensity: 0.3 });
+  const rbcMat = new THREE.MeshPhysicalMaterial({ color: 0x9a2028, roughness: 0.55, sheen: 0.45, sheenColor: new THREE.Color(0xff9090), emissive: 0x4a0a10, emissiveIntensity: 0.25, envMapIntensity: 0.35 });   /* без лака: впадина в центре не чернеет */
   const NR = 110, rbcI = new THREE.InstancedMesh(rbcG, rbcMat, NR); rbcI.userData.pick = 'rbc'; pick.push(rbcI); ves.add(rbcI);
   const RBC = Array.from({ length: NR }, () => { const r = Math.sqrt(rnd()) * (R - 0.5), a = rnd() * Math.PI * 2; return { x: rand(-L / 2, L / 2), y: Math.cos(a) * r, z: Math.sin(a) * r, q: new THREE.Quaternion().setFromAxisAngle(randUnit(), rnd() * 6), w: randUnit(), sp: rnd() * 2, stuck: 0, out: 0 }; });  // диск r 0.42 не выходит за стенку
   // тромбоциты
@@ -8850,7 +8850,7 @@ function makeBlood() {
   }
   function stats() { return st.mode === 'tube' ? [['Гематокрит', '40–45', '%'], ['Плазма', '≈ 55', '%'], ['Белок плазмы', '65–80', 'г/л']] : st.mode === 'groups' ? [['Совместимость', compatible() ? 'да' : 'нет', '']] : [['Эритроцитов', '4–5', 'млн/мкл'], ['Лейкоцитов', '4–9', 'тыс/мкл'], ['Тромбоцитов', '150–400', 'тыс/мкл']]; }
   const self = {
-    scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#E0505A',
+    labelBg: true, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#E0505A',
     kicker: 'Тело · кровь', title: 'Кровь',
     lede: 'Пять литров жидкой ткани: 25 триллионов эритроцитов, армия лейкоцитов и тромбоциты, которые за минуты закрывают любую ранку.',
     notes: `
