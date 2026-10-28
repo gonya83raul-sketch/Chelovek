@@ -1031,7 +1031,7 @@ function updateLabels() {
     tmp.copy(l.pos).project(cur.camera);
     if (!vis || tmp.z > 1 || Math.abs(tmp.x) > 1.1 || Math.abs(tmp.y) > 1.1) { if (el._on !== false) { el.style.opacity = '0'; el._on = false; } return; }
     if (el._wk !== thin || !el._w) { el._w = el.offsetWidth || 60; el._wk = thin; }   // ширина текста (шрифт на телефоне мельче)
-    items.push({ el, x: (tmp.x * 0.5 + 0.5) * w, y: (-tmp.y * 0.5 + 0.5) * hgt, op: l.fade ? l.fade() : 1 });   // fade(): сцена может приглушить подпись (точка за телом)
+    items.push({ el, x: (tmp.x * 0.5 + 0.5) * w, y: (-tmp.y * 0.5 + 0.5) * hgt, op: l.fade ? l.fade() : 1, lf: !!l.left });   // left: сцена просит подпись слева от точки   // fade(): сцена может приглушить подпись (точка за телом)
   });
   items.sort((a, b) => b.op - a.op || (b.el._on ? 1 : 0) - (a.el._on ? 1 : 0));
   const sr = stageEl.getBoundingClientRect();
@@ -1039,8 +1039,8 @@ function updateLabels() {
     if (!e || !e.offsetWidth) return; const r = e.getBoundingClientRect(); placed.push([r.left - sr.left - 4, r.top - sr.top - 2, r.right - sr.left + 4, r.bottom - sr.top + 2]);
   });
   const free = (r) => !placed.some((q) => r[0] < q[2] && r[2] > q[0] && r[1] < q[3] && r[3] > q[1]);
-  items.forEach(({ el, x, y, op }) => {
-    const left = x + el._w > w - 6;   // не помещается справа — подпись слева от точки
+  items.forEach(({ el, x, y, op, lf }) => {
+    const left = lf ? x - el._w > 6 : x + el._w > w - 6;   // не помещается справа (или сцена просит) — подпись слева от точки
     const x0 = left ? x + 2 - el._w : x - 4, x1 = left ? x + 4 : x - 2 + el._w;
     let dy = null;
     for (const d of [0, el._on ? el._dy || 0 : 0, -lh, lh, -2 * lh, 2 * lh]) { const r = [x0, y + d - lh / 2, x1, y + d + lh / 2]; if (free(r)) { dy = d; placed.push(r); break; } }

@@ -58,13 +58,13 @@ function makeAdrenal() {
   const HYP = V3(0, 4.12, 0.08), PIT = V3(0, 3.98, 0.16), HRT = BODY.heart.clone(), LIV = V3(-0.35, 1.5, 0.18), LUN = V3(0.42, 2.35, 0.05);
   const ADR = [V3(0.33, 1.42, -0.12), V3(-0.33, 1.42, -0.12)];
   const brainM = new THREE.Mesh(ell3(0.34, 0.27, 0.36, V3(0, 4.3, 0.02)), glassMat('#C8B8FF', { rim: 0.7, base: 0.04, keep: true })); G2.add(brainM);
-  const kidM = organMat('#9A4A4A', 0.5); ADR.forEach((p, i) => { const k = new THREE.Mesh(ell3(0.13, 0.22, 0.1, p.clone().add(V3(i ? -0.02 : 0.02, -0.27, 0))), kidM); G2.add(k); });
+  const kidM = organMat('#9A4A4A', 0.5); ADR.forEach((p, i) => { const k = new THREE.Mesh(ell3(0.16, 0.3, 0.12, p.clone().add(V3(i ? -0.02 : 0.02, -0.36, 0))), kidM); G2.add(k); });
   const adrM = organMat('#F2C14E', 0.55, { emissiveIntensity: 0.1 });
   const adrG = ADR.map((p) => { const m = new THREE.Mesh(new THREE.ConeGeometry(0.09, 0.13, 3), adrM); m.position.copy(p); G2.add(m); return glowNucleus(G2, p.clone().add(V3(0, 0, 0.06)), '#F2C14E', 0.035, 10); });
   const hypG = glowNucleus(G2, HYP, '#9F7BFF', 0.05, 9), pitG = glowNucleus(G2, PIT, '#7FD6FF', 0.05, 9);
   const heartM = new THREE.Mesh(ell3(0.22, 0.27, 0.2, HRT), organMat('#C84A50', 0.45)); G2.add(heartM);
   const livM = new THREE.Mesh(ell3(0.42, 0.22, 0.25, LIV), organMat('#9A4A3A', 0.5, { transparent: true, opacity: 0.55 })); G2.add(livM);
-  const lunM = [LUN, V3(-0.42, 2.35, 0.05)].map((p) => { const m = new THREE.Mesh(ell3(0.3, 0.5, 0.22, p), organMat('#E890A0', 0.35, { transparent: true, opacity: 0.55 })); G2.add(m); return m; });
+  const lunM = [LUN, V3(-0.42, 2.35, 0.05)].map((p) => { const m = new THREE.Mesh(ell3(0.3, 0.5, 0.22, p), organMat('#F2C0C8', 0.35, { transparent: true, opacity: 0.22, depthWrite: false })); G2.add(m); return m; });
   // симпатический путь: спинной мозг → мозговое вещество
   const spine = new THREE.CatmullRomCurve3([V3(0, 3.8, -0.25), V3(0, 2.8, -0.42), V3(0, 1.8, -0.38), V3(0.05, 1.45, -0.3), ADR[0].clone().add(V3(-0.05, 0, -0.05))]);
   const symp = new THREE.Mesh(new THREE.TubeGeometry(spine, 60, 0.025, 6), flowTubeMat('#FF9A5C', 0.6, 1.6)); G2.add(symp);
@@ -197,7 +197,8 @@ function makeAdrenal() {
   };
   const SHORT = { doc: 'deoxycorticosterone', ohp: '17-OH-progesterone', dcort: '11-deoxycortisol', cort_b: 'corticosterone' };
   const labels = [
-    ...ZONES.filter((z) => z.name).map((z) => ({ text: z.name, pos: V3(z.id === 'med' ? -3.65 : -3.5, { glom: 1.39, fasc: 1.08, ret: 0.73, med: 0 }[z.id] * 0.72, 0.3), color: z.col, show: () => st.labels && st.mode === 'steroid' && (st.zone === 'all' || st.zone === z.id) })),
+    // подписи зон — легендой слева от железы (на цветных кольцах бледный текст не читался)
+    ...ZONES.filter((z) => z.name).map((z) => ({ left: true, text: z.name, pos: V3(-4.75, { glom: 0.55, fasc: 0.18, ret: -0.19, med: -0.56 }[z.id], 0.3), color: z.col, show: () => st.labels && st.mode === 'steroid' && (st.zone === 'all' || st.zone === z.id) })),
     ...Object.entries(NODE).map(([k, n]) => ({ text: SHORT[k] || MOL(n.m).name, pos: n.p.clone().add(V3(-0.35, -0.7, 0.3)), color: n.z ? ZC[n.z] : '#E8E0D8', show: () => st.labels && st.mode === 'steroid' && (st.zone === 'all' || !n.z || n.z === st.zone) })),
     ...ST.filter((s) => s.tag !== 'shunt').map((s) => ({ text: s.enz, pos: NODE[s.a].p.clone().lerp(NODE[s.b].p, s.a === 'preg' && s.b === 'dhea' ? 0.68 : 0.5).add(V3(-0.5, s.a === 'preg' && s.b === 'dhea' ? -0.3 : 0.32, 0.3)), color: st.cah && s.tag === 'h21' ? '#FF6A5A' : '#B8B0C0', show: () => st.labels && st.mode === 'steroid' && st.zone !== 'all' && (s.z === st.zone || (!s.z && st.zone !== 'all')) })),
     ...ST.filter((s) => s.tag === 'h21').map((s) => ({ text: '✕ 21-hydroxylase', pos: NODE[s.a].p.clone().lerp(NODE[s.b].p, 0.5).add(V3(-0.5, -0.1, 0.45)), color: '#FF6A5A', show: () => st.labels && st.mode === 'steroid' && st.cah })),

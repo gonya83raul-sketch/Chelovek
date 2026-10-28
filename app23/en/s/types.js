@@ -33,8 +33,8 @@ function makeTypes() {
   const BG = 0x07060a, GOLGI_BG = 0x8a5420;
   const scene = new THREE.Scene(); scene.background = new THREE.Color(BG); scene.fog = new THREE.FogExp2(BG, 0.011); scene.environment = envTex;
   addLights(scene);
-  const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 400); camera.position.set(0, 1.5, 44);
-  const controls = makeControls(camera, V3(0, -0.5, 0)); controls.minDistance = 3; controls.maxDistance = 90;
+  const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 400); camera.position.set(-3.6, 1.1, 50);
+  const controls = makeControls(camera, V3(-3.6, -0.9, 0)); controls.minDistance = 3; controls.maxDistance = 90;
 
   const baseMat = new THREE.MeshPhysicalMaterial({ color: 0xcdb0c4, roughness: 0.46, clearcoat: 0.55, clearcoatRoughness: 0.35, sheen: 1, sheenColor: new THREE.Color(0x8f6dff), sheenRoughness: 0.5, emissive: 0x12081a, envMapIntensity: 0.6 });
   const myelinMat = new THREE.MeshPhysicalMaterial({ color: 0xf1e7d6, roughness: 0.28, clearcoat: 1, clearcoatRoughness: 0.18, envMapIntensity: 0.9 });
@@ -318,7 +318,7 @@ function makeTypes() {
   }
 
   /* ---------- камера ---------- */
-  const views = { all: { tgt: V3(0, -0.5, 0), pos: V3(0, 1.5, 44) }, net: { tgt: NET.clone().add(NC).add(V3(0, -3, 0)), pos: NET.clone().add(NC).add(V3(0, 1, 40)) } };
+  const views = { all: { tgt: V3(-3.6, -0.9, 0), pos: V3(-3.6, 1.1, 50) }, net: { tgt: NET.clone().add(NC).add(V3(0, -3, 0)), pos: NET.clone().add(NC).add(V3(0, 1, 40)) } };
   cells.slice(0, 7).forEach((c) => { views[c.def.id] = { tgt: c.origin.clone().add(V3(0, -2.6, 0)), pos: c.origin.clone().add(V3(4.5, 0.5, 24)) }; });
   views.purk.pos = byId.purk.origin.clone().add(V3(13, 1.5, 20));
   const st = { view: 'all', stain: 'live', auto: true, labels: true, t: 0, next: 0.8, fly: 1, twitch: 0, twitchT: -9, touchT: -9 };
