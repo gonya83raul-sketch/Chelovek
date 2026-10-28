@@ -70,7 +70,7 @@ function makeCortex() {
   labLights(scene, 0xe58fc4);
   { const k2 = new THREE.DirectionalLight(0xfff1e6, 1.15); k2.position.set(5, 8, -7); scene.add(k2); }   // ключевой свет и для левого полушария (z<0)
   const VIEWS = {
-    lat: flyTarget(V3(-0.22, -0.3, -0.55), V3(-0.5, 0.75, -9.4)),   // левое полушарие (z<0) снаружи
+    lat: flyTarget(V3(0.55, -0.3, -0.55), V3(0.27, 0.75, -8.2)),   // левое полушарие (z<0) снаружи
     med: flyTarget(V3(-0.22, -0.3, -0.3), V3(-0.5, 0.55, 8.4)),      // его медиальная стенка, правое скрыто
     top: flyTarget(V3(-0.3, -0.1, 0), V3(-3.4, 7.4, 0.01)),
     col: flyTarget(V3(0.2, -0.75, 0), V3(4.4, 0.9, 8.0)),
@@ -321,7 +321,7 @@ function makeCortex() {
   }
   function stats() { return st.mode === 'zones' ? [['Brodmann areas', 52, ''], ['Year of the map', 1909, '']] : st.mode === 'layers' ? [['Layers', 6, ''], ['Pyramidal cells', '≈75', '%']] : [['Lobes', 5, ''], ['Main sulci', 3, '']]; }
   const self = {
-    labelBg: true, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#E9785F', mobZoom: 0.68,
+    labelBg: true, mobZoom: 0.62, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#E9785F', mobZoom: 0.68,
     kicker: 'Brain · neocortex', title: 'Cerebral cortex',
     lede: 'Five lobes, 52 Brodmann areas, six layers and processor columns. See where the cortex speaks, sees and moves, and how a signal passes through its layers.',
     notes: `

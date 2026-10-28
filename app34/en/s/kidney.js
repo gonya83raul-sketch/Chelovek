@@ -5,11 +5,11 @@ import { Sparks, THREE, V3, __set_rnd, bodyShell, button, dimOthers, displaceGeo
    ТЕЛО · ПОЧКИ И МОЧЕВЫДЕЛЕНИЕ
    ========================================================= */
 const KD_PARTS = [
-  { id: 'kid', name: 'Почки', color: '#B85A50', text: '<b>Почки</b> — парные органы бобовидной формы (10–12 см, 150 г) у задней стенки живота на уровне XII грудного — II поясничного позвонков; правая чуть ниже из-за печени. Через них проходит ~1,2 л крови в минуту — четверть всего выброса сердца. Они очищают кровь, держат постоянными объём воды, соли и кислотность, выделяют гормоны (ренин, эритропоэтин).' },
-  { id: 'adr', name: 'Надпочечники', color: '#F2C14E', text: '<b>Надпочечники</b> сидят «шапочками» на почках, но это эндокринные железы: кора выделяет кортизол и альдостерон (задерживает натрий и воду), мозговое вещество — адреналин и норадреналин.' },
-  { id: 'ves', name: 'Сосуды', color: '#C86070', text: '<b>Почечные артерии</b> отходят прямо от аорты под высоким давлением — это нужно для фильтрации. <b>Почечные вены</b> несут очищенную кровь в нижнюю полую вену.' },
-  { id: 'ure', name: 'Мочеточники', color: '#E8D8A0', text: '<b>Мочеточники</b> — трубки по 25–30 см. Моча идёт по ним не самотёком, а волнами перистальтики, порциями каждые 10–20 секунд.' },
-  { id: 'blad', name: 'Мочевой пузырь', color: '#E8C890', text: '<b>Мочевой пузырь</b> — мышечный мешок. При заполнении 200–300 мл рецепторы растяжения посылают сигнал в спинной мозг и кору — появляется позыв; вмещает до 500–700 мл. Опорожнение — рефлекс, который с 2–3 лет человек учится контролировать (наружный сфинктер произвольный).' },
+  { id: 'kid', name: 'Kidneys', color: '#B85A50', text: 'The <b>kidneys</b> are paired bean-shaped organs (10–12 cm, 150 g) on the posterior abdominal wall at the level of the T12–L2 vertebrae; the right one sits slightly lower because of the liver. About 1.2 L of blood passes through them every minute — a quarter of the heart’s total output. They cleanse the blood, keep water and salt balance and acidity constant, and secrete hormones (renin, erythropoietin).' },
+  { id: 'adr', name: 'Adrenal glands', color: '#F2C14E', text: 'The <b>adrenal glands</b> sit like “caps” on the kidneys, but they are endocrine glands: the cortex secretes cortisol and aldosterone (which retains sodium and water), and the medulla secretes epinephrine and norepinephrine.' },
+  { id: 'ves', name: 'Vessels', color: '#C86070', text: 'The <b>renal arteries</b> branch directly off the aorta under high pressure — this is needed for filtration. The <b>renal veins</b> carry cleansed blood to the inferior vena cava.' },
+  { id: 'ure', name: 'Ureters', color: '#E8D8A0', text: 'The <b>ureters</b> are tubes 25–30 cm long. Urine moves along them not by gravity but in waves of peristalsis, in portions every 10–20 seconds.' },
+  { id: 'blad', name: 'Urinary bladder', color: '#E8C890', text: 'The <b>urinary bladder</b> is a muscular sac. When it fills to 200–300 mL, stretch receptors send a signal to the spinal cord and cortex — and the urge appears; it holds up to 500–700 mL. Emptying is a reflex that a person learns to control from the age of 2–3 (the external sphincter is voluntary).' },
 ];
 function kidneyCanvas() {
   const W = 512, H = 800, c = document.createElement('canvas'); c.width = W; c.height = H; const g = c.getContext('2d');
@@ -149,47 +149,47 @@ function makeKidney() {
     fx.update(dt);
   }
   const TXT = {
-    sys: '<b>Мочевыделительная система</b>: две почки, два мочеточника, мочевой пузырь и мочеиспускательный канал. Почки фильтруют кровь, а моча стекает в пузырь (вид сзади — почки лежат у спины). Нажмите на орган.',
-    kid: '<b>Разрез почки.</b> Снаружи — капсула и <b>корковое вещество</b> (там лежат клубочки нефронов). Глубже — 8–18 <b>пирамид мозгового вещества</b> с петлями Генле и собирательными трубками; между пирамидами — почечные столбы. Вершины пирамид (сосочки) открываются в малые чашечки → большие чашечки → <b>лоханку</b> → мочеточник. Через ворота входят артерия и выходят вена.',
-    neph: '<b>Нефрон</b> — рабочая единица почки, в каждой их около миллиона. 1) В <b>клубочке</b> под давлением из крови фильтруется плазма без белков и клеток — первичная моча, 150–180 л в сутки. 2) В <b>проксимальном канальце</b> обратно всасываются вся глюкоза, аминокислоты и ~65% воды и солей (зелёные и белые искры). 3) <b>Петля Генле</b> создаёт в мозговом веществе солевой градиент: нисходящая часть отдаёт воду, восходящая — соль. 4) В <b>дистальном канальце и собирательной трубке</b> идёт тонкая настройка под действием гормонов. Остаётся 1–1,5 л вторичной мочи.',
-    adh: '<b>Жажда: выделяется АДГ (вазопрессин).</b> Гипоталамус чувствует, что кровь стала «гуще», и задняя доля гипофиза выпускает антидиуретический гормон. В стенке собирательной трубки открываются водные каналы-аквапорины, вода уходит в солёное мозговое вещество (голубые искры). Мочи мало, она концентрированная и тёмная.',
-    water: '<b>Выпили много воды: АДГ почти нет.</b> Собирательная трубка становится непроницаемой для воды — она уходит с мочой. Мочи много, она разбавленная и светлая, а пузырь наполняется быстрее.',
-    void: '<b>Мочеиспускание.</b> Растяжение стенки пузыря → сигнал по нервам в крестцовый отдел спинного мозга → сокращение мышцы пузыря и расслабление внутреннего сфинктера. Кора разрешает или запрещает расслабить наружный сфинктер.',
+    sys: 'The <b>urinary system</b>: two kidneys, two ureters, the urinary bladder and the urethra. The kidneys filter the blood, and urine drains into the bladder (viewed from behind — the kidneys lie against the back). Click an organ.',
+    kid: '<b>Kidney section.</b> On the outside are the capsule and the <b>cortex</b> (where the nephron glomeruli lie). Deeper are 8–18 <b>medullary pyramids</b> with loops of Henle and collecting ducts; between the pyramids are the renal columns. The tips of the pyramids (papillae) open into the minor calyces → major calyces → <b>renal pelvis</b> → ureter. The artery enters and the vein leaves through the hilum.',
+    neph: 'The <b>nephron</b> is the working unit of the kidney; each kidney has about a million. 1) In the <b>glomerulus</b>, plasma free of proteins and cells is filtered from the blood under pressure — primary urine, 150–180 L a day. 2) In the <b>proximal tubule</b>, all the glucose and amino acids and ~65% of the water and salts are reabsorbed (green and white sparks). 3) The <b>loop of Henle</b> creates a salt gradient in the medulla: the descending limb gives up water, the ascending limb gives up salt. 4) In the <b>distal tubule and collecting duct</b>, fine-tuning takes place under the control of hormones. What remains is 1–1.5 L of final urine.',
+    adh: '<b>Thirst: ADH (vasopressin) is released.</b> The hypothalamus senses that the blood has become “thicker”, and the posterior pituitary releases antidiuretic hormone. Water channels — aquaporins — open in the wall of the collecting duct, and water leaves into the salty medulla (light-blue sparks). There is little urine; it is concentrated and dark.',
+    water: '<b>Drank a lot of water: almost no ADH.</b> The collecting duct becomes impermeable to water, and the water leaves with the urine. There is a lot of urine; it is dilute and pale, and the bladder fills faster.',
+    void: '<b>Urination.</b> Stretching of the bladder wall → a signal along nerves to the sacral spinal cord → contraction of the bladder muscle and relaxation of the internal sphincter. The cortex permits or forbids relaxation of the external sphincter.',
   };
   const labels = [
-    { text: 'левая почка', pos: V3(0.75, 1.05, -0.35), color: '#D07060', show: () => st.labels && st.mode === 'sys' },
-    { text: 'правая почка', pos: V3(-0.75, 0.95, -0.35), color: '#D07060', left: true, show: () => st.labels && st.mode === 'sys' },
-    { text: 'надпочечник', pos: V3(0.5, 1.45, -0.35), color: '#F2C14E', show: () => st.labels && st.mode === 'sys' },
-    { text: 'аорта', pos: V3(0.12, 1.45, -0.4), color: '#E0605A', show: () => st.labels && st.mode === 'sys' },
-    { text: 'нижняя полая вена', pos: V3(-0.2, 1.5, -0.35), left: true, color: '#8CA0F0', show: () => st.labels && st.mode === 'sys' },
-    { text: 'мочеточник', pos: V3(0.21, 0.5, -0.3), color: '#E8D8A0', show: () => st.labels && st.mode === 'sys' },
-    { text: 'мочевой пузырь', pos: V3(0.25, 0.05, 0.2), color: '#F2D860', show: () => st.labels && st.mode === 'sys' },
-    { text: 'корковое вещество', pos: V3(30.55, 0.75, 0.05), color: '#d07a6a', show: () => st.labels && st.mode === 'kid' },
-    { text: 'пирамида', pos: V3(30.3, 0.0, 0.05), color: '#c86058', show: () => st.labels && st.mode === 'kid' },
-    { text: 'чашечка', pos: V3(29.75, 0.42, 0.05), color: '#efe0c8', show: () => st.labels && st.mode === 'kid' },
-    { text: 'лоханка', pos: V3(29.45, 0.0, 0.05), color: '#efe0c8', show: () => st.labels && st.mode === 'kid' },
-    { text: 'почечная артерия', pos: V3(28.4, 0.35, -0.3), color: '#E0605A', show: () => st.labels && st.mode === 'kid' },
-    { text: 'почечная вена', pos: V3(28.4, -0.1, -0.5), color: '#8CA0F0', show: () => st.labels && st.mode === 'kid' },
-    { text: 'мочеточник', pos: V3(29.0, -1.3, -0.3), color: '#E8D8A0', show: () => st.labels && st.mode === 'kid' },
-    { text: 'клубочек и капсула', pos: V3(58.9, 1.55, 0.2), color: '#ffb0a0', show: () => st.labels && st.mode === 'neph' },
-    { text: 'проксимальный каналец', pos: V3(59.3, 0.55, 0.3), color: '#F2C88A', show: () => st.labels && st.mode === 'neph' },
-    { text: 'петля Генле', pos: V3(60.3, -2.7, 0.1), color: '#9FD0FF', show: () => st.labels && st.mode === 'neph' },
-    { text: 'дистальный каналец', pos: V3(60.75, 1.35, 0.2), color: '#C8E08A', show: () => st.labels && st.mode === 'neph' },
-    { text: 'собирательная трубка', pos: V3(61.2, -1.0, 0.1), color: '#E8D8A0', show: () => st.labels && st.mode === 'neph' },
-    { text: 'кора', pos: V3(57.5, 0.9, -0.85), color: '#c89090', show: () => st.labels && st.mode === 'neph' },
-    { text: 'мозговое вещество', pos: V3(57.5, -1.0, -0.85), color: '#c89090', show: () => st.labels && st.mode === 'neph' },
+    { text: 'left kidney', pos: V3(0.8, 0.5, -0.35), color: '#D07060', show: () => st.labels && st.mode === 'sys' },
+    { text: 'right kidney', pos: V3(-0.75, 0.95, -0.35), color: '#D07060', left: true, show: () => st.labels && st.mode === 'sys' },
+    { text: 'adrenal gland', pos: V3(0.5, 1.45, -0.35), color: '#F2C14E', show: () => st.labels && st.mode === 'sys' },
+    { text: 'aorta', pos: V3(0.12, 1.45, -0.4), color: '#E0605A', show: () => st.labels && st.mode === 'sys' },
+    { text: 'inferior vena cava', pos: V3(-0.2, 1.5, -0.35), left: true, color: '#8CA0F0', show: () => st.labels && st.mode === 'sys' },
+    { text: 'ureter', pos: V3(0.21, 0.5, -0.3), color: '#E8D8A0', show: () => st.labels && st.mode === 'sys' },
+    { text: 'urinary bladder', pos: V3(0.25, 0.05, 0.2), color: '#F2D860', show: () => st.labels && st.mode === 'sys' },
+    { text: 'cortex', pos: V3(30.55, 0.75, 0.05), color: '#d07a6a', show: () => st.labels && st.mode === 'kid' },
+    { text: 'pyramid', pos: V3(30.3, 0.0, 0.05), color: '#c86058', show: () => st.labels && st.mode === 'kid' },
+    { text: 'calyx', pos: V3(29.75, 0.42, 0.05), color: '#efe0c8', show: () => st.labels && st.mode === 'kid' },
+    { text: 'renal pelvis', pos: V3(29.45, 0.0, 0.05), color: '#efe0c8', show: () => st.labels && st.mode === 'kid' },
+    { text: 'renal artery', pos: V3(28.4, 0.35, -0.3), color: '#E0605A', show: () => st.labels && st.mode === 'kid' },
+    { text: 'renal vein', pos: V3(28.4, -0.1, -0.5), color: '#8CA0F0', show: () => st.labels && st.mode === 'kid' },
+    { text: 'ureter', pos: V3(29.0, -1.3, -0.3), color: '#E8D8A0', show: () => st.labels && st.mode === 'kid' },
+    { text: 'glomerulus and capsule', pos: V3(58.9, 1.55, 0.2), color: '#ffb0a0', show: () => st.labels && st.mode === 'neph' },
+    { text: 'proximal tubule', pos: V3(59.3, 0.55, 0.3), color: '#F2C88A', show: () => st.labels && st.mode === 'neph' },
+    { text: 'loop of Henle', pos: V3(60.3, -2.7, 0.1), color: '#9FD0FF', show: () => st.labels && st.mode === 'neph' },
+    { text: 'distal tubule', pos: V3(60.75, 1.35, 0.2), color: '#C8E08A', show: () => st.labels && st.mode === 'neph' },
+    { text: 'collecting duct', pos: V3(61.2, -1.0, 0.1), color: '#E8D8A0', show: () => st.labels && st.mode === 'neph' },
+    { text: 'cortex', pos: V3(57.5, 0.9, -0.85), color: '#c89090', show: () => st.labels && st.mode === 'neph' },
+    { text: 'medulla', pos: V3(57.5, -1.0, -0.85), color: '#c89090', show: () => st.labels && st.mode === 'neph' },
   ];
   const refs = {};
   function ui(el) {
     const ib = infoBox('1 1 340px');
     refs.setInfo = () => { ib.info.innerHTML = st.msg || (st.mode === 'sys' && st.sel ? PART[st.sel].text : TXT[st.mode]); };
-    refs.modeSeg = seg([{ id: 'sys', label: 'Система' }, { id: 'kid', label: 'Разрез почки' }, { id: 'neph', label: 'Нефрон' }], () => st.mode, (v) => setMode(v));
-    refs.seg = seg([{ id: 'all', label: 'Все' }, ...KD_PARTS.map((p) => ({ id: p.id, label: p.name, color: p.color }))], () => st.sel || 'all', (v) => { if (st.mode !== 'sys') setMode('sys'); select(v); });
-    refs.rot = toggle('Вращение', () => st.rot, (v) => { st.rot = v; });
-    const lab = toggle('Подписи', () => st.labels, (v) => { st.labels = v; });
+    refs.modeSeg = seg([{ id: 'sys', label: 'System' }, { id: 'kid', label: 'Kidney section' }, { id: 'neph', label: 'Nephron' }], () => st.mode, (v) => setMode(v));
+    refs.seg = seg([{ id: 'all', label: 'All' }, ...KD_PARTS.map((p) => ({ id: p.id, label: p.name, color: p.color }))], () => st.sel || 'all', (v) => { if (st.mode !== 'sys') setMode('sys'); select(v); });
+    refs.rot = toggle('Rotate', () => st.rot, (v) => { st.rot = v; });
+    const lab = toggle('Labels', () => st.labels, (v) => { st.labels = v; });
     Object.assign(refs, { lab });
-    el.append(group('Режим', '1–3', refs.modeSeg), h('div', { class: 'grp', style: 'flex:1 1 420px' }, h('div', { class: 'glabel' }, 'Органы', h('kbd', {}, 'клик')), h('div', { class: 'gctl' }, refs.seg)),
-      group('Опыт', 'T · W · V', button('Жажда (АДГ)', thirst, true), button('Выпить литр воды', drink), button('Опорожнить пузырь', voidB)), group('Вид', 'R · N', refs.rot, lab), ib.el);
+    el.append(group('Mode', '1–3', refs.modeSeg), h('div', { class: 'grp', style: 'flex:1 1 420px' }, h('div', { class: 'glabel' }, 'Organs', h('kbd', {}, 'click')), h('div', { class: 'gctl' }, refs.seg)),
+      group('Experiment', 'T · W · V', button('Thirst (ADH)', thirst, true), button('Drink a liter of water', drink), button('Empty the bladder', voidB)), group('View', 'R · N', refs.rot, lab), ib.el);
     refs.setInfo();
   }
   function onKey(e) {
@@ -200,18 +200,18 @@ function makeKidney() {
     if (e.key === 'Escape') { select('all'); return true; }
     return false;
   }
-  function stats() { const out = (0.5 + (1 - st.adh) * 2.5).toFixed(1); return [['Первичная моча', '≈180', 'л/сут'], ['Конечная', out, 'л/сут'], ['Пузырь', Math.round(st.fill * 500), 'мл']]; }
+  function stats() { const out = (0.5 + (1 - st.adh) * 2.5).toFixed(1); return [['Primary urine', '≈180', 'L/day'], ['Final urine', out, 'L/day'], ['Bladder', Math.round(st.fill * 500), 'mL']]; }
   const self = {
-    mobZoom: 0.5, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#F2D860',
-    kicker: 'Тело · выделение', title: 'Почки и мочевыделение',
-    lede: 'Каждые сутки почки пропускают через себя всю кровь около 300 раз, отфильтровывают 180 литров жидкости и возвращают обратно в кровь 99% её.',
+    labelBg: true, mobZoom: 0.5, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#F2D860',
+    kicker: 'Body · excretion', title: 'Kidneys and the urinary system',
+    lede: 'Every day the kidneys pass all of the blood through themselves about 300 times, filter out 180 liters of fluid and return 99% of it to the blood.',
     notes: `
-      <div><h2>Что делают почки</h2><ul>
-        <li>Выводят мочевину, мочевую кислоту, креатинин, лекарства и яды.</li><li>Держат постоянными объём крови, концентрацию солей и pH.</li>
-        <li>Ренин регулирует кровяное давление; эритропоэтин запускает образование эритроцитов; в почках активируется витамин D.</li></ul>
-        <h3>Гормоны</h3><p><b>АДГ</b> (вазопрессин) задерживает воду, <b>альдостерон</b> — натрий, <b>натрийуретический пептид</b> сердца — наоборот, выводит натрий и воду.</p></div>
-      <div><h2>Условности</h2><ul><li>Нефрон увеличен примерно в 300 раз, петля Генле укорочена.</li><li>Срез почки — схема по учебному рисунку.</li></ul></div>
-      <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>3</code> режим</li><li><code>T</code> жажда</li><li><code>W</code> вода</li><li><code>V</code> опорожнить</li><li><code>R</code> вращение · <code>N</code> подписи</li></ul></div>`,
+      <div><h2>What the kidneys do</h2><ul>
+        <li>Excrete urea, uric acid, creatinine, drugs and toxins.</li><li>Keep blood volume, salt concentration and pH constant.</li>
+        <li>Renin regulates blood pressure; erythropoietin triggers the production of red blood cells; vitamin D is activated in the kidneys.</li></ul>
+        <h3>Hormones</h3><p><b>ADH</b> (vasopressin) retains water, <b>aldosterone</b> retains sodium, and the heart’s <b>natriuretic peptide</b> does the opposite, removing sodium and water.</p></div>
+      <div><h2>Simplifications</h2><ul><li>The nephron is magnified about 300 times; the loop of Henle is shortened.</li><li>The kidney section is a diagram based on a textbook drawing.</li></ul></div>
+      <div class="keys"><h2>Keys</h2><ul><li><code>1</code>–<code>3</code> mode</li><li><code>T</code> thirst</li><li><code>W</code> water</li><li><code>V</code> empty</li><li><code>R</code> rotate · <code>N</code> labels</li></ul></div>`,
   };
   return self;
 }

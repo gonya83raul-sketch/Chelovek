@@ -36,7 +36,7 @@ function makeRepro(initMode) {
     return mergeGeometries(a); })(), new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xe8d8bb).multiplyScalar(0.3), roughness: 0.6, transparent: true, opacity: 0.1, depthWrite: false })); scene.add(pelvis);
   /* ---------- женская система ---------- */
   const fGhosts = [ghost(ell3(0.12, 0.09, 0.09, V3(0, -0.02, 0.24)), '#F2D860', F)]; fGhosts.push(ghost(tube([V3(0, 0.4, -0.3), V3(0.02, 0.0, -0.28), V3(0, -0.4, -0.18)], 0.06, 20, 10), '#C8A090', F));   // пузырь и прямая кишка — ориентиры; в «Цикле» спрятаны, чтобы не заслонять матку
-  fGhosts.forEach((g) => { g.visible = initMode !== 'cycle'; });
+  fGhosts.push(pelvis); fGhosts.forEach((g) => { g.visible = initMode !== 'cycle'; });   // и таз-призрак: в «Цикле» не нужен
   const utG = displaceGeo(new THREE.SphereGeometry(1, 48, 36), (v) => { let k = v.y < 0 ? 1 - 0.55 * (-v.y) : 1; v.set(v.x * 0.17 * k, v.y * 0.2, v.z * 0.1 * k); }); utG.rotateX(0.35); utG.translate(0, 0.17, 0.04);   // антеверсия: дно наклонено вперёд, над мочевым пузырём
   const ut = add('ut', utG, F, { mat: { transparent: true, opacity: 0.55, depthWrite: false } });
   const endoG = displaceGeo(new THREE.SphereGeometry(1, 40, 30), (v) => { let k = v.y < 0 ? 1 - 0.6 * (-v.y) : 1; v.set(v.x * 0.11 * k, v.y * 0.14, v.z * 0.02 * k + 0.0); });
@@ -171,11 +171,11 @@ function makeRepro(initMode) {
   };
   const cycText = () => { const d = Math.floor(st.day); const ph = d <= 5 ? '<b>Менструация (дни 1–5).</b> Уровни эстрогена и прогестерона низкие, функциональный слой эндометрия отторгается. Гипофиз начинает выделять ФСГ — в яичнике растут фолликулы.' : d < 13 ? '<b>Фолликулярная фаза.</b> Под действием ФСГ созревает главный фолликул и выделяет всё больше эстрогена — эндометрий утолщается.' : d <= 15 ? '<b>Овуляция (~14-й день).</b> Пик эстрогена вызывает резкий выброс ЛГ гипофизом — фолликул лопается, яйцеклетка выходит в трубу. Она жизнеспособна около суток.' : '<b>Лютеиновая фаза.</b> На месте фолликула образуется <b>жёлтое тело</b> и выделяет прогестерон — эндометрий становится рыхлым и богатым сосудами. Если оплодотворения нет, через ~12 дней жёлтое тело угасает, гормоны падают, начинается новый цикл.'; return `День ${d} из 28. ` + ph; };
   const labels = [
-    { text: 'яичник', pos: V3(0.48, 0.12, 0.05), color: '#F2B0C8', show: () => st.labels && schem() },
-    { text: 'маточная труба', pos: V3(0.3, 0.42, 0.05), color: '#F2C88A', show: () => st.labels && schem() },
-    { text: 'матка', pos: V3(-0.1, 0.33, 0.1), color: '#E88A9A', show: () => st.labels && schem() },
+    { text: 'яичник', pos: V3(0.42, 0.17, 0.05), color: '#F2B0C8', show: () => st.labels && schem() },
+    { text: 'маточная труба', pos: V3(0.38, 0.36, 0.05), color: '#F2C88A', show: () => st.labels && schem() },
+    { text: 'матка', pos: V3(0.0, 0.36, 0.1), color: '#E88A9A', show: () => st.labels && schem() },
     { text: 'эндометрий', pos: V3(-0.06, 0.12, 0.12), color: '#ff7a8a', show: () => st.labels && st.mode === 'cycle' },
-    { text: 'шейка и влагалище', pos: V3(0.08, -0.3, -0.02), color: '#D8A0B0', show: () => st.labels && schem() },
+    { text: 'шейка и влагалище', pos: V3(0.08, -0.3, -0.02), color: '#D8A0B0', left: true, show: () => st.labels && schem() },
     { text: 'мочевой пузырь', pos: V3(0.1, -0.02, 0.36), color: '#F2D860', show: () => st.labels && ((st.mode === 'female' && schem()) || st.mode === 'male') },
     { text: 'яичко', pos: V3(0.16, -0.6, 0.36), color: '#C8D8F0', show: () => st.labels && st.mode === 'male' },
     { text: 'семявыносящий проток', pos: V3(0.24, 0.25, 0.18), color: '#9FD0FF', show: () => st.labels && st.mode === 'male' },

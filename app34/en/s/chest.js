@@ -34,7 +34,7 @@ function makeChest() {
   for (let i = 0; i < 12; i++) {
     const y = 2.92 - i * 0.15, w = 0.5 + 0.48 * Math.sin(Math.min(1, (i + 1) / 6) * Math.PI / 2) - (i > 7 ? (i - 7) * 0.05 : 0), drop = 0.32 + i * 0.03;
     [1, -1].forEach((s) => {
-      const front = i < 10 ? 1 : 0.55;
+      const front = i < 10 ? 1 : 0.35;
       const pts = [V3(0.07 * s, y, -0.42), V3(w * 0.72 * s, y - 0.04, -0.38), V3(w * s, y - 0.16, 0.0), V3(w * 0.82 * s, y - drop * 0.75, 0.42 * front)];
       if (i < 10) pts.push(V3(w * 0.45 * s, y - drop, 0.56));
       const c = new THREE.CatmullRomCurve3(pts); ribG.push(taperTube(c, () => 0.026, 40, 6));
@@ -141,10 +141,10 @@ function makeChest() {
   const labels = [
     { text: 'sternum', pos: V3(0.12, 2.5, 0.68), color: '#F2E6C8', show: () => st.labels && st.mode === 'chest' },
     { text: 'clavicle', pos: V3(0.65, 3.12, 0.35), color: '#F2E6C8', show: () => st.labels && st.mode === 'chest' },
-    { text: 'ribs', pos: V3(1.05, 2.3, 0.2), color: '#E8D8BB', show: () => st.labels && st.mode === 'chest' },
+    { text: 'ribs', pos: V3(0.85, 2.25, 0.3), color: '#E8D8BB', show: () => st.labels && st.mode === 'chest' },
     { text: 'costal cartilages', pos: V3(0.42, 1.85, 0.62), color: '#c8d8e0', show: () => st.labels && st.mode === 'chest' },
     { text: 'spine', pos: V3(0.0, 1.55, -0.6), color: '#D8C8A8', show: () => st.labels && st.mode === 'chest' && camera.position.z < 1.5 },   // спереди позвоночник закрыт грудиной — подпись только при взгляде сбоку или сзади
-    { text: 'diaphragm', pos: V3(0.7, 1.45, 0.45), color: '#C86A6A', show: () => st.labels && st.mode === 'chest' },
+    { text: 'diaphragm', pos: V3(0.7, 1.45, 0.45), color: '#E89090', show: () => st.labels && st.mode === 'chest' },
     { text: 'heart', pos: BODY.heart.clone().add(V3(0.15, -0.05, 0.3)), color: '#FF8A7A', show: () => st.labels && st.mode === 'chest' },
     { text: 'pectoralis major', pos: V3(29.25, 0.95, 0.2), color: '#D07070', show: () => st.labels && st.mode !== 'chest' },
     { text: 'ribs', pos: V3(28.9, 1.05, 0.4), color: '#E8D8BB', show: () => st.labels && st.mode !== 'chest' },
@@ -178,7 +178,7 @@ function makeChest() {
   }
   function stats() { return st.mode === 'chest' ? [['Pairs of ribs', 12, ''], ['Thoracic vertebrae', 12, '']] : st.mode === 'lact' ? [['Prolactin', Math.round(st.prl * 100), '%'], ['Oxytocin', Math.round(st.oxy * 100), '%']] : [['Lobes', '15–20', '']]; }
   const self = {
-    scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#F2B0C8',
+    labelBg: true, mobZoom: 0.6, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#F2B0C8',
     kicker: 'Body · chest', title: 'Chest and breast',
     lede: 'The bony frame that protects the heart and lungs and helps us breathe, and how the breast is built — from lobules to ducts and the hormones of breastfeeding.',
     notes: `

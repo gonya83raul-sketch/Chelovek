@@ -144,7 +144,7 @@ function makeEndo() {
   }
   function stats() { const S = SIM; return st.mode === 'sugar' ? [['Glucose', S.G.toFixed(1), 'mmol/L'], ['Insulin', Math.round(S.I), 'µU/mL']] : st.mode === 'stress' ? [['Pulse', Math.round(S.HR), 'bpm'], ['Cortisol', Math.round(S.C * 30), 'nmol/L']] : st.mode === 'thy' ? [['TSH', S.TSH.toFixed(1), 'mU/L'], ['T4', (S.T4 * 15).toFixed(0), 'pmol/L']] : [['Glands', 8, ''], ['Hormones', '>50', '']]; }
   const self = {
-    mobZoom: 0.5, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#C77DFF',
+    labelBg: true, mobZoom: 0.5, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#C77DFF',
     kicker: 'Body · hormones', title: 'Endocrine system',
     lede: 'Tiny glands control growth, metabolism, sleep, stress and blood sugar by sending chemical letters — hormones — through the bloodstream.',
     notes: `

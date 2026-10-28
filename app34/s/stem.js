@@ -15,7 +15,7 @@ function makeStem() {
   __set_rnd(mulberry(505));
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x060509); scene.environment = envTex;
   labLights(scene, 0x9fb0ff);
-  const HOME = flyTarget(V3(0, -0.6, 0), V3(-7.0, 2.9, 8.7));
+  const HOME = flyTarget(V3(0, -0.75, 0), V3(-7.7, 3.1, 9.6));
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 200); camera.position.copy(HOME.pos);
   const controls = makeControls(camera, HOME.target); controls.minDistance = 2.5; controls.maxDistance = 30;
   const mat = (c, o = {}) => tissue(new THREE.Color(c).multiplyScalar(0.4), o);

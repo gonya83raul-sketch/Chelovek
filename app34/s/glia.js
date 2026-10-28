@@ -5,19 +5,19 @@ import { GLOW, Sparks, THREE, V3, __set_rnd, addLights, button, clamp, displaceG
    ЛЕКЦИЯ 1 · НЕЙРОГЛИЯ
    ========================================================= */
 const GLIA = [
-  { id: 'astro', name: 'Astrocytes', color: '#7FD6C8', text: '<b>Astrocytes</b> are the largest and most numerous glial cells. They pack the fine web of axons and dendrites so that the brain can withstand concussions. Their <b>end feet</b> sheathe almost the entire capillary surface and support the blood–brain barrier (the barrier itself is the tight junctions of the endothelium). Astrocytes take up and break down neurotransmitters after the synapse, regulate ions and water, and form a scar after injury.' },
-  { id: 'oligo', name: 'Oligodendrocytes', color: '#B9A4FF', text: '<b>An oligodendrocyte</b> (“cell with few processes”) insulates neurons from one another. Each process wraps around its own axon, up to 100 layers of membrane, forming a <b>myelin sheath</b> about 1 mm long. Bare <b>nodes of Ranvier</b> remain between the sheaths, and the impulse jumps from node to node: 100–120 m/s instead of 1–5. In the periphery the same job is done by Schwann cells, which have one process per sheath.' },
-  { id: 'micro', name: 'Microglia', color: '#FFCF6B', text: '<b>Microglia</b> are the smallest glial cells, the resident macrophages of the brain. Unlike the rest of the glia, they come from the mesoderm. At rest their thin processes “listen” to synapses, and microglia can tear down a weak synapse: this is <b>pruning</b>, trimming of the network. After injury or during inflammation the cells enlarge, divide, move to the lesion and devour the debris.' },
-  { id: 'epen', name: 'Ependyma', color: '#8FB4FF', text: '<b>Ependymal cells</b> line the cavities of the brain in a single layer: the four ventricles, the cerebral aqueduct and the central canal of the spinal cord. In early stages their cilia drive the CSF; in adults they remain only in places. The ependyma takes part in exchange between the blood, the CSF and the brain.' },
-  { id: 'neu', name: 'Neurons', color: '#CDB0C4', text: '<b>Neurons</b> transmit information, and glia help them work. After birth neurons almost never divide (exceptions: the hippocampus and the olfactory centers), while glia divide throughout life. Across the brain, glia and neurons are roughly equal in number; the cortex has more glia, the brainstem up to ten per neuron, the cerebellum far fewer.' },
+  { id: 'astro', name: 'Астроциты', color: '#7FD6C8', text: '<b>Астроциты</b>: самые крупные и многочисленные глиальные клетки. Они упаковывают тонкое плетение аксонов и дендритов, так что мозг переносит сотрясения. Их <b>концевые ножки</b> почти целиком одевают капилляры и поддерживают гематоэнцефалический барьер (сам барьер — плотные контакты эндотелия). Астроциты захватывают и разрушают медиаторы после синапса, регулируют ионы и воду, образуют рубец при травме.' },
+  { id: 'oligo', name: 'Олигодендроциты', color: '#B9A4FF', text: '<b>Олигодендроцит</b> («клетка с немногими отростками») изолирует нейроны друг от друга. Каждый отросток наматывается на свой аксон, до 100 слоёв мембраны, и получается <b>миелиновая оболочка</b> длиной около 1 мм. Между оболочками остаются голые <b>перехваты Ранвье</b>, и импульс прыгает с перехвата на перехват: 100–120 м/с вместо 1–5. На периферии ту же работу делают шванновские клетки, у них один отросток на одну оболочку.' },
+  { id: 'micro', name: 'Микроглия', color: '#FFCF6B', text: '<b>Микроглия</b>: самые маленькие глиальные клетки, тканевые макрофаги мозга. В отличие от остальной глии, они пришли из мезодермы. В покое тонкие отростки «слушают» синапсы, и слабый синапс микроглия может разорвать: это <b>прунинг</b>, подрезка сети. При травме или воспалении клетки увеличиваются, делятся, идут в очаг и поедают обломки.' },
+  { id: 'epen', name: 'Эпендима', color: '#8FB4FF', text: '<b>Эпендимоциты</b> выстилают одним слоем полости мозга: четыре желудочка, водопровод среднего мозга и спинномозговой канал. Реснички на ранних стадиях гонят ликвор, у взрослого они остаются лишь местами. Эпендима участвует в обмене веществ между кровью, ликвором и мозгом.' },
+  { id: 'neu', name: 'Нейроны', color: '#CDB0C4', text: '<b>Нейроны</b> передают информацию, глия помогает им работать. Нейроны после рождения почти не делятся (исключения: гиппокамп и обонятельные центры), глия делится всю жизнь. В целом по мозгу глии и нейронов примерно поровну; в коре глии больше, в стволе — до десяти на нейрон, в мозжечке гораздо меньше.' },
 ];
 
 function makeGlia() {
   __set_rnd(mulberry(31));
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x07060a); scene.fog = new THREE.FogExp2(0x07060a, 0.022); scene.environment = envTex;
   addLights(scene, 0x7fd6c8);
-  const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 200); camera.position.set(13.6, 6.4, 34);
-  const controls = makeControls(camera, V3(0.6, -1.2, 0)); controls.minDistance = 4; controls.maxDistance = 50;
+  const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 200); camera.position.set(10.1, 6.6, 34);
+  const controls = makeControls(camera, V3(-2.9, -0.4, 0)); controls.minDistance = 4; controls.maxDistance = 50;
 
   const TY = Object.fromEntries(GLIA.map((g) => [g.id, { ...g, mats: [], objs: [] }]));
   function mat(type, extra = {}) {
@@ -171,7 +171,7 @@ function makeGlia() {
   function feed() { let n = 0; for (const g of glu) { if (g.s) continue; g.s = 1; g.x = -CX - rand(0, 6); g.r = rand(0, 0.6); g.a = rand(0, 6.28); g.v.set(rand(1.6, 2.2), 0, 0); if (++n >= 140) break; } }
 
   const st = { focus: 'all', bbb: true, trauma: false, labels: true, t: 0, glu: 0, flash: [-9, -9], wrap: 1, nextFeed: 2.5, auto: true, fly: null, msg: null };
-  const HOME = { target: V3(0.6, -1.2, 0), pos: V3(13.6, 6.4, 34) };
+  const HOME = { target: V3(-2.9, -0.4, 0), pos: V3(10.1, 6.6, 34) };
   function flyTo(target, dist, dir) {
     const d = dir ? dir.clone().normalize() : camera.position.clone().sub(controls.target).normalize();
     st.fly = { target: target.clone(), pos: target.clone().addScaledVector(d, dist), t: 0 };
@@ -199,13 +199,13 @@ function makeGlia() {
     if (st.wrap < 1) return;
     setFocusAll(); st.wrap = 0; st.wrapT = 0;
     flyTo(V3(wrapAx[0], wrapAx[1], 0), 4.2, V3(0.9, 0.35, 0.55));
-    say('<b>Myelination.</b> A process of the oligodendrocyte flattens into a thin tongue and wraps around a bare axon again and again. The membrane layers stick together, the cytoplasm is squeezed out of them, and a dense white sleeve forms. In the CNS this is done by the oligodendrocyte (one cell serves many axons), in the periphery by the Schwann cell.');
+    say('<b>Миелинизация.</b> Отросток олигодендроцита распластывается в тонкий язычок и раз за разом оборачивается вокруг голого аксона. Слои мембраны слипаются, цитоплазма из них выдавливается, и получается плотная белая муфта. В ЦНС так делает олигодендроцит (одна клетка обслуживает много аксонов), на периферии — шванновская клетка.');
   }
   /* прунинг: микроглия «съедает» слабый синапс */
   function startPrune() {
     if (prune) return;
     const s = syn.find((q) => q.alive && q.weak) || syn.filter((q) => q.alive).sort((a, b) => a.rate - b.rate)[0];
-    if (!s) { say('No weak synapses are left: microglia have already removed them. Reload the scene to start over.'); return; }
+    if (!s) { say('Слабых синапсов не осталось: микроглия уже убрала их. Перезагрузите сцену, чтобы начать заново.'); return; }
     setFocusAll();
     const m = MG.filter((q) => !q.born).reduce((a, b) => (a.pos.distanceTo(s.p) < b.pos.distanceTo(s.p) ? a : b));
     const park = s.p.clone().add(V3(0.9, -0.7, 0.8));
@@ -217,7 +217,7 @@ function makeGlia() {
     const tagS = new THREE.Sprite(new THREE.SpriteMaterial({ map: GLOW, color: 0xff4a3a, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true, opacity: 0 })); tagS.position.copy(s.p); tagS.scale.setScalar(1.1); scene.add(tagS);
     prune = { s, m, mesh, cup, tagS, curve, park, t: 0, n: geo.index.count, home: m.home.clone() };
     flyTo(s.p, 5.5, V3(0.6, 0.25, 1));
-    say('<b>Pruning</b> (“trimming”). This synapse barely works: only occasional flashes. Weak contacts are tagged with complement proteins (red glow), and microglia recognize them by this tag.');
+    say('<b>Прунинг</b> («обрезка»). Этот синапс почти не работает: редкие вспышки. Слабые контакты метятся белками комплемента (красное свечение), и микроглия узнаёт их по этой метке.');
   }
   function applyFocus() {
     Object.values(TY).forEach((T) => {
@@ -269,7 +269,7 @@ function makeGlia() {
       const n = Math.floor(w * WRAP_TURNS * WRAP_SEG); wrapGeo.setDrawRange(0, Math.max(0, n) * 6);
       const th = n / WRAP_SEG * Math.PI * 2, r = AX_R + 0.012 + (n / WRAP_SEG) * 0.011 + 0.03;
       wrapTip.visible = w > 0 && w < 1; wrapTip.position.set(wrapAx[0] + Math.cos(th) * r, wrapAx[1] + Math.sin(th) * r, 0);
-      if (st.wrapT > 8.2 && !st.wrapSaid) { st.wrapSaid = true; say('<b>Done: 7 layers of membrane.</b> Now current no longer leaks through the membrane, and the impulse jumps from one node of Ranvier to the next (yellow spark on the neighboring axon). Speed rises from 0.5–2 m/s in a bare fiber to 100 m/s and more. In humans myelination goes on for about 20 years: the spinal cord first, the frontal cortex last of all.'); }
+      if (st.wrapT > 8.2 && !st.wrapSaid) { st.wrapSaid = true; say('<b>Готово: 7 слоёв мембраны.</b> Теперь ток не утекает сквозь мембрану, и импульс перескакивает от одного перехвата Ранвье к другому (жёлтая искра на соседнем аксоне). Скорость растёт с 0,5–2 м/с у голого волокна до 100 м/с и выше. У человека миелинизация идёт около 20 лет: сначала спинной мозг, позже всего лобная кора.'); }
       if (st.wrap >= 1) { wrapTip.visible = false; st.wrapSaid = false; }
     } else if (wrapMesh.visible) { nakedAx.visible = true; nakedAx.scale.setScalar(1); }
     // микроглия
@@ -298,7 +298,7 @@ function makeGlia() {
       const cupOn = smooth(3.8, 4.6, p) * (1 - smooth(6.8, 7.4, p));
       P.cup.visible = cupOn > 0.01; P.cup.position.copy(s.p); P.cup.scale.setScalar(0.6 + 0.5 * cupOn); P.cup.lookAt(P.park); P.cup.rotateX(-Math.PI / 2);
       if (p > 5.0 && p < 7.6) { const q = 1 - smooth(5.0, 7.4, p); const pos = P.curve.getPointAt(1 - 0.85 * (1 - q)); s.b.position.copy(pos); s.b.scale.setScalar(Math.max(0.01, 0.4 + 0.6 * q)); s.fib.scale.setScalar(Math.max(0.01, q)); s.m.color.setRGB(0.6 + 0.4 * q, 0.35 + 0.3 * q, 0.3); P.tagS.position.copy(pos); }
-      if (p >= 7.6 && s.alive) { s.alive = false; s.b.visible = false; s.fib.visible = false; say('<b>Synapse eaten.</b> The microglial cell digested the bouton in its lysosomes and returned to its place. Strong, frequently used contacts remain. In childhood and adolescence up to half of all cortical synapses are removed this way: the brain keeps the connections it needs and saves energy. Pruning defects have been linked to autism and schizophrenia.'); }
+      if (p >= 7.6 && s.alive) { s.alive = false; s.b.visible = false; s.fib.visible = false; say('<b>Синапс съеден.</b> Микроглия переварила бутон в своих лизосомах и вернулась на место. Сильные, часто работающие контакты остаются. В детстве и подростковом возрасте так удаляется до половины синапсов коры: мозг сохраняет нужные связи и экономит энергию. Сбои прунинга связывают с аутизмом и шизофренией.'); }
       if (p > 7.6) P.m.home.lerp(P.home, 1 - Math.exp(-dt * 1.5));
       if (p > 10) { [P.mesh, P.cup, P.tagS].forEach((o) => { scene.remove(o); if (o.geometry) o.geometry.dispose(); }); P.m.home.copy(P.home); prune = null; }
     }
@@ -315,34 +315,34 @@ function makeGlia() {
   { const seen = new Set(); scene.traverse((o) => { const m = o.material; if (m && m.isMeshPhysicalMaterial && !seen.has(m)) { seen.add(m); m.color.multiplyScalar(0.6); } }); }
   const fp = feet[2].geometry.boundingSphere || (feet[2].geometry.computeBoundingSphere(), feet[2].geometry.boundingSphere);
   const show = (type) => () => st.labels && (st.focus === 'all' || st.focus === type);
-  const micLbl = { text: 'microglia', pos: V3(0, 0, 0), color: '#FFCF6B', show: show('micro') };
+  const micLbl = { text: 'микроглия', pos: V3(0, 0, 0), color: '#FFCF6B', show: show('micro') };
   const labels = [
-    { text: 'astrocyte', pos: ASTRO[0].p.clone().add(V3(-0.6, 1.1, 0.3)), color: '#7FD6C8', show: show('astro') },
-    { text: 'end feet · BBB', pos: fp.center.clone().add(V3(0, 1.1, 0.5)), color: '#7FD6C8', show: show('astro') },
-    { text: 'capillary', pos: V3(-9.4, CY + 1.2, 0.4), color: '#ff8d7f', show: () => st.labels },
-    { text: 'oligodendrocyte', pos: O.clone().add(V3(0.5, -0.7, 0.4)), color: '#B9A4FF', show: show('oligo') },
-    { text: 'myelin', pos: V3(AXP[0][0], AXP[0][1] + 0.45, 2.75), color: '#F1E7D6', show: show('oligo') },
-    { text: 'node of Ranvier', pos: V3(AXP[2][0] + 0.2, AXP[2][1] + 0.4, 4.125), color: '#F1E7D6', show: show('oligo') },
+    { text: 'астроцит', pos: ASTRO[0].p.clone().add(V3(-0.6, 1.1, 0.3)), color: '#7FD6C8', show: show('astro') },
+    { text: 'концевые ножки · ГЭБ', pos: fp.center.clone().add(V3(0, 1.1, 0.5)), color: '#7FD6C8', show: show('astro') },
+    { text: 'капилляр', pos: V3(-9.4, CY + 1.2, 0.4), color: '#ff8d7f', show: () => st.labels },
+    { text: 'олигодендроцит', pos: O.clone().add(V3(0.5, -0.7, 0.4)), color: '#B9A4FF', show: show('oligo') },
+    { text: 'миелин', pos: V3(AXP[0][0], AXP[0][1] + 0.45, 2.75), color: '#F1E7D6', show: show('oligo') },
+    { text: 'перехват Ранвье', pos: V3(AXP[2][0] + 0.2, AXP[2][1] + 0.4, 4.125), color: '#F1E7D6', show: show('oligo') },
     micLbl,
-    { text: 'ependyma', pos: V3(-0.9, EY, -0.9), color: '#8FB4FF', show: show('epen') },
-    { text: 'CSF in the ventricle', pos: V3(6.4, EY - 1.4, -1.5), color: '#9fc4ff', show: show('epen') },
-    { text: 'neuron', pos: somas[0].clone().add(V3(0.6, 1.0, 0.3)), show: show('neu') },
-    { text: 'synapse', pos: syn[3] ? syn[3].p.clone().add(V3(0.25, 0.2, 0)) : V3(0, 0, 0), color: '#ffb070', show: show('neu') },
-    { text: 'injury', pos: LES.clone().add(V3(0.4, -0.9, 0)), color: '#ff6a5a', show: () => st.labels && st.trauma },
+    { text: 'эпендима', pos: V3(-0.9, EY, -0.9), color: '#8FB4FF', show: show('epen') },
+    { text: 'ликвор в желудочке', pos: V3(6.4, EY - 1.4, -1.5), color: '#9fc4ff', show: show('epen') },
+    { text: 'нейрон', pos: somas[0].clone().add(V3(0.6, 1.0, 0.3)), show: show('neu') },
+    { text: 'синапс', pos: syn[3] ? syn[3].p.clone().add(V3(0.25, 0.2, 0)) : V3(0, 0, 0), color: '#ffb070', show: show('neu') },
+    { text: 'травма', pos: LES.clone().add(V3(0.4, -0.9, 0)), color: '#ff6a5a', show: () => st.labels && st.trauma },
   ];
   const _u = update; const update2 = (dt) => { _u(dt); micLbl.pos.copy(MG[0].pos).add(V3(0.4, -0.6, 0.3)); };
 
   let refs = {};
   function ui(el) {
     const info = h('div', { class: 'info' });
-    const setInfo = () => { if (st.msg) { info.innerHTML = st.msg; return; } info.innerHTML = st.focus === 'all' ? 'Four types of glia around two neurons. Select a cell to make the others transparent. Every few seconds plasma <b style="color:#9ee66a">glutamate</b> floats by in the blood: with the BBB closed, it passes the brain by.' : TY[st.focus].text; };
-    const fSeg = seg([{ id: 'all', label: 'All' }, ...GLIA.map((g) => ({ id: g.id, label: g.name, color: g.color }))], () => st.focus, (v) => { st.focus = v; st.msg = null; applyFocus(); setInfo(); });
-    const bbb = toggle('BBB', () => st.bbb, (v) => { st.bbb = v; });
-    const tr = toggle('Injury', () => st.trauma, (v) => { st.trauma = v; st.traumaT = st.t; if (v) { setFocusAll(); flyTo(LES, 9, V3(0.5, 0.3, 1)); say('<b>Injury.</b> Microglia sense the breakdown products of cells, grow, divide and crawl to the lesion. There they engulf the debris (phagocytosis) and release inflammatory signaling molecules.'); } else { st.msg = null; refs.setInfo(); } });
+    const setInfo = () => { if (st.msg) { info.innerHTML = st.msg; return; } info.innerHTML = st.focus === 'all' ? 'Четыре типа глии вокруг двух нейронов. Выберите клетку, чтобы остальные стали прозрачными. Каждые несколько секунд с кровью проплывает <b style="color:#9ee66a">глутамат</b> плазмы: при закрытом ГЭБ он проходит мимо мозга.' : TY[st.focus].text; };
+    const fSeg = seg([{ id: 'all', label: 'Все' }, ...GLIA.map((g) => ({ id: g.id, label: g.name, color: g.color }))], () => st.focus, (v) => { st.focus = v; st.msg = null; applyFocus(); setInfo(); });
+    const bbb = toggle('ГЭБ', () => st.bbb, (v) => { st.bbb = v; });
+    const tr = toggle('Травма', () => st.trauma, (v) => { st.trauma = v; st.traumaT = st.t; if (v) { setFocusAll(); flyTo(LES, 9, V3(0.5, 0.3, 1)); say('<b>Травма.</b> Микроглия чувствует продукты распада клеток, вырастает, делится и ползёт в очаг. Там она поглощает обломки (фагоцитоз) и выделяет сигнальные молекулы воспаления.'); } else { st.msg = null; refs.setInfo(); } });
     refs = { fSeg, bbb, tr, setInfo };
-    el.append(group('Cells', '0–5', fSeg),
-      group('Experiment', 'F · B · P · T · M', button('Protein meal', feed, true), bbb, button('Pruning', startPrune), tr, button('Myelination', myelinate), button('Overview', () => { st.msg = null; setInfo(); flyHome(); })),
-      h('div', { class: 'grp', style: 'flex:1 1 320px' }, h('div', { class: 'glabel' }, 'What you see'), info));
+    el.append(group('Клетки', '0–5', fSeg),
+      group('Опыт', 'F · B · P · T · M', button('Белковая еда', feed, true), bbb, button('Прунинг', startPrune), tr, button('Миелинизация', myelinate), button('Обзор', () => { st.msg = null; setInfo(); flyHome(); })),
+      h('div', { class: 'grp', style: 'flex:1 1 320px' }, h('div', { class: 'glabel' }, 'Что видно'), info));
     setInfo();
   }
   function onKey(e) {
@@ -358,25 +358,25 @@ function makeGlia() {
     if (e.key === 'Escape') { st.msg = null; refs.setInfo(); flyHome(); return true; }
     return false;
   }
-  function stats() { return [['BBB', st.bbb ? 'closed' : 'open', ''], ['Glutamate in the brain', st.glu, ''], ['Synapses', syn.filter((s) => s.alive).length, '']]; }
+  function stats() { return [['ГЭБ', st.bbb ? 'закрыт' : 'открыт', ''], ['Глутамат в мозге', st.glu, ''], ['Синапсов', syn.filter((s) => s.alive).length, '']]; }
   return {
     labelBg: true, mobZoom: 0.62, scene, camera, controls, update: update2, ui, onKey, stats, labels, drawScope: null, accent: '#7FD6C8',
-    kicker: 'Brain · supporting cells', title: 'Neuroglia',
-    lede: 'Glia is Greek for “glue”. Glia wrap and support neurons, insulate them, guard the entry from the blood and clear away debris.',
+    kicker: 'Мозг · вспомогательные клетки', title: 'Нейроглия',
+    lede: 'Glia по-гречески «клей». Глия упаковывает нейроны, изолирует их, охраняет вход из крови и убирает мусор.',
     notes: `
-      <div><h2>Why neurons need glia</h2>
-        <p>Glia were described and named “neuroglia” by Rudolf Virchow (1856); the shapes of glial cells were revealed by Golgi and Ramón y Cajal. Glia fill all the space between neurons. Across the whole brain there are roughly as many glial cells as neurons (~1:1). In the cortical gray matter there are about 1.5 glial cells per neuron, in the brainstem up to ten, while in the cerebellum, packed with tiny granule cells, glia are several times fewer than neurons. Gliocytes are 3–4 times smaller than neurons, contain little Nissl substance, form no synapses and do not transmit signals electrically.</p>
-        <h3>Blood–brain barrier</h3>
-        <p>The barrier itself is the capillary endothelium: its cells are sealed by tight junctions, and substances from the blood enter the brain only through transporters. Astrocyte end feet sheathe almost the entire capillary and support the barrier. Glutamate is the main excitatory neurotransmitter and one of the most common amino acids in food, but gut cells burn almost all dietary glutamate, and plasma glutamate crosses the barrier poorly. That is why a protein meal does not overexcite the brain. Turn off “BBB” and see what happens to the neurons.</p>
-        <h3>White and gray matter</h3>
-        <p>Myelin is 75% lipid, with a lot of cholesterol, and is therefore white. Bundles of myelinated axons form the <b>white matter</b>, the “wiring”. The cell bodies and dendrites of neurons form the <b>gray matter</b>. In multiple sclerosis the immune system attacks myelin protein. Myelination proceeds over the first 20 years of life, from the spinal cord to the cortex, and the corpus callosum begins it only in the second month after birth.</p>
-        <h3>Where glia come from</h3>
-        <p>Astrocytes, oligodendrocytes and ependymal cells develop from the neuroectoderm. Microglia are mesodermal: during embryogenesis phagocyte precursor cells enter the brain and stay there.</p></div>
-      <div><h2>What is accurate here</h2><ul>
-        <li>The four types of glia and where they sit: end feet on the capillary, sheaths on different axons from a single oligodendrocyte, branching microglia near synapses, a single-layered ciliated ependyma.</li>
-        <li>Nodes of Ranvier between the sheaths and the jumping impulse.</li><li>The microglial response to injury: growth, division, movement to the lesion, phagocytosis.</li></ul>
-        <h2 style="margin-top:22px">Simplifications</h2><ul><li>Scales are brought closer together: in reality the capillary is narrower than a neuron’s cell body, and a sheath is about 1 mm long.</li><li>Glutamate is drawn as large dots.</li></ul></div>
-      <div class="keys"><h2>Keys</h2><ul><li><code>0</code>–<code>5</code> cell type</li><li><code>F</code> protein meal</li><li><code>B</code> BBB</li><li><code>P</code> pruning</li><li><code>T</code> injury</li><li><code>M</code> myelination</li><li><code>N</code> labels</li></ul></div>`,
+      <div><h2>Зачем нейронам глия</h2>
+        <p>Глию описал и назвал «нейроглией» Рудольф Вирхов (1856); форму её клеток показали Гольджи и Рамон-и-Кахаль. Глия заполняет всё пространство между нейронами. В целом по мозгу глиальных клеток примерно столько же, сколько нейронов (~1:1). В сером веществе коры на нейрон приходится около 1,5 глиальной клетки, в стволе — до десяти, а в мозжечке, полном мелких клеток-зёрен, глии в несколько раз меньше, чем нейронов. Глиоциты в 3–4 раза мельче нейронов, тигроида в них мало, синапсов они не образуют и сигнал электрически не передают.</p>
+        <h3>Гематоэнцефалический барьер</h3>
+        <p>Сам барьер — эндотелий капилляров: его клетки сшиты плотными контактами, и вещества из крови проходят в мозг только через переносчики. Ножки астроцитов одевают капилляр почти целиком и поддерживают барьер. Глутамат — главный возбуждающий медиатор и одна из самых частых аминокислот пищи, но пищевой глутамат почти весь сжигают клетки кишечника, а глутамат плазмы плохо проходит барьер. Поэтому белковая еда не раскачивает мозг. Выключите «ГЭБ» и посмотрите, что станет с нейронами.</p>
+        <h3>Белое и серое вещество</h3>
+        <p>Миелин на 75% состоит из липидов с большим количеством холестерина и потому белый. Скопления аксонов в миелине образуют <b>белое вещество</b>, это «провода». Тела и дендриты нейронов образуют <b>серое</b>. При рассеянном склерозе иммунитет атакует белок миелина. Миелинизация идёт первые 20 лет жизни: от спинного мозга к коре, а мозолистое тело начинает её лишь на втором месяце после рождения.</p>
+        <h3>Откуда глия</h3>
+        <p>Астроциты, олигодендроциты и эпендимоциты развиваются из нейроэктодермы. Микроглия мезодермальная: в эмбриогенезе в мозг заходят клетки-предшественники фагоцитов и остаются там.</p></div>
+      <div><h2>Что здесь настоящее</h2><ul>
+        <li>Четыре типа глии и их место: ножки на капилляре, оболочки на разных аксонах от одного олигодендроцита, ветвистая микроглия у синапсов, однослойная эпендима с ресничками.</li>
+        <li>Перехваты Ранвье между оболочками и прыжки импульса.</li><li>Ответ микроглии на травму: рост, деление, движение в очаг, фагоцитоз.</li></ul>
+        <h2 style="margin-top:22px">Условности</h2><ul><li>Масштабы сближены: на деле капилляр уже тела нейрона, а оболочка длиной около 1 мм.</li><li>Глутамат нарисован крупными точками.</li></ul></div>
+      <div class="keys"><h2>Клавиши</h2><ul><li><code>0</code>–<code>5</code> тип клеток</li><li><code>F</code> белковая еда</li><li><code>B</code> ГЭБ</li><li><code>P</code> прунинг</li><li><code>T</code> травма</li><li><code>M</code> миелинизация</li><li><code>N</code> подписи</li></ul></div>`,
   };
 }
 export { makeGlia };

@@ -177,9 +177,9 @@ function makeLungs() {
     { text: 'nasal cavity', pos: V3(0.1, 4.2, 0.42), color: '#E8A890', show: () => st.labels && st.mode !== 'alv' },
     { text: 'larynx', pos: V3(0.15, 3.5, 0.22), color: '#F2D18A', show: () => st.labels && st.mode !== 'alv' },
     { text: 'trachea', pos: V3(0.12, 2.95, 0.12), color: '#E8DCC8', show: () => st.labels && st.mode !== 'alv' },
-    { text: 'right lung · 3 lobes', pos: V3(-0.85, 2.75, 0.2), color: '#E89AA8', show: () => st.labels && st.mode !== 'alv' },
-    { text: 'left lung · 2 lobes', pos: V3(0.85, 2.75, 0.2), color: '#E89AA8', show: () => st.labels && st.mode !== 'alv' },
-    { text: 'diaphragm', pos: V3(0.6, 1.55, 0.45), color: '#C86A6A', show: () => st.labels && st.mode !== 'alv' },
+    { text: 'right lung · 3 lobes', pos: V3(-0.95, 1.9, 0.2), left: true, color: '#E89AA8', show: () => st.labels && st.mode !== 'alv' },
+    { text: 'left lung · 2 lobes', pos: V3(1.05, 2.9, 0.2), color: '#E89AA8', show: () => st.labels && st.mode !== 'alv' },
+    { text: 'diaphragm', pos: V3(0.45, 1.45, 0.45), color: '#E89090', show: () => st.labels && st.mode !== 'alv' },
     { text: 'heart', pos: BODY.heart.clone().add(V3(0.1, -0.05, 0.3)), color: '#FF8A7A', show: () => st.labels && st.mode === 'tract' },
     { text: 'bronchiole', pos: V3(28.0, 0.9, 0.2), color: '#E8DCC8', show: () => st.labels && st.mode === 'alv' },
     { text: 'alveoli', pos: V3(31.0, 0.75, 0.6), color: '#F0B0B8', show: () => st.labels && st.mode === 'alv' },
@@ -213,7 +213,7 @@ function makeLungs() {
   }
   function stats() { return st.mode === 'alv' ? [['Alveoli', '300–500', 'million'], ['Area', '70–100', 'm²']] : [['Lung volume', Math.round(st.V), 'mL'], ['Rate', st.rr, '/min']]; }
   const self = {
-    scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#9FE0FF',
+    labelBg: true, mobZoom: 0.6, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#9FE0FF',
     kicker: 'Body · respiration', title: 'Respiratory system',
     lede: 'About 20,000 breaths a day. Air travels down the branching bronchial tree to hundreds of millions of alveoli, where oxygen passes into the blood in a fraction of a second.',
     notes: `

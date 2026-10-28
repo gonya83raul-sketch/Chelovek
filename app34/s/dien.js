@@ -21,7 +21,7 @@ function makeDien() {
   __set_rnd(mulberry(606));
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x060509); scene.environment = envTex;
   labLights(scene, 0xb9a4ff);
-  const VIEW = { thal: flyTarget(V3(-0.1, -0.2, 0), V3(7.8, 4.4, 11.4)), hypo: flyTarget(V3(0.35, -2.15, 0), V3(4.6, -0.9, 6.2)) };
+  const VIEW = { thal: flyTarget(V3(-0.6, -0.55, 0), V3(7.3, 4.05, 11.4)), hypo: flyTarget(V3(0.35, -2.15, 0), V3(4.6, -0.9, 6.2)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 200); camera.position.copy(VIEW.thal.pos);
   const controls = makeControls(camera, VIEW.thal.target); controls.minDistance = 2; controls.maxDistance = 25;
   const mat = (c, o = {}) => tissue(new THREE.Color(c).multiplyScalar(0.4), o);

@@ -5,27 +5,27 @@ import { GLOW, LOOK, Sparks, THREE, V3, __set_rnd, addLights, bloom, button, can
    ЛЕКЦИЯ 1 · ТИПЫ НЕЙРОНОВ И НЕЙРОСЕТЬ
    ========================================================= */
 const NTYPES = [
-  { id: 'multi', short: 'Мульти', name: 'Мультиполярный', tiles: [['Дендритов', 'много', ''], ['Аксон', 1, '']],
-    text: '<b>Мультиполярный нейрон</b>: один аксон и несколько дендритов, самый частый тип в мозге. Здесь показан мотонейрон спинного мозга. Его аксон в миелине дотягивается до мышцы руки или ноги, иногда длиннее метра. Коллатераль отходит под прямым углом и копирует сигнал второму адресату.' },
-  { id: 'bi', short: 'Би', name: 'Биполярный', tiles: [['Дендритов', 1, ''], ['Аксон', 1, '']],
-    text: '<b>Биполярный нейрон</b>: один дендрит и один аксон на противоположных полюсах тела. Это редкая форма, её находят в сенсорных системах. Дендрит здесь бывает покрыт миелином.' },
-  { id: 'pseudo', short: 'Псевдоуни', name: 'Псевдоуниполярный', tiles: [['Отростков', 1, ''], ['Ветвей', 2, '']],
-    text: '<b>Псевдоуниполярный нейрон</b>: от тела отходит один отросток (по происхождению это аксон) и делится буквой Т. Одна ветвь работает как дендрит и чувствует прикосновение к коже. Другая работает как аксон и уходит в ЦНС. Обе в миелине, и сигнал идёт в обход тела. Так устроены нейроны боли и касания в спинномозговых ганглиях.' },
-  { id: 'pyr', short: 'Пирамидный', name: 'Пирамидный', tiles: [['Тело', 'до 100', 'мкм'], ['Шипики', 'да', '']],
-    text: '<b>Пирамидный нейрон</b> коры больших полушарий: тело-пирамида до 100 мкм, апикальный дендрит вверх, базальные вниз. Дендриты усыпаны <b>шипиками</b>, это принимающая часть синапсов. Чем больше шипиков, тем больше информационных потоков собирает клетка.' },
-  { id: 'purk', short: 'Пуркинье', name: 'Клетка Пуркинье', tiles: [['Тело', '60–70', 'мкм'], ['Стволов', '2–3', '']],
-    text: '<b>Клетка Пуркинье</b> мозжечка: с неё в 1836 году началась нейроцитология. От тела отходят 2–3 толстых дендрита и ветвятся в огромное дерево, лежащее <b>в одной плоскости</b>. На синапсах этого дерева хранится двигательная память. Поверните сцену боком, и дерево станет тонкой полоской.' },
-  { id: 'star', short: 'Звездчатый', name: 'Звездчатый', tiles: [['Дендритов', 'много', ''], ['Аксон', 'короткий', '']],
-    text: '<b>Звездчатый нейрон</b>: небольшое тело, дендриты расходятся во все стороны, как лучи. Аксон короткий и ветвится рядом, то есть клетка работает внутри местной сети.' },
-  { id: 'fusi', short: 'Веретено', name: 'Веретеновидный', tiles: [['Дендритов', '2 пучка', ''], ['Аксон', 1, '']],
-    text: '<b>Веретеновидный нейрон</b>: вытянутое тело, дендриты отходят пучками от двух полюсов. Это одна из форм, по которым нейроны делят по виду тела, наряду с пирамидной, звездчатой и клеткой Пуркинье.' },
+  { id: 'multi', short: 'Multi', name: 'Multipolar', tiles: [['Dendrites', 'many', ''], ['Axon', 1, '']],
+    text: '<b>Multipolar neuron</b>: one axon and several dendrites, the most common type in the brain. Shown here is a spinal cord motor neuron. Its myelinated axon reaches a muscle of the arm or leg and is sometimes longer than a meter. A collateral branches off at a right angle and copies the signal to a second target.' },
+  { id: 'bi', short: 'Bi', name: 'Bipolar', tiles: [['Dendrites', 1, ''], ['Axon', 1, '']],
+    text: '<b>Bipolar neuron</b>: one dendrite and one axon at opposite poles of the cell body. It is a rare form, found in sensory systems. The dendrite here can be myelinated.' },
+  { id: 'pseudo', short: 'Pseudouni', name: 'Pseudounipolar', tiles: [['Processes', 1, ''], ['Branches', 2, '']],
+    text: '<b>Pseudounipolar neuron</b>: a single process leaves the cell body (by origin it is an axon) and splits in the shape of a T. One branch works as a dendrite and senses touch on the skin. The other works as an axon and goes into the CNS. Both are myelinated, and the signal bypasses the cell body. This is how the pain and touch neurons of the spinal ganglia are built.' },
+  { id: 'pyr', short: 'Pyramidal', name: 'Pyramidal', tiles: [['Cell body', 'up to 100', 'µm'], ['Spines', 'yes', '']],
+    text: '<b>Pyramidal neuron</b> of the cerebral cortex: a pyramid-shaped cell body up to 100 µm, an apical dendrite going up and basal dendrites going down. The dendrites are covered in <b>spines</b>, the receiving side of synapses. The more spines, the more streams of information the cell collects.' },
+  { id: 'purk', short: 'Purkinje', name: 'Purkinje cell', tiles: [['Cell body', '60–70', 'µm'], ['Main dendrites', '2–3', '']],
+    text: '<b>Purkinje cell</b> of the cerebellum: neurocytology began with it in 1836. 2–3 thick dendrites leave the cell body and branch into a huge tree lying <b>in a single plane</b>. Motor memory is stored at the synapses of this tree. Turn the scene sideways, and the tree becomes a thin strip.' },
+  { id: 'star', short: 'Stellate', name: 'Stellate', tiles: [['Dendrites', 'many', ''], ['Axon', 'short', '']],
+    text: '<b>Stellate neuron</b>: a small cell body with dendrites radiating in all directions. The axon is short and branches nearby, meaning the cell works within a local network.' },
+  { id: 'fusi', short: 'Spindle', name: 'Fusiform', tiles: [['Dendrites', '2 tufts', ''], ['Axon', 1, '']],
+    text: '<b>Fusiform neuron</b>: an elongated cell body, with dendrites leaving in tufts from its two poles. It is one of the shapes by which neurons are classified by cell body form, along with pyramidal, stellate and Purkinje cells.' },
 ];
-const NET_TEXT = 'Сеть из пяти нейронов. <b>Сенсорный</b> нейрон (вход) замечает касание кожи. Два <b>вставочных</b> передают сигнал друг другу по кругу, и мышца дёргается несколько раз. <b>Мотонейрон</b> (выход) управляет мышцей. Внутри клетки сигнал электрический, в синапсах химический: в центральных обычно <b style="color:#9ee66a">глутамат</b>, в нервно-мышечных <b style="color:#3FC1B0">ацетилхолин</b>.';
+const NET_TEXT = 'A network of five neurons. The <b>sensory</b> neuron (input) detects a touch on the skin. Two <b>interneurons</b> pass the signal to each other in a loop, so the muscle twitches several times. The <b>motor neuron</b> (output) controls the muscle. Inside a cell the signal is electrical, at synapses it is chemical: usually <b style="color:#9ee66a">glutamate</b> at central synapses and <b style="color:#3FC1B0">acetylcholine</b> at neuromuscular ones.';
 const STAIN_TEXT = {
   live: '',
-  golgi: '<b>Окраска по Гольджи</b>: сначала бихромат калия даёт оранжевый фон, потом нитрат серебра. Образуется бихромат серебра, и клетка чернеет целиком, до тончайших веточек дендритов.',
-  nissl: '<b>Окраска по Нисслю</b> метиленовым синим. Она проявляет скопления рибосом, <b>тигроид</b>: глыбки в теле и в основаниях дендритов. В аксоне тигроида нет.',
-  bb: '<b>Brainbow</b>: случайные варианты флуоресцентного белка медузы дают около 100 оттенков, и каждую клетку можно проследить в сплетении.',
+  golgi: '<b>Golgi stain</b>: first potassium dichromate gives an orange background, then silver nitrate is added. Silver chromate forms, and the whole cell turns black, down to the finest dendritic twigs.',
+  nissl: '<b>Nissl stain</b> with methylene blue. It reveals clusters of ribosomes, the <b>Nissl substance</b> (tigroid): clumps in the cell body and at the bases of the dendrites. There is no Nissl substance in the axon.',
+  bb: '<b>Brainbow</b>: random variants of a jellyfish fluorescent protein produce about 100 hues, so each cell can be traced through the tangle.',
 };
 
 function makeTypes() {
@@ -33,8 +33,8 @@ function makeTypes() {
   const BG = 0x07060a, GOLGI_BG = 0x8a5420;
   const scene = new THREE.Scene(); scene.background = new THREE.Color(BG); scene.fog = new THREE.FogExp2(BG, 0.011); scene.environment = envTex;
   addLights(scene);
-  const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 400); camera.position.set(-6.0, 2.0, 50);
-  const controls = makeControls(camera, V3(-6.0, 0.0, 0)); controls.minDistance = 3; controls.maxDistance = 90;
+  const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 400); camera.position.set(-8.5, 2.5, 55);
+  const controls = makeControls(camera, V3(-8.5, 0.5, 0)); controls.minDistance = 3; controls.maxDistance = 90;
 
   const baseMat = new THREE.MeshPhysicalMaterial({ color: 0xcdb0c4, roughness: 0.46, clearcoat: 0.55, clearcoatRoughness: 0.35, sheen: 1, sheenColor: new THREE.Color(0x8f6dff), sheenRoughness: 0.5, emissive: 0x12081a, envMapIntensity: 0.6 });
   const myelinMat = new THREE.MeshPhysicalMaterial({ color: 0xf1e7d6, roughness: 0.28, clearcoat: 1, clearcoatRoughness: 0.18, envMapIntensity: 0.9 });
@@ -126,7 +126,7 @@ function makeTypes() {
     myelinate(c, ax2, 0.06, 0.94, 4, 0.24);
     finish(c, 0.85, V3(1, 1, 0.9));
     c.route = () => [S(c.prim.slice(0, 4).map((cv) => sg(c, cv, true)), 4, INP, () => { c.flash = st.t; }), S([sg(c, ax1)], 5, AP), S([sg(c, ax2), sg(c, col)], 9, AP), S(terms.map((cv) => sg(c, cv)), 6, AP, () => terms.forEach((cv) => burst(cv.getPointAt(1).add(c.origin), ACH)))];
-    c.lbl = [['дендриты', V3(-2.6, 2.4, 0)], ['тело (сома)', V3(1.0, 0.7, 0.6)], ['аксонный холмик', V3(0.45, -1.2, 0.2)], ['коллатераль', V3(1.8, -1.6, 0.1)], ['миелин', V3(0.4, -3.4, 0.2)], ['окончания аксона', V3(1.1, -5.9, 0)]];
+    c.lbl = [['dendrites', V3(-2.6, 2.4, 0)], ['cell body (soma)', V3(1.0, 0.7, 0.6)], ['axon hillock', V3(0.45, -1.2, 0.2)], ['collateral', V3(1.8, -1.6, 0.1)], ['myelin', V3(0.4, -3.4, 0.2)], ['axon terminals', V3(1.1, -5.9, 0)]];
   }
   // 2 биполярный
   { const c = newCell(NTYPES[1], org(1)); soma(c, blob(0.45, 1, 1.7, 1, 2));
@@ -137,7 +137,7 @@ function makeTypes() {
     terms.forEach((cv) => { const e = cv.getPointAt(1), b = new THREE.SphereGeometry(0.15, 12, 8); b.translate(e.x, e.y, e.z); c.ag.push(b); });
     finish(c, 0.5, V3(0.9, 1.6, 0.9));
     c.route = () => [S([sg(c, d, true)], 4, INP, () => { c.flash = st.t; }), S([sg(c, ax)], 6, AP), S(terms.map((cv) => sg(c, cv)), 4, AP)];
-    c.lbl = [['дендрит', V3(0.3, 2.4, 0)], ['тело', V3(0.6, 0.2, 0.3)], ['аксон', V3(0.3, -2.6, 0)]];
+    c.lbl = [['dendrite', V3(0.3, 2.4, 0)], ['cell body', V3(0.6, 0.2, 0.3)], ['axon', V3(0.3, -2.6, 0)]];
   }
   // 3 псевдоуниполярный
   { const c = newCell(NTYPES[2], org(2)); soma(c, blob(0.65, 1, 1, 1, 3), V3(0, 1.1, 0));
@@ -151,7 +151,7 @@ function makeTypes() {
     myelinate(c, per, 0.1, 0.92, 4, 0.2); myelinate(c, cen, 0.1, 0.92, 4, 0.2);
     finish(c, 0.65);
     c.route = () => [S([sg(c, per, true)], 7, AP, () => { c.flash = st.t - 0.15; }), S([sg(c, cen)], 7, AP), S(terms.map((cv) => sg(c, cv)), 4, AP)];
-    c.lbl = [['тело в ганглии', V3(0.75, 1.6, 0.3)], ['Т-образное деление', V3(0.3, -0.7, 0.3)], ['к коже: работает как дендрит', V3(-3.0, -2.0, 0.3)], ['в ЦНС: работает как аксон', V3(3.0, -2.1, 0.3)], ['свободные окончания', V3(-3.0, -4.9, 0.3)]];
+    c.lbl = [['cell body in the ganglion', V3(0.75, 1.6, 0.3)], ['T-shaped branching', V3(0.3, -0.7, 0.3)], ['to the skin: works as a dendrite', V3(-3.0, -2.0, 0.3)], ['to the CNS: works as an axon', V3(3.0, -2.1, 0.3)], ['free nerve endings', V3(-3.0, -4.9, 0.3)]];
   }
   // 4 пирамидный
   { const c = newCell(NTYPES[3], org(3));
@@ -172,7 +172,7 @@ function makeTypes() {
     const cB = addTube(c, [V3(0, -3.4, 0), V3(-0.8, -3.45, 0), V3(-1.5, -3.2, -0.2)], 0.06, 0.05, true, 10);
     finish(c, 0.6, V3(1, 1.1, 1));
     c.route = () => [S([sg(c, apical, true), ...c.prim.slice(1, 4).map((cv) => sg(c, cv, true))], 6, INP, () => { c.flash = st.t; }), S([sg(c, a1)], 5, AP), S([sg(c, a2), sg(c, cA)], 5, AP), S([sg(c, a3), sg(c, cB)], 5, AP)];
-    c.lbl = [['апикальный дендрит', V3(0.3, 3.4, 0)], ['шипики', V3(-1.3, 2.4, 0)], ['тело-пирамида', V3(0.8, 0.1, 0.4)], ['базальные дендриты', V3(-2.0, -1.5, 0)], ['коллатерали', V3(1.5, -1.6, 0.2)], ['аксон', V3(0.25, -4.6, 0)]];
+    c.lbl = [['apical dendrite', V3(0.3, 3.4, 0)], ['spines', V3(-1.3, 2.4, 0)], ['pyramid-shaped body', V3(0.8, 0.1, 0.4)], ['basal dendrites', V3(-2.0, -1.5, 0)], ['collaterals', V3(1.5, -1.6, 0.2)], ['axon', V3(0.25, -4.6, 0)]];
   }
   // 5 клетка Пуркинье
   { const c = newCell(NTYPES[4], org(4)); soma(c, blob(0.8, 0.95, 1.15, 0.9, 5));
@@ -186,7 +186,7 @@ function makeTypes() {
     myelinate(c, a2, 0.08, 0.95, 3, 0.22);
     finish(c, 0.8, V3(0.95, 1.15, 0.9));
     c.route = () => [S(trees.map((cv) => sg(c, cv, true)), 3, INP), S([sg(c, trunk, true)], 3, INP, () => { c.flash = st.t; }), S([sg(c, a1)], 5, AP), S([sg(c, a2), sg(c, col)], 8, AP)];
-    c.lbl = [['дендритное дерево в одной плоскости', V3(1.4, 4.4, 0)], ['тело 60–70 мкм', V3(0.95, 0.2, 0.4)], ['аксон к ядрам мозжечка', V3(0.4, -4.4, 0)], ['возвратная коллатераль', V3(1.4, -1.4, 0)]];
+    c.lbl = [['dendritic tree in a single plane', V3(1.4, 4.4, 0)], ['cell body 60–70 µm', V3(0.95, 0.2, 0.4)], ['axon to the cerebellar nuclei', V3(0.4, -4.4, 0)], ['recurrent collateral', V3(1.4, -1.4, 0)]];
   }
   // 6 звездчатый
   { const c = newCell(NTYPES[5], org(5)); soma(c, blob(0.5, 1, 1, 1, 6));
@@ -196,7 +196,7 @@ function makeTypes() {
     terms.forEach((cv) => { const e = cv.getPointAt(1), b = new THREE.SphereGeometry(0.12, 10, 8); b.translate(e.x, e.y, e.z); c.ag.push(b); });
     finish(c, 0.5);
     c.route = () => [S(c.prim.slice(0, 5).map((cv) => sg(c, cv, true)), 4, INP, () => { c.flash = st.t; }), S([sg(c, ax)], 4, AP), S(terms.map((cv) => sg(c, cv)), 4, AP)];
-    c.lbl = [['дендриты во все стороны', V3(1.2, 2.0, 0)], ['тело', V3(0.6, 0.3, 0.3)], ['короткий аксон ветвится рядом', V3(1.2, -2.3, 0)]];
+    c.lbl = [['dendrites in all directions', V3(1.2, 2.0, 0)], ['cell body', V3(0.6, 0.3, 0.3)], ['short axon branches nearby', V3(1.2, -2.3, 0)]];
   }
   // 7 веретеновидный
   { const c = newCell(NTYPES[6], org(6)); soma(c, blob(0.42, 1, 2.3, 1, 7));
@@ -207,7 +207,7 @@ function makeTypes() {
     const ax = addTube(c, [V3(0.35, 0.1, 0), V3(1.0, -0.4, 0.1), V3(1.5, -1.8, 0), V3(1.6, -3.4, 0), V3(1.4, -5.0, 0)], 0.12, 0.08, true, 40);
     finish(c, 0.42, V3(1, 2.2, 1));
     c.route = () => [S([sg(c, up, true), sg(c, dn, true)], 3, INP, () => { c.flash = st.t; }), S([sg(c, ax)], 6, AP)];
-    c.lbl = [['вытянутое тело', V3(0.5, 0.5, 0.3)], ['пучок дендритов', V3(0.8, 3.0, 0)], ['второй пучок', V3(-1.9, -2.6, 0)], ['аксон', V3(1.7, -3.6, 0)]];
+    c.lbl = [['elongated cell body', V3(0.5, 0.5, 0.3)], ['dendrite tuft', V3(0.8, 3.0, 0)], ['second tuft', V3(-1.9, -2.6, 0)], ['axon', V3(1.7, -3.6, 0)]];
   }
 
   /* ---------- сеть из пяти нейронов ---------- */
@@ -318,7 +318,7 @@ function makeTypes() {
   }
 
   /* ---------- камера ---------- */
-  const views = { all: { tgt: V3(-6.0, 0.0, 0), pos: V3(-6.0, 2.0, 50) }, net: { tgt: NET.clone().add(NC).add(V3(0, -3, 0)), pos: NET.clone().add(NC).add(V3(0, 1, 40)) } };
+  const views = { all: { tgt: V3(-8.5, 0.5, 0), pos: V3(-8.5, 2.5, 55) }, net: { tgt: NET.clone().add(NC).add(V3(0, -3, 0)), pos: NET.clone().add(NC).add(V3(0, 1, 40)) } };
   cells.slice(0, 7).forEach((c) => { views[c.def.id] = { tgt: c.origin.clone().add(V3(0, -2.6, 0)), pos: c.origin.clone().add(V3(4.5, 0.5, 24)) }; });
   views.purk.pos = byId.purk.origin.clone().add(V3(13, 1.5, 20));
   const st = { view: 'all', stain: 'live', auto: true, labels: true, t: 0, next: 0.8, fly: 1, twitch: 0, twitchT: -9, touchT: -9 };
@@ -359,24 +359,24 @@ function makeTypes() {
     labels.push({ text: c.def.name, pos: c.somaPos.clone().add(c.origin).add(V3(0.9, 0.9, 0.3)), show: () => st.labels && st.view === 'all' });
     c.lbl.forEach(([t, p]) => labels.push({ text: t, pos: c.origin.clone().add(p), show: () => st.labels && st.view === c.def.id }));
   });
-  [['кожа', at(-11.2, -4.3)], ['сенсорный нейрон', at(-4.0, 4.5)], ['спинномозговой ганглий', at(-3.6, 2.2)], ['вставочный 1', at(2.4, -0.8)], ['вставочный 2', at(6.3, 3.9, 0.3)],
-    ['серое вещество спинного мозга', at(2.2, 4.9)], ['мотонейрон', at(7.9, -3.7)], ['мышечные волокна', at(19.6, -4.7)], ['синапс: глутамат', at(0.6, 1.6)], ['нервно-мышечный синапс', at(16.4, -0.9)]]
+  [['skin', at(-11.2, -4.3)], ['sensory neuron', at(-4.0, 4.5)], ['spinal ganglion', at(-3.6, 2.2)], ['interneuron 1', at(2.4, -0.8)], ['interneuron 2', at(6.3, 3.9, 0.3)],
+    ['spinal cord gray matter', at(2.2, 4.9)], ['motor neuron', at(7.9, -3.7)], ['muscle fibers', at(19.6, -4.7)], ['synapse: glutamate', at(0.6, 1.6)], ['neuromuscular junction', at(16.4, -0.9)]]
     .forEach(([t, p]) => labels.push({ text: t, pos: NET.clone().add(p), show: () => st.labels && st.view === 'net' }));
 
   let refs = {};
   function ui(el) {
     const info = h('div', { class: 'info' });
     const setInfo = () => {
-      const base = st.view === 'all' ? 'Семь форм нервных клеток. Нажмите на клетку или выберите её выше. Импульс всегда идёт с дендритов (вход) через тело к аксону (выход).' : st.view === 'net' ? NET_TEXT : NTYPES.find((d) => d.id === st.view).text;
+      const base = st.view === 'all' ? 'Seven shapes of nerve cells. Click a cell or select it above. The impulse always travels from the dendrites (input) through the cell body to the axon (output).' : st.view === 'net' ? NET_TEXT : NTYPES.find((d) => d.id === st.view).text;
       info.innerHTML = base + (STAIN_TEXT[st.stain] ? '<br><br>' + STAIN_TEXT[st.stain] : '');
     };
-    const viewSeg = seg([{ id: 'all', label: 'Все' }, ...NTYPES.map((d) => ({ id: d.id, label: d.short })), { id: 'net', label: 'Сеть' }], () => st.view, (v) => { go(v); setInfo(); });
-    const stSeg = seg([{ id: 'live', label: 'Живая' }, { id: 'golgi', label: 'Гольджи', color: '#c9793a' }, { id: 'nissl', label: 'Ниссль', color: '#6b7bff' }, { id: 'bb', label: 'Brainbow', color: '#c77dff' }], () => st.stain, (v) => { st.stain = v; applyStain(); setInfo(); });
-    const auto = toggle('Авто', () => st.auto, (v) => { st.auto = v; st.next = st.t + 0.3; });
-    const lab = toggle('Подписи', () => st.labels, (v) => { st.labels = v; });
+    const viewSeg = seg([{ id: 'all', label: 'All' }, ...NTYPES.map((d) => ({ id: d.id, label: d.short })), { id: 'net', label: 'Network' }], () => st.view, (v) => { go(v); setInfo(); });
+    const stSeg = seg([{ id: 'live', label: 'Live' }, { id: 'golgi', label: 'Golgi', color: '#c9793a' }, { id: 'nissl', label: 'Nissl', color: '#6b7bff' }, { id: 'bb', label: 'Brainbow', color: '#c77dff' }], () => st.stain, (v) => { st.stain = v; applyStain(); setInfo(); });
+    const auto = toggle('Auto', () => st.auto, (v) => { st.auto = v; st.next = st.t + 0.3; });
+    const lab = toggle('Labels', () => st.labels, (v) => { st.labels = v; });
     refs = { viewSeg, stSeg, auto, lab, setInfo };
-    el.append(group('Клетка', '0–8', viewSeg), group('Окраска', 'G', stSeg), group('Сигнал', 'пробел · A · N', button('Импульс', fireNow, true), auto, lab),
-      h('div', { class: 'grp', style: 'flex:1 1 320px' }, h('div', { class: 'glabel' }, 'Что видно'), info));
+    el.append(group('Cell', '0–8', viewSeg), group('Stain', 'G', stSeg), group('Signal', 'Space · A · N', button('Impulse', fireNow, true), auto, lab),
+      h('div', { class: 'grp', style: 'flex:1 1 320px' }, h('div', { class: 'glabel' }, 'What you see'), info));
     setInfo();
   }
   const VIEW_KEYS = ['all', ...NTYPES.map((d) => d.id), 'net'];
@@ -391,28 +391,28 @@ function makeTypes() {
     return false;
   }
   function stats() {
-    if (st.view === 'all') return [['Форм', 7, ''], ['Тело', '5–100', 'мкм']];
-    if (st.view === 'net') return [['Нейронов', 5, ''], ['Сокращений', st.twitch, '']];
+    if (st.view === 'all') return [['Shapes', 7, ''], ['Cell body', '5–100', 'µm']];
+    if (st.view === 'net') return [['Neurons', 5, ''], ['Twitches', st.twitch, '']];
     return NTYPES.find((d) => d.id === st.view).tiles;
   }
   applyStain();
   return {
     mobZoom: 0.66, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#F5C26B',
-    kicker: 'Мозг · нейроны', title: 'Типы нейронов',
-    lede: 'Семь форм нервных клеток и маленькая нейросеть. Можно покрасить их так, как это делали Гольджи и Ниссль, или раскрасить методом Brainbow.',
+    kicker: 'Brain · neurons', title: 'Neuron types',
+    lede: 'Seven shapes of nerve cells and a small neural network. You can stain them the way Golgi and Nissl did, or color them with the Brainbow method.',
     notes: `
-      <div><h2>Как устроен нейрон</h2>
-        <p>У нейрона есть <b>тело (сома)</b> с ядром и рибосомами, где синтезируется белок, и два вида отростков. <b>Дендриты</b> принимают сигналы и несут их к телу. Тело сводит возбуждающие и тормозные входы и решает, запускать ли ответ. <b>Аксон</b> уносит импульс к другим клеткам. Аксон отходит от тела в месте, которое называется <b>аксонный холмик</b>.</p>
-        <h3>Дендрит и аксон</h3>
-        <p>Дендрит короче (около 0,5–1 мм), ветвится под острым углом и истончается, как ветка дерева. Аксон длиной от сантиметров до метра и больше. Он держит постоянный диаметр 0,5–1,5 мкм и ветвится под прямым углом: коллатерали копируют сигнал нескольким адресатам. Дендриты в ЦНС обычно без миелина, аксоны часто в миелине. Тигроид есть в дендритах, в аксоне его нет.</p>
-        <h3>Три класса по функции</h3>
-        <p><b>Сенсорные</b> (афферентные) нейроны стоят на входе, <b>вставочные</b> связывают вход с выходом, их в сложной нервной системе больше всего. <b>Исполнительные</b> (эфферентные) стоят на выходе: мотонейроны управляют мышцами, вегетативные нейроны управляют органами.</p>
-        <h3>Как увидели клетки</h3>
-        <p>Пуркинье в 1836 году зафиксировал мягкую ткань мозжечка и разглядел крупные клетки. <b>Гольджи</b> придумал окраску серебром, <b>Рамон-и-Кахаль</b> зарисовал тончайшие ветвления и синапсы, оба получили Нобелевскую премию 1906 года. <b>Ниссль</b> окрасил рибосомы метиленовым синим.</p></div>
-      <div><h2>Что здесь настоящее</h2><ul>
-        <li>Число и расположение отростков у каждой формы.</li><li>Острые углы ветвления у дендритов, прямые у аксонных коллатералей.</li><li>Плоское дерево клетки Пуркинье, шипики пирамидного нейрона, Т-образный отросток сенсорного.</li><li>Вид окрасок: чёрный силуэт на оранжевом, тигроид только в теле и основаниях дендритов.</li></ul>
-        <h2 style="margin-top:22px">Условности</h2><ul><li>Размеры клеток выровнены, аксоны сильно укорочены.</li><li>Импульс замедлен примерно в тысячу раз.</li><li>Гольджи красит лишь некоторые клетки, здесь окрашены все.</li></ul></div>
-      <div class="keys"><h2>Клавиши</h2><ul><li><code>0</code>–<code>8</code> клетка, <code>8</code> сеть</li><li>клик по клетке: выбрать</li><li><code>G</code> окраска</li><li><code>пробел</code> импульс</li><li><code>A</code> авто</li><li><code>N</code> подписи</li></ul></div>`,
+      <div><h2>How a neuron is built</h2>
+        <p>A neuron has a <b>cell body (soma)</b> with a nucleus and ribosomes, where proteins are synthesized, and two kinds of processes. <b>Dendrites</b> receive signals and carry them to the cell body. The cell body sums excitatory and inhibitory inputs and decides whether to fire a response. The <b>axon</b> carries the impulse away to other cells. The axon leaves the cell body at a site called the <b>axon hillock</b>.</p>
+        <h3>Dendrite and axon</h3>
+        <p>A dendrite is shorter (about 0.5–1 mm), branches at acute angles and tapers like a tree branch. An axon is from centimeters to a meter or more long. It keeps a constant diameter of 0.5–1.5 µm and branches at right angles: collaterals copy the signal to several targets. Dendrites in the CNS are usually unmyelinated, axons are often myelinated. Nissl substance is present in dendrites but absent from the axon.</p>
+        <h3>Three functional classes</h3>
+        <p><b>Sensory</b> (afferent) neurons sit at the input, <b>interneurons</b> link input to output, and in a complex nervous system they are the most numerous. <b>Effector</b> (efferent) neurons sit at the output: motor neurons control muscles, autonomic neurons control organs.</p>
+        <h3>How cells were first seen</h3>
+        <p>In 1836 Purkinje fixed the soft tissue of the cerebellum and made out large cells. <b>Golgi</b> invented silver staining, <b>Ramón y Cajal</b> drew the finest branchings and synapses, and both received the 1906 Nobel Prize. <b>Nissl</b> stained ribosomes with methylene blue.</p></div>
+      <div><h2>What is accurate here</h2><ul>
+        <li>The number and arrangement of processes in each shape.</li><li>Acute branching angles in dendrites, right angles in axon collaterals.</li><li>The flat tree of the Purkinje cell, the spines of the pyramidal neuron, the T-shaped process of the sensory neuron.</li><li>The look of the stains: a black silhouette on orange, Nissl substance only in the cell body and dendrite bases.</li></ul>
+        <h2 style="margin-top:22px">Simplifications</h2><ul><li>Cell sizes are equalized, and axons are greatly shortened.</li><li>The impulse is slowed roughly a thousandfold.</li><li>The Golgi method stains only some cells; here all of them are stained.</li></ul></div>
+      <div class="keys"><h2>Keys</h2><ul><li><code>0</code>–<code>8</code> cell, <code>8</code> network</li><li>click a cell: select</li><li><code>G</code> stain</li><li><code>Space</code> impulse</li><li><code>A</code> auto</li><li><code>N</code> labels</li></ul></div>`,
   };
 }
 export { makeTypes };

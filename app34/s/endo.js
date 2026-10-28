@@ -144,7 +144,7 @@ function makeEndo() {
   }
   function stats() { const S = SIM; return st.mode === 'sugar' ? [['Глюкоза', S.G.toFixed(1), 'ммоль/л'], ['Инсулин', Math.round(S.I), 'мкЕд/мл']] : st.mode === 'stress' ? [['Пульс', Math.round(S.HR), 'уд/мин'], ['Кортизол', Math.round(S.C * 30), 'нмоль/л']] : st.mode === 'thy' ? [['ТТГ', S.TSH.toFixed(1), 'мЕд/л'], ['T4', (S.T4 * 15).toFixed(0), 'пмоль/л']] : [['Желёз', 8, ''], ['Гормонов', '>50', '']]; }
   const self = {
-    mobZoom: 0.5, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#C77DFF',
+    labelBg: true, mobZoom: 0.5, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#C77DFF',
     kicker: 'Тело · гормоны', title: 'Эндокринная система',
     lede: 'Крошечные железы управляют ростом, обменом веществ, сном, стрессом и сахаром крови, рассылая по кровотоку химические письма — гормоны.',
     notes: `
