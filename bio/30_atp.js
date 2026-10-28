@@ -173,7 +173,7 @@ function makeAtp() {
   }
   function stats() { return st.mode === 'cycle' ? [['Этап', st.phase || '', ''], ['Оборот АТФ', '≈ масса тела', 'в сутки']] : [['Энергии в стадии 3', '≈ ⅔', ''], ['Запас АТФ в теле', '≈ 100', 'г']]; }
   const self = {
-    scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#FFB070',
+    mobZoom: 1.0, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#FFB070',
     kicker: 'Биохимия · энергия', title: 'АТФ и стадии катаболизма',
     lede: 'Клетка не может напрямую «сжечь» сахар для работы: энергия пищи сначала переводится в универсальную валюту — АТФ. Человек за сутки синтезирует и тратит её примерно столько, сколько весит сам.',
     notes: `

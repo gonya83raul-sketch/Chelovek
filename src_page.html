@@ -1299,9 +1299,14 @@ function makeBrain() {
   const hemiGeos = brainKit().hemi;
   const innerMat = glassMat(0xb9a4ff, { rim: 0.35, base: 0.01, pow: 1.8 });
   const innerFill = new THREE.MeshPhysicalMaterial({ color: 0xb9a4ff, roughness: 0.5, transparent: true, opacity: 0.15, depthWrite: false });   // таламус и гипофиз видны, но не закрывают ядра
-  [[V3(0.0, -0.05, 0.2), V3(0.32, 0.2, 0.2)], [V3(0.0, -0.05, -0.2), V3(0.32, 0.2, 0.2)]].forEach(([p, s]) => { [innerFill, innerMat].forEach((mt) => { const m = new THREE.Mesh(new THREE.SphereGeometry(1, 32, 24), mt); m.position.copy(p); m.scale.copy(s); scene.add(m); }); });
-  const cc = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([V3(0.95, -0.05, 0), V3(0.7, 0.32, 0), V3(0, 0.42, 0), V3(-0.65, 0.3, 0), V3(-0.8, 0.12, 0)]), 64, 0.06, 10), innerMat); scene.add(cc);
-  [innerFill, innerMat].forEach((mt) => { const pit = new THREE.Mesh(new THREE.SphereGeometry(0.07, 20, 14), mt); pit.position.set(0.38, -0.78, 0); scene.add(pit); });
+  // таламусы — два яйца (узкий передний конец, толстая подушка сзади) с щелью III желудочка между ними
+  [1, -1].forEach((sd) => { const g = displaceGeo(new THREE.SphereGeometry(1, 40, 28), (v) => { const back = smooth(0.2, -1, v.x); v.set(v.x * 0.36, v.y * (0.15 + 0.06 * back), v.z * (0.13 + 0.06 * back)); v.add(V3(0.0, -0.05, 0.19 * sd)); });
+    [innerFill, innerMat].forEach((mt) => scene.add(new THREE.Mesh(g, mt))); });
+  // мозолистое тело — плоская дуга-лента с утолщениями спереди (колено) и сзади (валик)
+  { const c = new THREE.CatmullRomCurve3([V3(0.72, -0.12, 0), V3(0.86, 0.1, 0), V3(0.7, 0.32, 0), V3(0, 0.42, 0), V3(-0.65, 0.3, 0), V3(-0.8, 0.12, 0)]);
+    const g = taperTube(c, (u) => 0.035 + 0.03 * Math.exp(-(((u - 0.2) / 0.12) ** 2)) + 0.045 * smooth(0.75, 1, u), 80, 16); g.scale(1, 1, 4.2); scene.add(new THREE.Mesh(g, innerMat)); }
+  [innerFill, innerMat].forEach((mt) => { const pit = new THREE.Mesh(new THREE.SphereGeometry(0.07, 20, 14), mt); pit.position.set(0.38, -0.8, 0); scene.add(pit); });
+  scene.add(new THREE.Mesh(taperTube(new THREE.CatmullRomCurve3([V3(0.27, -0.55, 0), V3(0.33, -0.66, 0), V3(0.37, -0.75, 0)]), (u) => 0.03 - 0.012 * u, 16, 10), innerMat));   // воронка (ножка гипофиза)
 
   // cortex target points
   const cortexPts = [];
@@ -1361,7 +1366,7 @@ function makeBrain() {
   function apply() {
     SYSTEMS.forEach((s) => {
       const on = st.sys === 'all' || st.sys === s.id;
-      groups[s.id].children.forEach((m) => { if (m.material.uniforms) m.material.uniforms.uOn.value = on ? (st.sys === 'all' ? 0.4 : 1.2) : 0.05; else m.visible = on; });
+      groups[s.id].children.forEach((m) => { if (m.material.uniforms) m.material.uniforms.uOn.value = on ? (st.sys === 'all' ? 0.2 : 1.2) : 0.04; else m.visible = on; });
     });
     accentSet(st.sys === 'all' ? '#EFEAE6' : S[st.sys].color);
   }
@@ -1374,7 +1379,8 @@ function makeBrain() {
     { text: 'мозжечок', pos: V3(-1.5, -1.2, 0.95) }, { text: 'ствол', pos: V3(-0.25, -1.45, 0.3) }, { text: 'спинной мозг', pos: V3(-0.5, -2.25, 0.2) },
     { text: 'таламус', pos: V3(0.05, 0.12, 0.3) }, { text: 'гипофиз', pos: V3(0.48, -0.86, 0.05) },
   ];
-  const labels = [...anat.map((l) => ({ ...l, show: () => st.labels })), ...nucleiLabels.map((l) => ({ text: l.text, pos: l.pos, color: S[l.sys].color, show: () => st.labels && (st.sys === 'all' || st.sys === l.sys) }))];
+  // в обзоре — по одному ядру на систему; на телефоне анатомические подписи только при выбранной системе
+  const labels = [...anat.map((l) => ({ ...l, show: () => st.labels && !(mqMob.matches && st.sys === 'all') })), ...nucleiLabels.map((l) => ({ text: l.text, pos: l.pos, color: S[l.sys].color, show: () => st.labels && (st.sys === l.sys || (st.sys === 'all' && l.text !== 'чёрная субстанция')) }))];
   let refs = {};
   function ui(el) {
     const info = h('div', { class: 'info' });
@@ -1397,7 +1403,7 @@ function makeBrain() {
   function stats() { if (st.sys === 'all') return [['Систем', 5, ''], ['Медиаторов', 5, '']]; const s = S[st.sys]; return [['Нейронов', s.share, '']]; }
   apply();
   return {
-    scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, get accent() { return st.sys === 'all' ? '#EFEAE6' : S[st.sys].color; },
+    deskShift: 1.3, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, get accent() { return st.sys === 'all' ? '#EFEAE6' : S[st.sys].color; },
     kicker: 'Медиаторы · где они в мозге', title: 'Системы медиаторов',
     lede: 'Маленькие ядра в стволе и основании мозга раскидывают отростки по огромной территории. Поэтому одно вещество меняет состояние всего мозга сразу.',
     notes: `
@@ -3074,7 +3080,7 @@ function makeGlia() {
   }
   function stats() { return [['ГЭБ', st.bbb ? 'закрыт' : 'открыт', ''], ['Глутамат в мозге', st.glu, ''], ['Синапсов', syn.filter((s) => s.alive).length, '']]; }
   return {
-    scene, camera, controls, update: update2, ui, onKey, stats, labels, drawScope: null, accent: '#7FD6C8',
+    mobZoom: 0.62, scene, camera, controls, update: update2, ui, onKey, stats, labels, drawScope: null, accent: '#7FD6C8',
     kicker: 'Мозг · вспомогательные клетки', title: 'Нейроглия',
     lede: 'Glia по-гречески «клей». Глия упаковывает нейроны, изолирует их, охраняет вход из крови и убирает мусор.',
     notes: `
@@ -5444,7 +5450,7 @@ function makeStem() {
   function stats() { if (st.mode === 'rf') return [['Дыхание', 15, 'в мин'], ['Пульс', 70, 'уд/мин']]; return [['Продолговатый', '≈4', 'см'], ['Мост', '2,5–3', 'см']]; }
   setMode('floors');
   const self = {
-    scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#9FE0C0',
+    mobZoom: 0.7, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#9FE0C0',
     kicker: 'Мозг · стволовые структуры', title: 'Ствол мозга',
     lede: 'Продолговатый и средний мозг — древние отделы, общие для всех позвоночных; мост как отдельный отдел есть только у млекопитающих. Здесь центры дыхания и сердца, сна и бодрствования, и все пути между мозгом и телом.',
     notes: `
@@ -5482,7 +5488,7 @@ function makeDien() {
   rnd = mulberry(606);
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x060509); scene.environment = envTex;
   labLights(scene, 0xb9a4ff);
-  const VIEW = { thal: flyTarget(V3(-0.1, 0.2, 0), V3(7.2, 4.9, 10.4)), hypo: flyTarget(V3(0.35, -2.15, 0), V3(4.6, -0.9, 6.2)) };
+  const VIEW = { thal: flyTarget(V3(-0.1, -0.2, 0), V3(7.8, 4.4, 11.4)), hypo: flyTarget(V3(0.35, -2.15, 0), V3(4.6, -0.9, 6.2)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 200); camera.position.copy(VIEW.thal.pos);
   const controls = makeControls(camera, VIEW.thal.target); controls.minDistance = 2; controls.maxDistance = 25;
   const mat = (c, o = {}) => tissue(new THREE.Color(c).multiplyScalar(0.4), o);
@@ -5492,7 +5498,7 @@ function makeDien() {
   const thalGeo = (s) => displaceGeo(new THREE.SphereGeometry(1, 64, 44), (v) => {
     const back = smooth(0, -1, v.x); v.set(v.x * 1.05, v.y * (0.62 + 0.12 * back), v.z * (0.52 + 0.12 * back)); v.x += 0.06 * Math.exp(-(((v.y - 0.3) / 0.25) ** 2)) * smooth(0.6, 1, v.x / 1.05); v.z += 0.7 * s;   // между таламусами — только III желудочек и межталамическое сращение
   });
-  [1, -1].forEach((s) => { const g = thalGeo(s); thal.add(new THREE.Mesh(g, mat(0xb9a4ff, { transparent: true, opacity: 0.2, depthWrite: false })), new THREE.Mesh(g, glassMat(0xc9b6ff, { rim: 0.35, base: 0.008, pow: 2 }))); });
+  [1, -1].forEach((s) => { const g = thalGeo(s); thal.add(new THREE.Mesh(g, mat(0xd8c8ff, { transparent: true, opacity: 0.42, depthWrite: false, emissive: 0x2a1e50 })), new THREE.Mesh(g, glassMat(0xc9b6ff, { rim: 0.6, base: 0.012, pow: 2 }))); });
   { const ad = new THREE.CylinderGeometry(0.14, 0.14, 0.62, 20); ad.rotateX(Math.PI / 2); ad.translate(0.1, 0.02, 0); thal.add(new THREE.Mesh(ad, mat(0xe8e0f0))); }
   // ретикулярное ядро — «скорлупа» снаружи
   const retShell = [1, -1].map((s) => { const g = thalGeo(s); g.scale(1.06, 1.08, 1.0); g.translate(0, 0, 0.1 * s); const m = new THREE.Mesh(g, glassMat(0x8fb4ff, { rim: 0.2, base: 0.003, pow: 1.6 })); thal.add(m); return m; });
@@ -5670,7 +5676,7 @@ function makeDien() {
   function stats() { return st.mode === 'thal' ? [['Ядер таламуса', '≈40', ''], ['Длина', '≈4', 'см']] : [['Ядер', '>30', 'пар'], ['Гипофиз', '≈0,5', 'г']]; }
   setMode('thal');
   const self = {
-    scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#B9A4FF',
+    mobZoom: 0.7, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#B9A4FF',
     kicker: 'Мозг · промежуточный мозг', title: 'Таламус и гипоталамус',
     lede: 'Таламус решает, какая информация попадёт в кору. Гипоталамус следит за потребностями тела и через гипофиз управляет гормонами.',
     notes: `
@@ -9205,7 +9211,7 @@ function makeChemo() {
   }
   function stats() { return st.mode === 'smell' ? [['Типов рецепторов', '≈400', ''], ['Активных клубочков', GLOM.filter((g) => g.act > 0.5).length, '']] : [['Вкусовых почек', '2–8', 'тыс.'], ['Базовых вкусов', 5, '']]; }
   const self = {
-    scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#7FE0A0',
+    mobZoom: 0.72, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#7FE0A0',
     kicker: 'Органы чувств · химические', title: 'Обоняние и вкус',
     lede: 'Два химических чувства: нос различает тысячи запахов по узору сотен рецепторов, язык — пять базовых вкусов. Вместе они дают то, что мы называем вкусом еды.',
     notes: `

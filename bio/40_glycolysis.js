@@ -41,8 +41,8 @@ const GL_MODES = {
 function makeGlycolysis() {
   rnd = mulberry(1201);
   const scene = bioStage({ rim: 0xff8ab0 });
-  const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 200); camera.position.set(0.4, 0.8, 22);
-  const controls = makeControls(camera, V3(0.4, -2.0, 0)); controls.minDistance = 4; controls.maxDistance = 40;
+  const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 200); camera.position.set(-1.1, 0.8, 22);
+  const controls = makeControls(camera, V3(-1.1, -2.0, 0)); controls.minDistance = 4; controls.maxDistance = 40;
   controls.minAzimuthAngle = -0.6; controls.maxAzimuthAngle = 0.6; controls.minPolarAngle = 1.1; controls.maxPolarAngle = 2.0; // плоская схема: подписи не уходят к соседям
   const fx = new Sparks(1600, 0.09); scene.add(fx.obj);
   const NP = (id) => V3(GL_N[id][0], GL_N[id][1], 0);
@@ -122,9 +122,9 @@ function makeGlycolysis() {
     if (k === 'r' || k === 'к') { refs.rot.click(); return true; } if (k === 'n' || k === 'т') { refs.lab.click(); return true; }
     return false;
   }
-  function stats() { return [['Реакция', st.cur ? st.cur.name : '', ''], ['АТФ', `−${st.cnt.spent} +${st.cnt.made}`, ''], [st.mode === 'ppp' ? 'НАДФН' : 'НАДН', st.mode === 'ppp' ? st.cnt.nadph * 2 : st.cnt.nadh, '']]; }
+  function stats() { return [['Шаг', `${st.step + 1} / ${GL_MODES[st.mode].route.length}`, ''], ['АТФ', `−${st.cnt.spent} +${st.cnt.made}`, ''], [st.mode === 'ppp' ? 'НАДФН' : 'НАДН', st.mode === 'ppp' ? st.cnt.nadph * 2 : st.cnt.nadh, '']]; }
   const self = {
-    scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#FF8AB0',
+    mobZoom: 0.82, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#FF8AB0',
     kicker: 'Биохимия · обмен углеводов', title: 'Гликолиз и глюконеогенез',
     lede: 'Десять реакций цитоплазмы разрезают глюкозу на два пирувата. Дальше — лактат, спирт или митохондрия; а печень умеет пройти этот путь обратно.',
     notes: `

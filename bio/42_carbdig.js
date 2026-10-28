@@ -6,7 +6,7 @@
 function makeCarbdig() {
   rnd = mulberry(4201);
   const scene = bioStage({ rim: 0xf2c14e });
-  const VIEW = { dig: [V3(1.2, 0.5, 0), V3(1.4, 0.9, 15.5)], met: [V3(41.2, 0.3, 0), V3(41.4, 0.7, 16.5)] };
+  const VIEW = { dig: [V3(1.2, 0.5, 0), V3(1.4, 0.9, 15.5)], met: [V3(39.8, 0.5, 0), V3(40.0, 0.9, 15.6)] };
   const VIEWM = { dig: [V3(1.2, 0.6, 0), V3(1.2, 0.8, 11.5)], met: [V3(41.2, 0.4, 0), V3(41.2, 0.6, 13.5)] };
   const mqm = window.matchMedia('(max-width:700px)'), VV = (m) => (mqm.matches && VIEWM[m]) || VIEW[m];
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VV('dig')[1]);
@@ -70,7 +70,7 @@ function makeCarbdig() {
   const LUM_Y = 2.05, LUM_R = 1.5;
   G1.add(new THREE.Mesh(tube([V3(XL - 0.1, LUM_Y + LUM_R, 0), V3(0, LUM_Y + LUM_R + 0.02, 0), V3(XR, LUM_Y + LUM_R, 0)], 0.07, 40, 8), organMat('#C8A090', 0.55)));
   const colCurve = new THREE.CatmullRomCurve3([V3(XR - 0.05, LUM_Y, 0), V3(XR + 0.9, LUM_Y + 0.05, 0), V3(XR + 1.8, LUM_Y - 0.45, 0), V3(XR + 2.2, LUM_Y - 1.4, 0), V3(XR + 2.2, LUM_Y - 2.4, 0)]);
-  const colG = taperTube(colCurve, (u) => (LUM_R - 0.78 * smooth(0, 0.7, u)) * (1 + 0.06 * Math.sin(u * 34)), 90, 18); colG.computeBoundingBox(); const colC = colG.boundingBox.getCenter(V3(0, 0, 0)); colG.translate(-colC.x, -colC.y, -colC.z);
+  const colG = taperTube(colCurve, (u) => (LUM_R - 0.78 * smooth(0, 0.7, u)) * (1 + 0.03 * Math.sin(u * 34)), 90, 18); colG.computeBoundingBox(); const colC = colG.boundingBox.getCenter(V3(0, 0, 0)); colG.translate(-colC.x, -colC.y, -colC.z);
   const colon = new THREE.Mesh(colG, organMat('#C8A090', 0.5, { transparent: true, opacity: 0.55, depthWrite: false })); colon.position.copy(colC); G1.add(colon);
 
   /* ---------- 2. галактоза и фруктоза в печени ---------- */
@@ -80,7 +80,7 @@ function makeCarbdig() {
     udpglc: { m: 'udpglc', p: V3(-1.1, 3.35, 0) }, udpgal: { m: 'udpgal', p: V3(0.9, 3.35, 0) },
     fru: { m: 'fructose', p: V3(-3.8, -0.4, 0) }, f1p: { m: 'f1p', p: V3(-1.8, -0.4, 0) }, dhap: { m: 'dhap', p: V3(0.4, 0.15, 0) }, gald: { m: 'glyald', p: V3(0.4, -0.95, 0) }, gly: { m: 'gap', p: V3(2.7, -0.4, 0), name: 'ГАФ → гликолиз' },
   };
-  Object.values(NODES).forEach((n) => { const mo = MOL(n.m); n.g = molMesh(mo, { scale: n.m.startsWith('udp') ? 0.09 : 0.11, hideH: true }); if (n.m.startsWith('udp')) molGlow(n.g, 0.15); n.g.position.copy(n.p); G2.add(n.g); n.glow = glowNucleus(G2, n.p, '#FF6A5A', 0.1, 9); n.glow.core.visible = false; n.glow.spr.material.opacity = 0; });
+  Object.values(NODES).forEach((n) => { const mo = MOL(n.m); n.g = molMesh(mo, { scale: n.m.startsWith('udp') ? 0.115 : 0.14, hideH: true }); if (n.m.startsWith('udp')) molGlow(n.g, 0.15); n.g.position.copy(n.p); G2.add(n.g); n.glow = glowNucleus(G2, n.p, '#FF6A5A', 0.1, 9); n.glow.core.visible = false; n.glow.spr.material.opacity = 0; });
   const STEP = [
     ['gal', 'gal1p', 'галактокиназа', '#7FE0A0', 'gk'], ['gal1p', 'g1p', 'ГАЛТ', '#7FE0A0', 'galt'], ['udpglc', 'udpgal', '', '#9FB4FF', 'galt2'], ['udpgal', 'udpglc', 'эпимераза', '#9FB4FF', 'epi'], ['g1p', 'g6p', 'фосфоглюкомутаза', '#F2C14E', 'pgm'],
     ['fru', 'f1p', 'фруктокиназа', '#FF9A5C', 'fk'], ['f1p', 'dhap', 'альдолаза B', '#FF9A5C', 'aldB'], ['f1p', 'gald', '', '#FF9A5C', 'aldB2'], ['dhap', 'gly', '', '#F2C14E', 'g1'], ['gald', 'gly', 'триокиназа', '#F2C14E', 'tri'], ['g6p', 'gly', '', '#F2C14E', 'g3'],
@@ -199,7 +199,7 @@ function makeCarbdig() {
     { text: 'энтероцит', pos: V3(-1.2, YB + 1.45, 0.8), color: '#E8A0A0', show: () => st.labels && st.mode === 'dig' && !mqm.matches },
     { text: 'капилляр → воротная вена', pos: V3(1.1, YB - 0.95, 0.3), color: '#E06A6A', show: () => st.labels && st.mode === 'dig' },
     { text: 'толстая кишка', pos: V3(XR + 0.45, LUM_Y + 0.35, 0.5), color: '#C8A090', show: () => st.labels && st.mode === 'dig' },
-    ...Object.entries(NODES).map(([k, n]) => ({ text: n.name || MOL(n.m).name, pos: n.p.clone().add(k === 'gly' ? V3(OX + 0.35, -0.1, 0.2) : k === 'g6p' ? V3(OX + 0.38, -0.05, 0.2) : k === 'dhap' ? V3(OX - 0.3, 0.45, 0.2) : V3(OX - 0.55, -0.75, 0.2)), color: k === 'gly' || k === 'g6p' || k === 'g1p' ? '#F2C14E' : k.startsWith('udp') ? '#9FB4FF' : ['gal', 'gal1p'].includes(k) ? '#7FE0A0' : '#FF9A5C', show: () => st.labels && st.mode === 'met' })),
+    ...Object.entries(NODES).map(([k, n]) => ({ text: n.name || MOL(n.m).name, pos: n.p.clone().add(k === 'gly' ? V3(OX + 0.35, -0.1, 0.2) : k === 'g6p' ? V3(OX + 0.38, -0.05, 0.2) : k === 'dhap' ? V3(OX - 0.3, 0.5, 0.2) : V3(OX - 0.3, -0.64, 0.2)), color: k === 'gly' || k === 'g6p' || k === 'g1p' ? '#F2C14E' : k.startsWith('udp') ? '#9FB4FF' : ['gal', 'gal1p'].includes(k) ? '#7FE0A0' : '#FF9A5C', show: () => st.labels && st.mode === 'met' })),
     ...AR.filter((a) => a.name).map((a) => ({ text: a.name, pos: NODES[a.a].p.clone().lerp(NODES[a.b].p, 0.5).add(V3(OX - 0.6, a.id === 'epi' ? -0.55 : a.id === 'tri' ? -0.45 : a.id === 'galt' ? -0.42 : 0.5, 0.3)), color: '#C8C8D0', show: () => st.labels && st.mode === 'met' })),
     { text: 'гликоген', pos: V3(OX + 3.1, 3.1, 0.3), color: '#F2C14E', show: () => st.labels && st.mode === 'met' },
     { text: 'хрусталик (галактитол)', pos: V3(OX + 3.2, -2.35, 0.4), color: '#E8F0FF', show: () => st.labels && st.mode === 'met' },

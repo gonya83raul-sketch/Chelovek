@@ -27,11 +27,12 @@ function makeGlycogen() {
       const q = new THREE.Quaternion().setFromUnitVectors(V3(0, 1, 0), d);
       const r = { p: p.clone(), q, tier, ta: t0 + i * 0.09, end: i === n - 1, n: i, len: n, kidAt: false };
       r.cid = cid; RES.push(r); gridAdd(r);
-      if (tier < 5 && (i === 2 || (i === 6 && tier > 0))) { r.kidAt = true; const ax = randUnit().cross(d).normalize(); kids.push([p.clone(), d.clone().applyAxisAngle(ax, rand(0.52, 0.7)).normalize(), tier + 1, t0 + i * 0.09 + 0.25]); } // ветвь отходит под 30–40°
+      if (tier < 4 && (i === 2 || (i === 5 && tier > 0) || (i === 8 && tier > 1))) { r.kidAt = true; const ax = randUnit().cross(d).normalize(); kids.push([p.clone(), d.clone().applyAxisAngle(ax, rand(0.52, 0.7)).normalize(), tier + 1, t0 + i * 0.09 + 0.25]); } // ветвь отходит под 30–40°
     }
     kids.forEach((k) => { if (RES.length < 1700) chain(...k); });
   }
-  [V3(1, 0, 0), V3(-1, 0, 0), V3(0, 1, 0), V3(0, -1, 0), V3(0, 0, 1), V3(0, 0, -1)].forEach((d) => chain(d.clone().multiplyScalar(0.2), d, 0, 0)); // 6 цепей от гликогенина
+  // цепи от гликогенина расходятся во все стороны (точки Фибоначчи на сфере) — гранула растёт шаром, а не крестом
+  for (let k = 0; k < 12; k++) { const y = 1 - 2 * (k + 0.5) / 12, rr = Math.sqrt(1 - y * y), a = k * 2.39996; const d = V3(Math.cos(a) * rr, y, Math.sin(a) * rr); chain(d.clone().multiplyScalar(0.22), d, 0, k * 0.04); }
   const NR = RES.length; const T_ALL = Math.max(...RES.map((r) => r.ta)) + 0.5;
   const HX = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.06, 0.06, 0.035, 6), new THREE.MeshPhysicalMaterial({ roughness: 0.35, clearcoat: 0.6, envMapIntensity: 0.5 }), NR); G1.add(HX);
   const dm = new THREE.Object3D(), col = new THREE.Color();
@@ -56,9 +57,11 @@ function makeGlycogen() {
   /* ---------- состояние ---------- */
   const LB = { br: V3(0, 0, 0), udp: V3(0, 0, 0), g1p: V3(0, 0, 0) };
   const st = { t: 0, mode: 'build', labels: true, rot: true, fly: null, g: 0, msg: null, glu: 5.0, ins: 0.3, glg: 0.3, meal: -99, diab: 'none', hist: [], hrs: 0, sim: 8, glycL: 0.7 };
-  function setMode(m) { st.mode = m; refs.modeSeg && refs.modeSeg.sync(); G1.visible = m !== 'blood'; G2.visible = m === 'blood'; st.fly = VIEW[m]; st.g = m === 'build' ? 0 : T_ALL; st.msg = null; refs.rebuild && refs.rebuild(); refs.setInfo && refs.setInfo(); }
+  controls.addEventListener('start', () => { st.userCam = true; });
+  function setMode(m) { st.mode = m; st.userCam = false; refs.modeSeg && refs.modeSeg.sync(); G1.visible = m !== 'blood'; G2.visible = m === 'blood'; st.fly = VIEW[m]; st.g = m === 'build' ? 0 : T_ALL; st.msg = null; refs.rebuild && refs.rebuild(); refs.setInfo && refs.setInfo(); }
   function update(dt) {
     st.t += dt; const t = st.t; controls.autoRotate = false; flyStep(st, camera, controls, dt);
+    if (G1.visible && !st.fly && !st.userCam) { const want = 7.5 + 7.5 * Math.cbrt((st.res || 0) / NR), off = camera.position.clone().sub(controls.target), L = off.length(); const L2 = L + (want - L) * Math.min(1, dt * 1.5); camera.position.copy(controls.target).addScaledVector(off, L2 / L); const dy = 0.9 - 0.9 * L2 / 13.5 - controls.target.y; controls.target.y += dy; camera.position.y += dy; }
     if (G1.visible) {
       if (st.rot) G1.rotation.y += dt * 0.2;
       if (st.mode === 'build') { st.g += dt * 0.55; if (st.g > T_ALL + 2.5) st.g = 0.2; }
@@ -105,10 +108,10 @@ function makeGlycogen() {
     if (st.mode !== 'blood') { scopeShow(false); return; } scopeShow(true);
     const A = plotAxes(ctx, w, h, { title: 'глюкоза крови, ммоль/л · 8 часов', xl: 'время →', yl: '' });
     const Y = (v) => A.Y(v / 16);
-    ctx.fillStyle = 'rgba(127,224,160,.12)'; ctx.fillRect(A.X(0), Y(5.5), A.X(1) - A.X(0), Y(3.3) - Y(5.5));
+    ctx.fillStyle = 'rgba(127,224,160,.12)'; ctx.fillRect(A.X(0), Y(5.5), A.X(1) - A.X(0), Y(3.9) - Y(5.5));
     ctx.setLineDash([3, 4]); ctx.strokeStyle = 'rgba(255,106,106,.5)'; ctx.beginPath(); ctx.moveTo(A.X(0), Y(10)); ctx.lineTo(A.X(1), Y(10)); ctx.stroke(); ctx.setLineDash([]);
     ctx.strokeStyle = '#F2C14E'; ctx.lineWidth = 2; ctx.beginPath(); st.hist.forEach(([x, v], i) => { const X = A.X((x - (st.hrs - 8)) / 8); i ? ctx.lineTo(X, Y(v)) : ctx.moveTo(X, Y(v)); }); ctx.stroke();
-    ctx.font = '500 9px JetBrains Mono, monospace'; ctx.fillStyle = 'rgba(127,224,160,.8)'; ctx.fillText('норма 3,3–5,5', A.X(0.02), Y(5.5) - 3); ctx.fillStyle = 'rgba(255,140,140,.8)'; ctx.fillText('почечный порог ~10', A.X(0.55), Y(10) - 3);
+    ctx.font = '500 9px JetBrains Mono, monospace'; ctx.fillStyle = 'rgba(127,224,160,.8)'; ctx.fillText('норма 3,9–5,5', A.X(0.02), Y(5.5) - 3); ctx.fillStyle = 'rgba(255,140,140,.8)'; ctx.fillText('почечный порог ~10', A.X(0.55), Y(10) - 3);
   }
   const TXT = {
     build: '<b>Синтез гликогена (гликогенез).</b> После еды глюкоза в печени и мышцах превращается в глюкозо-6-фосфат → глюкозо-1-фосфат → <b>УДФ-глюкозу</b> (активированная форма, зелёные огоньки). <b>Гликогенсинтаза</b> пришивает остатки к концам цепей связью <b>α-1,4</b>, а <b>ветвящий фермент</b> переносит кусочки по 6–7 остатков, создавая точки ветвления <b>α-1,6</b> (примерно каждые 8–12 остатков). Затравка — белок <b>гликогенин</b> в центре (розовый). Ветвление делает гранулу компактной, растворимой и даёт много концов для быстрого распада. Гликогенсинтазу включает инсулин (через дефосфорилирование).',
@@ -153,7 +156,7 @@ function makeGlycogen() {
   }
   function stats() { return st.mode === 'blood' ? [['Глюкоза', st.glu.toFixed(1), 'ммоль/л'], ['Инсулин', Math.round(st.ins * 60), '%'], ['Гликоген печени', Math.round(st.glycL * 100), '%']] : [['Остатков глюкозы', st.res || 0, ''], ['В реальной грануле', '≈ 30 000', '']]; }
   const self = {
-    scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#F2C14E',
+    mobZoom: 1.0, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#F2C14E',
     kicker: 'Биохимия · обмен углеводов', title: 'Гликоген и сахар крови',
     lede: 'Глюкоза — быстрое топливо, но хранить её в свободном виде нельзя: вода хлынула бы в клетку. Поэтому печень и мышцы запасают её в ветвистых гранулах гликогена.',
     notes: `

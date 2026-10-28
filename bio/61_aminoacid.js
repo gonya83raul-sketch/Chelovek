@@ -183,7 +183,7 @@ function makeAminoacid() {
     return [['Белка в сутки', '≈ 1', 'г/кг']];
   }
   const self = {
-    scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#7FE0A0',
+    mobZoom: 1.0, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#7FE0A0',
     kicker: 'Биохимия · обмен белков', title: 'Обмен аминокислот и мочевина',
     lede: 'Белки пищи разбираются на аминокислоты; их азот снимается, превращается в ядовитый аммиак — и печень упаковывает его в безопасную мочевину.',
     notes: `

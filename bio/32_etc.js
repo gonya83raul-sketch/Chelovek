@@ -13,8 +13,8 @@ const ETC_POIS = [
 function makeEtc() {
   rnd = mulberry(1101);
   const scene = bioStage({ bg: 0x08060a, rim: 0xffb070 });
-  const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 200); camera.position.set(0.4, 2.6, 20.5);
-  const controls = makeControls(camera, V3(0, -2.9, 0)); controls.minDistance = 4; controls.maxDistance = 40;
+  const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 200); camera.position.set(-1.6, 5.0, 23);
+  const controls = makeControls(camera, V3(-2.0, -1.0, 0)); controls.minDistance = 4; controls.maxDistance = 40;
   const fx = new Sparks(2600, 0.08); scene.add(fx.obj);
   const MEMY = 0, TH = 0.95;
   const mem = schemBilayer({ w: 17, d: 5.0, thick: TH, step: 0.27, head: '#C8A070', tail: '#8A6A4A', seed: 4 }); mem.position.z = -2.65; scene.add(mem); // «срез»: передний край бислоя чуть позади комплексов — видны трансмембранные части
@@ -198,7 +198,7 @@ function makeEtc() {
   }
   function stats() { return [['Градиент H⁺', Math.round((st.pmf || 0) * 100), '%'], ['Дыхание', (st.oRate || 0).toFixed(2), 'O/с'], ['АТФ', (st.aRate || 0).toFixed(2), '/с'], ['P/O', st.oRate > 0.05 ? (st.aRate / st.oRate).toFixed(1) : '—', '']]; }
   const self = {
-    scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#FFB070',
+    mobZoom: 0.9, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#FFB070',
     kicker: 'Биохимия · биологическое окисление', title: 'Дыхательная цепь и АТФ-синтаза',
     lede: 'Внутренняя мембрана митохондрии: электроны бегут к кислороду, протоны выкачиваются наружу, а потом крутят молекулярную турбину, собирающую АТФ.',
     notes: `

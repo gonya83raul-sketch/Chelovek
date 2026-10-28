@@ -6,7 +6,7 @@
 function makeBetaox() {
   rnd = mulberry(1501);
   const scene = bioStage({ rim: 0xf2c14e });
-  const VIEW = { lipo: flyTarget(V3(0, -1.6, 0), V3(0.6, 0.6, 18)), beta: flyTarget(V3(38.5, -1.9, 0), V3(39.1, 0.6, 17.5)), keto: flyTarget(V3(80, -1.0, 0), V3(80.6, 1.2, 18.5)), syn: flyTarget(V3(120, -1.6, 0), V3(120.6, 0.6, 16)) };
+  const VIEW = { lipo: flyTarget(V3(0, -1.6, 0), V3(0.6, 0.6, 18)), beta: flyTarget(V3(39.9, -1.9, 0), V3(40.5, 0.6, 17.5)), keto: flyTarget(V3(80, -1.0, 0), V3(80.6, 1.2, 18.5)), syn: flyTarget(V3(120, -1.6, 0), V3(120.6, 0.6, 16)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.lipo.pos);
   const controls = makeControls(camera, VIEW.lipo.target); controls.minDistance = 3; controls.maxDistance = 40;
   const fx = new Sparks(1800, 0.08); scene.add(fx.obj);
