@@ -32,7 +32,8 @@ function makeVitamins() {
   const big = (id) => { if (!cache[id]) { const m = MOL(id); cache[id] = molMesh(m, { scale: molFit(m, 2.35), style: 'ball' }); } return cache[id]; };
   const ring = new THREE.Group(); G1.add(ring);
   const RING = VT.map((v, k) => { const m = MOL(v.mol); const g = molMesh(m, { scale: molFit(m, 0.82), hideH: true }); g.traverse((o) => { if (o.isMesh) o.userData.pick = v.id; }); ring.add(g); const pk = new THREE.Mesh(new THREE.SphereGeometry(0.55, 10, 8), new THREE.MeshBasicMaterial({ visible: false })); pk.userData.pick = v.id; g.add(pk); return { v, g, pk }; });
-  const halo = new THREE.Mesh(new THREE.TorusGeometry(3.1, 0.012, 8, 160), new THREE.MeshBasicMaterial({ color: 0xf2c14e, transparent: true, opacity: 0.16 })); halo.rotation.x = Math.PI / 2; halo.position.y = -1.35; G1.add(halo);
+  // дорожка карусели — та же дуга, по которой стоят витамины (эллипс 6,4 × 1,2 вокруг (0, −1,75, −3,2))
+  const halo = new THREE.Line(new THREE.BufferGeometry().setFromPoints(Array.from({ length: 121 }, (_, i) => { const a = Math.PI * (0.06 + 0.88 * i / 120); return V3(-Math.cos(a) * 6.4, -1.75 + Math.sin(a) * 0.25 - 0.32, -3.2 - Math.sin(a) * 1.2); })), new THREE.LineBasicMaterial({ color: 0xf2c14e, transparent: true, opacity: 0.4 })); G1.add(halo);
   /* ---------- 3. НАД⁺ в работе ---------- */
   const G2 = new THREE.Group(); G2.position.set(40, 0, 0); scene.add(G2);
   const nadFull = molMesh(MOL('nad'), { scale: molFit(MOL('nad'), 2.0) }); nadFull.position.set(-2.7, 0.2, -0.5); G2.add(nadFull);
