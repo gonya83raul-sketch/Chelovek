@@ -3084,7 +3084,7 @@ function makeGlia() {
   }
   function stats() { return [['ГЭБ', st.bbb ? 'закрыт' : 'открыт', ''], ['Глутамат в мозге', st.glu, ''], ['Синапсов', syn.filter((s) => s.alive).length, '']]; }
   return {
-    mobZoom: 0.62, scene, camera, controls, update: update2, ui, onKey, stats, labels, drawScope: null, accent: '#7FD6C8',
+    labelBg: true, mobZoom: 0.62, scene, camera, controls, update: update2, ui, onKey, stats, labels, drawScope: null, accent: '#7FD6C8',
     kicker: 'Мозг · вспомогательные клетки', title: 'Нейроглия',
     lede: 'Glia по-гречески «клей». Глия упаковывает нейроны, изолирует их, охраняет вход из крови и убирает мусор.',
     notes: `
@@ -5457,7 +5457,7 @@ function makeStem() {
   function stats() { if (st.mode === 'rf') return [['Дыхание', 15, 'в мин'], ['Пульс', 70, 'уд/мин']]; return [['Продолговатый', '≈4', 'см'], ['Мост', '2,5–3', 'см']]; }
   setMode('floors');
   const self = {
-    mobZoom: 0.7, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#9FE0C0',
+    labelBg: true, mobZoom: 0.7, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#9FE0C0',
     kicker: 'Мозг · стволовые структуры', title: 'Ствол мозга',
     lede: 'Продолговатый и средний мозг — древние отделы, общие для всех позвоночных; мост как отдельный отдел есть только у млекопитающих. Здесь центры дыхания и сердца, сна и бодрствования, и все пути между мозгом и телом.',
     notes: `
@@ -5683,7 +5683,7 @@ function makeDien() {
   function stats() { return st.mode === 'thal' ? [['Ядер таламуса', '≈40', ''], ['Длина', '≈4', 'см']] : [['Ядер', '>30', 'пар'], ['Гипофиз', '≈0,5', 'г']]; }
   setMode('thal');
   const self = {
-    mobZoom: 0.7, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#B9A4FF',
+    labelBg: true, mobZoom: 0.7, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#B9A4FF',
     kicker: 'Мозг · промежуточный мозг', title: 'Таламус и гипоталамус',
     lede: 'Таламус решает, какая информация попадёт в кору. Гипоталамус следит за потребностями тела и через гипофиз управляет гормонами.',
     notes: `
@@ -6245,7 +6245,7 @@ function makeCortex() {
   }
   function stats() { return st.mode === 'zones' ? [['Полей Бродмана', 52, ''], ['Год карты', 1909, '']] : st.mode === 'layers' ? [['Слоёв', 6, ''], ['Пирамид', '≈75', '%']] : [['Доли', 5, ''], ['Главные борозды', 3, '']]; }
   const self = {
-    scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#E9785F', mobZoom: 0.68,
+    labelBg: true, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#E9785F', mobZoom: 0.68,
     kicker: 'Мозг · новая кора', title: 'Кора больших полушарий',
     lede: 'Пять долей, 52 поля Бродмана, шесть слоёв и колонки-процессоры. Посмотрите, где говорит, видит и двигается кора и как сигнал проходит через её слои.',
     notes: `
@@ -9239,7 +9239,7 @@ function makeChemo() {
   }
   function stats() { return st.mode === 'smell' ? [['Типов рецепторов', '≈400', ''], ['Активных клубочков', GLOM.filter((g) => g.act > 0.5).length, '']] : [['Вкусовых почек', '2–8', 'тыс.'], ['Базовых вкусов', 5, '']]; }
   const self = {
-    mobZoom: 0.72, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#7FE0A0',
+    labelBg: true, mobZoom: 0.72, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#7FE0A0',
     kicker: 'Органы чувств · химические', title: 'Обоняние и вкус',
     lede: 'Два химических чувства: нос различает тысячи запахов по узору сотен рецепторов, язык — пять базовых вкусов. Вместе они дают то, что мы называем вкусом еды.',
     notes: `
