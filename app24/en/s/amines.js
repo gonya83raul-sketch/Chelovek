@@ -21,6 +21,9 @@ function makeAmines() {
   /* ---------- 1. декарбоксилирование ---------- */
   const G1 = new THREE.Group(); scene.add(G1);
   const XS = [-1.0, 1.45, 3.9, 6.35, 8.8];
+  // телефон: выбранный путь столбиком сверху вниз (ряд из пяти молекул по ширине не помещается); остальные пути скрыты
+  const MOB = matchMedia('(max-width:700px)').matches;
+  const NP = (r, i) => (MOB ? V3(0, 2.8 - i * 1.6, 0) : V3(XS[i], r.y, 0)), MP = (r, i) => NP(r, i).lerp(NP(r, i + 1), 0.5);
   const ROWS = [
     { id: 'his', col: '#FF8AB0', y: 2.25, chain: [['his', 'histidine'], ['histamine', 'histamine']], dec: [0], name: 'Histamine' },
     { id: 'ser', col: '#7FD6FF', y: 0.95, chain: [['trp', 'tryptophan'], ['htp', '5-hydroxytryptophan'], ['serotonin', 'serotonin'], ['melatonin', 'melatonin']], dec: [1], name: 'Serotonin and melatonin' },
@@ -29,9 +32,9 @@ function makeAmines() {
   ];
   const STEPN = { his: ['histidine decarboxylase'], ser: ['hydroxylase', 'decarboxylase', 'in the pineal gland, at night'], cat: ['tyrosine hydroxylase', 'decarboxylase', 'hydroxylase (vit. C)', 'methylation (SAM)'], gaba: ['glutamate decarboxylase'] };
   ROWS.forEach((r) => {
-    r.nodes = r.chain.map(([id], i) => { const g = fit(id, 0.6); g.position.set(XS[i], r.y, 0); G1.add(g); return g; });
-    r.arr = r.chain.slice(1).map((_, i) => flowArrow(G1, V3(XS[i] + 0.75, r.y, 0), V3(XS[i + 1] - 0.75, r.y, 0), r.col, { bend: 0.12, r: 0.02 }));
-    r.b6 = r.dec.map((i) => { const m = new THREE.Mesh(new THREE.SphereGeometry(0.09, 14, 10), new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xff9a30).multiplyScalar(0.6), emissive: 0xff9a30, emissiveIntensity: 0.2, roughness: 0.3 })); m.position.set((XS[i] + XS[i + 1]) / 2, r.y + 0.3, 0.2); G1.add(m); return m; });
+    r.nodes = r.chain.map(([id], i) => { const g = fit(id, 0.6); g.position.copy(NP(r, i)); G1.add(g); return g; });
+    r.arr = r.chain.slice(1).map((_, i) => flowArrow(G1, NP(r, i).lerp(NP(r, i + 1), 0.3), NP(r, i).lerp(NP(r, i + 1), 0.7), r.col, { bend: 0.12, r: 0.02 }));
+    r.b6 = r.dec.map((i) => { const m = new THREE.Mesh(new THREE.SphereGeometry(0.09, 14, 10), new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xff9a30).multiplyScalar(0.6), emissive: 0xff9a30, emissiveIntensity: 0.2, roughness: 0.3 })); m.position.copy(MP(r, i)).add(MOB ? V3(0.3, 0, 0.2) : V3(0, 0.3, 0.2)); G1.add(m); return m; });
   });
 
   /* ---------- 2. где действуют и как разрушаются ---------- */
@@ -74,16 +77,18 @@ function makeAmines() {
 
   /* ---------- состояние ---------- */
   const st = { t: 0, mode: 'decarb', labels: true, rot: false, fly: null, msg: null, row: 'cat', sit: 'calm', mao: false, b6: true, onec: 'norm', lvl: {} };
-  function setMode(m) { st.mode = m; refs.modeSeg && refs.modeSeg.sync(); [G1, G2, G3].forEach((g, k) => { g.visible = ['decarb', 'fate', 'onec'][k] === m; }); st.fly = flyTarget(VIEW[m][0], VIEW[m][1]); st.msg = null; refs.rebuild && refs.rebuild(); refs.setInfo && refs.setInfo(); }
+  const rowView = () => { const n = ROWS.find((x) => x.id === st.row).chain.length, cy = 2.8 - (n - 1) * 0.8; return flyTarget(V3(0.9, cy, 0), V3(1.0, cy + 0.5, n > 3 ? 9.8 : n > 2 ? 7.8 : 6)); };
+  function setMode(m) { st.mode = m; refs.modeSeg && refs.modeSeg.sync(); [G1, G2, G3].forEach((g, k) => { g.visible = ['decarb', 'fate', 'onec'][k] === m; }); st.fly = MOB && m === 'decarb' ? rowView() : flyTarget(VIEW[m][0], VIEW[m][1]); st.msg = null; refs.rebuild && refs.rebuild(); refs.setInfo && refs.setInfo(); }
   const C = new THREE.Color();
   function update(dt) {
     st.t += dt; const t = st.t; controls.autoRotate = st.rot; controls.autoRotateSpeed = 0.4; flyStep(st, camera, controls, dt);
     if (st.mode === 'decarb') {
       ROWS.forEach((r) => {
         const on = r.id === st.row;
+        if (MOB) { r.nodes.forEach((g) => { g.visible = on; }); r.arr.forEach((a) => { a.mesh.visible = on; if (a.cone) a.cone.visible = on; }); }
         r.nodes.forEach((g, i) => { g.rotation.y += dt * (on ? 0.6 : 0.15); g.scale.setScalar(on ? 1.1 : 0.85); });
-        r.arr.forEach((a, i) => { a.mat.uniforms.uTime.value = t; const isDec = r.dec.includes(i); a.mat.uniforms.uOn.value = on ? (isDec && !st.b6 ? 0.06 : 1.0) : 0.15; if (on && isDec && st.b6 && rnd() < 0.15) fx.spawn(V3((XS[i] + XS[i + 1]) / 2, r.y + 0.1, 0.2), V3(rand(-0.1, 0.1), 0.7, 0.2), C.set('#C8C8D0'), 0.9, 0.5, 1.1); });
-        r.b6.forEach((m) => { m.visible = st.b6; m.material.emissiveIntensity = on ? 0.3 + 0.15 * Math.sin(t * 5) : 0.08; });
+        r.arr.forEach((a, i) => { a.mat.uniforms.uTime.value = t; const isDec = r.dec.includes(i); a.mat.uniforms.uOn.value = on ? (isDec && !st.b6 ? 0.06 : 1.0) : 0.15; if (on && isDec && st.b6 && rnd() < 0.15) fx.spawn(MP(r, i).add(V3(0, 0.1, 0.2)), V3(rand(-0.1, 0.1), 0.7, 0.2), C.set('#C8C8D0'), 0.9, 0.5, 1.1); });
+        r.b6.forEach((m) => { m.visible = st.b6 && (on || !MOB); m.material.emissiveIntensity = on ? 0.3 + 0.15 * Math.sin(t * 5) : 0.08; });
       });
     }
     if (st.mode === 'fate') {
@@ -121,8 +126,8 @@ function makeAmines() {
   const SIT = { calm: 'Rest', mood: 'Mood', night: 'Night', stress: 'Stress', allergy: 'Allergy', sleep: 'Sleeping pill' };
   const SITTXT = { calm: TXT.fate, mood: '<b>Mood and motivation.</b> Dopamine is the signal of “reward” and the urge to act, serotonin the signal of calm and satisfaction, norepinephrine of alertness and attention. In depression these systems are less active; antidepressants raise the concentration of amines in the synapses.', night: '<b>Night.</b> When light stops reaching the retina, the pineal gland makes <b>melatonin</b> from serotonin, and its level rises tenfold. Melatonin tells the body “it is night now”: body temperature drops and you feel sleepy. Bright screen light in the evening suppresses its production.', stress: '<b>Stress.</b> Within seconds the sympathetic system releases <b>norepinephrine</b> and the adrenal medulla releases <b>epinephrine</b>: the pulse quickens, blood pressure rises, the bronchi and pupils dilate, the liver releases glucose — the “fight or flight” response.', allergy: '<b>Allergy.</b> An antigen binds to IgE on mast cells, and they release <b>histamine</b>: itching, hives, a runny nose, bronchospasm; in severe cases, anaphylactic shock. Antihistamines help; in anaphylaxis, epinephrine is needed.', sleep: '<b>Sleeping pills and sedatives</b> (benzodiazepines) enhance the action of <b>GABA</b> on its receptors — the chloride channel opens more often and neurons are inhibited. Alcohol acts in a similar way, which is why combining them is dangerous.' };
   const labels = [
-    ...ROWS.flatMap((r) => r.chain.map(([id, n], i) => ({ text: n, pos: V3(XS[i] - 0.25, r.y - 0.62, 0.3), color: r.col, show: () => st.labels && st.mode === 'decarb' && (st.row === r.id || i === 0 || i === r.chain.length - 1) }))),
-    ...ROWS.flatMap((r) => STEPN[r.id].map((n, i) => ({ text: n, pos: V3((XS[i] + XS[i + 1]) / 2 - 0.55, r.y + 0.55, 0.3), color: '#C8C8D0', show: () => st.labels && st.mode === 'decarb' && st.row === r.id }))),
+    ...ROWS.flatMap((r) => r.chain.map(([id, n], i) => ({ text: n, pos: MOB ? NP(r, i).add(V3(0.6, 0.05, 0.3)) : V3(XS[i] - 0.25, r.y - 0.62, 0.3), color: r.col, show: () => st.labels && st.mode === 'decarb' && (st.row === r.id || !MOB && (i === 0 || i === r.chain.length - 1)) }))),
+    ...ROWS.flatMap((r) => STEPN[r.id].map((n, i) => ({ text: n, pos: MOB ? MP(r, i).add(V3(0.35, 0, 0.3)) : V3((XS[i] + XS[i + 1]) / 2 - 0.55, r.y + 0.55, 0.3), color: '#C8C8D0', show: () => st.labels && st.mode === 'decarb' && st.row === r.id }))),
     { text: 'brain', pos: V3(40.45, 4.55, 0.1), color: '#9F7BFF', show: () => st.labels && st.mode === 'fate' }, { text: 'pineal gland', pos: V3(40 - 0.95, 4.15, 0), color: '#7FD6FF', show: () => st.labels && st.mode === 'fate' },
     { text: 'adrenal gland', pos: V3(40 + 0.6, 1.25, 0), color: '#F2C14E', show: () => st.labels && st.mode === 'fate' }, { text: 'bronchi', pos: V3(40 - 1.3, 2.4, 0), color: '#FF8AB0', show: () => st.labels && st.mode === 'fate' },
     { text: 'skin', pos: V3(40 + 1.45, 1.75, 0.2), color: '#FF8AB0', show: () => st.labels && st.mode === 'fate' }, { text: 'intestines', pos: V3(40 + 0.25, 0.25, 0.3), color: '#7FD6FF', show: () => st.labels && st.mode === 'fate' },
@@ -144,7 +149,7 @@ function makeAmines() {
     const box = h('div', { class: 'grp', style: 'flex:1 1 440px' });
     refs.rebuild = () => {
       box.innerHTML = '';
-      if (st.mode === 'decarb') box.append(h('div', { class: 'glabel' }, 'Pathway'), h('div', { class: 'gctl' }, seg(ROWS.map((r) => ({ id: r.id, label: r.name, color: r.col })), () => st.row, (v) => { st.row = v; st.msg = null; refs.setInfo(); }), toggle('Vitamin B6', () => st.b6, (v) => { st.b6 = v; st.msg = v ? null : '<b>Without vitamin B6</b> (pyridoxal phosphate), decarboxylases and transaminases do not work: the synthesis of GABA, serotonin and dopamine falls. B6 deficiency occurs during tuberculosis treatment with isoniazid and in people who abuse alcohol.'; refs.setInfo(); })));
+      if (st.mode === 'decarb') box.append(h('div', { class: 'glabel' }, 'Pathway'), h('div', { class: 'gctl' }, seg(ROWS.map((r) => ({ id: r.id, label: r.name, color: r.col })), () => st.row, (v) => { st.row = v; st.msg = null; if (MOB) st.fly = rowView(); refs.setInfo(); }), toggle('Vitamin B6', () => st.b6, (v) => { st.b6 = v; st.msg = v ? null : '<b>Without vitamin B6</b> (pyridoxal phosphate), decarboxylases and transaminases do not work: the synthesis of GABA, serotonin and dopamine falls. B6 deficiency occurs during tuberculosis treatment with isoniazid and in people who abuse alcohol.'; refs.setInfo(); })));
       else if (st.mode === 'fate') box.append(h('div', { class: 'glabel' }, 'Situation'), h('div', { class: 'gctl' }, seg(Object.entries(SIT).map(([id, label]) => ({ id, label })), () => st.sit, (v) => { st.sit = v; st.msg = null; refs.setInfo(); }), toggle('MAO inhibitor', () => st.mao, (v) => { st.mao = v; refs.setInfo(); })));
       else box.append(h('div', { class: 'glabel' }, 'State'), h('div', { class: 'gctl' }, seg([{ id: 'norm', label: 'Normal' }, { id: 'folate', label: 'No folate' }, { id: 'b12', label: 'No B12' }, { id: 'mtx', label: 'Methotrexate' }], () => st.onec, (v) => { st.onec = v; refs.setInfo(); })));
     };
@@ -154,6 +159,7 @@ function makeAmines() {
     el.append(group('Mode', '1–3', refs.modeSeg), box, group('View', 'R · N', refs.rot, lab), ib.el);
     refs.rebuild(); refs.setInfo();
   }
+  if (MOB) { const v = rowView(); camera.position.copy(v.pos); controls.target.copy(v.target); }
   function onKey(e) {
     const k = e.key.toLowerCase(), n = parseInt(e.key, 10);
     if (n >= 1 && n <= 3) { setMode(['decarb', 'fate', 'onec'][n - 1]); return true; }
@@ -166,7 +172,7 @@ function makeAmines() {
     const r = ROWS.find((x) => x.id === st.row); return [['Amino acid', r.chain[0][1], ''], ['Steps', r.chain.length - 1, '']];
   }
   const self = {
-    mobZoom: 0.9, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#9FE870',
+    mobZoom: 1.0, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#9FE870',
     kicker: 'Biochemistry · amino acid metabolism', title: 'Biogenic amines',
     lede: 'By removing just one molecule of CO₂, a cell turns an ordinary amino acid into a powerful signal: histamine, serotonin, dopamine, epinephrine, GABA.',
     notes: `

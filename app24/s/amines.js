@@ -21,6 +21,9 @@ function makeAmines() {
   /* ---------- 1. декарбоксилирование ---------- */
   const G1 = new THREE.Group(); scene.add(G1);
   const XS = [-1.0, 1.45, 3.9, 6.35, 8.8];
+  // телефон: выбранный путь столбиком сверху вниз (ряд из пяти молекул по ширине не помещается); остальные пути скрыты
+  const MOB = matchMedia('(max-width:700px)').matches;
+  const NP = (r, i) => (MOB ? V3(0, 2.8 - i * 1.6, 0) : V3(XS[i], r.y, 0)), MP = (r, i) => NP(r, i).lerp(NP(r, i + 1), 0.5);
   const ROWS = [
     { id: 'his', col: '#FF8AB0', y: 2.25, chain: [['his', 'гистидин'], ['histamine', 'гистамин']], dec: [0], name: 'Гистамин' },
     { id: 'ser', col: '#7FD6FF', y: 0.95, chain: [['trp', 'триптофан'], ['htp', '5-гидрокситриптофан'], ['serotonin', 'серотонин'], ['melatonin', 'мелатонин']], dec: [1], name: 'Серотонин и мелатонин' },
@@ -29,9 +32,9 @@ function makeAmines() {
   ];
   const STEPN = { his: ['гистидиндекарбоксилаза'], ser: ['гидроксилаза', 'декарбоксилаза', 'в эпифизе, ночью'], cat: ['тирозингидроксилаза', 'декарбоксилаза', 'гидроксилаза (вит. C)', 'метилирование (SAM)'], gaba: ['глутаматдекарбоксилаза'] };
   ROWS.forEach((r) => {
-    r.nodes = r.chain.map(([id], i) => { const g = fit(id, 0.6); g.position.set(XS[i], r.y, 0); G1.add(g); return g; });
-    r.arr = r.chain.slice(1).map((_, i) => flowArrow(G1, V3(XS[i] + 0.75, r.y, 0), V3(XS[i + 1] - 0.75, r.y, 0), r.col, { bend: 0.12, r: 0.02 }));
-    r.b6 = r.dec.map((i) => { const m = new THREE.Mesh(new THREE.SphereGeometry(0.09, 14, 10), new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xff9a30).multiplyScalar(0.6), emissive: 0xff9a30, emissiveIntensity: 0.2, roughness: 0.3 })); m.position.set((XS[i] + XS[i + 1]) / 2, r.y + 0.3, 0.2); G1.add(m); return m; });
+    r.nodes = r.chain.map(([id], i) => { const g = fit(id, 0.6); g.position.copy(NP(r, i)); G1.add(g); return g; });
+    r.arr = r.chain.slice(1).map((_, i) => flowArrow(G1, NP(r, i).lerp(NP(r, i + 1), 0.3), NP(r, i).lerp(NP(r, i + 1), 0.7), r.col, { bend: 0.12, r: 0.02 }));
+    r.b6 = r.dec.map((i) => { const m = new THREE.Mesh(new THREE.SphereGeometry(0.09, 14, 10), new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xff9a30).multiplyScalar(0.6), emissive: 0xff9a30, emissiveIntensity: 0.2, roughness: 0.3 })); m.position.copy(MP(r, i)).add(MOB ? V3(0.3, 0, 0.2) : V3(0, 0.3, 0.2)); G1.add(m); return m; });
   });
 
   /* ---------- 2. где действуют и как разрушаются ---------- */
@@ -74,16 +77,18 @@ function makeAmines() {
 
   /* ---------- состояние ---------- */
   const st = { t: 0, mode: 'decarb', labels: true, rot: false, fly: null, msg: null, row: 'cat', sit: 'calm', mao: false, b6: true, onec: 'norm', lvl: {} };
-  function setMode(m) { st.mode = m; refs.modeSeg && refs.modeSeg.sync(); [G1, G2, G3].forEach((g, k) => { g.visible = ['decarb', 'fate', 'onec'][k] === m; }); st.fly = flyTarget(VIEW[m][0], VIEW[m][1]); st.msg = null; refs.rebuild && refs.rebuild(); refs.setInfo && refs.setInfo(); }
+  const rowView = () => { const n = ROWS.find((x) => x.id === st.row).chain.length, cy = 2.8 - (n - 1) * 0.8; return flyTarget(V3(0.9, cy, 0), V3(1.0, cy + 0.5, n > 3 ? 9.8 : n > 2 ? 7.8 : 6)); };
+  function setMode(m) { st.mode = m; refs.modeSeg && refs.modeSeg.sync(); [G1, G2, G3].forEach((g, k) => { g.visible = ['decarb', 'fate', 'onec'][k] === m; }); st.fly = MOB && m === 'decarb' ? rowView() : flyTarget(VIEW[m][0], VIEW[m][1]); st.msg = null; refs.rebuild && refs.rebuild(); refs.setInfo && refs.setInfo(); }
   const C = new THREE.Color();
   function update(dt) {
     st.t += dt; const t = st.t; controls.autoRotate = st.rot; controls.autoRotateSpeed = 0.4; flyStep(st, camera, controls, dt);
     if (st.mode === 'decarb') {
       ROWS.forEach((r) => {
         const on = r.id === st.row;
+        if (MOB) { r.nodes.forEach((g) => { g.visible = on; }); r.arr.forEach((a) => { a.mesh.visible = on; if (a.cone) a.cone.visible = on; }); }
         r.nodes.forEach((g, i) => { g.rotation.y += dt * (on ? 0.6 : 0.15); g.scale.setScalar(on ? 1.1 : 0.85); });
-        r.arr.forEach((a, i) => { a.mat.uniforms.uTime.value = t; const isDec = r.dec.includes(i); a.mat.uniforms.uOn.value = on ? (isDec && !st.b6 ? 0.06 : 1.0) : 0.15; if (on && isDec && st.b6 && rnd() < 0.15) fx.spawn(V3((XS[i] + XS[i + 1]) / 2, r.y + 0.1, 0.2), V3(rand(-0.1, 0.1), 0.7, 0.2), C.set('#C8C8D0'), 0.9, 0.5, 1.1); });
-        r.b6.forEach((m) => { m.visible = st.b6; m.material.emissiveIntensity = on ? 0.3 + 0.15 * Math.sin(t * 5) : 0.08; });
+        r.arr.forEach((a, i) => { a.mat.uniforms.uTime.value = t; const isDec = r.dec.includes(i); a.mat.uniforms.uOn.value = on ? (isDec && !st.b6 ? 0.06 : 1.0) : 0.15; if (on && isDec && st.b6 && rnd() < 0.15) fx.spawn(MP(r, i).add(V3(0, 0.1, 0.2)), V3(rand(-0.1, 0.1), 0.7, 0.2), C.set('#C8C8D0'), 0.9, 0.5, 1.1); });
+        r.b6.forEach((m) => { m.visible = st.b6 && (on || !MOB); m.material.emissiveIntensity = on ? 0.3 + 0.15 * Math.sin(t * 5) : 0.08; });
       });
     }
     if (st.mode === 'fate') {
@@ -121,8 +126,8 @@ function makeAmines() {
   const SIT = { calm: 'Покой', mood: 'Настроение', night: 'Ночь', stress: 'Стресс', allergy: 'Аллергия', sleep: 'Снотворное' };
   const SITTXT = { calm: TXT.fate, mood: '<b>Настроение и мотивация.</b> Дофамин — сигнал «награды» и желания действовать, серотонин — спокойствия и удовлетворения, норадреналин — бодрости и внимания. При депрессии эти системы работают слабее; антидепрессанты увеличивают концентрацию аминов в синапсах.', night: '<b>Ночь.</b> Когда свет перестаёт попадать на сетчатку, эпифиз из серотонина синтезирует <b>мелатонин</b> — его уровень растёт в 10 раз. Мелатонин сообщает организму «сейчас ночь»: снижается температура, хочется спать. Яркий свет экранов вечером тормозит его выработку.', stress: '<b>Стресс.</b> Симпатическая система за секунды выбрасывает <b>норадреналин</b>, мозговое вещество надпочечников — <b>адреналин</b>: учащается пульс, растёт давление, расширяются бронхи и зрачки, печень отдаёт глюкозу — реакция «бей или беги».', allergy: '<b>Аллергия.</b> Антиген связывается с IgE на тучных клетках — они высвобождают <b>гистамин</b>: зуд, крапивница, насморк, спазм бронхов; в тяжёлом случае — анафилактический шок. Помогают антигистаминные препараты, при анафилаксии — адреналин.', sleep: '<b>Снотворные и успокаивающие</b> (бензодиазепины) усиливают действие <b>ГАМК</b> на её рецепторы — хлорный канал открывается чаще, нейроны тормозятся. Алкоголь действует похоже, поэтому их сочетание опасно.' };
   const labels = [
-    ...ROWS.flatMap((r) => r.chain.map(([id, n], i) => ({ text: n, pos: V3(XS[i] - 0.25, r.y - 0.62, 0.3), color: r.col, show: () => st.labels && st.mode === 'decarb' && (st.row === r.id || i === 0 || i === r.chain.length - 1) }))),
-    ...ROWS.flatMap((r) => STEPN[r.id].map((n, i) => ({ text: n, pos: V3((XS[i] + XS[i + 1]) / 2 - 0.55, r.y + 0.55, 0.3), color: '#C8C8D0', show: () => st.labels && st.mode === 'decarb' && st.row === r.id }))),
+    ...ROWS.flatMap((r) => r.chain.map(([id, n], i) => ({ text: n, pos: MOB ? NP(r, i).add(V3(0.6, 0.05, 0.3)) : V3(XS[i] - 0.25, r.y - 0.62, 0.3), color: r.col, show: () => st.labels && st.mode === 'decarb' && (st.row === r.id || !MOB && (i === 0 || i === r.chain.length - 1)) }))),
+    ...ROWS.flatMap((r) => STEPN[r.id].map((n, i) => ({ text: n, pos: MOB ? MP(r, i).add(V3(0.35, 0, 0.3)) : V3((XS[i] + XS[i + 1]) / 2 - 0.55, r.y + 0.55, 0.3), color: '#C8C8D0', show: () => st.labels && st.mode === 'decarb' && st.row === r.id }))),
     { text: 'мозг', pos: V3(40.45, 4.55, 0.1), color: '#9F7BFF', show: () => st.labels && st.mode === 'fate' }, { text: 'эпифиз', pos: V3(40 - 0.95, 4.15, 0), color: '#7FD6FF', show: () => st.labels && st.mode === 'fate' },
     { text: 'надпочечник', pos: V3(40 + 0.6, 1.25, 0), color: '#F2C14E', show: () => st.labels && st.mode === 'fate' }, { text: 'бронхи', pos: V3(40 - 1.3, 2.4, 0), color: '#FF8AB0', show: () => st.labels && st.mode === 'fate' },
     { text: 'кожа', pos: V3(40 + 1.45, 1.75, 0.2), color: '#FF8AB0', show: () => st.labels && st.mode === 'fate' }, { text: 'кишечник', pos: V3(40 + 0.25, 0.25, 0.3), color: '#7FD6FF', show: () => st.labels && st.mode === 'fate' },
@@ -144,7 +149,7 @@ function makeAmines() {
     const box = h('div', { class: 'grp', style: 'flex:1 1 440px' });
     refs.rebuild = () => {
       box.innerHTML = '';
-      if (st.mode === 'decarb') box.append(h('div', { class: 'glabel' }, 'Путь'), h('div', { class: 'gctl' }, seg(ROWS.map((r) => ({ id: r.id, label: r.name, color: r.col })), () => st.row, (v) => { st.row = v; st.msg = null; refs.setInfo(); }), toggle('Витамин B6', () => st.b6, (v) => { st.b6 = v; st.msg = v ? null : '<b>Без витамина B6</b> (пиридоксальфосфата) декарбоксилазы и трансаминазы не работают: падает синтез ГАМК, серотонина, дофамина. Дефицит B6 бывает при лечении туберкулёза изониазидом и у людей, злоупотребляющих алкоголем.'; refs.setInfo(); })));
+      if (st.mode === 'decarb') box.append(h('div', { class: 'glabel' }, 'Путь'), h('div', { class: 'gctl' }, seg(ROWS.map((r) => ({ id: r.id, label: r.name, color: r.col })), () => st.row, (v) => { st.row = v; st.msg = null; if (MOB) st.fly = rowView(); refs.setInfo(); }), toggle('Витамин B6', () => st.b6, (v) => { st.b6 = v; st.msg = v ? null : '<b>Без витамина B6</b> (пиридоксальфосфата) декарбоксилазы и трансаминазы не работают: падает синтез ГАМК, серотонина, дофамина. Дефицит B6 бывает при лечении туберкулёза изониазидом и у людей, злоупотребляющих алкоголем.'; refs.setInfo(); })));
       else if (st.mode === 'fate') box.append(h('div', { class: 'glabel' }, 'Ситуация'), h('div', { class: 'gctl' }, seg(Object.entries(SIT).map(([id, label]) => ({ id, label })), () => st.sit, (v) => { st.sit = v; st.msg = null; refs.setInfo(); }), toggle('Ингибитор МАО', () => st.mao, (v) => { st.mao = v; refs.setInfo(); })));
       else box.append(h('div', { class: 'glabel' }, 'Состояние'), h('div', { class: 'gctl' }, seg([{ id: 'norm', label: 'Норма' }, { id: 'folate', label: 'Нет фолата' }, { id: 'b12', label: 'Нет B12' }, { id: 'mtx', label: 'Метотрексат' }], () => st.onec, (v) => { st.onec = v; refs.setInfo(); })));
     };
@@ -154,6 +159,7 @@ function makeAmines() {
     el.append(group('Режим', '1–3', refs.modeSeg), box, group('Вид', 'R · N', refs.rot, lab), ib.el);
     refs.rebuild(); refs.setInfo();
   }
+  if (MOB) { const v = rowView(); camera.position.copy(v.pos); controls.target.copy(v.target); }
   function onKey(e) {
     const k = e.key.toLowerCase(), n = parseInt(e.key, 10);
     if (n >= 1 && n <= 3) { setMode(['decarb', 'fate', 'onec'][n - 1]); return true; }
@@ -166,7 +172,7 @@ function makeAmines() {
     const r = ROWS.find((x) => x.id === st.row); return [['Аминокислота', r.chain[0][1], ''], ['Шагов', r.chain.length - 1, '']];
   }
   const self = {
-    mobZoom: 0.9, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#9FE870',
+    mobZoom: 1.0, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#9FE870',
     kicker: 'Биохимия · обмен аминокислот', title: 'Биогенные амины',
     lede: 'Отщепив всего одну молекулу CO₂, клетка превращает обычную аминокислоту в мощный сигнал: гистамин, серотонин, дофамин, адреналин, ГАМК.',
     notes: `
