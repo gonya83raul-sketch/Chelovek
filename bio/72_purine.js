@@ -7,7 +7,8 @@
 function makePurine() {
   rnd = mulberry(2101);
   const scene = bioStage({ rim: 0xc77dff });
-  const VIEW = { build: flyTarget(V3(0, -1.5, 0), V3(0.4, 0.6, 16)), catab: flyTarget(V3(40, -1.4, 0), V3(40.5, 0.8, 16.5)), synth: flyTarget(V3(80, -1.4, 0), V3(80.8, 0.6, 15)) };
+  const VIEW = { build: flyTarget(V3(0, -1.5, 0), V3(0.4, 0.6, 16)), catab: flyTarget(V3(39.4, 1.55, 0), V3(39.9, 3.75, 17.5)), synth: flyTarget(V3(80, -1.4, 0), V3(80.8, 0.6, 15)) };
+  if (matchMedia('(max-width:700px)').matches) [VIEW.build.target, VIEW.build.pos].forEach((v) => { v.x += 2.1; v.z += 3; });   // телефон: раскладка «Строения» шире экрана — кадр по её центру и чуть дальше
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.build.pos);
   const controls = makeControls(camera, VIEW.build.target); controls.minDistance = 2; controls.maxDistance = 40;
   const fx = new Sparks(1200, 0.08); scene.add(fx.obj);
@@ -16,12 +17,12 @@ function makePurine() {
   // аденин: окраска атомов по происхождению
   const A = MOL('adenine'); const SRC = { 0: 'asp', 1: 'co2', 2: 'asp', 3: 'thf', 4: 'gln', 5: 'gly', 6: 'gln', 7: 'thf', 8: 'gly', 9: 'gly' };
   const SRCC = { gly: '#7FE0A0', asp: '#FF6A6A', gln: '#7FA8FF', co2: '#C8C8D0', thf: '#F2C14E' };
-  const adG = new THREE.Group(); adG.position.set(-1.0, 1.0, 0); G1.add(adG);
+  const adG = new THREE.Group(); adG.position.set(0.8, 0.5, 0); G1.add(adG);
   Object.entries(SRCC).forEach(([k, c]) => { const idx = new Set(Object.entries(SRC).filter(([, v]) => v === k).map(([i]) => +i)); adG.add(molMesh(A, { scale: 0.42, idx, tint: c, bondR: 0.11 })); });
   // связи между атомами разного происхождения — общая модель полупрозрачная
   const adAll = molMesh(A, { scale: 0.42, hideH: true }); molFade(adAll, 0.35); adG.add(adAll);
-  const bases = ['adenine', 'guanine', 'cytosine', 'thymine', 'uracil'].map((id, k) => { const m = molMesh(MOL(id), { scale: 0.2, hideH: true }); m.position.set(3.2 + (k % 3) * 1.7, k < 2 ? 2.0 : 0.2 - (k > 2 ? 0 : 0), 0); if (k >= 2) m.position.set(3.2 + (k - 2) * 1.7, 0.1, 0); G1.add(m); return m; });
-  const amp = molMesh(MOL('amp'), { scale: 0.17, hideH: true }); amp.position.set(-5.6, -0.1, 0); G1.add(amp);
+  const bases = ['adenine', 'guanine', 'cytosine', 'thymine', 'uracil'].map((id, k) => { const m = molMesh(MOL(id), { scale: 0.2, hideH: true }); m.position.set(4.1 + k * 1.6, 1.1, 0); if (k >= 2) m.position.set(3.4 + (k - 2) * 1.4, -0.9, 0); G1.add(m); return m; });
+  const amp = molMesh(MOL('amp'), { scale: 0.17, hideH: true }); amp.position.set(-1.9, -2.2, 0); G1.add(amp);
   /* ---------- 2. распад и подагра ---------- */
   const G2 = new THREE.Group(); G2.position.set(40, 0, 0); scene.add(G2);
   const PATH = [['amp', -6.6, 1.8], ['hypoxanthine', -3.8, 1.8], ['xanthine', -1.0, 1.8], ['urate', 1.8, 1.8]];
@@ -31,7 +32,7 @@ function makePurine() {
   const allo = molMesh(MOL('allopurinol'), { scale: 0.22, hideH: true, tint: '#7FE0A0' }); allo.position.set(-2.4, 3.2, 0); G2.add(allo);
   const xoX = [0, 1].map((k) => { const m = new THREE.Mesh(new THREE.TorusGeometry(0.3, 0.035, 8, 32), new THREE.MeshBasicMaterial({ color: 0xff5a5a })); m.position.set(-2.4 + k * 2.8, 1.8, 0.3); G2.add(m); return m; });
   // сустав большого пальца стопы с кристаллами урата
-  const joint = new THREE.Group(); joint.position.set(5.6, 0.4, 0); G2.add(joint);
+  const joint = new THREE.Group(); joint.position.set(4.6, 0.35, 0); joint.scale.setScalar(0.62); G2.add(joint);
   const bone1 = new THREE.Mesh(new THREE.CapsuleGeometry(0.55, 1.6, 10, 24), tissue(new THREE.Color('#E8DCC8').multiplyScalar(0.22))); bone1.rotation.z = Math.PI / 2 - 0.15; bone1.position.set(-1.25, -0.1, 0); joint.add(bone1);
   const bone2 = bone1.clone(); bone2.rotation.z = Math.PI / 2 + 0.15; bone2.position.set(1.25, -0.1, 0); joint.add(bone2);
   const caps = new THREE.Mesh(new THREE.SphereGeometry(1.0, 32, 24), glassMat(0xff8a8a, { rim: 0.35, base: 0.01 })); caps.scale.set(1.0, 0.9, 0.9); joint.add(caps);
@@ -54,7 +55,7 @@ function makePurine() {
   const dm = new THREE.Object3D();
   function update(dt) {
     st.t += dt; const t = st.t; controls.autoRotate = false; flyStep(st, camera, controls, dt); st.cyc += dt;
-    if (st.mode === 'build') { if (st.rot) { adG.rotation.y += dt * 0.35; bases.forEach((m) => { m.rotation.y += dt * 0.4; }); amp.rotation.y += dt * 0.3; } }
+    if (st.mode === 'build') { if (st.rot) { adG.rotation.y += dt * 0.35; bases.forEach((m, k) => { m.rotation.y = 0.5 * Math.sin(t * 0.5 + k); }); amp.rotation.y = 0.5 * Math.sin(t * 0.4); } }
     if (st.mode === 'catab') {
       ar.forEach((a) => { a.mat.uniforms.uTime.value = t; }); pm.forEach((m) => { m.rotation.y += dt * 0.4; }); guan.rotation.y += dt * 0.4;
       ar[1].mat.uniforms.uOn.value = ar[2].mat.uniforms.uOn.value = st.allo ? 0.1 : 1; xoX.forEach((m) => { m.visible = st.allo; });
@@ -82,15 +83,15 @@ function makePurine() {
     synth: '<b>Синтез нуклеотидов и антиметаболиты.</b> Пурины и пиримидины клетка строит из аминокислот, CO₂ и рибозы, а для переноса одноуглеродных групп нужна <b>тетрагидрофолиевая кислота</b> — её восстанавливает дигидрофолатредуктаза (реальная структура с коферментом НАДФН, PDB 1RX1). Быстро делящиеся клетки особенно зависят от этого пути, и на этом построена химиотерапия: <b>метотрексат</b> — аналог фолата, прочно занимает ДГФР; <b>5-фторурацил</b> (справа рядом с тимином) — аналог тимина, блокирует тимидилатсинтазу. Часть оснований клетка не синтезирует заново, а переиспользует — <b>«путь спасения»</b> через фермент ГГФРТ; его наследственный дефект — <b>синдром Леша — Найхана</b> (подагра и самоповреждения у мальчиков).',
   };
   const labels = [
-    { text: 'аденин: откуда атомы', pos: V3(-1.6, 2.9, 0), color: '#F2E6C8', show: () => st.labels && st.mode === 'build' },
-    { text: 'АМФ (нуклеотид)', pos: V3(-6.4, -1.2, 0), color: '#C77DFF', show: () => st.labels && st.mode === 'build' },
-    ...['аденин', 'гуанин'].map((n, k) => ({ text: n + ' · пурин', pos: V3(3.2 + k * 1.7 - 0.5, 1.2, 0), color: '#FF8A5C', show: () => st.labels && st.mode === 'build' })),
-    ...['цитозин', 'тимин (ДНК)', 'урацил (РНК)'].map((n, k) => ({ text: n, pos: V3(3.2 + k * 1.7 - 0.5, -0.7, 0), color: '#7FD6FF', show: () => st.labels && st.mode === 'build' })),
+    { text: 'аденин: откуда атомы', pos: V3(0.2, 2.2, 0), color: '#F2E6C8', show: () => st.labels && st.mode === 'build' },
+    { text: 'АМФ (нуклеотид)', pos: V3(-2.5, -3.1, 0), color: '#C77DFF', show: () => st.labels && st.mode === 'build' },
+    ...['аденин', 'гуанин'].map((n, k) => ({ text: n + ' · пурин', pos: V3(4.1 + k * 1.6 - 0.5, 0.3, 0), color: '#FF8A5C', show: () => st.labels && st.mode === 'build' })),
+    ...['цитозин', 'тимин (ДНК)', 'урацил (РНК)'].map((n, k) => ({ text: n, pos: V3(3.4 + k * 1.4 - 0.4, -1.65, 0), color: '#7FD6FF', show: () => st.labels && st.mode === 'build' })),
     ...PATH.map(([id, x, y]) => ({ text: MOL(id).name, pos: V3(40 + x - 0.6, y - 0.95, 0), color: '#EFEAE6', show: () => st.labels && st.mode === 'catab' })),
     { text: 'гуанин', pos: V3(40 - 4.3, -0.7, 0), color: '#EFEAE6', show: () => st.labels && st.mode === 'catab' },
     { text: 'ксантиноксидаза', pos: V3(40 - 1.6, 2.5, 0), color: '#FF8A5C', show: () => st.labels && st.mode === 'catab' && !st.allo },
     { text: 'аллопуринол блокирует', pos: V3(40 - 1.8, 3.9, 0), color: '#7FE0A0', show: () => st.labels && st.mode === 'catab' && st.allo },
-    { text: 'сустав: кристаллы урата', pos: V3(40 + 4.6, -0.9, 0), color: '#FF8A8A', show: () => st.labels && st.mode === 'catab' },
+    { text: 'сустав: кристаллы урата', pos: V3(40 + 4.1, -0.6, 0), color: '#FF8A8A', show: () => st.labels && st.mode === 'catab' },
     { text: 'ДГФР + НАДФН (PDB 1RX1)', pos: V3(80 - 2.6, -1.8, 0), color: '#FF8A5C', show: () => st.labels && st.mode === 'synth' },
     { text: 'метотрексат', pos: V3(80 + 2.0, 3.2, 0), color: '#F2C14E', show: () => st.labels && st.mode === 'synth' && st.drug === 'mtx' },
     { text: 'фолат', pos: V3(80 - 6.0, 3.0, 0), color: '#EFEAE6', show: () => st.labels && st.mode === 'synth' },
@@ -122,7 +123,7 @@ function makePurine() {
   }
   function stats() { return st.mode === 'catab' ? [['Мочевая кислота', (st.uEff || st.urate).toFixed(2), 'ммоль/л'], ['Норма', '< 0,42', 'муж.']] : [['Оснований', '5', ''], ['Нуклеотидов ДНК', '4', 'вида']]; }
   const self = {
-    scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#C77DFF',
+    mobZoom: 0.7, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#C77DFF',
     kicker: 'Биохимия · обмен нуклеотидов', title: 'Нуклеотиды и подагра',
     lede: 'Из чего строятся буквы генетического кода, во что они превращаются при распаде и почему избыток мочевой кислоты оборачивается болью в суставах.',
     notes: `
