@@ -3445,7 +3445,7 @@ function makeDevelop() {
   function curWeek() { const s = st.s, i = Math.min(6, Math.floor(s)), f = s - i; return lerp(DEV_STAGES[i].wk, DEV_STAGES[i + 1].wk, f); }
   function drawScope(ctx, w, hgt) {
     ctx.clearRect(0, 0, w, hgt);
-    const x0 = 92, x1 = w - 10, X = (wk) => x0 + (Math.min(wk, 46) / 46) * (x1 - x0), rh = (hgt - 26) / ROWS.length;
+    const x0 = 110, x1 = w - 10, X = (wk) => x0 + (Math.min(wk, 46) / 46) * (x1 - x0), rh = (hgt - 26) / ROWS.length;
     ctx.font = '500 10px JetBrains Mono, monospace'; ctx.textBaseline = 'middle';
     ROWS.forEach((r, i) => {
       const y = 8 + rh * i + rh / 2;
@@ -3455,7 +3455,7 @@ function makeDevelop() {
     });
     ctx.strokeStyle = '#3A3540'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(X(40), 6); ctx.lineTo(X(40), hgt - 16); ctx.stroke();
     ctx.fillStyle = '#6F6875'; ctx.textAlign = 'center';
-    [[0, '0'], [16, '16'], [20, '20'], [40, 'род.']].forEach(([wk, t]) => ctx.fillText(t, X(wk), hgt - 8));
+    [[0, '0'], [20, '20'], [40, 'род.']].forEach(([wk, t]) => ctx.fillText(t, X(wk), hgt - 8));
     ctx.textAlign = 'left'; ctx.fillText('нед', 6, hgt - 8);
     const cx = X(curWeek()); ctx.strokeStyle = '#FF8F7A'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(cx, 4); ctx.lineTo(cx, hgt - 16); ctx.stroke();
   }
@@ -3654,7 +3654,7 @@ function makeVision() {
   }
 
   /* ---------- камера ---------- */
-  const VIEWS = { path: { pos: V3(10, 6, 11), tgt: V3(0, -0.4, -0.3) }, eye: { pos: V3(-6.4, 0.2, 3.9), tgt: V3(-1.8, -0.5, 3.75) } };
+  const VIEWS = { path: { pos: V3(10 - 0.45 * VSX, 6, 11 + 0.4 * VSX), tgt: V3(-0.45 * VSX, -0.4, -0.3 + 0.4 * VSX) }, eye: { pos: V3(-6.4, 0.2, 3.9), tgt: V3(-1.8, -0.5, 3.75) } };
   function setMode(m) {
     st.mode = m; st.fly = 1;
     const eyeMode = m === 'eye';
@@ -4414,7 +4414,7 @@ function makeVentricles() {
 
   /* ---------- синус и грануляции ---------- */
   const sinusMat = new THREE.MeshPhysicalMaterial({ color: 0x4a3ad0, roughness: 0.35, clearcoat: 0.7, emissive: 0x120a40, emissiveIntensity: 1 });
-  const sinus = new THREE.CatmullRomCurve3([V3(1.35, 0.55, 0), V3(1.0, 1.12, 0), V3(0.2, 1.36, 0), V3(-0.7, 1.2, 0), V3(-1.4, 0.65, 0), V3(-1.62, 0.0, 0), V3(-1.55, -0.4, 0)]);
+  const sinus = new THREE.CatmullRomCurve3([V3(1.35, 0.55, 0), V3(1.0, 0.9, 0), V3(0.2, 1.16, 0), V3(-0.7, 1.0, 0), V3(-1.4, 0.5, 0), V3(-1.62, 0.0, 0), V3(-1.55, -0.4, 0)]);
   scene.add(new THREE.Mesh(taperTube(sinus, (u) => 0.018 + u * 0.03, 90, 12), sinusMat));
   // сток синусов → поперечные → сигмовидные синусы → яремные вены
   { const conf = sinus.getPointAt(1);
@@ -4599,7 +4599,7 @@ function makeVentricles() {
   }
   function stats() { return [['Ликвора', '≈150', 'мл'], ['Давление', Math.round(st.press), 'мм рт. ст.'], ['Желудочков', 4, '']]; }
   const self = {
-    scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#6FC3FF',
+    mobZoom: 0.72, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#6FC3FF',
     kicker: 'Мозг · вспомогательные структуры', title: 'Желудочки и оболочки',
     lede: 'Внутри мозга — система полостей с ликвором, снаружи — три оболочки. Они питают, защищают и служат удобными ориентирами в анатомии.',
     notes: `
@@ -5767,7 +5767,7 @@ function makeHemis() {
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x060509); scene.environment = envTex;
   labLights(scene, 0x5e8fef);
   const TRV = flyTarget(V3(0.0, -0.3, 0), V3(3.0, 1.9, 4.9));
-  const HOME = flyTarget(V3(-0.1, -0.25, 0), V3(2.85, 1.85, 4.85));
+  const HOME = flyTarget(V3(-0.1, -0.2, 0), V3(2.6, 1.7, 4.4));
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(HOME.pos);
   const controls = makeControls(camera, HOME.target); controls.minDistance = 1.2; controls.maxDistance = 12;
   const shell = brainShell(scene, { opacity: 0.04, rim: 0.26 });
@@ -5788,7 +5788,7 @@ function makeHemis() {
     const acc = new THREE.SphereGeometry(0.06, 20, 14); acc.translate(0.46, -0.12, 0.16 * s); solid('acc', acc);
     const th = new THREE.SphereGeometry(1, 32, 24); th.scale(0.3, 0.19, 0.13); th.translate(-0.2, -0.04, 0.14 * s); solid('thal', th, { opacity: 0.6 });   // кзади и медиальнее чечевицеобразного ядра
   });
-  PART.caud.anchor = V3(0.5, 0.32, 0.28); PART.put.anchor = V3(0.42, 0.0, 0.5); PART.gp.anchor = V3(0.1, -0.2, 0.37); PART.cla.anchor = V3(0.2, 0.3, 0.58);
+  PART.caud.anchor = V3(0.5, 0.32, 0.28); PART.put.anchor = V3(0.42, 0.0, 0.5); PART.gp.anchor = V3(0.1, -0.2, 0.37); PART.cla.anchor = V3(0.22, 0.14, 0.58);
   PART.amy.anchor = V3(0.18, -0.44, 0.58); PART.acc.anchor = V3(0.55, -0.22, 0.12); PART.thal.anchor = V3(-0.25, 0.1, 0.16);
   // чёрная субстанция и субталамическое ядро — участники двигательной петли
   const SN = [V3(-0.05, -0.47, 0.13), V3(-0.05, -0.47, -0.13)], STN = [V3(0.0, -0.33, 0.17), V3(0.0, -0.33, -0.17)];
@@ -5876,7 +5876,7 @@ function makeHemis() {
     park: '<b>Петля при болезни Паркинсона.</b> Дофамина нет: стриатум слабо тормозит бледный шар, тот продолжает давить на таламус, и программа почти не доходит до коры. Движение трудно начать, появляются скованность и тремор.',
   };
   const labels = [
-    ...BG_PARTS.map((p) => ({ text: p.name, pos: PART[p.id].anchor, color: p.color, show: () => st.labels && st.mode === 'bg' && (!st.sel || st.sel === p.id) })),
+    ...BG_PARTS.map((p) => ({ text: p.name, pos: PART[p.id].anchor, color: p.color, left: ['thal', 'gp', 'amy'].includes(p.id), show: () => st.labels && st.mode === 'bg' && (!st.sel || st.sel === p.id) })),
     { text: 'чёрная субстанция', pos: SN[0].clone().add(V3(0, -0.04, 0.06)), color: '#F4C542', show: () => st.labels && st.mode === 'bg' && !st.sel },
     { text: 'проекционные', pos: V3(-0.3, 0.55, 0.62), color: '#FF6A5A', show: () => st.labels && st.mode === 'tracts' },
     { text: 'мозолистое тело', pos: V3(0.0, 0.48, 0.05), color: '#4FA3FF', show: () => st.labels && st.mode === 'tracts' },
@@ -5911,7 +5911,7 @@ function makeHemis() {
   }
   function stats() { return st.mode === 'tracts' ? [['Передняя комиссура', '≈3', 'млн волокон']] : [['Моторная часть', '≈80', '%'], ['Лимбическая', '≈20', '%']]; }
   const self = {
-    labelBg: true, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#5E8FEF',
+    labelBg: true, mobZoom: 0.7, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#5E8FEF',
     kicker: 'Мозг · конечный мозг', title: 'Полушария и базальные ганглии',
     lede: 'Под корой — белое вещество и ядра базальных ганглиев. Они собирают отдельные движения в программы и вместе с лимбической системой решают, что нам нужно.',
     notes: `
@@ -6286,7 +6286,7 @@ function makeHippo() {
   rnd = mulberry(909);
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x060509); scene.environment = envTex;
   labLights(scene, 0xff8a5c);
-  const VIEW = { papez: flyTarget(V3(-0.1, -0.35, 0.2), V3(1.47, 1.41, 7.37)), sec: flyTarget(V3(0.45, -0.6, 0), V3(0.5, 0.1, 7.6)) };
+  const VIEW = { papez: flyTarget(V3(-0.1, -0.35, 0.2), V3(1.25, 1.2, 6.15)), sec: flyTarget(V3(0.45, -0.6, 0), V3(0.5, 0.1, 7.6)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(VIEW.papez.pos);
   const controls = makeControls(camera, VIEW.papez.target); controls.minDistance = 1.5; controls.maxDistance = 14;
   const brain = new THREE.Group(); scene.add(brain);
@@ -6439,7 +6439,7 @@ function makeHippo() {
     after: '<b>После ДВП</b> тот же одиночный стимул вызывает в CA1 заметно больший ответ: синапс «запомнил» тренировку. Так в гиппокампе прописываются карты знакомых мест и события дня.',
   };
   const labels = [
-    ...PZ_PARTS.map((p) => ({ text: p.name, pos: { hip: V3(-0.32, -0.2, 0.62), fx: V3(-0.2, 0.36, 0.12), mam: V3(0.12, -0.7, 0.12), ant: V3(0.32, 0.18, 0.22), cing: V3(0.1, 0.78, 0.12), ent: V3(-0.1, -0.74, 0.5), amy: V3(0.55, -0.28, 0.6), olf: V3(1.2, -0.7, 0.2) }[p.id], color: p.color, show: () => st.labels && st.mode === 'papez' && (!st.sel || st.sel === p.id) })),
+    ...PZ_PARTS.map((p) => ({ text: p.name, pos: { hip: V3(-0.32, -0.2, 0.62), fx: V3(-0.2, 0.36, 0.12), mam: V3(0.12, -0.7, 0.12), ant: V3(0.32, 0.18, 0.22), cing: V3(0.1, 0.78, 0.12), ent: V3(-0.1, -0.74, 0.5), amy: V3(0.55, -0.28, 0.6), olf: V3(1.24, -0.62, 0.2) }[p.id], color: p.color, show: () => st.labels && st.mode === 'papez' && (!st.sel || st.sel === p.id) })),
     { text: 'мозолистое тело', pos: V3(-0.2, 0.5, 0.0), color: '#efe8dc', show: () => st.labels && st.mode === 'papez' && !st.sel },
     { text: 'таламус', pos: V3(-0.1, -0.05, 0.4), color: '#B9A4FF', show: () => st.labels && st.mode === 'papez' && !st.sel },
     { text: 'CA1', pos: CA.getPointAt(0.2).add(V3(0.2, 0, 0.1)), color: '#86B6FF', show: () => st.labels && st.mode === 'sec' },
@@ -6478,7 +6478,7 @@ function makeHippo() {
   }
   function stats() { return st.mode === 'sec' ? [['Сила синапсов Шаффера', '×' + st.w.toFixed(1), ''], ['Синапсов в петле', 3, '']] : [['Звеньев круга', 6, ''], ['Новая кора', '≈96', '% коры']]; }
   const self = {
-    labelBg: true, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#FF8A5C',
+    labelBg: true, mobZoom: 0.66, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#FF8A5C',
     kicker: 'Мозг · старая кора', title: 'Гиппокамп и память',
     lede: 'Гиппокамп держит память текущего дня: сигнал бегает по кругу Пейпеза и по трисинаптической петле, а частая стимуляция усиливает синапсы — так рождается память.',
     notes: `
@@ -6807,7 +6807,7 @@ function makeCereb() {
   }
   function stats() { return st.mode === 'micro' ? [['Ошибка', st.err.length ? Math.round(st.err[st.err.length - 1] * 100) : 100, '%'], ['Слоёв коры', 3, '']] : [['Масса', '120–160', 'г'], ['Нейронов мозга', '>50', '%']]; }
   const self = {
-    scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#7FD6C8',
+    mobZoom: 0.62, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#7FD6C8',
     kicker: 'Мозг · мозжечок', title: 'Мозжечок и двигательные навыки',
     lede: 'Больше половины нейронов мозга — в мозжечке. На дендритах клеток Пуркинье записывается двигательная память: как быстро и точно сделать каждое движение.',
     notes: `
@@ -8298,7 +8298,7 @@ function makeEar() {
     flyStep(st, camera, controls, dt);
     const f = freq(), A = st.vol, vis = Math.min(28, 2 + Math.log10(f) * 4), ph = Math.sin(t * vis * 2);
     // звуковые волны к уху
-    rings.forEach((rg) => { const k = (t * 0.45 + rg.ph) % 1; rg.r.position.set(-4.4 + k * 1.9, 0.0, 0.05); rg.r.scale.setScalar(0.9 - k * 0.65); rg.r.material.opacity = A * 0.5 * Math.sin(k * Math.PI); });
+    rings.forEach((rg) => { const k = (t * 0.45 + rg.ph) % 1; rg.r.position.set(-3.2 + k * 0.75, 0.0, 0.05); rg.r.scale.setScalar(0.9 - k * 0.65); rg.r.material.opacity = A * 0.5 * Math.sin(k * Math.PI); });
     drum.position.x = -0.93 + 0.012 * A * ph; drum.scale.setScalar(1);
     mall.rotation.z = 0.12 * A * ph; inc.rotation.z = 0.1 * A * ph; stap.position.x = -0.6 + 0.014 * A * ph;
     // место максимума на улитке
@@ -8380,7 +8380,7 @@ function makeEar() {
   }
   function stats() { const f = freq(); return st.mode === 'vest' ? [['Вращение', st.omega.toFixed(1), 'рад/с'], ['Сигнал купулы', Math.abs(st.rel || 0).toFixed(2), '']] : [['Частота', f >= 1000 ? (f / 1000).toFixed(1) : Math.round(f), f >= 1000 ? 'кГц' : 'Гц'], ['Место на улитке', Math.round((1 - place(f)) * 100), '% от основания']]; }
   const self = {
-    scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#7FD6FF',
+    mobZoom: 0.66, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#7FD6FF',
     kicker: 'Органы чувств · слух', title: 'Слух и равновесие',
     lede: 'Три крошечные косточки, улитка с жидкостью и 15 000 волосковых клеток превращают колебания воздуха в звуки, а соседние каналы следят за каждым поворотом головы.',
     notes: `
@@ -10317,6 +10317,7 @@ window.addEventListener('keydown', (e) => {
 refreshSeen();
 
 const tmp = new THREE.Vector3();
+const ttlRange = document.createRange();
 function updateLabels() {
   const w = stageEl.clientWidth, hgt = stageEl.clientHeight;
   // подписи не налезают друг на друга (на компьютере и на телефоне): налезающая сдвигается вверх/вниз на строку-две,
@@ -10332,9 +10333,12 @@ function updateLabels() {
   });
   items.sort((a, b) => b.op - a.op || (b.el._on ? 1 : 0) - (a.el._on ? 1 : 0));
   const sr = stageEl.getBoundingClientRect();
-  [hudTtl, statsEl, scopeEl.hidden ? null : scopeEl, consoleEl.parentNode === stageEl ? consoleEl : null].forEach((e) => {
+  [statsEl, scopeEl.hidden ? null : scopeEl, consoleEl.parentNode === stageEl ? consoleEl : null].forEach((e) => {
     if (!e || !e.offsetWidth) return; const r = e.getBoundingClientRect(); placed.push([r.left - sr.left - 4, r.top - sr.top - 2, r.right - sr.left + 4, r.bottom - sr.top + 2]);
   });
+  // заголовок и описание: заняты только сами строки текста и кнопки, а не весь блок — справа от коротких строк подписи могут стоять
+  if (hudTtl && hudTtl.offsetWidth) { ttlRange.selectNodeContents(hudTtl); for (const r of ttlRange.getClientRects()) if (r.width > 1) placed.push([r.left - sr.left - 6, r.top - sr.top - 3, r.right - sr.left + 6, r.bottom - sr.top + 3]);
+    hudTtl.querySelectorAll('button, .hbtn').forEach((e) => { const r = e.getBoundingClientRect(); placed.push([r.left - sr.left - 4, r.top - sr.top - 2, r.right - sr.left + 4, r.bottom - sr.top + 2]); }); }
   const free = (r) => !placed.some((q) => r[0] < q[2] && r[2] > q[0] && r[1] < q[3] && r[3] > q[1]);
   items.forEach(({ el, x, y, op, lf }) => {
     const left0 = lf ? x - el._w > 6 : x + el._w > w - 6;   // не помещается справа (или сцена просит) — подпись слева от точки
