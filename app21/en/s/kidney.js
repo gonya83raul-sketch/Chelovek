@@ -42,7 +42,7 @@ function makeKidney() {
   __set_rnd(mulberry(1515));
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x07060a); scene.environment = envTex;
   labLights(scene, 0xffc080);
-  const VIEW = { sys: flyTarget(V3(0.0, 0.55, 0), V3(1.6, 1.4, -7.6)), kid: flyTarget(V3(29.6, -0.75, 0), V3(30.5, 0.1, 6.9)), neph: flyTarget(V3(60.2, -1.3, 0), V3(62.6, 0.0, 10.8)) };
+  const VIEW = { sys: flyTarget(V3(0.0, 0.45, 0), V3(1.15, 1.06, -5.5)), kid: flyTarget(V3(29.6, -0.75, 0), V3(30.5, 0.1, 6.9)), neph: flyTarget(V3(60.2, -1.3, 0), V3(62.6, 0.0, 10.8)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 120); camera.position.copy(VIEW.sys.pos);
   const controls = makeControls(camera, VIEW.sys.target); controls.minDistance = 1.5; controls.maxDistance = 22;
   const body = new THREE.Group(); scene.add(body);
@@ -54,13 +54,20 @@ function makeKidney() {
   KID.forEach((K) => { const g = beanGeo(-K.s); g.scale(0.33, 0.3, 0.3); g.rotateZ(-0.15 * K.s); g.translate(K.c.x, K.c.y, K.c.z); add('kid', g, { k: 0.45, mat: { clearcoat: 0.7 } });
     const ad = ell3(0.11, 0.06, 0.06); ad.rotateZ(0.3 * K.s); ad.translate(K.c.x - 0.03 * K.s, K.c.y + 0.33, K.c.z); add('adr', ad, { k: 0.5 }); });  // сначала поворот, потом перенос на верхний полюс
   // аорта и полая вена
-  const AO = new THREE.CatmullRomCurve3([V3(0.06, 1.9, -0.36), V3(0.06, 1.0, -0.4), V3(0.06, 0.25, -0.36)]), VC = new THREE.CatmullRomCurve3([V3(-0.1, 1.9, -0.32), V3(-0.1, 1.0, -0.36), V3(-0.1, 0.25, -0.32)]);
-  add('ves', taperTube(AO, () => 0.05, 30, 12), { color: '#E0605A' }); add('ves', taperTube(VC, () => 0.06, 30, 12), { color: '#6C86E0' });
+  // аорта и полая вена: сверху уходят под диафрагму (сужаются), внизу на уровне L4 делятся на общие подвздошные
+  const AO = new THREE.CatmullRomCurve3([V3(0.06, 1.8, -0.36), V3(0.06, 1.0, -0.4), V3(0.06, 0.45, -0.36)]), VC = new THREE.CatmullRomCurve3([V3(-0.1, 1.8, -0.32), V3(-0.1, 1.0, -0.36), V3(-0.1, 0.42, -0.32)]);
+  const topTaper = (r) => (u) => r * (0.35 + 0.65 * smooth(0, 0.12, u));
+  add('ves', taperTube(AO, topTaper(0.05), 30, 12), { color: '#E0605A' }); add('ves', taperTube(VC, topTaper(0.06), 30, 12), { color: '#6C86E0' });
+  [1, -1].forEach((s) => {
+    add('ves', taperTube(new THREE.CatmullRomCurve3([V3(0.06, 0.47, -0.36), V3(0.06 + 0.12 * s, 0.3, -0.33), V3(0.3 * s, 0.02, -0.22), V3(0.36 * s, -0.12, -0.12)]), (u) => 0.036 - 0.01 * u, 24, 10), { color: '#E0605A' });
+    add('ves', taperTube(new THREE.CatmullRomCurve3([V3(-0.1, 0.44, -0.32), V3(-0.1 + 0.12 * s, 0.26, -0.3), V3(0.27 * s, 0.0, -0.26), V3(0.33 * s, -0.14, -0.16)]), (u) => 0.042 - 0.012 * u, 24, 10), { color: '#6C86E0' });
+  });
   const RA = KID.map((K) => new THREE.CatmullRomCurve3([V3(0.06, 1.0, -0.36), K.s < 0 ? V3(-0.12, K.c.y + 0.02, -0.46) : V3(0.25 * K.s, K.c.y + 0.02, -0.36), K.c.clone().add(V3(-0.17 * K.s, 0.02, 0))]));  // правая — позади полой вены
   const RV = KID.map((K) => new THREE.CatmullRomCurve3([K.c.clone().add(V3(-0.17 * K.s, -0.04, 0.02)), V3(0.22 * K.s, K.c.y - 0.05, -0.3), V3(-0.1, 0.96, -0.32)]));
   RA.forEach((c) => add('ves', taperTube(c, () => 0.022, 20, 8), { color: '#E0605A' })); RV.forEach((c) => add('ves', taperTube(c, () => 0.026, 20, 8), { color: '#6C86E0' }));
-  const URE = KID.map((K) => new THREE.CatmullRomCurve3([K.c.clone().add(V3(-0.16 * K.s, -0.1, 0.0)), V3(0.3 * K.s, 0.5, -0.25), V3(0.22 * K.s, 0.12, -0.05), V3(0.08 * K.s, 0.02, 0.15)]));
-  URE.forEach((c) => add('ure', taperTube(c, () => 0.016, 40, 8), { k: 0.5 }));
+  // мочеточник почти отвесно по большой поясничной мышце, в малом тазу заходит в пузырь сзади-снизу
+  const URE = KID.map((K) => new THREE.CatmullRomCurve3([K.c.clone().add(V3(-0.16 * K.s, -0.1, 0.0)), V3(0.2 * K.s, 0.55, -0.3), V3(0.17 * K.s, 0.18, -0.12), V3(0.1 * K.s, -0.02, 0.08)]));
+  URE.forEach((c) => add('ure', taperTube(c, () => 0.025, 40, 8), { k: 0.5 }));
   const bladG = ell3(0.2, 0.16, 0.17); const blad = add('blad', bladG, { k: 0.45, mat: { transparent: true, opacity: 0.85 } }); blad.position.set(0, 0.0, 0.18);
   const urine = new THREE.Mesh(ell3(0.18, 0.14, 0.15), new THREE.MeshPhysicalMaterial({ color: 0xf2d860, emissive: 0x403000, emissiveIntensity: 0.4, transparent: true, opacity: 0.7, roughness: 0.2 })); urine.position.set(0, -0.0, 0.18); body.add(urine);
   add('blad', tube([V3(0, -0.15, 0.2), V3(0, -0.4, 0.22)], 0.014, 10, 6), { k: 0.5 });
@@ -154,7 +161,7 @@ function makeKidney() {
     { text: 'adrenal gland', pos: V3(0.5, 1.45, -0.35), color: '#F2C14E', show: () => st.labels && st.mode === 'sys' },
     { text: 'aorta', pos: V3(0.12, 1.6, -0.4), color: '#E0605A', show: () => st.labels && st.mode === 'sys' },
     { text: 'inferior vena cava', pos: V3(-0.2, 1.7, -0.35), color: '#8CA0F0', show: () => st.labels && st.mode === 'sys' },
-    { text: 'ureter', pos: V3(0.34, 0.5, -0.25), color: '#E8D8A0', show: () => st.labels && st.mode === 'sys' },
+    { text: 'ureter', pos: V3(0.21, 0.5, -0.3), color: '#E8D8A0', show: () => st.labels && st.mode === 'sys' },
     { text: 'urinary bladder', pos: V3(0.25, 0.05, 0.2), color: '#F2D860', show: () => st.labels && st.mode === 'sys' },
     { text: 'cortex', pos: V3(30.55, 0.75, 0.05), color: '#d07a6a', show: () => st.labels && st.mode === 'kid' },
     { text: 'pyramid', pos: V3(30.3, 0.0, 0.05), color: '#c86058', show: () => st.labels && st.mode === 'kid' },
@@ -194,7 +201,7 @@ function makeKidney() {
   }
   function stats() { const out = (0.5 + (1 - st.adh) * 2.5).toFixed(1); return [['Primary urine', '≈180', 'L/day'], ['Final urine', out, 'L/day'], ['Bladder', Math.round(st.fill * 500), 'mL']]; }
   const self = {
-    scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#F2D860',
+    mobZoom: 0.6, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#F2D860',
     kicker: 'Body · excretion', title: 'Kidneys and the urinary system',
     lede: 'Every day the kidneys pass all of the blood through themselves about 300 times, filter out 180 liters of fluid and return 99% of it to the blood.',
     notes: `

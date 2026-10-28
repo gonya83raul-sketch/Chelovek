@@ -59,8 +59,9 @@ function makeAtp() {
     if (d.id === 'sub') { const m = molMesh(MOL('pep'), { scale: 0.2, hideH: true }); g.add(m); g.userData.anim = m; }
     stations.push({ d, g, p, kind }); return g;
   };
-  ATP_USE.forEach((d, k) => addSt(d, [V3(5.9, 2.4, -0.8), V3(5.9, 0.3, -0.8), V3(2.8, 3.3, -1.0)][k], 'use'));
-  ATP_SRC.forEach((d, k) => addSt(d, V3(-5.3 + k * 1.2, 0.3 - k * 1.55, -0.8), 'src'));
+  // потребители — колонкой справа над графиком, источники — слева под описанием
+  ATP_USE.forEach((d, k) => addSt(d, [V3(4.8, 2.15, -0.8), V3(4.8, 0.95, -0.8), V3(4.6, -0.2, -0.8)][k], 'use'));
+  ATP_SRC.forEach((d, k) => addSt(d, [V3(-3.4, -1.3, -0.8), V3(-0.9, -2.3, -0.8)][k], 'src'));
   const packet = glowNucleus(G1, V3(0, 0, 0), '#FFD070', 0.1, 10);
   /* ---------- 2. воронка катаболизма ---------- */
   const G2 = new THREE.Group(); G2.position.set(40, 0, 0); scene.add(G2);
@@ -138,7 +139,7 @@ function makeAtp() {
     funnel: '<b>Три стадии катаболизма.</b> Сотни разных молекул пищи сходятся в немногие общие пути: белки, углеводы и жиры распадаются до мономеров, мономеры — до <b>ацетил-КоА</b>, а он сгорает в цикле Кребса и дыхательной цепи до CO₂ и воды с образованием АТФ. Азот аминокислот уходит в виде аммиака (затем — мочевины). Нажмите на стадию.',
   };
   const labels = [
-    ...stations.map((s) => ({ text: s.d.name, pos: s.p.clone().add(s.kind === 'use' ? V3(-0.6, -0.7, 0) : V3(-0.7, -0.85, 0)), color: s.d.color, show: () => st.labels && st.mode === 'cycle' })),
+    ...stations.map((s) => ({ text: s.d.name, pos: s.p.clone().add(s.kind === 'use' ? V3(-0.6, -0.5, 0) : V3(-0.7, -0.75, 0)), color: s.d.color, show: () => st.labels && st.mode === 'cycle' })),
     
     { text: 'γ-фосфат', pos: gC.clone().add(V3(0, 1.3, 0)), color: '#FF9A30', show: () => st.labels && st.mode === 'cycle' && st.cyc % 8 < 3 },
     { text: 'Фн', pos: gC.clone().add(piDir.clone().multiplyScalar(1.4)).add(V3(0.2, 1.1, 0)), color: '#FF9A30', show: () => st.labels && st.mode === 'cycle' && st.cyc % 8 > 3.6 && st.cyc % 8 < 5.4 },

@@ -22,7 +22,7 @@ function makeEndo() {
   __set_rnd(mulberry(1616));
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x07060a); scene.environment = envTex;
   labLights(scene, 0xc77dff);
-  const VIEW = { map: flyTarget(V3(0.0, 0.45, 0), V3(2.6, 1.3, 13.6)), sugar: flyTarget(V3(-0.1, 0.75, 0), V3(1.8, 1.8, 6.2)), stress: flyTarget(V3(0.1, 1.9, 0), V3(-2.6, 3.0, 8.4)), thy: flyTarget(V3(0.0, 3.25, 0.1), V3(1.3, 3.6, 3.6)) };
+  const VIEW = { map: flyTarget(V3(0.0, 1.15, 0), V3(2.3, 1.9, 12.8)), sugar: flyTarget(V3(-0.1, 0.75, 0), V3(1.8, 1.8, 6.2)), stress: flyTarget(V3(0.1, 1.9, 0), V3(-2.6, 3.0, 8.4)), thy: flyTarget(V3(0.0, 3.25, 0.1), V3(1.3, 3.6, 3.6)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(VIEW.map.pos);
   const controls = makeControls(camera, VIEW.map.target); controls.minDistance = 1.2; controls.maxDistance = 22;
   bodyShell(scene, { rim: 0.22 });
@@ -69,7 +69,10 @@ function makeEndo() {
   function setMode(m) { st.mode = m; refs.modeSeg && refs.modeSeg.sync(); st.fly = VIEW[m]; st.trace = []; st.msg = null; if (m === 'sugar') { SIM.meal = st.t + 1.5; } if (m === 'stress') SIM.stressT = st.t + 1; if (m === 'thy') { SIM.iodine = 1; } select('all'); refs.setInfo && refs.setInfo(); }
   pickOn(() => self, camera, pick, (id) => { if (st.mode === 'map') select(id); });
   const C = { ins: '#FF8A5C', glc: '#7FE0A0', cor: '#F2C14E', adr: '#FF5A5A', tsh: '#C77DFF', t4: '#5CC48A', glu: '#FFE08A' };
+  // мишени гормонов (мышца, кость) — только когда к ним идёт сигнал: в «Сахаре» мышца, в «Железах» — у выбранной железы
+  const showTG = (k) => st.mode === 'sugar' ? k === 'mus' : st.mode === 'map' ? !!st.sel && GL[st.sel].targets.includes(k) : true;
   function update(dt) {
+    ['mus', 'bone'].forEach((k) => { if (TG[k] && TG[k].m) TG[k].m.visible = showTG(k); });
     st.t += dt; const t = st.t; controls.autoRotate = st.rot && !st.fly; controls.autoRotateSpeed = 0.6;
     flyStep(st, camera, controls, dt);
     const S = SIM, h2 = dt * 1.2; // ускоренное время модели
@@ -111,10 +114,10 @@ function makeEndo() {
   };
   const labels = [
     ...EN_GL.map((g) => ({ text: g.name, pos: g.p.clone().add({ para: V3(0.25, -0.14, 0.1), pin: V3(0.14, 0.16, 0.1), hyp: V3(0.14, -0.06, 0.12) }[g.id] || V3(0.14, 0.04, 0.12)), color: g.color, show: () => st.labels && (st.mode === 'map' ? (!st.sel || st.sel === g.id) : (st.mode === 'sugar' ? g.id === 'panc' : st.mode === 'stress' ? ['hyp', 'adr'].includes(g.id) : ['hyp', 'thy'].includes(g.id))) })),
-    { text: 'печень', pos: V3(-0.8, 1.6, 0.25), color: '#c88a70', show: () => st.labels && st.mode !== 'thy' },
-    { text: 'мышцы', pos: V3(-0.75, -1.0, 0.2), color: '#c86a6a', show: () => st.labels && (st.mode === 'sugar' || (st.mode === 'map' && st.sel)) },
-    { text: 'кость', pos: V3(0.62, -1.0, 0.1), color: '#e8d8bb', show: () => st.labels && st.mode === 'map' && st.sel && GL[st.sel].targets.includes('bone') },
-    { text: 'сердце', pos: BODY.heart.clone().add(V3(0.3, 0.0, 0.2)), color: '#FF8A7A', show: () => st.labels && (st.mode === 'stress' || (st.mode === 'map' && st.sel && st.sel !== 'hrt')) },
+    { text: 'Печень', pos: V3(-0.8, 1.6, 0.25), color: '#c88a70', show: () => st.labels && st.mode !== 'thy' },
+    { text: 'Мышцы', pos: V3(-0.75, -1.0, 0.2), color: '#c86a6a', show: () => st.labels && (st.mode === 'sugar' || (st.mode === 'map' && st.sel)) },
+    { text: 'Кость', pos: V3(0.62, -1.0, 0.1), color: '#e8d8bb', show: () => st.labels && st.mode === 'map' && st.sel && GL[st.sel].targets.includes('bone') },
+    { text: 'Сердце', pos: BODY.heart.clone().add(V3(0.3, 0.0, 0.2)), color: '#FF8A7A', show: () => st.labels && (st.mode === 'stress' || (st.mode === 'map' && st.sel && st.sel !== 'hrt')) },
   ];
   const refs = {};
   function ui(el) {
@@ -141,7 +144,7 @@ function makeEndo() {
   }
   function stats() { const S = SIM; return st.mode === 'sugar' ? [['Глюкоза', S.G.toFixed(1), 'ммоль/л'], ['Инсулин', Math.round(S.I), 'мкЕд/мл']] : st.mode === 'stress' ? [['Пульс', Math.round(S.HR), 'уд/мин'], ['Кортизол', Math.round(S.C * 30), 'нмоль/л']] : st.mode === 'thy' ? [['ТТГ', S.TSH.toFixed(1), 'мЕд/л'], ['T4', (S.T4 * 15).toFixed(0), 'пмоль/л']] : [['Желёз', 8, ''], ['Гормонов', '>50', '']]; }
   const self = {
-    scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#C77DFF',
+    mobZoom: 0.6, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#C77DFF',
     kicker: 'Тело · гормоны', title: 'Эндокринная система',
     lede: 'Крошечные железы управляют ростом, обменом веществ, сном, стрессом и сахаром крови, рассылая по кровотоку химические письма — гормоны.',
     notes: `
