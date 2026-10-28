@@ -820,10 +820,10 @@ function makeNeuron() {
     { text: 'тело нейрона', pos: V3(-0.6, 1.5, 0.6) },
     { text: 'дендриты', pos: V3(-3.4, 2.4, 0) },
     { text: 'аксонный холмик', pos: V3(1.4, -0.75, 0.3) },
-    { text: 'миелин', pos: axon.getPointAt(0.33).add(V3(0, 0.6, 0.2)), show: () => st.myelin },
+    { text: 'миелин', pos: axon.getPointAt(0.37).add(V3(0, 0.6, 0.2)), show: () => st.myelin },
     { text: 'перехват Ранвье', pos: nodes[5].clone().add(V3(0, -0.55, 0)) },
     { text: 'шванновская клетка', pos: SCHW[2].clone().add(V3(0, 0.12, 0.1)), show: () => st.myelin },
-    { text: 'начальный сегмент', pos: axon.getPointAt(0.05).add(V3(0, -0.18, 0.15)) },
+    { text: 'начальный сегмент', pos: axon.getPointAt(0.05).add(V3(-0.3, 0.45, 0.15)) },
     { text: 'электрод', pos: probeP.clone().add(V3(0.25, 3.6, 0.3)) },
     { text: 'лидокаин', pos: axon.getPointAt(0.565).add(V3(0, 1.3, 0)), show: () => st.lido },
     { text: 'окончания аксона', pos: V3(19.8, 1.9, 0.6) },
@@ -6689,6 +6689,7 @@ function makeCereb() {
     // на срезе ядра — плоские контуры в плоскости среза, а не фигурки над ней
     Object.values(NUC).flat().forEach((n) => { n.scale.y = m === 'nuc' ? 0.05 : 1; n.position.y = m === 'nuc' ? CUT + 0.01 : 0; });
     cbMat.opacity = m === 'nuc' ? 1 : 1; st.fly = VIEW[m]; applySel(); refs.setInfo && refs.setInfo();
+    if (refs.gN) { refs.gN.style.display = m === 'nuc' ? '' : 'none'; refs.gM.style.display = m === 'micro' ? '' : 'none'; }   /* лишние ряды пульта прячутся — сцене больше места */
   }
   function applySel() {
     const zi = CB_ZONES.findIndex((z) => z.id === st.sel), col = cbG.attributes.color.array, src = cbG.userData.zoneCol, pos = cbG.attributes.position, v = new THREE.Vector3();
@@ -6792,8 +6793,9 @@ function makeCereb() {
     refs.rot = toggle('Вращение', () => st.rot, (v) => { st.rot = v; });
     const lab = toggle('Подписи', () => st.labels, (v) => { st.labels = v; });
     Object.assign(refs, { lab });
-    el.append(group('Режим', '1–3', refs.modeSeg), h('div', { class: 'grp', style: 'flex:1 1 460px' }, h('div', { class: 'glabel' }, 'Части и ножки', h('kbd', {}, 'клик')), h('div', { class: 'gctl' }, refs.seg)), group('Ядра', '', refs.nseg),
-      group('Нейросеть', 'M · C · L', button('Моховидный вход', mossy, true), button('Лазящее волокно', climb), button('Выработать навык', learn)), group('Вид', 'R · N', refs.rot, lab), ib.el);
+    el.append(group('Режим', '1–3', refs.modeSeg), h('div', { class: 'grp', style: 'flex:1 1 460px' }, h('div', { class: 'glabel' }, 'Части и ножки', h('kbd', {}, 'клик')), h('div', { class: 'gctl' }, refs.seg)), refs.gN = group('Ядра', '', refs.nseg),
+      refs.gM = group('Нейросеть', 'M · C · L', button('Моховидный вход', mossy, true), button('Лазящее волокно', climb), button('Выработать навык', learn)), group('Вид', 'R · N', refs.rot, lab), ib.el);
+    refs.gN.style.display = st.mode === 'nuc' ? '' : 'none'; refs.gM.style.display = st.mode === 'micro' ? '' : 'none';
     refs.setInfo();
   }
   const _sel = select; select = (id) => { _sel(id); refs.seg && refs.seg.sync(); refs.nseg && refs.nseg.sync(); };

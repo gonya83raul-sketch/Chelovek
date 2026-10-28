@@ -23,7 +23,7 @@ function makePurine() {
   Object.entries(SRCC).forEach(([k, c]) => { const idx = new Set(Object.entries(SRC).filter(([, v]) => v === k).map(([i]) => +i)); adG.add(molMesh(A, { scale: 0.42, idx, tint: c, bondR: 0.11 })); });
   // связи между атомами разного происхождения — общая модель полупрозрачная
   const adAll = molMesh(A, { scale: 0.42, hideH: true }); molFade(adAll, 0.35); adG.add(adAll);
-  const bases = ['adenine', 'guanine', 'cytosine', 'thymine', 'uracil'].map((id, k) => { const m = molMesh(MOL(id), { scale: 0.2, hideH: true }); m.position.copy(MOB ? (k < 2 ? V3(-0.9 + k * 1.8, 0.3, 0) : V3(-1.5 + (k - 2) * 1.5, -1.5, 0)) : (k < 2 ? V3(4.1 + k * 1.6, 1.1, 0) : V3(3.4 + (k - 2) * 1.4, -0.9, 0))); G1.add(m); return m; });
+  const bases = ['adenine', 'guanine', 'cytosine', 'thymine', 'uracil'].map((id, k) => { const m = molMesh(MOL(id), { scale: MOB ? 0.2 : 0.26, hideH: true }); m.position.copy(MOB ? (k < 2 ? V3(-0.9 + k * 1.8, 0.3, 0) : V3(-1.5 + (k - 2) * 1.5, -1.5, 0)) : (k < 2 ? V3(3.6 + k * 1.6, 1.1, 0) : V3(3.0 + (k - 2) * 1.5, -0.9, 0))); G1.add(m); return m; });
   const amp = molMesh(MOL('amp'), { scale: 0.17, hideH: true }); amp.position.copy(MOB ? V3(-0.3, -3.2, 0) : V3(-1.9, -2.2, 0)); G1.add(amp);
   /* ---------- 2. распад и подагра ---------- */
   const G2 = new THREE.Group(); G2.position.set(40, 0, 0); scene.add(G2);
@@ -87,8 +87,8 @@ function makePurine() {
   const labels = [
     { text: 'аденин: откуда атомы', pos: MOB ? V3(0.7, 3.2, 0) : V3(0.2, 2.2, 0), color: '#F2E6C8', show: () => st.labels && st.mode === 'build' },
     { text: 'АМФ (нуклеотид)', pos: MOB ? V3(-0.9, -4.0, 0) : V3(-2.5, -3.1, 0), color: '#C77DFF', show: () => st.labels && st.mode === 'build' },
-    ...['аденин', 'гуанин'].map((n, k) => ({ text: n + ' · пурин', pos: MOB ? V3(-1.4 + k * 1.8, -0.45, 0) : V3(4.1 + k * 1.6 - 0.5, 0.3, 0), color: '#FF8A5C', show: () => st.labels && st.mode === 'build' })),
-    ...['цитозин', 'тимин (ДНК)', 'урацил (РНК)'].map((n, k) => ({ text: n, pos: MOB ? V3(-1.9 + k * 1.5, -2.15 - (k % 2) * 0.28, 0) : V3(3.4 + k * 1.4 - 0.4, -1.65, 0), color: '#7FD6FF', show: () => st.labels && st.mode === 'build' })),
+    ...['аденин', 'гуанин'].map((n, k) => ({ text: n + ' · пурин', pos: MOB ? V3(-1.4 + k * 1.8, -0.45, 0) : V3(3.6 + k * 1.6 - 0.5, 0.3, 0), color: '#FF8A5C', show: () => st.labels && st.mode === 'build' })),
+    ...['цитозин', 'тимин (ДНК)', 'урацил (РНК)'].map((n, k) => ({ text: n, pos: MOB ? V3(-1.9 + k * 1.5, -2.15 - (k % 2) * 0.28, 0) : V3(3.0 + k * 1.5 - 0.4, -1.65, 0), color: '#7FD6FF', show: () => st.labels && st.mode === 'build' })),
     ...PATH.map(([id, x, y]) => ({ text: MOL(id).name, pos: V3(40 + x - 0.6, y - 0.95, 0), color: '#EFEAE6', show: () => st.labels && st.mode === 'catab' })),
     { text: 'гуанин', pos: V3(40 - 4.3, -0.7, 0), color: '#EFEAE6', show: () => st.labels && st.mode === 'catab' },
     { text: 'ксантиноксидаза', pos: V3(40 - 1.6, 2.5, 0), color: '#FF8A5C', show: () => st.labels && st.mode === 'catab' && !st.allo },
