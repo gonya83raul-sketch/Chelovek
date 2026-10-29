@@ -7,7 +7,7 @@ function makeGlycogen() {
   rnd = mulberry(1301);
   const scene = bioStage({ rim: 0xf2c14e });
   const GX = matchMedia("(max-width:700px)").matches ? 0 : -2.4;   // компьютер: гранула правее описания
-  const VIEW = { build: flyTarget(V3(GX, -1.2, 0), V3(GX + 1.0, 0.4, 13.5)), break: flyTarget(V3(GX, -1.2, 0), V3(GX + 1.0, 0.4, 13.5)), blood: flyTarget(V3(40, -0.9, 0), V3(40.6, 1.2, 18.5)) };
+  const VIEW = { build: flyTarget(V3(GX, -1.2, 0), V3(GX + 1.0, 0.4, 13.5)), break: flyTarget(V3(GX, -1.2, 0), V3(GX + 1.0, 0.4, 13.5)), blood: GX ? flyTarget(V3(40, 0.1, 0), V3(40.6, 2.2, 18.5)) : flyTarget(V3(40, -0.9, 0), V3(40.6, 1.2, 18.5)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VIEW.build.pos);
   const controls = makeControls(camera, VIEW.build.target); controls.minDistance = 3; controls.maxDistance = 40;
   const fx = new Sparks(1800, 0.08); scene.add(fx.obj);

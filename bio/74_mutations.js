@@ -9,7 +9,7 @@ function makeMutations() {
   rnd = mulberry(7401);
   const scene = bioStage({ rim: 0xff8ab0 });
   const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: кадр уходит из-под заголовка и описания (телефон — прежний ракурс)
-  const VIEW = { mut: DK ? [V3(-3.2, 0.1, 0), V3(-2.8, 1.4, 19.5)] : [V3(-0.56, 1.0, 0), V3(-0.16, 2.2, 12.1)], sickle: [V3(38.4, -0.4, 0), V3(38.8, 1.6, 13)], ptm: [V3(78.8, -0.9, 0), V3(79.2, 1.0, 14.5)] };
+  const VIEW = { mut: DK ? [V3(-3.2, 0.1, 0), V3(-2.8, 1.4, 19.5)] : [V3(-0.56, 1.0, 0), V3(-0.16, 2.2, 12.1)], sickle: DK ? [V3(37.2, -0.4, 0), V3(37.6, 1.6, 15.5)] : [V3(39.4, 0.4, 0), V3(39.8, 2.4, 11.2)], ptm: DK ? [V3(77.8, -0.9, 0), V3(78.2, 1.0, 14.5)] : [V3(79.0, -0.3, 0), V3(79.4, 1.6, 11.2)] };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VIEW.mut[1]);
   const controls = makeControls(camera, VIEW.mut[0]); controls.minDistance = 3; controls.maxDistance = 40;
   const fx = new Sparks(1800, 0.07); scene.add(fx.obj);
