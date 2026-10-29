@@ -17,7 +17,8 @@ function makeEar() {
   __set_rnd(mulberry(1818));
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x06070a); scene.environment = envTex;
   labLights(scene, 0x7fd6ff);
-  const VIEW = { anat: flyTarget(V3(-1.5, -0.55, 0), V3(-1.8, 1.15, 8.8)), coch: flyTarget(V3(30, -0.1, 0), V3(30.6, 2.2, 6.6)), vest: flyTarget(V3(0.1, -0.15, 0), V3(1.9, 1.5, 4.4)) };
+  const MQM = matchMedia('(max-width:700px)').matches;   /* компьютер: «Улитка изнутри» правее описания */
+  const VIEW = { anat: flyTarget(V3(-1.5, -0.55, 0), V3(-1.8, 1.15, 8.8)), coch: MQM ? flyTarget(V3(30, -0.1, 0), V3(30.6, 2.2, 6.6)) : flyTarget(V3(29.05, -0.1, 0), V3(29.7, 2.4, 7.2)), vest: flyTarget(V3(0.1, -0.15, 0), V3(1.9, 1.5, 4.4)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(VIEW.anat.pos);
   const controls = makeControls(camera, VIEW.anat.target); controls.minDistance = 1; controls.maxDistance = 18;
   const ear = new THREE.Group(); scene.add(ear);
@@ -108,6 +109,7 @@ function makeEar() {
     mall.rotation.z = 0.12 * A * ph; inc.rotation.z = 0.1 * A * ph; stap.position.x = -0.6 + 0.014 * A * ph;
     // место максимума на улитке
     const x = place(f), u = 1 - x; const sp = cochCurve.getPointAt(Math.max(0.01, Math.min(0.99, u)));
+    glowSpot.core.visible = glowSpot.spr.visible = st.mode !== 'vest';   /* в «Равновесии» пятно звука улитки не нужно */
     glowSpot.core.position.copy(sp); glowSpot.spr.position.copy(sp); glowSpot.spr.material.color.setHSL(0.02 + 0.68 * (1 - u), 0.8, 0.6); glowSpot.spr.scale.setScalar((0.25 + 0.25 * A) * (0.8 + 0.2 * Math.abs(ph)));
     if (st.mode === 'anat' && rnd() < A * 0.8) fx.spawn(NERVE.getPointAt(rnd()), V3(0.2, 0, 0), C_N, 0.5, 0, 1.3);
     // развёрнутая мембрана: бегущая волна

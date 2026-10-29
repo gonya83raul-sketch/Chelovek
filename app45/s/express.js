@@ -133,6 +133,7 @@ function makeExpress() {
     { text: 'поли-A', pos: V3(40 + 2.4, 1.1, 0), color: '#FF6A6A', show: () => st.labels && st.mode === 'splice' && st.cyc % 14 > 9.5 },
     { text: 'интроны', pos: V3(40 - 2.5, 2.2, 0), color: '#9FA8B8', show: () => st.labels && st.mode === 'splice' && st.cyc % 14 > 3 && st.cyc % 14 < 7 },
     { text: 'экзоны', pos: V3(40 - 5.4, 0.0, 0), color: '#FF8A5C', show: () => st.labels && st.mode === 'splice' },
+    { text: 'сплайсосома', pos: V3(40 - 0.5, 2.0, 0), color: '#7FD6FF', show: () => st.labels && st.mode === 'splice' && st.cyc % 14 > 2.5 && st.cyc % 14 < 7.5 },
     { text: 'большая субъединица (рРНК + белки)', pos: V3(80 + 2.6, 3.6, 0), color: '#F2E6C8', show: () => st.labels && st.mode === 'tl' },
     { text: 'малая субъединица', pos: V3(80 + 2.4, -1.4, 0.8), color: '#FFB070', show: () => st.labels && st.mode === 'tl' },
     { text: 'E · P · A', pos: V3(80 - 0.7, mY - 0.75, 0.6), color: '#E8D27A', show: () => st.labels && st.mode === 'tl' },

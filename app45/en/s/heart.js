@@ -17,7 +17,7 @@ function makeHeart() {
   __set_rnd(mulberry(1212));
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x07060a); scene.environment = envTex;
   labLights(scene, 0xff7a6a);
-  const VIEW = { heart: flyTarget(V3(0.0, -0.05, 0), V3(2.2, 0.65, 9.9)), cond: flyTarget(V3(0.05, -0.85, 0), V3(-1.6, -0.2, 8.8)), circ: flyTarget(V3(0.1, 0.9, 0), V3(3.6, 3.4, 13.5)) };
+  const VIEW = { heart: flyTarget(V3(0.0, -0.05, 0), V3(2.2, 0.65, 9.9)), cond: flyTarget(V3(0.05, -0.05, 0), V3(-1.8, 0.65, 9.9)), circ: flyTarget(V3(0.1, 1.2, 0), V3(5.0, 4.7, 19)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(VIEW.heart.pos);
   const controls = makeControls(camera, VIEW.heart.target); controls.minDistance = 2; controls.maxDistance = 25;
   const hg = new THREE.Group(); scene.add(hg);

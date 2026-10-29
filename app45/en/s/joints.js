@@ -1,5 +1,6 @@
 import { SKEL_META, Sparks, THREE, V3, __set_rnd, envTex, flyStep, flyTarget, glassMat, glowNucleus, group, h, infoBox, labLights, makeControls, mulberry, rand, randUnit, rnd, seg, smooth, toggle } from '../core.js';
-import { blobGeo, loadSkeletonStatic } from './kit.js';
+import { BIO_MOL, blobGeo, loadSkeletonStatic } from './kit.js';
+Object.assign(BIO_MOL, {"methotrexate":{"name":"Methotrexate","el":"C N C C C N C N C N N C N C N C C C C C C C O N C C C C O O C O O H H H H H H H H H H H H H H H H H H H H H H","xyz":"1QBE/tr/ygC+/ioAPwHq/nYAgwFd/y0AvwFH/7f//wGw/3P//wEmAKX/PAKSAGb/OwIIAZz/fQJ2AVX//QEiARYAwQHHAFsAggHoANsAvQE+ACcAgwHe/2UATQAJ/ywAQAB5/3UAwf/E/3YAWP+Z/y4AZv8e/9//2v/a/t7/1P7n/zAAyv5NAHMAYP67/+P/4/0DAOT/8P11AH3/of3nALn/8/0tASYAy/0uAZkAbv5rAQUAbf2r/7n/B/2p//v/d/1c/0P/rQBX/nb/PgEo/tL/nQD1/QkAhQGX/oAAIAEL/9kAvwHj/oz/fQLSAX3/qgJkAfz+UwGgABABhQFHAf4AkwCg/7AAvf8eALMAFP/4/qP/4P+A/qL/Zv5m/6v/zf0uAEYAxv1VAB7/Wf6PAHL/RP3BAOX/iP0wAWz/vf5IATAAnf2I//X+","b":"AAABAAEAAgACAAMAAwAEAAQABQAFAAYABgAHAAcACAAIAAkACAAKAAoACwALAAwACwANAAYADQANAA4AAwAOAAEADwAPABAAEAARABEAEgASABMAEwAUAA8AFAASABUAFQAWABUAFwAXABgAGAAZABkAGgAaABsAGwAcABsAHQAYAB4AHgAfAB4AIAAAACEAAAAiAAAAIwACACQAAgAlAAQAJgAJACcACQAoAAwAKQAMACoAEAArABEALAATAC0AFAAuABcALwAYADAAGQAxABkAMgAaADMAGgA0AB0ANQAgADYA","o":"111212121121112112121211211111211211111111111111111111111"},"urate":{"name":"Uric acid","el":"O C N C O C N C O N C N H H H H","xyz":"wP6AAAAALP9GAAAAMP+6/wAArP94/wAAsf/+/gAAJADK/wAAqACk/wAA9QAZAAAAbAEfAAAAnACEAAAAHABPAAAAo/+RAAAA2v6E/wAAzQBI/wAAtQDkAAAAnf/2AAAA","b":"AAABAAEAAgACAAMAAwAEAAMABQAFAAYABgAHAAcACAAHAAkACQAKAAUACgAKAAsAAQALAAIADAAGAA0ACQAOAAsADwA=","o":"21121112112111111"}});
 
 
 // @scene joints makeJoints | Кости и суставы | @body Опора и движение
@@ -12,8 +13,8 @@ function makeJoints() {
   __set_rnd(mulberry(1101));
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x07070b); scene.environment = envTex;
   labLights(scene, 0xffc89f);
-  const VIEW = { bone: [V3(-2.2, -2.6, 0), V3(1.8, -0.4, 24)], osteon: [V3(8.4, -1.0, -0.2), V3(10.6, 4.0, 7.5)], joint: [V3(38.9, -1.2, 0), V3(40.6, 0.6, 17.5)], types: [V3(82.0, 4.8, 0), V3(85, 7.2, 47)] };
-  const VIEWM = { bone: [V3(0.5, -0.8, 0), V3(3.0, 0.8, 24)], osteon: [V3(9.0, -0.2, -0.2), V3(11.2, 4.4, 8.5)], joint: [V3(40, 0.2, 0), V3(41.2, 1.4, 14)], types: [V3(84.6, 8.6, 0), V3(87, 10.5, 52)] }, mqm = window.matchMedia('(max-width:700px)'), VV = (m) => (mqm.matches && VIEWM[m]) || VIEW[m];
+  const VIEW = { bone: [V3(-2.2, -1.3, 0), V3(1.8, 0.9, 24)], osteon: [V3(8.4, -1.0, -0.2), V3(10.6, 4.0, 7.5)], joint: [V3(38.9, -0.4, 0), V3(40.6, 1.4, 17.5)], types: [V3(82.0, 6.6, 0), V3(85, 9.0, 47)] };
+  const VIEWM = { bone: [V3(0.5, -0.8, 0), V3(3.0, 0.8, 24)], osteon: [V3(9.0, -0.2, -0.2), V3(11.2, 4.4, 8.5)], joint: [V3(40, 1.8, 0), V3(41.2, 3.0, 15)], types: [V3(84.6, 8.6, 0), V3(87, 10.5, 52)] }, mqm = window.matchMedia('(max-width:700px)'), VV = (m) => (mqm.matches && VIEWM[m]) || VIEW[m];
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300);
   const controls = makeControls(camera, VIEW.bone[0]); controls.minDistance = 2; controls.maxDistance = 70;
   const fx = new Sparks(800, 0.07); scene.add(fx.obj);
@@ -140,13 +141,13 @@ function makeJoints() {
   loadSkeletonStatic(skel, skelMat).catch((e) => { st.err = e.message; refs.setInfo && refs.setInfo(); });
   const J = Object.fromEntries(Object.entries(SKEL_META.joints).map(([k, v]) => [k, V3(...v)]));
   const TYPES = {
-    ball: { name: 'Шаровидный', col: '#FF8A5C', ax: 3, at: [[J.shL, 'плечевой'], [J.shR, ''], [J.hpL, 'тазобедренный'], [J.hpR, '']] },
-    hinge: { name: 'Блоковидный', col: '#7FD6FF', ax: 1, at: [[J.elL, 'плечелоктевой'], [J.elR, ''], [J.anL, 'голеностопный'], [J.anR, ''], [J.hdL.clone().add(V3(0.05, -0.75, 0.15)), 'межфаланговые']] },
-    cond: { name: 'Мыщелковый', col: '#FFD86A', ax: 2, at: [[J.knL, 'коленный'], [J.knR, '']] },
-    pivot: { name: 'Цилиндрический', col: '#F2C14E', ax: 1, at: [[J.C1.clone().add(V3(0, -0.08, 0.1)), 'атлантоосевой'], [J.elL.clone().add(V3(0.18, -0.3, 0.05)), 'лучелоктевые'], [J.elR.clone().add(V3(-0.18, -0.3, 0.05)), ''], [J.wrL.clone().add(V3(-0.08, 0.12, 0)), ''], [J.wrR.clone().add(V3(0.08, 0.12, 0)), '']] },
-    ellip: { name: 'Эллипсовидный', col: '#7FE0A0', ax: 2, at: [[J.wrL, 'лучезапястный'], [J.wrR, ''], [J.hdL.clone().add(V3(0.0, -0.25, 0.15)), 'пястно-фаланговые'], [J.C1.clone().add(V3(0.12, 0.1, 0.05)), 'атлантозатылочный']] },
-    saddle: { name: 'Седловидный', col: '#C77DFF', ax: 2, at: [[J.wrL.clone().add(V3(0.2, -0.4, 0.2)), 'запястно-пястный большого пальца'], [J.wrR.clone().add(V3(-0.2, -0.4, 0.2)), '']] },
-    plane: { name: 'Плоский', col: '#FF8AB0', ax: 0, at: [[J.wrL.clone().add(V3(0.0, -0.22, 0.05)), 'межзапястные'], [V3(0.3, 12.6, -0.55), 'дугоотростчатые позвонков'], [V3(-0.2, 12.6, -0.55), ''], [J.shL.clone().add(V3(-0.25, 0.38, 0.1)), 'акромиально-ключичный']] },
+    ball: { name: 'Ball-and-socket', col: '#FF8A5C', ax: 3, at: [[J.shL, 'shoulder'], [J.shR, ''], [J.hpL, 'hip'], [J.hpR, '']] },
+    hinge: { name: 'Hinge', col: '#7FD6FF', ax: 1, at: [[J.elL, 'humeroulnar'], [J.elR, ''], [J.anL, 'ankle'], [J.anR, ''], [J.hdL.clone().add(V3(0.05, -0.75, 0.15)), 'interphalangeal']] },
+    cond: { name: 'Condylar', col: '#FFD86A', ax: 2, at: [[J.knL, 'knee'], [J.knR, '']] },
+    pivot: { name: 'Pivot', col: '#F2C14E', ax: 1, at: [[J.C1.clone().add(V3(0, -0.08, 0.1)), 'atlantoaxial'], [J.elL.clone().add(V3(0.18, -0.3, 0.05)), 'radioulnar'], [J.elR.clone().add(V3(-0.18, -0.3, 0.05)), ''], [J.wrL.clone().add(V3(-0.08, 0.12, 0)), ''], [J.wrR.clone().add(V3(0.08, 0.12, 0)), '']] },
+    ellip: { name: 'Ellipsoid', col: '#7FE0A0', ax: 2, at: [[J.wrL, 'radiocarpal (wrist)'], [J.wrR, ''], [J.hdL.clone().add(V3(0.0, -0.25, 0.15)), 'metacarpophalangeal'], [J.C1.clone().add(V3(0.12, 0.1, 0.05)), 'atlanto-occipital']] },
+    saddle: { name: 'Saddle', col: '#C77DFF', ax: 2, at: [[J.wrL.clone().add(V3(0.2, -0.4, 0.2)), 'carpometacarpal joint of the thumb'], [J.wrR.clone().add(V3(-0.2, -0.4, 0.2)), '']] },
+    plane: { name: 'Plane', col: '#FF8AB0', ax: 0, at: [[J.wrL.clone().add(V3(0.0, -0.22, 0.05)), 'intercarpal'], [V3(0.3, 12.6, -0.55), 'vertebral facet joints'], [V3(-0.2, 12.6, -0.55), ''], [J.shL.clone().add(V3(-0.25, 0.38, 0.1)), 'acromioclavicular']] },
   };
   Object.values(TYPES).forEach((T) => { T.marks = T.at.map(([p]) => glowNucleus(G3, p, T.col, 0.07, 9)); });
   // механические модели (крупнее, сеткой 2×4 справа от скелета)
@@ -222,51 +223,51 @@ function makeJoints() {
   }
 
   const TXT = {
-    bone: '<b>Трубчатая кость</b> (здесь — схема бедренной) на продольном распиле. Стержень — <b>диафиз</b>: толстая стенка из <b>компактного вещества</b>, внутри — костномозговой канал с <b>жёлтым (жировым) костным мозгом</b>. Концы — <b>эпифизы</b>: тонкий слой компактного вещества, внутри — <b>губчатое</b>: сеть перекладин-трабекул, выстроенных вдоль линий нагрузки, между ними — <b>красный костный мозг</b>. У взрослого кроветворный мозг остаётся в плоских и коротких костях (грудина, рёбра, таз, тела позвонков) и в проксимальных эпифизах бедренной и плечевой костей. Суставные поверхности покрыты <b>гиалиновым хрящом</b>, остальное — <b>надкостницей</b> (по ней кость растёт в толщину и срастается после перелома). Белая линия — след <b>пластинки роста</b> (эпифизарная линия). Сквозь стенку входит <b>питательная артерия</b>. Рамка на диафизе — откуда взят блок с остеонами.',
-    osteon: '<b>Остеон</b> (гаверсова система) — единица компактного вещества: 4–20 концентрических <b>пластинок</b> из коллагена и кристаллов гидроксиапатита вокруг <b>центрального (гаверсова) канала</b> с капиллярами и нервным волокном. Между пластинками в вытянутых лакунах сидят <b>остеоциты</b> (фиолетовые) — бывшие остеобласты, замурованные в кость; их отростки идут по тонким канальцам и соединяют клетки друг с другом и с каналом — так они чувствуют нагрузку. Поперечные <b>фолькмановы каналы</b> несут сосуды от надкостницы. Снаружи под <b>надкостницей</b> лежат <b>наружные окружные пластинки</b>. Кость на 2/3 — минерал (прочность на сжатие), на 1/3 — органический матрикс, в основном коллаген I типа (гибкость).',
-    op: '<b>Остеопороз</b>: разрушение кости (остеокласты) обгоняет построение (остеобласты) — особенно после менопаузы, когда исчезают эстрогены, при лечении глюкокортикоидами, малоподвижности. Трабекул меньше, они тоньше и теряют связи, компактный слой истончается (костномозговой канал шире), в остеонах расширяются каналы — полости резорбции. Типичные переломы — шейка бедра, позвонки (компрессионные), лучевая кость у запястья. Диагноз — денситометрия; лечат кальцием с витамином D, бисфосфонатами, деносумабом. См. тему «Кальций: паратгормон и витамин D».',
-    norm: '<b>Синовиальный сустав</b> на срезе. Суставные поверхности <b>конгруэнтны</b> — повторяют друг друга, между ними лишь щель с тонким слоем <b>синовиальной жидкости</b>. Концы костей покрыты гладким <b>гиалиновым хрящом</b> (голубой) — в нём нет сосудов и нервов, питание идёт из жидкости; под хрящом — плотная <b>субхондральная пластинка</b>, глубже — губчатая кость с красным мозгом. Жидкость (гиалуроновая кислота + лубрицин) — смазка: трение в суставе меньше, чем у льда по льду. Её выделяет <b>синовиальная оболочка</b> (розовая), выстилающая капсулу до края хряща и образующая завороты. <b>Фиброзная капсула</b> крепится у края хряща и переходит в надкостницу; снаружи — <b>связки</b>. В некоторых суставах есть внутрисуставные диски и мениски (коленный, височно-нижнечелюстной).',
-    oa: '<b>Остеоартроз</b> — самая частая болезнь суставов: хрящ изнашивается и истончается (с возрастом, после травм, при лишнем весе), <b>суставная щель сужается</b>, кость под хрящом уплотняется (субхондральный склероз — белая полоса толще), по краям вырастают костные шипы — <b>остеофиты</b>. Движения ограничены, хруст (искры), боль при нагрузке, утренняя скованность короткая. Лечат движением и снижением веса, обезболивающими, при разрушении — эндопротезированием.',
-    ra: '<b>Ревматоидный артрит</b> — аутоиммунное воспаление синовиальной оболочки: она утолщается и разрастается в агрессивную ткань — <b>паннус</b> (красный), который наползает на хрящ и разъедает кость по краям (<b>эрозии</b> — тёмные выемки). Жидкости больше (выпот), щель расширена, сустав опухший, горячий, утренняя скованность больше часа; поражаются симметрично мелкие суставы кистей и стоп. Лечат метотрексатом и биологическими препаратами (ингибиторы ФНО-α и др.).',
-    gout: '<b>Подагра</b>: когда урат в крови выше ~420 мкмоль/л (≈7 мг/дл, предел растворимости урата), в суставной жидкости выпадают игольчатые кристаллы <b>урата натрия</b> (белые). Нейтрофилы атакуют кристаллы, и за ночь развивается приступ острейшего воспаления — чаще всего в суставе большого пальца стопы. В поляризационном микроскопе кристаллы дают отрицательное двулучепреломление; при хроническом течении образуются узлы-тофусы. Подробно — тема «Нуклеотиды и подагра».',
+    bone: 'A <b>long bone</b> (here a schematic femur) cut lengthwise. The shaft — the <b>diaphysis</b> — has a thick wall of <b>compact bone</b>, with a marrow cavity of <b>yellow (fatty) marrow</b> inside. The ends — the <b>epiphyses</b> — have a thin layer of compact bone and inside <b>spongy bone</b>: a network of struts (trabeculae) aligned with lines of stress, with <b>red marrow</b> between them. In adults blood-forming marrow remains in flat and short bones (sternum, ribs, pelvis, vertebral bodies) and in the proximal epiphyses of the femur and humerus. The articular surfaces are covered with <b>hyaline cartilage</b>, the rest with <b>periosteum</b> (through it bone grows in thickness and heals after a fracture). The white line is a trace of the <b>growth plate</b> (epiphyseal line). A <b>nutrient artery</b> enters through the wall. The frame on the diaphysis marks where the block of osteons comes from.',
+    osteon: 'An <b>osteon</b> (Haversian system) is the unit of compact bone: 4–20 concentric <b>lamellae</b> of collagen and hydroxyapatite crystals around a <b>central (Haversian) canal</b> with capillaries and a nerve fiber. Between the lamellae, in elongated lacunae, sit <b>osteocytes</b> (purple) — former osteoblasts walled into bone; their processes run through fine canaliculi connecting the cells to each other and to the canal — this is how they sense load. Transverse <b>Volkmann’s canals</b> bring vessels from the periosteum. On the outside, beneath the <b>periosteum</b>, lie the <b>outer circumferential lamellae</b>. Bone is 2/3 mineral (compressive strength) and 1/3 organic matrix, mainly type I collagen (flexibility).',
+    op: '<b>Osteoporosis</b>: bone breakdown (osteoclasts) outpaces bone building (osteoblasts) — especially after menopause, when estrogens disappear, with glucocorticoid therapy, and with immobility. There are fewer trabeculae, they are thinner and lose connections, the compact layer thins (the marrow cavity widens), and the canals in osteons enlarge into resorption cavities. Typical fractures — femoral neck, vertebrae (compression), distal radius at the wrist. Diagnosis — densitometry; treatment — calcium with vitamin D, bisphosphonates, denosumab. See the “Calcium: parathyroid hormone and vitamin D” topic.',
+    norm: 'A <b>synovial joint</b> in section. The articular surfaces are <b>congruent</b> — they match each other, with only a slit holding a thin layer of <b>synovial fluid</b> between them. The bone ends are covered with smooth <b>hyaline cartilage</b> (blue) — it has no vessels or nerves and is nourished by the fluid; beneath it lies the dense <b>subchondral plate</b>, and deeper, spongy bone with red marrow. The fluid (hyaluronic acid + lubricin) is a lubricant: friction in a joint is lower than ice on ice. It is produced by the <b>synovial membrane</b> (pink), which lines the capsule up to the edge of the cartilage and forms recesses. The <b>fibrous capsule</b> attaches at the edge of the cartilage and continues into the periosteum; outside are the <b>ligaments</b>. Some joints contain intra-articular discs and menisci (knee, temporomandibular).',
+    oa: '<b>Osteoarthritis</b> is the most common joint disease: cartilage wears and thins (with age, after injuries, with excess weight), the <b>joint space narrows</b>, bone beneath the cartilage becomes denser (subchondral sclerosis — a thicker white band), and bony spurs — <b>osteophytes</b> — grow at the margins. Movement is limited, there is crepitus (sparks), pain on loading, and brief morning stiffness. Treatment — exercise and weight loss, painkillers, and joint replacement when the joint is destroyed.',
+    ra: '<b>Rheumatoid arthritis</b> is autoimmune inflammation of the synovial membrane: it thickens and grows into aggressive tissue — <b>pannus</b> (red) — which creeps over the cartilage and eats into the bone at the margins (<b>erosions</b> — dark notches). There is more fluid (effusion), the joint space is widened, the joint is swollen and hot, morning stiffness lasts more than an hour; small joints of the hands and feet are affected symmetrically. Treatment — methotrexate and biologic drugs (TNF-α inhibitors and others).',
+    gout: '<b>Gout</b>: when blood urate exceeds about 420 µmol/L (≈7 mg/dL, the solubility limit of urate), needle-shaped crystals of <b>sodium urate</b> (white) precipitate in the joint fluid. Neutrophils attack the crystals, and overnight an attack of intense inflammation develops — most often in the joint of the big toe. Under a polarizing microscope the crystals show negative birefringence; in chronic gout nodules (tophi) form. In detail — the “Nucleotides and gout” topic.',
   };
   const TYTXT = {
-    ball: '<b>Шаровидный сустав</b> — шаровидная головка во впадине: движения вокруг <b>трёх осей</b> (сгибание-разгибание, отведение-приведение, вращение) и круговые. <b>Плечевой</b> сустав — самый подвижный в теле (впадина мелкая), зато и вывихивается чаще всех. <b>Тазобедренный</b> — головка глубоко в вертлужной впадине, он прочнее и устойчивее, но подвижен меньше.',
-    hinge: '<b>Блоковидный сустав</b> — валик (блок) в вырезке: движения вокруг <b>одной оси</b> — сгибание и разгибание. Примеры: плечелоктевой, межфаланговые суставы пальцев, голеностопный.',
-    cond: '<b>Мыщелковый сустав</b> — два округлых мыщелка на почти плоских площадках: главное движение — сгибание-разгибание, а в согнутом положении возможно и вращение (<b>две оси</b>). Главный пример — <b>коленный</b>, самый крупный сустав тела; его поверхности не совпадают, поэтому между ними лежат хрящевые <b>мениски</b>, а внутри — крестообразные связки. Ещё мыщелковый — височно-нижнечелюстной сустав.',
-    pivot: '<b>Цилиндрический (вращательный) сустав</b> — вращение вокруг <b>одной продольной оси</b>. Зуб второго шейного позвонка вращается в кольце атланта — так мы поворачиваем голову «нет». Проксимальный и дистальный лучелоктевые суставы вращают предплечье: ладонь вниз (пронация) и вверх (супинация).',
-    ellip: '<b>Эллипсовидный сустав</b> — овальная головка в овальной ямке: <b>две оси</b> — сгибание-разгибание и отведение-приведение, вращения нет. Примеры: лучезапястный, пястно-фаланговые суставы пальцев, атлантозатылочный (кивок «да»).',
-    saddle: '<b>Седловидный сустав</b> — два «седла», повёрнутые друг к другу под прямым углом: <b>две оси</b>, а при их сочетании — круговое движение. Главный пример — запястно-пястный сустав большого пальца: благодаря ему большой палец противопоставляется остальным — основа хватательной кисти человека. Здесь же часто начинается артроз.',
-    plane: '<b>Плоский сустав</b> — почти плоские поверхности, возможны лишь небольшие скольжения в разных направлениях. Примеры: суставы между костями запястья и предплюсны, дугоотростчатые (фасеточные) суставы позвонков, акромиально-ключичный. Каждый двигается мало, но вместе они дают гибкость кисти, стопе и позвоночнику.',
+    ball: 'A <b>ball-and-socket joint</b> — a spherical head in a socket: movement around <b>three axes</b> (flexion–extension, abduction–adduction, rotation) and circumduction. The <b>shoulder</b> joint is the most mobile in the body (the socket is shallow), and so it dislocates most often. The <b>hip</b> has its head deep in the acetabulum: it is stronger and more stable, but less mobile.',
+    hinge: 'A <b>hinge joint</b> — a roller (trochlea) in a notch: movement around <b>one axis</b> — flexion and extension. Examples: humeroulnar, interphalangeal joints of the fingers, ankle.',
+    cond: 'A <b>condylar joint</b> — two rounded condyles on almost flat facets: the main movement is flexion–extension, and when flexed some rotation is possible (<b>two axes</b>). The main example is the <b>knee</b>, the largest joint in the body; its surfaces do not match, so cartilaginous <b>menisci</b> lie between them, and cruciate ligaments inside. The temporomandibular joint is also condylar.',
+    pivot: 'A <b>pivot joint</b> — rotation around <b>one longitudinal axis</b>. The dens of the second cervical vertebra rotates in the ring of the atlas — that is how we turn the head to say “no”. The proximal and distal radioulnar joints rotate the forearm: palm down (pronation) and up (supination).',
+    ellip: 'An <b>ellipsoid joint</b> — an oval head in an oval socket: <b>two axes</b> — flexion–extension and abduction–adduction, no rotation. Examples: the wrist (radiocarpal), the metacarpophalangeal joints of the fingers, the atlanto-occipital joint (the “yes” nod).',
+    saddle: 'A <b>saddle joint</b> — two “saddles” turned to each other at a right angle: <b>two axes</b>, and combined, circumduction. The main example is the carpometacarpal joint of the thumb: it lets the thumb oppose the other fingers — the basis of the human grasping hand. Osteoarthritis often starts here.',
+    plane: 'A <b>plane joint</b> — almost flat surfaces allowing only small gliding movements in different directions. Examples: joints between the carpal and tarsal bones, facet joints of the vertebrae, the acromioclavicular joint. Each moves little, but together they make the hand, foot and spine flexible.',
   };
   const L1 = () => st.labels && st.mode === 'bone' && st.view === 'bone', L1o = () => st.labels && st.mode === 'bone' && st.view === 'osteon', L2 = () => st.labels && st.mode === 'joint', L3 = () => st.labels && st.mode === 'types';
   const labels = [
-    { text: 'суставной хрящ', pos: V3(0.55, 4.18, 0.3), color: CART, show: L1 },
-    { text: 'губчатое вещество', pos: V3(0.35, 3.25, 0.3), color: IVORY, show: L1 },
-    { text: 'красный костный мозг', pos: V3(-0.3, 3.55, 0.3), color: '#E07080', show: L1 },
-    { text: 'эпифизарная линия', pos: V3(0.62, 2.75, 0.3), color: '#FFF4D8', show: L1 },
-    { text: 'компактное вещество', pos: V3(0.38, 1.6, 0.3), color: IVORY, show: L1 },
-    { text: 'жёлтый костный мозг', pos: V3(0.0, -0.6, 0.3), color: YEL, show: L1 },
-    { text: 'питательная артерия', pos: V3(1.55, 0.9, 0.4), color: '#FF6A6A', show: L1 },
-    { text: 'надкостница', pos: V3(0.47, -1.7, 0.3), color: '#E8A0A8', show: L1 },
-    { text: 'остеоны (рамка)', pos: V3(0.5, -1.0, 0.3), color: '#FFF4D8', show: L1 },
-    { text: 'пластинки', pos: V3(9.0 + 0.4, -0.6 + 1.25, 0.2), color: IVORY, show: L1o },
-    { text: 'гаверсов канал: капилляры, нерв', pos: V3(9.0, -0.6 + 1.3, 0.05), color: '#FF6A6A', show: L1o },
-    { text: 'остеоциты в лакунах', pos: V3(9.0 - 1.05, -0.6 + 0.2, 0.7), color: '#9F7BFF', show: L1o },
-    { text: 'фолькманов канал', pos: V3(9.0 + 0.6, -0.6 + 0.45, 0.3), color: '#FF6A6A', show: L1o },
-    { text: 'надкостница, окружные пластинки', pos: V3(9.0 + 2.3, -0.6 - 0.9, 0.9), color: '#E8A0A8', show: L1o },
-    { text: 'гиалиновый хрящ', pos: () => V3(40 + 0.0, UPC.y - RB - 0.06, 0.62), color: CART, show: L2 },
-    { text: 'субхондральная кость', pos: () => V3(40 - 0.35, UPC.y - RB + 0.14, 0.62), color: '#FFF6E0', show: L2 },
-    { text: 'синовиальная жидкость', pos: () => V3(40 + JG.ex + 0.2, JG.ey + 0.3, 0.62), color: '#7FD6FF', show: L2 },
-    { text: 'синовиальная оболочка', pos: () => V3(40 - JG.ex - 0.42, UPC.y + 0.05, 0.62), color: '#E87A8A', show: L2 },
-    { text: 'фиброзная капсула', pos: () => V3(40 + JG.ex + 0.6, UPC.y + 0.45, 0.62), color: '#F0EEE6', show: L2 },
-    { text: 'связка', pos: () => V3(40 + JG.ex + 0.8, JG.ey - 0.6, 0.62), color: '#D8D4C8', show: L2 },
-    { text: 'губчатая кость, красный мозг', pos: V3(40 - 0.2, 3.3, 0.62), color: '#E07080', show: L2 },
-    { text: 'остеофиты', pos: () => V3(40 - JG.ex - 0.2, JG.ey + 0.05, 0.62), color: IVORY, show: () => L2() && st.jd === 'oa' },
-    { text: 'паннус', pos: () => V3(40 - JG.ex - 0.1, JG.ey + 0.5, 0.62), color: '#FF6A6A', show: () => L2() && st.jd === 'ra' },
-    { text: 'эрозии', pos: () => V3(40 + JG.ex, JG.ey - 0.12, 0.62), color: '#FFB0A0', show: () => L2() && st.jd === 'ra' },
-    { text: 'кристаллы урата', pos: () => V3(40 + 0.2, UPC.y - RB - 0.12, 0.62), color: '#FFFFFF', show: () => L2() && st.jd === 'gout' },
-    ...Object.entries(TYPES).map(([k, T]) => ({ text: T.name + (T.ax ? ` · осей: ${T.ax}` : ' · скольжение'), pos: slot[k].clone().add(V3(80 - 1.0, -2.25, 0.6)), color: T.col, show: L3 })),
+    { text: 'articular cartilage', pos: V3(0.55, 4.18, 0.3), color: CART, show: L1 },
+    { text: 'spongy bone', pos: V3(0.35, 3.25, 0.3), color: IVORY, show: L1 },
+    { text: 'red marrow', pos: V3(-0.3, 3.55, 0.3), color: '#E07080', show: L1 },
+    { text: 'epiphyseal line', pos: V3(0.62, 2.75, 0.3), color: '#FFF4D8', show: L1 },
+    { text: 'compact bone', pos: V3(0.38, 1.6, 0.3), color: IVORY, show: L1 },
+    { text: 'yellow marrow', pos: V3(0.0, -0.6, 0.3), color: YEL, show: L1 },
+    { text: 'nutrient artery', pos: V3(1.55, 0.9, 0.4), color: '#FF6A6A', show: L1 },
+    { text: 'periosteum', pos: V3(0.47, -1.7, 0.3), color: '#E8A0A8', show: L1 },
+    { text: 'osteons (frame)', pos: V3(0.5, -1.0, 0.3), color: '#FFF4D8', show: L1 },
+    { text: 'lamellae', pos: V3(9.0 + 0.4, -0.6 + 1.25, 0.2), color: IVORY, show: L1o },
+    { text: 'Haversian canal: capillaries, nerve', pos: V3(9.0, -0.6 + 1.3, 0.05), color: '#FF6A6A', show: L1o },
+    { text: 'osteocytes in lacunae', pos: V3(9.0 - 1.05, -0.6 + 0.2, 0.7), color: '#9F7BFF', show: L1o },
+    { text: 'Volkmann’s canal', pos: V3(9.0 + 0.6, -0.6 + 0.45, 0.3), color: '#FF6A6A', show: L1o },
+    { text: 'periosteum, circumferential lamellae', pos: V3(9.0 + 2.3, -0.6 - 0.9, 0.9), color: '#E8A0A8', show: L1o },
+    { text: 'hyaline cartilage', pos: () => V3(40 + 0.0, UPC.y - RB - 0.06, 0.62), color: CART, show: L2 },
+    { text: 'subchondral bone', pos: () => V3(40 - 0.35, UPC.y - RB + 0.14, 0.62), color: '#FFF6E0', show: L2 },
+    { text: 'synovial fluid', pos: () => V3(40 + JG.ex + 0.2, JG.ey + 0.3, 0.62), color: '#7FD6FF', show: L2 },
+    { text: 'synovial membrane', pos: () => V3(40 - JG.ex - 0.42, UPC.y + 0.05, 0.62), color: '#E87A8A', show: L2 },
+    { text: 'fibrous capsule', pos: () => V3(40 + JG.ex + 0.6, UPC.y + 0.45, 0.62), color: '#F0EEE6', show: L2 },
+    { text: 'ligament', pos: () => V3(40 + JG.ex + 0.8, JG.ey - 0.6, 0.62), color: '#D8D4C8', show: L2 },
+    { text: 'spongy bone, red marrow', pos: V3(40 - 0.2, 3.3, 0.62), color: '#E07080', show: L2 },
+    { text: 'osteophytes', pos: () => V3(40 - JG.ex - 0.2, JG.ey + 0.05, 0.62), color: IVORY, show: () => L2() && st.jd === 'oa' },
+    { text: 'pannus', pos: () => V3(40 - JG.ex - 0.1, JG.ey + 0.5, 0.62), color: '#FF6A6A', show: () => L2() && st.jd === 'ra' },
+    { text: 'erosions', pos: () => V3(40 + JG.ex, JG.ey - 0.12, 0.62), color: '#FFB0A0', show: () => L2() && st.jd === 'ra' },
+    { text: 'urate crystals', pos: () => V3(40 + 0.2, UPC.y - RB - 0.12, 0.62), color: '#FFFFFF', show: () => L2() && st.jd === 'gout' },
+    ...Object.entries(TYPES).map(([k, T]) => ({ text: T.name + (T.ax ? ` · axes: ${T.ax}` : ' · gliding'), pos: slot[k].clone().add(V3(80 - 1.0, -2.25, 0.6)), color: T.col, show: L3 })),
     ...Object.entries(TYPES).flatMap(([k, T]) => T.at.filter(([, n]) => n).map(([p, n]) => ({ text: n, pos: p.clone().add(V3(80 + (p.x >= 0 ? 0.35 : -0.35), 0.05, 0.3)), color: T.col, show: () => L3() && st.typ === k }))),
   ];
   const dyn = labels.filter((l) => typeof l.pos === 'function'); dyn.forEach((l) => { l.fn = l.pos; l.pos = V3(0, 0, 0); });
@@ -276,21 +277,21 @@ function makeJoints() {
     refs.setInfo = () => {
       let s = st.msg;
       if (!s) s = st.mode === 'bone' ? (st.op ? TXT.op : TXT[st.view]) : st.mode === 'joint' ? TXT[st.jd] : TYTXT[st.typ];
-      if (st.err && st.mode === 'types') s += '<br><br><i>Модель скелета не загрузилась: ' + st.err + '</i>';
+      if (st.err && st.mode === 'types') s += '<br><br><i>The skeleton model failed to load: ' + st.err + '</i>';
       ib.info.innerHTML = s;
     };
-    refs.modeSeg = seg([{ id: 'bone', label: 'Строение кости' }, { id: 'joint', label: 'Сустав' }, { id: 'types', label: 'Типы суставов' }], () => st.mode, (v) => setMode(v));
+    refs.modeSeg = seg([{ id: 'bone', label: 'Bone structure' }, { id: 'joint', label: 'Joint' }, { id: 'types', label: 'Joint types' }], () => st.mode, (v) => setMode(v));
     const box = h('div', { class: 'grp', style: 'flex:1 1 440px' });
     refs.rebuild = () => {
       box.innerHTML = '';
-      if (st.mode === 'bone') box.append(h('div', { class: 'glabel' }, 'Показать'), h('div', { class: 'gctl' }, seg([{ id: 'bone', label: 'Кость целиком' }, { id: 'osteon', label: 'Остеоны' }], () => st.view, (v) => { st.view = v; OS.visible = v === 'osteon'; const vv = VV(v); st.fly = flyTarget(vv[0], vv[1]); refs.setInfo(); }), toggle('Остеопороз', () => st.op, (v) => { setOp(v); refs.setInfo(); })));
-      else if (st.mode === 'joint') box.append(h('div', { class: 'glabel' }, 'Состояние'), h('div', { class: 'gctl' }, seg([{ id: 'norm', label: 'Норма' }, { id: 'oa', label: 'Остеоартроз' }, { id: 'ra', label: 'Ревматоидный артрит' }, { id: 'gout', label: 'Подагра' }], () => st.jd, (v) => { setJd(v); refs.setInfo(); })));
-      else box.append(h('div', { class: 'glabel' }, 'Тип сустава'), h('div', { class: 'gctl' }, seg(Object.entries(TYPES).map(([id, T]) => ({ id, label: T.name, color: T.col })), () => st.typ, (v) => { st.typ = v; refs.setInfo(); })));
+      if (st.mode === 'bone') box.append(h('div', { class: 'glabel' }, 'Show'), h('div', { class: 'gctl' }, seg([{ id: 'bone', label: 'Whole bone' }, { id: 'osteon', label: 'Osteons' }], () => st.view, (v) => { st.view = v; OS.visible = v === 'osteon'; const vv = VV(v); st.fly = flyTarget(vv[0], vv[1]); refs.setInfo(); }), toggle('Osteoporosis', () => st.op, (v) => { setOp(v); refs.setInfo(); })));
+      else if (st.mode === 'joint') box.append(h('div', { class: 'glabel' }, 'State'), h('div', { class: 'gctl' }, seg([{ id: 'norm', label: 'Normal' }, { id: 'oa', label: 'Osteoarthritis' }, { id: 'ra', label: 'Rheumatoid arthritis' }, { id: 'gout', label: 'Gout' }], () => st.jd, (v) => { setJd(v); refs.setInfo(); })));
+      else box.append(h('div', { class: 'glabel' }, 'Joint type'), h('div', { class: 'gctl' }, seg(Object.entries(TYPES).map(([id, T]) => ({ id, label: T.name, color: T.col })), () => st.typ, (v) => { st.typ = v; refs.setInfo(); })));
     };
-    refs.rot = toggle('Вращение', () => st.rot, (v) => { st.rot = v; });
-    const lab = toggle('Подписи', () => st.labels, (v) => { st.labels = v; });
+    refs.rot = toggle('Rotate', () => st.rot, (v) => { st.rot = v; });
+    const lab = toggle('Labels', () => st.labels, (v) => { st.labels = v; });
     Object.assign(refs, { lab });
-    el.append(group('Режим', '1–3', refs.modeSeg), box, group('Вид', 'R · N', refs.rot, lab), ib.el);
+    el.append(group('Mode', '1–3', refs.modeSeg), box, group('View', 'R · N', refs.rot, lab), ib.el);
     refs.rebuild(); refs.setInfo();
   }
   function onKey(e) {
@@ -300,22 +301,22 @@ function makeJoints() {
     return false;
   }
   function stats() {
-    if (st.mode === 'bone') return st.view === 'osteon' ? [['Диаметр остеона', '0,1–0,4', 'мм'], ['Минерал / органика', '65 / 35', '%']] : [['Костей у взрослого', 206, ''], ['Трабекул', st.op ? 'мало, тонкие' : 'норма', '']];
-    if (st.mode === 'joint') return [['Суставная щель', st.jd === 'oa' ? 'сужена' : st.jd === 'ra' || st.jd === 'gout' ? 'выпот' : 'норма', ''], ['Движение', st.jd === 'oa' ? 'ограничено, хруст' : st.jd === 'norm' ? 'свободное' : 'болезненное', '']];
-    const T = TYPES[st.typ]; return [['Осей движения', T.ax || 'скольжение', ''], ['Отметок на скелете', T.at.length, '']];
+    if (st.mode === 'bone') return st.view === 'osteon' ? [['Osteon diameter', '0.1–0.4', 'mm'], ['Mineral / organic', '65 / 35', '%']] : [['Bones in an adult', 206, ''], ['Trabeculae', st.op ? 'few, thin' : 'normal', '']];
+    if (st.mode === 'joint') return [['Joint space', st.jd === 'oa' ? 'narrowed' : st.jd === 'ra' || st.jd === 'gout' ? 'effusion' : 'normal', ''], ['Movement', st.jd === 'oa' ? 'limited, crepitus' : st.jd === 'norm' ? 'free' : 'painful', '']];
+    const T = TYPES[st.typ]; return [['Axes of movement', T.ax || 'gliding', ''], ['Marks on skeleton', T.at.length, '']];
   }
   const self = {
     mobZoom: 0.55, scene, camera, controls, update: (dt) => { update(dt); dyn.forEach((l) => { l.pos.copy(l.fn()); }); }, ui, onKey, stats, labels, drawScope: null, accent: '#F2D27A',
-    kicker: 'Тело · опора и движение', title: 'Кости и суставы',
-    lede: 'Кость — живая ткань прочнее бетона на сжатие и легче стали, а сустав скользит с трением меньше, чем лёд по льду.',
+    kicker: 'Body · support and movement', title: 'Bones and joints',
+    lede: 'Bone is living tissue stronger than concrete in compression and lighter than steel, and a joint glides with less friction than ice on ice.',
     notes: `
-      <div><h2>Кости</h2>
-        <p>У взрослого 206 костей: осевой скелет (череп, позвоночник, рёбра, грудина) и добавочный (пояса и свободные конечности). По форме — трубчатые, губчатые (короткие), плоские, смешанные; сесамовидные лежат в сухожилиях (надколенник).</p>
-        <ul><li><b>Клетки</b>: остеобласты строят, остеоциты контролируют, остеокласты разрушают; кость перестраивается всю жизнь (≈10% скелета в год).</li><li><b>Рост в длину</b> — в эпифизарной пластинке (хрящ), в толщину — от надкостницы.</li><li><b>Костный мозг</b>: красный — кроветворный, жёлтый — жировой.</li></ul>
-        <h3>Соединения костей</h3><ul><li><b>Фиброзные</b>: швы черепа, синдесмозы, вколачивания (зубы).</li><li><b>Хрящевые</b>: межпозвонковые диски, лобковый симфиз, пластинки роста.</li><li><b>Синовиальные</b> (суставы): хрящ, полость с жидкостью, синовиальная оболочка, капсула, связки; бывают диски и мениски.</li></ul>
-        <h3>Типы суставов по форме</h3><p>Одноосные — блоковидный, цилиндрический; двуосные — эллипсовидный, седловидный, мыщелковый; многоосные — шаровидный; плоские — малые скольжения в разных направлениях.</p></div>
-      <div><h2>Условности</h2><ul><li>Кость, сустав и модели суставов — схемы, не в масштабе; трабекулы расположены случайно, а не по линиям нагрузки.</li><li>Скелет — настоящая 3D-модель (Sketchfab, CC BY); точки суставов поставлены приблизительно.</li></ul></div>
-      <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>3</code> режим</li><li><code>R</code> вращение · <code>N</code> подписи</li></ul></div>`,
+      <div><h2>Bones</h2>
+        <p>An adult has 206 bones: the axial skeleton (skull, spine, ribs, sternum) and the appendicular skeleton (girdles and free limbs). By shape — long, short (spongy), flat, irregular; sesamoid bones lie in tendons (patella).</p>
+        <ul><li><b>Cells</b>: osteoblasts build, osteocytes monitor, osteoclasts resorb; bone is remodeled throughout life (≈10% of the skeleton a year).</li><li><b>Growth in length</b> — at the epiphyseal plate (cartilage), in thickness — from the periosteum.</li><li><b>Bone marrow</b>: red — blood-forming, yellow — fatty.</li></ul>
+        <h3>Joints between bones</h3><ul><li><b>Fibrous</b>: skull sutures, syndesmoses, gomphoses (teeth).</li><li><b>Cartilaginous</b>: intervertebral discs, pubic symphysis, growth plates.</li><li><b>Synovial</b> (joints proper): cartilage, cavity with fluid, synovial membrane, capsule, ligaments; sometimes discs and menisci.</li></ul>
+        <h3>Joint types by shape</h3><p>Uniaxial — hinge, pivot; biaxial — ellipsoid, saddle, condylar; multiaxial — ball-and-socket; plane — small gliding movements in different directions.</p></div>
+      <div><h2>Simplifications</h2><ul><li>The bone and joint models are diagrams, not to scale; trabeculae are placed randomly rather than along lines of stress.</li><li>The skeleton is a real 3D model (Sketchfab, CC BY); joint marks are placed approximately.</li></ul></div>
+      <div class="keys"><h2>Keys</h2><ul><li><code>1</code>–<code>3</code> mode</li><li><code>R</code> rotate · <code>N</code> labels</li></ul></div>`,
   };
   setMode('bone'); camera.position.copy(st.fly.pos); controls.target.copy(st.fly.target); controls.update(); st.fly = null;
   return self;
