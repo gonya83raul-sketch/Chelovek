@@ -6051,7 +6051,7 @@ function makeCortex() {
     col: flyTarget(V3(0.2, -0.75, 0), V3(4.4, 0.9, 8.0)),
   };
   const VIEWSM = {   // телефон: кадр выше и ниже — модель крупнее (mobZoom)
-    lat: flyTarget(V3(-0.22, -0.25, -0.55), V3(-0.5, 0.8, -10.2)), med: flyTarget(V3(-0.22, -0.25, -0.3), V3(-0.5, 0.6, 9.2)),
+    lat: flyTarget(V3(-0.22, -0.25, -0.55), V3(-0.45, 0.6, -8.4)),   /* телефон: мозг крупнее */ med: flyTarget(V3(-0.22, -0.25, -0.3), V3(-0.5, 0.6, 9.2)),
     top: flyTarget(V3(-0.3, -0.1, 0), V3(-3.6, 8.2, 0.01)), col: flyTarget(V3(0.15, -0.6, 0), V3(5.4, 1.1, 9.8)),
   };
   const mqm = window.matchMedia('(max-width:700px)'), VV = (m) => (mqm.matches ? VIEWSM : VIEWS)[m];
