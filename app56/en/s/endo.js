@@ -23,7 +23,7 @@ function makeEndo() {
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x07060a); scene.environment = envTex;
   labLights(scene, 0xc77dff);
   const MOBE = matchMedia('(max-width:700px)').matches;
-  const VIEW = { map: flyTarget(V3(0.0, 1.8, 0), V3(2.05, 2.47, 11.4)), sugar: flyTarget(V3(-0.1, 0.75, 0), V3(1.8, 1.8, 6.2)), stress: flyTarget(V3(0.1, 1.9, 0), V3(-2.6, 3.0, 8.4)), thy: flyTarget(V3(0.0, 3.25, 0.1), V3(1.3, 3.6, 3.6)) };
+  const VIEW = { map: flyTarget(V3(0.0, 1.8, 0), V3(2.05, 2.47, 11.4)), sugar: MOBE ? flyTarget(V3(-0.1, 0.95, 0), V3(2.2, 2.2, 7.4)) : flyTarget(V3(-0.1, 0.75, 0), V3(1.8, 1.8, 6.2)), stress: MOBE ? flyTarget(V3(0.1, 2.3, 0), V3(-2.9, 3.5, 9.4)) : flyTarget(V3(0.1, 1.9, 0), V3(-2.6, 3.0, 8.4)), thy: MOBE ? flyTarget(V3(0.0, 3.45, 0.1), V3(1.3, 3.8, 3.6)) : flyTarget(V3(0.0, 3.25, 0.1), V3(1.3, 3.6, 3.6)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(VIEW.map.pos);
   const controls = makeControls(camera, VIEW.map.target); controls.minDistance = 1.2; controls.maxDistance = 22;
   bodyShell(scene, { rim: 0.36 });
@@ -114,7 +114,7 @@ function makeEndo() {
     iod: '<b>Iodine deficiency.</b> Without iodine the gland cannot make T4 → feedback weakens → the pituitary releases more and more TSH → TSH makes the gland grow: endemic goiter develops. That is why salt is iodized.',
   };
   const labels = [
-    ...EN_GL.map((g) => ({ text: g.id === 'panc' ? 'Islets of Langerhans' : g.name, pos: g.p.clone().add({ para: V3(0.25, -0.14, 0.1), pin: V3(0.14, 0.16, 0.1), hyp: V3(0.14, -0.06, 0.12), gut: V3(0.2, 0.22, 0.12), panc: V3(0.34, -0.14, 0.12) }[g.id] || V3(0.14, 0.04, 0.12)), color: g.color, show: () => st.labels && (st.mode === 'map' ? (!st.sel ? !(MOBE && ['fat', 'gut'].includes(g.id)) : st.sel === g.id) : (st.mode === 'sugar' ? g.id === 'panc' : st.mode === 'stress' ? ['hyp', 'adr'].includes(g.id) : ['hyp', 'thy'].includes(g.id))) })),
+    ...EN_GL.map((g) => ({ text: g.id === 'panc' ? 'Islets of Langerhans' : g.name, pos: g.p.clone().add({ para: V3(0.25, -0.14, 0.1), pin: V3(0.14, 0.16, 0.1), hyp: V3(0.14, -0.06, 0.12), gut: V3(0.2, 0.22, 0.12), panc: V3(0.34, -0.14, 0.12) }[g.id] || V3(0.14, 0.04, 0.12)), color: g.color, show: () => st.labels && (st.mode === 'map' ? (!st.sel ? !(MOBE && ['fat', 'gut'].includes(g.id)) : st.sel === g.id) : (st.mode === 'sugar' ? g.id === 'panc' : st.mode === 'stress' ? ['hyp', 'adr'].includes(g.id) : (MOBE ? ['hyp', 'thy'] : ['hyp', 'thy', 'thym']).includes(g.id))) })),
     { text: 'Liver', pos: V3(-0.8, 1.6, 0.25), color: '#c88a70', show: () => st.labels && st.mode !== 'thy' },
     { text: 'Muscles', pos: V3(-0.75, -1.0, 0.2), color: '#c86a6a', show: () => st.labels && (st.mode === 'sugar' || (st.mode === 'map' && st.sel)) },
     { text: 'Bone', pos: V3(0.62, -1.0, 0.1), color: '#e8d8bb', show: () => st.labels && st.mode === 'map' && st.sel && GL[st.sel].targets.includes('bone') },

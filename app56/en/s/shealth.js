@@ -45,7 +45,7 @@ function makeShealth() {
   const MOB = matchMedia('(max-width:700px)').matches;
   // выноска: увеличенный мозг (координаты brainKit: x — вперёд, z — вбок к зрителю) справа от тела; на телефоне — над головой
   const CB = MOB ? V3(0.15, 6.15, 0) : V3(2.3, 3.2, 0), KB = MOB ? 0.82 : 0.8;
-  const VIEW = { drive: MOB ? flyTarget(V3(-1.6, 3.9, 0), V3(-0.85, 4.5, 15)) : flyTarget(V3(0.45, 2.05, 0), V3(1.15, 2.7, 10.4)), sti: flyTarget(V3(30, -0.6, 0), V3(30, 0.8, 8.4)), protect: flyTarget(V3(60, -0.9, 0), V3(60.4, 1.6, 12.4)) };
+  const VIEW = { drive: MOB ? flyTarget(V3(-1.6, 3.9, 0), V3(-0.85, 4.5, 15)) : flyTarget(V3(0.45, 2.05, 0), V3(1.15, 2.7, 10.4)), sti: MOB ? flyTarget(V3(30, -0.6, 0), V3(30, 0.8, 8.4)) : flyTarget(V3(28.5, -0.6, 0), V3(28.5, 0.8, 8.4)), protect: MOB ? flyTarget(V3(60, -0.9, 0), V3(60.4, 1.6, 12.4)) : flyTarget(V3(58.6, -0.9, 0), V3(59.04, 1.85, 13.6)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 140); camera.position.copy(VIEW.drive.pos);
   const controls = makeControls(camera, VIEW.drive.target); controls.minDistance = 1.5; controls.maxDistance = 22;
   /* ---------- влечение ---------- */

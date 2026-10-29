@@ -43,7 +43,7 @@ function makeKidney() {
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x07060a); scene.environment = envTex;
   labLights(scene, 0xffc080);
   const MOBK = matchMedia('(max-width:700px)').matches;
-  const VIEW = { sys: MOBK ? flyTarget(V3(0.0, 0.72, 0), V3(1.15, 1.33, -5.5)) : flyTarget(V3(0.0, 0.55, 0), V3(1.15, 1.16, -5.5)), kid: flyTarget(V3(29.6, -0.75, 0), V3(30.5, 0.1, 6.9)), neph: flyTarget(V3(60.2, -1.3, 0), V3(62.6, 0.0, 10.8)) };
+  const VIEW = { sys: MOBK ? flyTarget(V3(0.0, 0.72, 0), V3(1.15, 1.33, -5.5)) : flyTarget(V3(0.0, 0.55, 0), V3(1.15, 1.16, -5.5)), kid: flyTarget(V3(29.6, -0.55, 0), V3(30.5, 0.3, 6.9)), neph: flyTarget(V3(60.2, -1.0, 0), V3(63.0, 0.5, 12.6)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 120); camera.position.copy(VIEW.sys.pos);
   const controls = makeControls(camera, VIEW.sys.target); controls.minDistance = 1.5; controls.maxDistance = 22;
   const body = new THREE.Group(); scene.add(body);

@@ -5,10 +5,10 @@ import { Sparks, THREE, V3, __set_rnd, button, displaceGeo, ell3, envTex, flySte
    ТЕЛО · КРОВЬ
    ========================================================= */
 const BL_CELLS = [
-  { id: 'rbc', name: 'Red blood cells', color: '#E0505A', text: '<b>Red blood cells</b> (erythrocytes) are biconcave discs 7–8 µm across, without a nucleus and packed with hemoglobin. They carry oxygen from the lungs to the tissues and some of the CO₂ back. There are 4–5 million in 1 µL of blood; they live ~120 days and are destroyed in the spleen and liver; every second the bone marrow releases ~2 million new ones. Their flexible shape lets them squeeze through capillaries narrower than themselves.' },
-  { id: 'wbc', name: 'White blood cells', color: '#E8E8F8', text: '<b>White blood cells</b> are nucleated cells, 4–9 thousand per µL. <b>Neutrophils</b> (up to 70%, segmented nucleus) are the first to reach an infection and eat bacteria. <b>Lymphocytes</b> (large round nucleus) are the B and T cells of immune memory. <b>Monocytes</b> (bean-shaped nucleus) enter tissues and become macrophages. <b>Eosinophils</b> (1–4%, two-lobed nucleus and orange granules) fight parasites and take part in allergy, <b>basophils</b> (under 1%, dark purple granules hide the nucleus) release histamine. A white cell is 1.5–2.5 times larger than a red cell. White cells can leave a vessel through its wall.' },
-  { id: 'plt', name: 'Platelets', color: '#F2C88A', text: '<b>Platelets</b> (thrombocytes) are anucleate plates 2–3 µm across, fragments of giant bone marrow cells. There are 150–400 thousand in 1 µL; they live 7–10 days. When a vessel is damaged, they stick to the wound, become activated (put out projections) and clump together into a plug.' },
-  { id: 'plasma', name: 'Plasma', color: '#F2E08A', text: '<b>Plasma</b> is 55% of blood volume: 92% water, 7% proteins (albumins — 60% of the proteins — keep water in the vessels; globulins — 35%, including antibodies; fibrinogen — 4%, needed for clotting), plus glucose, salts, hormones and waste products. An adult has about 5 L of blood — 7–8% of body mass.' },
+  { id: 'rbc', name: 'Эритроциты', color: '#E0505A', text: '<b>Эритроциты</b> — двояковогнутые диски 7–8 мкм без ядра, набитые гемоглобином. Переносят кислород от лёгких к тканям и часть CO₂ обратно. 4–5 млн в 1 мкл крови, живут ~120 дней, гибнут в селезёнке и печени; каждую секунду костный мозг выпускает ~2 млн новых. Гибкая форма позволяет протискиваться через капилляры уже самих себя.' },
+  { id: 'wbc', name: 'Лейкоциты', color: '#E8E8F8', text: '<b>Лейкоциты</b> — белые клетки с ядром, 4–9 тыс. в 1 мкл. <b>Нейтрофилы</b> (до 70%, ядро из сегментов) первыми приходят к инфекции и поедают бактерии. <b>Лимфоциты</b> (крупное круглое ядро) — B- и T-клетки иммунной памяти. <b>Моноциты</b> (ядро бобовидное) выходят в ткани и становятся макрофагами. <b>Эозинофилы</b> (1–4%, ядро из двух долей и оранжевые гранулы) борются с паразитами и участвуют в аллергии, <b>базофилы</b> (меньше 1%, тёмно-фиолетовые гранулы закрывают ядро) выделяют гистамин. Лейкоцит в 1,5–2,5 раза крупнее эритроцита. Лейкоциты умеют выходить из сосуда сквозь стенку.' },
+  { id: 'plt', name: 'Тромбоциты', color: '#F2C88A', text: '<b>Тромбоциты</b> — безъядерные пластинки 2–3 мкм, осколки гигантских клеток костного мозга. 150–400 тыс. в 1 мкл, живут 7–10 дней. При повреждении сосуда прилипают к ране, активируются (выпускают отростки) и склеиваются в пробку.' },
+  { id: 'plasma', name: 'Плазма', color: '#F2E08A', text: '<b>Плазма</b> — 55% объёма крови: на 92% вода, 7% белки (альбумины — 60% белков — держат воду в сосудах, глобулины — 35%, среди них антитела, фибриноген — 4%, нужен для свёртывания), глюкоза, соли, гормоны, продукты обмена. У взрослого около 5 л крови — 7–8% массы тела.' },
 ];
 const BL_GROUPS = { O: { a: [], ab: ['A', 'B'] }, A: { a: ['A'], ab: ['B'] }, B: { a: ['B'], ab: ['A'] }, AB: { a: ['A', 'B'], ab: [] } };
 function makeBlood() {
@@ -16,7 +16,7 @@ function makeBlood() {
   __set_rnd(mulberry(2020));
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x0a0507); scene.environment = envTex;
   labLights(scene, 0xff7a7a);
-  const VIEW = { flow: MOBB ? flyTarget(V3(0, 0.7, 0), V3(3.0, 3.4, 14.4)) : flyTarget(V3(-2.6, -0.4, 0), V3(0.4, 2.3, 15.2)), clot: flyTarget(V3(0.3, -0.4, 0), V3(1.4, 3.2, 7.4)), groups: flyTarget(V3(30, -0.9, 0), V3(30.6, 0.8, 7.2)), tube: flyTarget(V3(60.55, -0.55, 0), V3(61.7, 0.9, 12.4)) };
+  const VIEW = { flow: MOBB ? flyTarget(V3(0, 0.7, 0), V3(3.0, 3.4, 14.4)) : flyTarget(V3(-2.6, -0.4, 0), V3(0.4, 2.3, 15.2)), clot: MOBB ? flyTarget(V3(0.3, -0.4, 0), V3(1.4, 3.2, 7.4)) : flyTarget(V3(-0.8, 0.6, 0), V3(0.3, 4.05, 11.6)), groups: flyTarget(V3(30, -0.65, 0), V3(30.6, 1.05, 7.2)), tube: flyTarget(V3(60.55, 0.45, 0), V3(61.7, 1.9, 12.4)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(VIEW.flow.pos);
   const controls = makeControls(camera, VIEW.flow.target); controls.minDistance = 1.5; controls.maxDistance = 18;
   const pick = [];
@@ -119,10 +119,10 @@ function makeBlood() {
   function mix() { st.mixT = st.t; st.agg = 0; refs.setInfo && refs.setInfo(); }
   pickOn(() => self, camera, pick, (id) => { if (st.mode === 'flow') select(id); });
   const CLOT_STAGES = [
-    [0, '<b>1. Vascular spasm.</b> The damaged wall contracts reflexively — bleeding decreases. Blood flows out of the wound.'],
-    [1.5, '<b>2. Platelet plug.</b> Platelets stick to the exposed collagen of the wall and become activated — they put out projections and release substances that attract more platelets — and clump into a loose plug.'],
-    [4.5, '<b>3. Coagulation.</b> A cascade of clotting factors (calcium and vitamin K are required) converts prothrombin into thrombin, and thrombin converts soluble fibrinogen into fibrin threads. The fibrin mesh entangles the plug and red blood cells — a clot forms. The whole process takes a few minutes (in a test tube, by the Lee–White method, 5–10 min).'],
-    [8, '<b>4. Retraction and healing.</b> The clot contracts, pulling the edges of the wound together. Then the cells of the wall repair it, and the fibrin is dissolved (fibrinolysis). In hemophilia one of the factors is missing — the blood barely clots.'],
+    [0, '<b>1. Спазм сосуда.</b> Повреждённая стенка рефлекторно сокращается — кровотечение уменьшается. Из раны вытекает кровь.'],
+    [1.5, '<b>2. Тромбоцитарная пробка.</b> Тромбоциты прилипают к обнажённому коллагену стенки, активируются — выпускают отростки и вещества, привлекающие новые тромбоциты, — и склеиваются в рыхлую пробку.'],
+    [4.5, '<b>3. Свёртывание.</b> Каскад факторов свёртывания (нужны кальций и витамин K) превращает протромбин в тромбин, а тромбин — растворимый фибриноген в нити фибрина. Сеть фибрина опутывает пробку и эритроциты — образуется сгусток. Всё занимает несколько минут (в пробирке, по Ли — Уайту, 5–10 мин).'],
+    [8, '<b>4. Ретракция и заживление.</b> Сгусток сжимается, стягивая края раны. Потом клетки стенки восстанавливают её, а фибрин растворяется (фибринолиз). При гемофилии одного из факторов нет — кровь почти не свёртывается.'],
   ];
   const m4 = new THREE.Matrix4(), C_P = new THREE.Color(0xf2e08a), C_R = new THREE.Color(0xc02030);
   function update(dt) {
@@ -174,7 +174,7 @@ function makeBlood() {
     fx.update(dt);
   }
   // состав плазмы (Неттер, BP 15): вода/белки/прочее и доли белков
-  const PL_BARS = [['Plasma', [['water', 92, '#7FB8E8'], ['proteins', 7, '#F2D060'], ['other', 1, '#B0B0B0']]], ['Plasma proteins', [['albumins', 60, '#F2D060'], ['globulins', 35, '#E0A040'], ['fibrinogen', 4, '#F8F0D8']]]];
+  const PL_BARS = [['Плазма', [['вода', 92, '#7FB8E8'], ['белки', 7, '#F2D060'], ['прочее', 1, '#B0B0B0']]], ['Белки плазмы', [['альбумины', 60, '#F2D060'], ['глобулины', 35, '#E0A040'], ['фибриноген', 4, '#F8F0D8']]]];
   function drawScope(ctx, w, hgt) {
     ctx.clearRect(0, 0, w, hgt); const on = st.mode === 'tube' || (st.mode === 'flow' && st.sel === 'plasma'); scopeShow(on); if (!on) return;
     const small = w < 330, fs = small ? 9 : 10; let y = 4;
@@ -186,41 +186,41 @@ function makeBlood() {
       y = ly + 6; });
   }
   const TXT = {
-    tube: '<b>Blood in a test tube.</b> Spin a tube of blood in a centrifuge and the cells settle: heavy red cells at the bottom (about 45% of the volume — the <b>hematocrit</b>), above them a thin whitish film of white cells and platelets (under 1%), and clear yellow <b>plasma</b> on top (about 55%). A low hematocrit points to anemia, a high one to thickened blood (dehydration, life at high altitude).',
-    flow: '<b>Blood</b> is a liquid tissue: plasma (55%) and formed elements (45%). In an artery, cells flow faster in the center and slower near the wall. The arterial wall has three layers: the intima (endothelium and elastic membrane), the media (smooth muscle) and the outer adventitia with its own vessels and nerve. Red cells carry gases, white cells defend, platelets stop bleeding. All of them are born in red bone marrow from stem cells. Click a cell.',
-    clot: '<b>Blood clotting.</b> Click “Cut” to damage the vessel wall, and watch how the body stops the bleeding.',
-    groups: '<b>ABO blood groups.</b> Red blood cells may carry antigen A (yellow spikes) and antigen B (blue). The plasma contains antibodies against the antigens the person lacks (Y-shaped). If the recipient’s antibodies meet their antigens on the donor’s red cells, the cells clump together — <b>agglutination</b>, which is life-threatening. Choose a donor and a recipient.',
+    tube: '<b>Кровь в пробирке.</b> Если пробирку с кровью покрутить в центрифуге, клетки осядут: внизу тяжёлые эритроциты (около 45% объёма — это <b>гематокрит</b>), над ними тонкая беловатая плёнка лейкоцитов и тромбоцитов (меньше 1%), сверху прозрачная жёлтая <b>плазма</b> (около 55%). Низкий гематокрит говорит об анемии, высокий — о сгущении крови (обезвоживание, жизнь в горах).',
+    flow: '<b>Кровь</b> — жидкая ткань: плазма (55%) и форменные элементы (45%). В артерии клетки текут быстрее в центре и медленнее у стенки. Стенка артерии трёхслойная: интима (эндотелий и эластическая мембрана), медия (гладкие мышцы) и наружная адвентиция с собственными сосудами и нервом. Эритроциты переносят газы, лейкоциты защищают, тромбоциты останавливают кровотечение. Все они рождаются в красном костном мозге из стволовых клеток. Нажмите на клетку.',
+    clot: '<b>Свёртывание крови.</b> Нажмите «Порез», чтобы повредить стенку сосуда, и смотрите, как организм останавливает кровотечение.',
+    groups: '<b>Группы крови AB0.</b> На эритроцитах могут быть антигены A (жёлтые шипики) и B (голубые). В плазме — антитела к тем антигенам, которых у человека нет (Y-образные). Если антитела реципиента встречают свои антигены на эритроцитах донора, клетки склеиваются — <b>агглютинация</b>, опасная для жизни. Выберите донора и реципиента.',
   };
-  const grpTxt = () => { const ok = compatible(); return `<b>Donor ${st.donor} → recipient ${st.recip}: ${ok ? 'compatible' : 'incompatible!'}</b> ${ok ? 'The recipient’s plasma has no antibodies against the donor’s antigens — the red blood cells float freely.' : 'The recipient’s antibodies (' + BL_GROUPS[st.recip].ab.join(' и ') + ') bind the donor’s antigens — the red blood cells clump together.'} Group O (I) is the “universal donor” of red blood cells, and AB (IV) is the “universal recipient”. In practice, only blood of the same group is transfused, and the Rh factor is also taken into account.`; };
+  const grpTxt = () => { const ok = compatible(); return `<b>Донор ${st.donor} → реципиент ${st.recip}: ${ok ? 'совместимо' : 'несовместимо!'}</b> ${ok ? 'В плазме реципиента нет антител к антигенам донора — эритроциты свободно плавают.' : 'Антитела реципиента (' + BL_GROUPS[st.recip].ab.join(' и ') + ') связывают антигены донора — эритроциты склеиваются в комки.'} Группа 0 (I) — «универсальный донор» эритроцитов, AB (IV) — «универсальный реципиент». На практике переливают только одногруппную кровь и учитывают ещё резус-фактор (Rh).`; };
   const labels = [
-    { text: 'red blood cell', pos: V3(-1.6, 0.4, 0.9), color: '#E0505A', show: () => st.labels && st.mode === 'flow' },
-    ...[['neu', 'neutrophil · 50–70%', '#E8E8F8'], ['lym', 'lymphocyte · 20–30%', '#E8E8F8'], ['mon', 'monocyte · 2–8%', '#E8E8F8'], ['eos', 'eosinophil · 1–4%', '#FFB08A'], ['bas', 'basophil · <1%', '#B8A0F0']].map(([k, tx, c]) => { const w = WBC.find((q) => q.kind === k); w.lab = { text: tx, pos: V3(0, 0, 0), color: c, show: () => st.labels && st.mode === 'flow' && !(MOBB && (k === 'eos' || k === 'bas')) }; return w.lab; }),
-    { text: 'intima', pos: V3(-3.6, Math.sin(Math.PI * 1.85) * R, Math.cos(Math.PI * 1.85) * R + 0.05), color: '#F2C0C8', show: () => st.labels && st.mode === 'flow' },
-    { text: 'media: smooth muscle', pos: V3(-3.6, Math.sin(Math.PI * 1.85) * (R + 0.13), Math.cos(Math.PI * 1.85) * (R + 0.13) + 0.05), color: '#E08080', show: () => st.labels && st.mode === 'flow' },
-    { text: 'adventitia', pos: V3(-3.6, Math.sin(Math.PI * 1.85) * (R + 0.3), Math.cos(Math.PI * 1.85) * (R + 0.3) + 0.05), color: '#E0D0A8', show: () => st.labels && st.mode === 'flow' },
-    { text: 'vasa vasorum', pos: V3(2.6, Math.sin(Math.PI * 0.55) * (R + 0.35), Math.cos(Math.PI * 0.55) * (R + 0.35)), color: '#E0505A', show: () => st.labels && st.mode === 'flow' && !MOBB },
-    { text: 'wall nerve', pos: V3(-1.6, Math.sin(Math.PI * 1.25) * (R + 0.32), Math.cos(Math.PI * 1.25) * (R + 0.32)), color: '#F2D060', show: () => st.labels && st.mode === 'flow' && !MOBB },
-    { text: 'vessel wall', pos: V3(3.6, R + 0.2, -0.5), color: '#E8A0A8', show: () => st.labels && st.mode === 'clot' },
-    { text: 'plasma ≈ 55%', pos: V3(60.45, 1.9, 0.2), color: '#F2E08A', show: () => st.labels && st.mode === 'tube' && st.spin > 0.95 },
-    { text: 'white cells and platelets < 1%', pos: V3(60.45, HR + 0.03, 0.2), color: '#F4F0E8', show: () => st.labels && st.mode === 'tube' && st.spin > 0.95 },
-    { text: 'red cells ≈ 45% (hematocrit)', pos: V3(60.45, 0.35, 0.2), color: '#E0505A', show: () => st.labels && st.mode === 'tube' && st.spin > 0.95 },
-    { text: 'wound', pos: WOUND.clone().add(V3(0.7, 0.3, 0.3)), color: '#ff6a5a', show: () => st.labels && st.mode === 'clot' && st.t > st.cutT },
-    { text: 'fibrin threads', pos: WOUND.clone().add(V3(-0.9, 0.2, 0.4)), color: '#f8f0d8', show: () => st.labels && st.mode === 'clot' && st.t - st.cutT > 5 },
-    { text: 'recipient plasma', pos: V3(31.6, 0.9, 0.5), color: '#F2E08A', show: () => st.labels && st.mode === 'groups' },
+    { text: 'эритроцит', pos: V3(-1.6, 0.4, 0.9), color: '#E0505A', show: () => st.labels && st.mode === 'flow' },
+    ...[['neu', 'нейтрофил · 50–70%', '#E8E8F8'], ['lym', 'лимфоцит · 20–30%', '#E8E8F8'], ['mon', 'моноцит · 2–8%', '#E8E8F8'], ['eos', 'эозинофил · 1–4%', '#FFB08A'], ['bas', 'базофил · <1%', '#B8A0F0']].map(([k, tx, c]) => { const w = WBC.find((q) => q.kind === k); w.lab = { text: tx, pos: V3(0, 0, 0), color: c, show: () => st.labels && st.mode === 'flow' && !(MOBB && (k === 'eos' || k === 'bas')) }; return w.lab; }),
+    { text: 'интима', pos: V3(-3.6, Math.sin(Math.PI * 1.85) * R, Math.cos(Math.PI * 1.85) * R + 0.05), color: '#F2C0C8', show: () => st.labels && st.mode === 'flow' },
+    { text: 'медия: гладкие мышцы', pos: V3(-3.6, Math.sin(Math.PI * 1.85) * (R + 0.13), Math.cos(Math.PI * 1.85) * (R + 0.13) + 0.05), color: '#E08080', show: () => st.labels && st.mode === 'flow' },
+    { text: 'адвентиция', pos: V3(-3.6, Math.sin(Math.PI * 1.85) * (R + 0.3), Math.cos(Math.PI * 1.85) * (R + 0.3) + 0.05), color: '#E0D0A8', show: () => st.labels && st.mode === 'flow' },
+    { text: 'сосуды стенки', pos: V3(2.6, Math.sin(Math.PI * 0.55) * (R + 0.35), Math.cos(Math.PI * 0.55) * (R + 0.35)), color: '#E0505A', show: () => st.labels && st.mode === 'flow' && !MOBB },
+    { text: 'нерв стенки', pos: V3(-1.6, Math.sin(Math.PI * 1.25) * (R + 0.32), Math.cos(Math.PI * 1.25) * (R + 0.32)), color: '#F2D060', show: () => st.labels && st.mode === 'flow' && !MOBB },
+    { text: 'стенка сосуда', pos: V3(3.6, R + 0.2, -0.5), color: '#E8A0A8', show: () => st.labels && st.mode === 'clot' },
+    { text: 'плазма ≈ 55%', pos: V3(60.45, 1.9, 0.2), color: '#F2E08A', show: () => st.labels && st.mode === 'tube' && st.spin > 0.95 },
+    { text: 'лейкоциты и тромбоциты < 1%', pos: V3(60.45, HR + 0.03, 0.2), color: '#F4F0E8', show: () => st.labels && st.mode === 'tube' && st.spin > 0.95 },
+    { text: 'эритроциты ≈ 45% (гематокрит)', pos: V3(60.45, 0.35, 0.2), color: '#E0505A', show: () => st.labels && st.mode === 'tube' && st.spin > 0.95 },
+    { text: 'рана', pos: WOUND.clone().add(V3(0.7, 0.3, 0.3)), color: '#ff6a5a', show: () => st.labels && st.mode === 'clot' && st.t > st.cutT },
+    { text: 'нити фибрина', pos: WOUND.clone().add(V3(-0.9, 0.2, 0.4)), color: '#f8f0d8', show: () => st.labels && st.mode === 'clot' && st.t - st.cutT > 5 },
+    { text: 'плазма реципиента', pos: V3(31.6, 0.9, 0.5), color: '#F2E08A', show: () => st.labels && st.mode === 'groups' },
   ];
   const refs = {};
   function ui(el) {
     const ib = infoBox('1 1 340px');
     refs.setInfo = () => { ib.info.innerHTML = st.msg || (st.mode === 'groups' ? grpTxt() : st.mode === 'flow' && st.sel ? BL_CELLS.find((c) => c.id === st.sel).text : TXT[st.mode]); };
-    refs.modeSeg = seg([{ id: 'flow', label: 'Blood cells' }, { id: 'clot', label: 'Clotting' }, { id: 'groups', label: 'Blood groups' }, { id: 'tube', label: 'Test tube' }], () => st.mode, (v) => setMode(v));
-    refs.seg = seg([{ id: 'all', label: 'All' }, ...BL_CELLS.map((c) => ({ id: c.id, label: c.name, color: c.color }))], () => st.sel || 'all', (v) => { if (st.mode !== 'flow') setMode('flow'); select(v); });
+    refs.modeSeg = seg([{ id: 'flow', label: 'Клетки крови' }, { id: 'clot', label: 'Свёртывание' }, { id: 'groups', label: 'Группы крови' }, { id: 'tube', label: 'Пробирка' }], () => st.mode, (v) => setMode(v));
+    refs.seg = seg([{ id: 'all', label: 'Все' }, ...BL_CELLS.map((c) => ({ id: c.id, label: c.name, color: c.color }))], () => st.sel || 'all', (v) => { if (st.mode !== 'flow') setMode('flow'); select(v); });
     const G4 = ['O', 'A', 'B', 'AB'].map((g) => ({ id: g, label: g === 'O' ? '0 (I)' : g === 'A' ? 'A (II)' : g === 'B' ? 'B (III)' : 'AB (IV)' }));
     refs.dSeg = seg(G4, () => st.donor, (v) => { st.donor = v; if (st.mode !== 'groups') setMode('groups'); else mix(); });
     refs.rSeg = seg(G4, () => st.recip, (v) => { st.recip = v; if (st.mode !== 'groups') setMode('groups'); else mix(); });
-    refs.rot = toggle('Rotate', () => st.rot, (v) => { st.rot = v; });
-    const lab = toggle('Labels', () => st.labels, (v) => { st.labels = v; });
+    refs.rot = toggle('Вращение', () => st.rot, (v) => { st.rot = v; });
+    const lab = toggle('Подписи', () => st.labels, (v) => { st.labels = v; });
     Object.assign(refs, { lab });
-    el.append(group('Mode', '1–4', refs.modeSeg), group('Composition', 'click', refs.seg), group('Experiment', 'C · S', button('Cut', cut, true), button('Centrifuge', spin)), group('Donor', '', refs.dSeg), group('Recipient', '', refs.rSeg), group('View', 'R · N', refs.rot, lab), ib.el);
+    el.append(group('Режим', '1–4', refs.modeSeg), group('Состав', 'клик', refs.seg), group('Опыт', 'C · S', button('Порез', cut, true), button('Центрифуга', spin)), group('Донор', '', refs.dSeg), group('Реципиент', '', refs.rSeg), group('Вид', 'R · N', refs.rot, lab), ib.el);
     refs.setInfo();
   }
   function onKey(e) {
@@ -232,17 +232,17 @@ function makeBlood() {
     if (e.key === 'Escape') { select('all'); return true; }
     return false;
   }
-  function stats() { return st.mode === 'tube' ? [['Hematocrit', '40–45', '%'], ['Plasma', '≈ 55', '%'], ['Plasma protein', '65–80', 'g/L']] : st.mode === 'groups' ? [['Compatibility', compatible() ? 'yes' : 'no', '']] : [['Red blood cells', '4–5', 'million/µL'], ['White blood cells', '4–9', 'thousand/µL'], ['Platelets', '150–400', 'thousand/µL']]; }
+  function stats() { return st.mode === 'tube' ? [['Гематокрит', '40–45', '%'], ['Плазма', '≈ 55', '%'], ['Белок плазмы', '65–80', 'г/л']] : st.mode === 'groups' ? [['Совместимость', compatible() ? 'да' : 'нет', '']] : [['Эритроцитов', '4–5', 'млн/мкл'], ['Лейкоцитов', '4–9', 'тыс/мкл'], ['Тромбоцитов', '150–400', 'тыс/мкл']]; }
   const self = {
     labelBg: true, mobZoom: 0.8, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#E0505A',
-    kicker: 'Body · blood', title: 'Blood',
-    lede: 'Five liters of liquid tissue: 25 trillion red blood cells, an army of white blood cells, and platelets that seal any small wound within minutes.',
+    kicker: 'Тело · кровь', title: 'Кровь',
+    lede: 'Пять литров жидкой ткани: 25 триллионов эритроцитов, армия лейкоцитов и тромбоциты, которые за минуты закрывают любую ранку.',
     notes: `
-      <div><h2>Functions of blood</h2><ul>
-        <li>Transport: oxygen and CO₂, nutrients, hormones, metabolic products.</li><li>Defense: white blood cells, antibodies, clotting.</li><li>Regulation: temperature, pH, water and salt balance.</li></ul>
-        <h3>History</h3><p>Blood groups were discovered by Karl Landsteiner in 1900 (Nobel Prize, 1930), and the Rh factor by him and Wiener in 1940. Only after that did transfusion become safe.</p></div>
-      <div><h2>Simplifications</h2><ul><li>Cells are magnified about 50,000 times, and their density is reduced.</li><li>Clotting in the scene takes seconds; in real life it takes minutes.</li></ul></div>
-      <div class="keys"><h2>Keys</h2><ul><li><code>1</code>–<code>3</code> mode</li><li>click: cells</li><li><code>C</code> cut</li><li><code>R</code> rotate · <code>N</code> labels</li></ul></div>`,
+      <div><h2>Функции крови</h2><ul>
+        <li>Транспорт: кислород и CO₂, питательные вещества, гормоны, продукты обмена.</li><li>Защита: лейкоциты, антитела, свёртывание.</li><li>Регуляция: температура, pH, водно-солевой баланс.</li></ul>
+        <h3>История</h3><p>Группы крови открыл Карл Ландштейнер в 1900 году (Нобелевская премия 1930 г.), резус-фактор — он же с Винером в 1940-м. Именно после этого переливание стало безопасным.</p></div>
+      <div><h2>Условности</h2><ul><li>Клетки увеличены примерно в 50 000 раз, их плотность уменьшена.</li><li>Свёртывание в сцене длится секунды, в жизни — минуты.</li></ul></div>
+      <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>3</code> режим</li><li>клик: клетки</li><li><code>C</code> порез</li><li><code>R</code> вращение · <code>N</code> подписи</li></ul></div>`,
   };
   return self;
 }

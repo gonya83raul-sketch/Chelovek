@@ -8,47 +8,47 @@ import { blobGeo, skelShell } from './kit.js';
    в заднем роге спинного мозга и четыре клинических случая
    ========================================================= */
 const RF_ORG = [
-  { id: 'heart', name: 'Сердце', col: '#FF5A5A', seg: 'C8–T4', z: ['chest', 'larm', 'lneck', 'ljaw'], view: 'front',
-    text: '<b>Сердце.</b> Боль при стенокардии и инфаркте ощущается за грудиной и слева, отдаёт в <b>левую руку</b> по внутренней поверхности, в шею и нижнюю челюсть. Чувствительные волокна сердца входят в спинной мозг в сегментах T1–T4. В те же сегменты приходят нервы от кожи груди и внутренней стороны плеча и предплечья (T1–T2, а у мизинца — C8). Отдача в шею и челюсть связана с блуждающим нервом и шейными сегментами.' },
-  { id: 'eso', name: 'Пищевод', col: '#FFB0D0', seg: 'T4–T6', z: ['retro'], view: 'front',
-    text: '<b>Пищевод.</b> Изжога и спазм пищевода ощущаются <b>за грудиной</b> — их легко спутать с болью в сердце. Сегменты T4–T6.' },
-  { id: 'stomach', name: 'Желудок', col: '#FFA040', seg: 'T6–T9', z: ['epi', 'sback'], view: 'front',
-    text: '<b>Желудок и двенадцатиперстная кишка.</b> Боль при язве и гастрите — в <b>надчревной области</b>, «под ложечкой», посередине, хотя желудок лежит левее. Сзади боль бывает слева от позвоночника, под лопаткой. Сегменты T6–T9.' },
-  { id: 'liver', name: 'Печень', col: '#C07848', seg: 'T6–T9 · C3–C5', z: ['ruq', 'rsh', 'lvback'], view: 'front',
-    text: '<b>Печень.</b> Сама ткань печени почти не чувствует боли, болит растянутая капсула: тупая боль в <b>правом подреберье</b>. Если раздражена диафрагма под печенью, боль уходит в <b>правое надплечье</b>: диафрагму иннервирует диафрагмальный нерв из шейных сегментов C3–C5, а из тех же сегментов (C3–C4) надключичные нервы иннервируют кожу надплечья.' },
-  { id: 'gall', name: 'Желчный пузырь', col: '#7FD050', seg: 'T6–T9 · C3–C5', z: ['ruq', 'rscap', 'rsh'], view: 'rback', lz: 'rscap',
-    text: '<b>Желчный пузырь.</b> Желчная колика — в <b>правом подреберье</b> и надчревье, с отдачей <b>под правую лопатку</b> и в правое надплечье (через диафрагмальный нерв).' },
-  { id: 'pancreas', name: 'Поджелудочная', col: '#F2D060', seg: 'T6–T10', z: ['epi', 'backmid'], view: 'lback', lz: 'backmid',
-    text: '<b>Поджелудочная железа.</b> Железа лежит у задней стенки живота, поэтому боль при панкреатите — в надчревье и <b>опоясывает</b>, уходя в спину. Сегменты T6–T10.' },
-  { id: 'spleen', name: 'Селезёнка', col: '#C060A0', seg: 'T6–T8 · C3–C5', z: ['luq', 'lsh'], view: 'front',
-    text: '<b>Селезёнка.</b> Боль в <b>левом подреберье</b>; кровь под диафрагмой при разрыве селезёнки раздражает диафрагму и даёт боль в <b>левом надплечье</b> (симптом Кера).' },
-  { id: 'small', name: 'Тонкая кишка', col: '#FF8A70', seg: 'T9–T11', z: ['periumb'], view: 'front',
-    text: '<b>Тонкая кишка.</b> Схваткообразная боль <b>вокруг пупка</b>, плохо локализованная: кишка развивается по средней линии, и её волокна приходят в сегменты T9–T11 с обеих сторон.' },
-  { id: 'appendix', name: 'Аппендикс', col: '#FF6A4A', seg: 'T10 · брюшина T12–L1', z: ['periumb', 'mcb'], view: 'front',
-    text: '<b>Аппендикс.</b> Сначала боль <b>вокруг пупка</b> (висцеральная, сегмент T10). Когда воспаление доходит до пристеночной брюшины, у которой соматическая иннервация, боль перемещается в <b>правую подвздошную область</b> и становится точной и острой.' },
-  { id: 'colon', name: 'Толстая кишка', col: '#D0A080', seg: 'T10–L1', z: ['hypog', 'rliliac', 'liliac'], view: 'front',
-    text: '<b>Толстая кишка.</b> Слепая и восходящая ободочная кишка «болят» около пупка и справа внизу, сигмовидная — <b>над лобком и в левой подвздошной области</b>. Сегменты T10–L1.' },
-  { id: 'kidney', name: 'Почка и мочеточник', col: '#B488FF', seg: 'T10–L2', z: ['lloin', 'lflank', 'lgroin', 'lthigh'], view: 'lback', lz: 'lloin',
-    text: '<b>Почка и мочеточник.</b> Почка болит в <b>пояснице</b> и боку. Камень, спускаясь по мочеточнику, ведёт боль вниз — в <b>пах</b>, внутреннюю поверхность бедра и половые органы (сегменты T11–L2).' },
-  { id: 'bladder', name: 'Мочевой пузырь', col: '#F2E070', seg: 'T11–L2 · S2–S4', z: ['suprap'], view: 'front',
-    text: '<b>Мочевой пузырь.</b> Боль и позывы <b>над лобком</b> (T11–L2), от шейки пузыря — в промежность (S2–S4).' },
+  { id: 'heart', name: 'Heart', col: '#FF5A5A', seg: 'C8–T4', z: ['chest', 'larm', 'lneck', 'ljaw'], view: 'front',
+    text: '<b>Heart.</b> Angina and heart-attack pain is felt behind the breastbone and on the left, spreading to the <b>left arm</b> along its inner side, to the neck and the lower jaw. Sensory fibers from the heart enter the spinal cord at T1–T4. The same segments receive nerves from the skin of the chest and the inner side of the arm and forearm (T1–T2, and C8 at the little finger). Radiation to the neck and jaw is linked to the vagus nerve and the cervical segments.' },
+  { id: 'eso', name: 'Esophagus', col: '#FFB0D0', seg: 'T4–T6', z: ['retro'], view: 'front',
+    text: '<b>Esophagus.</b> Heartburn and esophageal spasm are felt <b>behind the breastbone</b> — easy to confuse with heart pain. Segments T4–T6.' },
+  { id: 'stomach', name: 'Stomach', col: '#FFA040', seg: 'T6–T9', z: ['epi', 'sback'], view: 'front',
+    text: '<b>Stomach and duodenum.</b> Ulcer and gastritis pain is in the <b>epigastric region</b>, “in the pit of the stomach”, in the midline, although the stomach lies to the left. At the back the pain may be felt left of the spine, below the shoulder blade. Segments T6–T9.' },
+  { id: 'liver', name: 'Liver', col: '#C07848', seg: 'T6–T9 · C3–C5', z: ['ruq', 'rsh', 'lvback'], view: 'front',
+    text: '<b>Liver.</b> Liver tissue itself hardly feels pain; the stretched capsule hurts: a dull ache in the <b>right upper quadrant</b>. If the diaphragm under the liver is irritated, pain goes to the <b>right shoulder</b>: the diaphragm is supplied by the phrenic nerve from cervical segments C3–C5, and the supraclavicular nerves from the same segments (C3–C4) supply the skin over the shoulder.' },
+  { id: 'gall', name: 'Gallbladder', col: '#7FD050', seg: 'T6–T9 · C3–C5', z: ['ruq', 'rscap', 'rsh'], view: 'rback', lz: 'rscap',
+    text: '<b>Gallbladder.</b> Biliary colic is felt in the <b>right upper quadrant</b> and epigastrium, radiating <b>under the right shoulder blade</b> and to the right shoulder (via the phrenic nerve).' },
+  { id: 'pancreas', name: 'Pancreas', col: '#F2D060', seg: 'T6–T10', z: ['epi', 'backmid'], view: 'lback', lz: 'backmid',
+    text: '<b>Pancreas.</b> The gland lies against the back wall of the abdomen, so pancreatitis pain is in the epigastrium and <b>bands around</b> to the back. Segments T6–T10.' },
+  { id: 'spleen', name: 'Spleen', col: '#C060A0', seg: 'T6–T8 · C3–C5', z: ['luq', 'lsh'], view: 'front',
+    text: '<b>Spleen.</b> Pain in the <b>left upper quadrant</b>; blood under the diaphragm from a ruptured spleen irritates the diaphragm and causes pain in the <b>left shoulder</b> (Kehr\'s sign).' },
+  { id: 'small', name: 'Small intestine', col: '#FF8A70', seg: 'T9–T11', z: ['periumb'], view: 'front',
+    text: '<b>Small intestine.</b> Cramping, poorly localized pain <b>around the navel</b>: the gut develops in the midline, and its fibers reach segments T9–T11 on both sides.' },
+  { id: 'appendix', name: 'Appendix', col: '#FF6A4A', seg: 'T10 · peritoneum T12–L1', z: ['periumb', 'mcb'], view: 'front',
+    text: '<b>Appendix.</b> Pain starts <b>around the navel</b> (visceral, segment T10). When the inflammation reaches the parietal peritoneum, which has somatic innervation, the pain moves to the <b>right iliac region</b> and becomes sharp and precise.' },
+  { id: 'colon', name: 'Large intestine', col: '#D0A080', seg: 'T10–L1', z: ['hypog', 'rliliac', 'liliac'], view: 'front',
+    text: '<b>Large intestine.</b> The cecum and ascending colon “hurt” near the navel and lower right, the sigmoid colon <b>above the pubis and in the left iliac region</b>. Segments T10–L1.' },
+  { id: 'kidney', name: 'Kidney and ureter', col: '#B488FF', seg: 'T10–L2', z: ['lloin', 'lflank', 'lgroin', 'lthigh'], view: 'lback', lz: 'lloin',
+    text: '<b>Kidney and ureter.</b> The kidney hurts in the <b>lower back</b> and flank. A stone moving down the ureter drags the pain downwards — to the <b>groin</b>, inner thigh and genitals (segments T11–L2).' },
+  { id: 'bladder', name: 'Urinary bladder', col: '#F2E070', seg: 'T11–L2 · S2–S4', z: ['suprap'], view: 'front',
+    text: '<b>Bladder.</b> Pain and urgency <b>above the pubis</b> (T11–L2); from the bladder neck — into the perineum (S2–S4).' },
 ];
 const RF_CASES = {
-  mi: { name: 'Инфаркт', o: 'heart', st: [
-    { z: ['chest'], time: '0–5 мин', view: 'front', t: '<b>Инфаркт миокарда, первые минуты.</b> Давящая, жгучая боль за грудиной, «как будто сел слон». Человек не может показать её одним пальцем — прижимает к груди кулак (симптом Левайна). Это типичная висцеральная боль: тупая и разлитая.' },
-    { z: ['chest', 'larm', 'lneck', 'ljaw'], time: '5–30 мин', view: 'front', t: '<b>Боль отдаёт.</b> Она уходит в левую руку по внутренней стороне до мизинца, в шею и нижнюю челюсть, иногда в надчревье. У женщин, пожилых и при диабете боль бывает слабой или только «в желудке» — поэтому такие инфаркты пропускают. Давящая боль за грудиной дольше 5 минут, которая не проходит в покое, — повод сразу вызвать скорую (103).' },
+  mi: { name: 'Heart attack', o: 'heart', st: [
+    { z: ['chest'], time: '0–5 min', view: 'front', t: '<b>Myocardial infarction, first minutes.</b> Crushing, burning pain behind the breastbone, “like an elephant sitting on the chest”. The patient cannot point to it with one finger and presses a fist to the chest (Levine\'s sign). This is typical visceral pain: dull and diffuse.' },
+    { z: ['chest', 'larm', 'lneck', 'ljaw'], time: '5–30 min', view: 'front', t: '<b>The pain spreads.</b> It goes down the inner side of the left arm to the little finger, into the neck and lower jaw, sometimes to the epigastrium. In women, the elderly and people with diabetes the pain may be mild or only “in the stomach” — which is why such heart attacks are missed. Crushing chest pain lasting more than 5 minutes that does not ease at rest is a reason to call emergency services at once.' },
   ] },
-  app: { name: 'Аппендицит', o: 'appendix', st: [
-    { z: ['periumb'], time: '0–12 ч', view: 'front', t: '<b>Аппендицит, начало.</b> Тупая боль вокруг пупка или в надчревье, тошнота. Растянутый воспалённый отросток раздражает висцеральные волокна, которые приходят в сегмент T10, — мозг относит боль к средней линии живота.' },
-    { z: ['mcb'], time: '12–24 ч', view: 'front', t: '<b>Боль перемещается</b> в правую подвздошную область, к точке Мак-Бёрни (на границе средней и наружной трети линии от пупка к выступу подвздошной кости). Воспаление дошло до пристеночной брюшины, а её нервы — соматические, как у кожи, и боль становится точной. Такое «переползание» боли — классический признак аппендицита (симптом Кохера).' },
+  app: { name: 'Appendicitis', o: 'appendix', st: [
+    { z: ['periumb'], time: '0–12 h', view: 'front', t: '<b>Appendicitis, onset.</b> Dull pain around the navel or in the epigastrium, nausea. The swollen, inflamed appendix irritates visceral fibers that enter segment T10, and the brain refers the pain to the midline of the abdomen.' },
+    { z: ['mcb'], time: '12–24 h', view: 'front', t: '<b>The pain moves</b> to the right iliac region, to McBurney\'s point (one third of the way from the anterior superior iliac spine to the navel). The inflammation has reached the parietal peritoneum, whose nerves are somatic like those of the skin, so the pain becomes precise. This migration of pain is a classic sign of appendicitis (Kocher\'s sign).' },
   ] },
-  bil: { name: 'Желчная колика', o: 'gall', st: [
-    { z: ['ruq'], time: '0–1 ч', view: 'front', t: '<b>Желчная колика.</b> Через час-два после жирной еды камень закупоривает проток пузыря: сильная боль в правом подреберье и надчревье, тошнота.' },
-    { z: ['ruq', 'rscap', 'rsh'], time: '1–6 ч', view: 'rback', t: '<b>Боль отдаёт</b> под правую лопатку и в правое надплечье. Лопатка — по общим грудным сегментам T6–T9, плечо — через диафрагмальный нерв (C3–C5): раздражённая диафрагма «жалуется» на коже шеи и плеча. Боль дольше 6 часов с лихорадкой говорит уже о воспалении пузыря (холецистите).' },
+  bil: { name: 'Biliary colic', o: 'gall', st: [
+    { z: ['ruq'], time: '0–1 h', view: 'front', t: '<b>Biliary colic.</b> An hour or two after a fatty meal a stone blocks the gallbladder duct: severe pain in the right upper quadrant and epigastrium, nausea.' },
+    { z: ['ruq', 'rscap', 'rsh'], time: '1–6 h', view: 'rback', t: '<b>The pain radiates</b> under the right shoulder blade and to the right shoulder. The shoulder blade — through the shared thoracic segments T6–T9, the shoulder — through the phrenic nerve (C3–C5): the irritated diaphragm “complains” on the skin of the neck and shoulder. Pain lasting more than 6 hours with fever suggests inflammation of the gallbladder (cholecystitis).' },
   ] },
-  ren: { name: 'Почечная колика', o: 'kidney', st: [
-    { z: ['lloin', 'lflank'], time: 'начало', view: 'lback', t: '<b>Почечная колика.</b> Камень застрял в лоханке или начале мочеточника: волнообразная, очень сильная боль в пояснице и боку. Человек мечется и не может найти удобное положение — в отличие от боли при воспалении брюшины, когда лежат неподвижно.' },
-    { z: ['lflank', 'lgroin', 'lthigh'], time: 'через часы', view: 'lfront', t: '<b>Камень спускается</b> по мочеточнику, и боль ползёт за ним вниз — в пах, на внутреннюю поверхность бедра и в половые органы. Сегменты мочеточника идут от T11 до L2, и каждый участок «отражается» на свой участок кожи.' },
+  ren: { name: 'Renal colic', o: 'kidney', st: [
+    { z: ['lloin', 'lflank'], time: 'onset', view: 'lback', t: '<b>Renal colic.</b> A stone is stuck in the renal pelvis or upper ureter: waves of very severe pain in the lower back and flank. The patient writhes and cannot find a comfortable position — unlike peritonitis, where people lie still.' },
+    { z: ['lflank', 'lgroin', 'lthigh'], time: 'hours later', view: 'lfront', t: '<b>The stone moves down</b> the ureter and the pain follows it — to the groin, the inner thigh and the genitals. The ureter\'s segments run from T11 to L2, and each part “refers” to its own patch of skin.' },
   ] },
 };
 function makeReferred() {
@@ -60,7 +60,7 @@ function makeReferred() {
   const BC = V3(0.1, 12.0, 0.2), MC = V3(36.9, 0.3, 0);
   const VIEW = { front: VW(BC, V3(0.1, 0.08, 1), 26), back: VW(BC, V3(-0.1, 0.08, -1), 26), rback: VW(BC, V3(-0.75, 0.08, -0.66), 26), lback: VW(BC, V3(0.75, 0.08, -0.66), 26), lfront: VW(BC.clone().add(V3(0, -0.6, 0)), V3(0.55, 0.05, 0.85), 26), mech: VW(MC, V3(0.02, 0.04, 1), 31, 0.14, 0.1) };
   const VIEWM = { front: VW(BC, V3(0.1, 0.05, 1), 13.5, 0, -0.03), back: VW(BC, V3(-0.1, 0.05, -1), 13.5, 0, -0.03), rback: VW(BC, V3(-0.75, 0.05, -0.66), 13.5, 0, -0.03), lback: VW(BC, V3(0.75, 0.05, -0.66), 13.5, 0, -0.03), lfront: VW(BC, V3(0.55, 0.05, 0.85), 13.5, 0, -0.03),
-    mech: VW(MC, V3(0, 0.03, 1), 17.5, -0.06, 0) }, mqm = window.matchMedia('(max-width:700px)'), VV = (m) => (mqm.matches && VIEWM[m]) || VIEW[m];
+    mech: VW(MC, V3(0, 0.03, 1), 21, 0, -0.03) }, mqm = window.matchMedia('(max-width:700px)'), VV = (m) => (mqm.matches && VIEWM[m]) || VIEW[m];
   const FT = VIEW.front.target;
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300);
   const controls = makeControls(camera, FT); controls.minDistance = 4; controls.maxDistance = 60;
@@ -190,10 +190,10 @@ function makeReferred() {
     fx.update(dt);
   }
   const TXT = {
-    map: '<b>Отражённая боль.</b> Больной орган часто «болит» не там, где лежит, а на участке кожи — <b>зоне Захарьина — Геда</b>. Нажмите на орган или выберите его в списке, чтобы увидеть его зону. Зоны помогают врачу: боль в левой руке может означать инфаркт, а боль в плече — кровь под диафрагмой.',
-    mech: '<b>Почему боль «переезжает».</b> Чувствительные волокна от сердца (красный импульс) идут вместе с симпатическими нервами через симпатический ствол, не прерываясь в его узлах, и по белой соединительной ветви попадают в спинномозговой нерв. Тело этого нейрона лежит в <b>спинномозговом узле</b>, а синапс он образует в заднем роге того же сегмента, куда приходят волокна от кожи (голубой импульс). Оба сходятся на <b>одном нейроне заднего рога</b>; его аксон переходит на другую сторону и поднимается по спиноталамическому пути в таламус. Сигналы от кожи приходят всю жизнь, от сердца — редко, и мозг по привычке относит боль к коже.',
-    mis: '<b>Ошибка мозга.</b> Сигнал от сердца пришёл в таламус по тому же пути, что обычно приносит боль от кожи груди и левой руки. Кора «рисует» боль там — пунктирная стрелка показывает, куда мозг её проецирует.',
-    cases: '<b>Четыре классических случая.</b> Выберите случай: боль меняет место по мере развития болезни. Этапы сменяются сами, или нажмите «Дальше».',
+    map: '<b>Referred pain.</b> A diseased organ often “hurts” not where it lies but on a patch of skin — a <b>Head zone</b> (Zakharyin–Head zone). Click an organ or choose it in the list to see its zone. Zones help doctors: pain in the left arm may mean a heart attack, pain in the shoulder — blood under the diaphragm.',
+    mech: '<b>Why pain “moves”.</b> Sensory fibers from the heart (red impulse) run with the sympathetic nerves through the sympathetic trunk without stopping in its ganglia and reach the spinal nerve through the white ramus communicans. The cell body of this neuron lies in the <b>dorsal root ganglion</b>, and it synapses in the dorsal horn of the same segment that receives fibers from the skin (blue impulse). Both converge on <b>one dorsal horn neuron</b>; its axon crosses to the other side and ascends in the spinothalamic tract to the thalamus. Signals from the skin arrive throughout life, from the heart rarely, so the brain habitually attributes the pain to the skin.',
+    mis: '<b>The brain\'s mistake.</b> The signal from the heart reached the thalamus along the same path that normally brings pain from the skin of the chest and left arm. The cortex “draws” the pain there — the dashed arrow shows where the brain projects it.',
+    cases: '<b>Four classic cases.</b> Choose a case: the pain changes place as the disease develops. Stages change by themselves, or press “Next”.',
   };
   const refs = {};
   const labels = [
@@ -201,33 +201,33 @@ function makeReferred() {
     ...RF_ORG.map((o) => { const OV = { spleen: V3(0.95, 11.5, -0.1) }, op = OV[o.id] ? OV[o.id].clone() : ORG[o.id].meshes[0].position.lengthSq() > 0 ? ORG[o.id].meshes[0].position.clone() : ({ eso: V3(0.03, 13.9, 0.0), colon: V3(0.95, 9.7, 0.5), appendix: V3(-0.6, 9.36, 0.68), small: V3(0.05, 10.0, 0.75), kidney: V3(0.6, 11.2, -0.32) }[o.id] || V3(0, 10, 0));
       const side = { heart: 1, eso: -1, stomach: 1, liver: -1, gall: -1, pancreas: 1, spleen: 1, small: 1, appendix: -1, colon: 1, kidney: 1, bladder: -1 }[o.id];
       return { text: o.name.toLowerCase(), pos: op.clone().add(V3(side * 0.05 + (side > 0 && !mqm.matches ? 0.55 : 0), 0, 0.35)), color: o.col, show: () => st.labels && st.mode === 'map' && (st.sel ? st.sel === o.id : st.side !== 'back') }; }),
-    ...Object.entries(ZONES).map(([zid, arr]) => ({ text: 'боль ощущается здесь', pos: arr[0].p.clone().add(V3(0.1, 0.05, Math.sign(arr[0].p.z - 0.18) * 0.12)), color: '#FFD0A0', show: () => st.labels && ((st.mode === 'map' && st.sel && (ORG[st.sel].lz || ORG[st.sel].z[0]) === zid) || (st.mode === 'cases' && RF_CASES[st.cs].st[st.stage].z[RF_CASES[st.cs].st[st.stage].z.length - 1] === zid)) })),
-    { text: 'спинной мозг, срез', pos: Q(0.0, -1.55, 0.3), color: '#F2E6C8', show: () => st.labels && st.mode === 'mech' },
-    { text: 'нейрон заднего рога', pos: NRN.clone().add(V3(-0.2, 0.45, 0.3)), color: '#FFD27A', show: () => st.labels && st.mode === 'mech' },
-    { text: 'белая ветвь', pos: Q(-3.75, -0.3, 0.3), color: '#F4C542', show: () => st.labels && st.mode === 'mech' },
-    { text: 'спиноталамический путь', pos: Q(1.2, -0.75, 0.6), color: '#FF8A5A', show: () => st.labels && st.mode === 'mech' },
-    { text: 'спинномозговой узел', pos: DRG.clone().add(V3(0, 0.3, 0.2)), color: '#F4C542', show: () => st.labels && st.mode === 'mech' },
-    { text: 'симпатический ствол', pos: Q(-2.7, -2.3, 0.3), color: '#E8B060', show: () => st.labels && st.mode === 'mech' },
-    { text: 'сердце', pos: HEARTP.clone().add(V3(0.5, -0.5, 0.4)), color: '#FF6A5A', show: () => st.labels && st.mode === 'mech' },
-    { text: 'кожа груди и левой руки', pos: SKINP.clone().add(V3(-0.6, 1.15, 0.2)), color: '#7FD6FF', show: () => st.labels && st.mode === 'mech' },
-    { text: 'в таламус и кору', pos: BRAIN.clone().add(V3(0.95, 0.4, 0.2)), color: '#FFB070', show: () => st.labels && st.mode === 'mech' },
-    { text: 'передний рог', pos: Q(0.35, -0.95, 0.3), color: '#C8B0D8', show: () => st.labels && st.mode === 'mech' },
+    ...Object.entries(ZONES).map(([zid, arr]) => ({ text: 'pain is felt here', pos: arr[0].p.clone().add(V3(0.1, 0.05, Math.sign(arr[0].p.z - 0.18) * 0.12)), color: '#FFD0A0', show: () => st.labels && ((st.mode === 'map' && st.sel && (ORG[st.sel].lz || ORG[st.sel].z[0]) === zid) || (st.mode === 'cases' && RF_CASES[st.cs].st[st.stage].z[RF_CASES[st.cs].st[st.stage].z.length - 1] === zid)) })),
+    { text: 'spinal cord, cross-section', pos: Q(0.0, -1.55, 0.3), color: '#F2E6C8', show: () => st.labels && st.mode === 'mech' },
+    { text: 'dorsal horn neuron', pos: NRN.clone().add(V3(-0.2, 0.45, 0.3)), color: '#FFD27A', show: () => st.labels && st.mode === 'mech' },
+    { text: 'white ramus', pos: Q(-3.75, -0.3, 0.3), color: '#F4C542', show: () => st.labels && st.mode === 'mech' },
+    { text: 'spinothalamic tract', pos: Q(1.2, -0.75, 0.6), color: '#FF8A5A', show: () => st.labels && st.mode === 'mech' },
+    { text: 'dorsal root ganglion', pos: DRG.clone().add(V3(0, 0.3, 0.2)), color: '#F4C542', show: () => st.labels && st.mode === 'mech' },
+    { text: 'sympathetic trunk', pos: Q(-2.7, -2.3, 0.3), color: '#E8B060', show: () => st.labels && st.mode === 'mech' },
+    { text: 'heart', pos: HEARTP.clone().add(V3(0.5, -0.5, 0.4)), color: '#FF6A5A', show: () => st.labels && st.mode === 'mech' },
+    { text: 'skin of chest and left arm', pos: SKINP.clone().add(V3(-0.6, 1.15, 0.2)), color: '#7FD6FF', show: () => st.labels && st.mode === 'mech' },
+    { text: 'to thalamus and cortex', pos: BRAIN.clone().add(V3(0.95, 0.4, 0.2)), color: '#FFB070', show: () => st.labels && st.mode === 'mech' },
+    { text: 'anterior horn', pos: Q(0.35, -0.95, 0.3), color: '#C8B0D8', show: () => st.labels && st.mode === 'mech' },
   ];
   function ui(el) {
     const ib = infoBox('1 1 340px');
     refs.setInfo = () => { ib.info.innerHTML = st.msg || (st.mode === 'map' ? (st.sel ? ORG[st.sel].text : TXT.map) : st.mode === 'cases' ? RF_CASES[st.cs].st[st.stage].t : TXT.mech); };
-    refs.modeSeg = seg([{ id: 'map', label: 'Карта зон' }, { id: 'mech', label: 'Механизм' }, { id: 'cases', label: 'Случаи' }], () => st.mode, (v) => setMode(v));
-    refs.seg = seg([{ id: 'all', label: 'Все' }, ...RF_ORG.map((o) => ({ id: o.id, label: o.name, color: o.col }))], () => (st.mode === 'map' ? st.sel || 'all' : null), (v) => select(v));
-    const sideSeg = seg([{ id: 'auto', label: 'Авто' }, { id: 'front', label: 'Спереди' }, { id: 'back', label: 'Сзади' }], () => st.side || 'auto', (v) => { st.side = v === 'auto' ? null : v; if (st.mode === 'mech') setMode('map', true); st.fly = VV(st.side || (st.mode === 'cases' ? RF_CASES[st.cs].st[st.stage].view : st.sel ? ORG[st.sel].view : 'front')); });
+    refs.modeSeg = seg([{ id: 'map', label: 'Zone map' }, { id: 'mech', label: 'Mechanism' }, { id: 'cases', label: 'Cases' }], () => st.mode, (v) => setMode(v));
+    refs.seg = seg([{ id: 'all', label: 'All' }, ...RF_ORG.map((o) => ({ id: o.id, label: o.name, color: o.col }))], () => (st.mode === 'map' ? st.sel || 'all' : null), (v) => select(v));
+    const sideSeg = seg([{ id: 'auto', label: 'Auto' }, { id: 'front', label: 'Front' }, { id: 'back', label: 'Back' }], () => st.side || 'auto', (v) => { st.side = v === 'auto' ? null : v; if (st.mode === 'mech') setMode('map', true); st.fly = VV(st.side || (st.mode === 'cases' ? RF_CASES[st.cs].st[st.stage].view : st.sel ? ORG[st.sel].view : 'front')); });
     refs.csSeg = seg(Object.entries(RF_CASES).map(([k, c]) => ({ id: k, label: c.name })), () => (st.mode === 'cases' ? st.cs : null), (v) => setCase(v));
-    refs.rot = toggle('Вращение', () => st.rot, (v) => { st.rot = v; });
-    const lab = toggle('Подписи', () => st.labels, (v) => { st.labels = v; });
+    refs.rot = toggle('Rotate', () => st.rot, (v) => { st.rot = v; });
+    const lab = toggle('Labels', () => st.labels, (v) => { st.labels = v; });
     refs.lab = lab;
-    refs.impSeg = seg([{ id: 'visc', label: 'От сердца', color: '#FF6A5A' }, { id: 'soma', label: 'От кожи', color: '#7FD6FF' }], () => (st.mode === 'mech' && st.sig ? st.sig.kind : null), (v) => fire(v));
-    refs.gOrg = h('div', { class: 'grp', style: 'flex:1 1 560px' }, h('div', { class: 'glabel' }, 'Орган', h('kbd', {}, 'клик')), h('div', { class: 'gctl' }, refs.seg));
-    refs.gCase = group('Случай', 'C · пробел', refs.csSeg, button('Дальше', () => { if (st.mode !== 'cases') setMode('cases'); else nextStage(); }));
-    refs.gImp = group('Импульс', 'V · S', refs.impSeg);
-    el.append(group('Режим', '1–3', refs.modeSeg), refs.gOrg, refs.gCase, refs.gImp, group('Вид', 'R · N', sideSeg, refs.rot, lab), ib.el);
+    refs.impSeg = seg([{ id: 'visc', label: 'From heart', color: '#FF6A5A' }, { id: 'soma', label: 'From skin', color: '#7FD6FF' }], () => (st.mode === 'mech' && st.sig ? st.sig.kind : null), (v) => fire(v));
+    refs.gOrg = h('div', { class: 'grp', style: 'flex:1 1 560px' }, h('div', { class: 'glabel' }, 'Organ', h('kbd', {}, 'click')), h('div', { class: 'gctl' }, refs.seg));
+    refs.gCase = group('Case', 'C · space', refs.csSeg, button('Next', () => { if (st.mode !== 'cases') setMode('cases'); else nextStage(); }));
+    refs.gImp = group('Impulse', 'V · S', refs.impSeg);
+    el.append(group('Mode', '1–3', refs.modeSeg), refs.gOrg, refs.gCase, refs.gImp, group('View', 'R · N', sideSeg, refs.rot, lab), ib.el);
     refs.gOrg.style.display = st.mode === 'map' ? '' : 'none'; refs.gCase.style.display = st.mode === 'cases' ? '' : 'none'; refs.gImp.style.display = st.mode === 'mech' ? '' : 'none';
     refs.setInfo();
   }
@@ -242,24 +242,24 @@ function makeReferred() {
     return false;
   }
   function stats() {
-    const VN = { front: 'спереди', back: 'сзади', rback: 'сзади справа', lback: 'сзади слева', lfront: 'спереди слева' };
-    if (st.mode === 'cases') { const c = RF_CASES[st.cs], v = st.side || c.st[st.stage].view; return [['Этап', (st.stage + 1) + ' из ' + c.st.length, ''], ['Время', c.st[st.stage].time, '']]; }
-    if (st.mode === 'mech') return [['Сегмент', 'T1–T4', ''], ['Нейронов на пути', 3, '']];
-    return st.sel ? [['Сегменты', ORG[st.sel].seg, ''], ['Вид', VN[st.side || ORG[st.sel].view], '']] : [['Органов', RF_ORG.length, ''], ['Зон', Object.keys(ZONES).length, '']];
+    const VN = { front: 'front', back: 'back', rback: 'back right', lback: 'back left', lfront: 'front left' };
+    if (st.mode === 'cases') { const c = RF_CASES[st.cs], v = st.side || c.st[st.stage].view; return [['Stage', (st.stage + 1) + ' of ' + c.st.length, ''], ['Time', c.st[st.stage].time, '']]; }
+    if (st.mode === 'mech') return [['Segment', 'T1–T4', ''], ['Neurons in chain', 3, '']];
+    return st.sel ? [['Segments', ORG[st.sel].seg, ''], ['View', VN[st.side || ORG[st.sel].view], '']] : [['Organs', RF_ORG.length, ''], ['Zones', Object.keys(ZONES).length, '']];
   }
   setMode('map'); camera.position.copy(st.fly.pos); controls.target.copy(st.fly.target); controls.update(); st.fly = null;
   const self = {
     mobZoom: 0.7, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#FF8A6A',
-    kicker: 'Тело · нервная система', title: 'Отражённая боль',
-    lede: 'Почему при инфаркте болит левая рука, а при аппендиците сначала живот вокруг пупка: органы «жалуются» на коже своих сегментов спинного мозга.',
+    kicker: 'Body · nervous system', title: 'Referred pain',
+    lede: 'Why a heart attack hurts in the left arm and appendicitis first around the navel: organs “complain” on the skin of their spinal cord segments.',
     notes: `
-      <div><h2>Зоны Захарьина — Геда</h2>
-        <p>В 1889 году терапевт Г. А. Захарьин в Москве и в 1893 году невролог Генри Гед в Лондоне независимо описали, что при болезнях внутренних органов кожа на определённых участках становится болезненной и сверхчувствительной. Эти участки совпадают с <b>дерматомами</b> — полосами кожи, которые иннервирует один сегмент спинного мозга.</p>
-        <h3>Висцеральная и соматическая боль</h3>
-        <p>Внутренние органы почти не чувствуют разреза или ожога, зато болят при растяжении, спазме, воспалении и нехватке кислорода. Висцеральная боль тупая, плохо локализуется, часто с тошнотой и потливостью. Пристеночная брюшина и плевра иннервируются как кожа — их боль острая и точная.</p></div>
-      <div><h2>Условности</h2><ul><li>Зоны показаны по атласу Неттера (BP 13), у разных людей они заметно различаются.</li><li>Зоны сердца, пищевода, аппендикса, мочевого пузыря и задняя зона поджелудочной добавлены по клиническим руководствам: на таблице Неттера их нет.</li><li>Почечная колика показана слева, бывает с любой стороны.</li><li>Срез спинного мозга схематичен, пути укорочены.</li></ul>
-        <p><b>Это не руководство к самодиагностике.</b> Сильная боль в груди, животе или пояснице — повод обратиться к врачу.</p></div>
-      <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>3</code> режим</li><li>клик: орган</li><li><code>C</code> следующий случай</li><li><code>пробел</code> дальше</li><li><code>V</code> · <code>S</code> импульс</li><li><code>R</code> вращение · <code>N</code> подписи</li></ul></div>`,
+      <div><h2>Zakharyin–Head zones</h2>
+        <p>In 1889 the physician G. A. Zakharyin in Moscow and in 1893 the neurologist Henry Head in London independently described how, in diseases of internal organs, certain patches of skin become tender and hypersensitive. These patches match <b>dermatomes</b> — strips of skin supplied by one spinal cord segment.</p>
+        <h3>Visceral and somatic pain</h3>
+        <p>Internal organs hardly feel cutting or burning but hurt when stretched, in spasm, inflamed or short of oxygen. Visceral pain is dull and poorly localized, often with nausea and sweating. The parietal peritoneum and pleura are innervated like the skin — their pain is sharp and precise.</p></div>
+      <div><h2>Simplifications</h2><ul><li>Zones follow Netter's atlas (BP 13); they vary considerably between people.</li><li>The zones of the heart, esophagus, appendix and bladder and the back zone of the pancreas were added from clinical guides: Netter's plate does not show them.</li><li>Renal colic is shown on the left; it can occur on either side.</li><li>The spinal cord section is schematic and pathways are shortened.</li></ul>
+        <p><b>This is not a self-diagnosis guide.</b> Severe pain in the chest, abdomen or lower back is a reason to see a doctor.</p></div>
+      <div class="keys"><h2>Keys</h2><ul><li><code>1</code>–<code>3</code> mode</li><li>click: organ</li><li><code>C</code> next case</li><li><code>space</code> next</li><li><code>V</code> · <code>S</code> impulse</li><li><code>R</code> rotate · <code>N</code> labels</li></ul></div>`,
   };
   return self;
 }

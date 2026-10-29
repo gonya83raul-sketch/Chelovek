@@ -18,7 +18,7 @@ function makeImmune() {
   __set_rnd(mulberry(1717));
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x06080a); scene.environment = envTex;
   labLights(scene, 0x7fd6ff);
-  const VIEW = { sys: MOBI ? flyTarget(V3(0.0, 1.4, 0), V3(2.75, 2.3, 14.6)) : flyTarget(V3(-0.9, 0.8, 0), V3(1.85, 1.7, 14.6)), node: flyTarget(V3(30, -0.8, 0), V3(31.6, 0.6, 8.0)), resp: flyTarget(V3(30, -0.8, 0), V3(28.4, 0.7, 8.0)) };
+  const VIEW = { sys: MOBI ? flyTarget(V3(0.0, 1.4, 0), V3(2.75, 2.3, 14.6)) : flyTarget(V3(-0.9, 0.8, 0), V3(1.85, 1.7, 14.6)), node: MOBI ? flyTarget(V3(30, -0.8, 0), V3(31.6, 0.6, 8.0)) : flyTarget(V3(29.0, -0.6, 0), V3(30.6, 0.8, 8.0)), resp: MOBI ? flyTarget(V3(30, -0.8, 0), V3(28.4, 0.7, 8.0)) : flyTarget(V3(29.0, -0.6, 0), V3(27.4, 0.9, 8.0)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(VIEW.sys.pos);
   const controls = makeControls(camera, VIEW.sys.target); controls.minDistance = 1.5; controls.maxDistance = 22;
   const body = new THREE.Group(); scene.add(body);
