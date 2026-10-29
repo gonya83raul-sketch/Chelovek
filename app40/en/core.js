@@ -1137,7 +1137,8 @@ function updateLabels() {
     if (!e || !e.offsetWidth) return; const r = e.getBoundingClientRect(); placed.push([r.left - sr.left - 4, r.top - sr.top - 2, r.right - sr.left + 4, r.bottom - sr.top + 2]);
   });
   // заголовок и описание: заняты только сами строки текста и кнопки, а не весь блок — справа от коротких строк подписи могут стоять
-  if (hudTtl && hudTtl.offsetWidth) { ttlRange.selectNodeContents(hudTtl); for (const r of ttlRange.getClientRects()) if (r.width > 1) placed.push([r.left - sr.left - 6, r.top - sr.top - 3, r.right - sr.left + 6, r.bottom - sr.top + 3]);
+  if (hudTtl && hudTtl.offsetWidth) { const tw = document.createTreeWalker(hudTtl, NodeFilter.SHOW_TEXT); let tn;   /* только строки текста: Range по элементу вернул бы и рамки целых блоков h1/p */
+    while ((tn = tw.nextNode())) { if (!tn.nodeValue.trim() || !tn.parentElement.offsetWidth) continue; ttlRange.selectNodeContents(tn); for (const r of ttlRange.getClientRects()) if (r.width > 1) placed.push([r.left - sr.left - 6, r.top - sr.top - 3, r.right - sr.left + 6, r.bottom - sr.top + 3]); }
     hudTtl.querySelectorAll('button, .hbtn').forEach((e) => { const r = e.getBoundingClientRect(); placed.push([r.left - sr.left - 4, r.top - sr.top - 2, r.right - sr.left + 4, r.bottom - sr.top + 2]); }); }
   LBC.base = placed.slice(); LBC.t = nowL; LBC.w = w; LBC.h = hgt;
   }

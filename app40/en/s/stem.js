@@ -218,7 +218,7 @@ function makeStem() {
     { text: 'pons', pos: V3(1.3, 0.2, 0.6), show: () => st.labels },
     { text: 'medulla oblongata', pos: V3(0.8, -1.6, 0.6), show: () => st.labels },
     { text: 'spinal cord', pos: V3(0.5, -2.85, 0.3), show: () => st.labels },
-    { text: 'thalamus', pos: V3(-0.2, 3.05, 0.75), color: '#b9a4ff', show: () => st.labels },
+    { text: 'thalamus', pos: V3(-0.2, 3.05, 0.75), color: '#b9a4ff', show: () => st.labels && !matchMedia('(max-width:700px)').matches },   /* телефон: висела в пустоте над стволом */
     { text: 'corpora quadrigemina', pos: V3(-0.9, 1.5, 0.45), color: '#F2C14E', show: () => st.labels && (st.mode === 'floors' || st.mode === 'orient') },
     { text: 'rhomboid fossa', pos: V3(-0.7, -0.4, 0.2), color: '#6fc3ff', show: () => st.labels && st.mode === 'floors' && !st.cere },
     { text: 'basis', pos: V3(1.05, -1.6, 0.3), color: '#FF7A6A', show: () => st.labels && st.mode === 'floors' },
@@ -262,7 +262,7 @@ function makeStem() {
   function stats() { if (st.mode === 'rf') return [['Breathing', 15, '/min'], ['Pulse', 70, 'bpm']]; return [['Medulla', '≈4', 'cm'], ['Pons', '2.5–3', 'cm']]; }
   setMode('floors');
   const self = {
-    labelBg: true, mobZoom: 0.7, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#9FE0C0',
+    labelBg: true, mobZoom: 0.6, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#9FE0C0',
     kicker: 'Brain · brainstem structures', title: 'Brainstem',
     lede: 'The medulla oblongata and midbrain are ancient parts of the brain shared by all vertebrates; the pons stands out as a separate part only in mammals. They hold the centers of breathing and heartbeat, sleep and wakefulness, and all the pathways between the brain and the body.',
     notes: `

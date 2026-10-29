@@ -191,7 +191,7 @@ function makeVision() {
     lp('eye', [-1.7, 0.15, 4.3], 'path'), lp('optic nerve', [-1.55, -0.95, 1.97], 'path'), lp('optic chiasm', [0.05, -0.55, 0.94], 'path'),
     lp('optic tract', [-1.25, -0.45, -0.21], 'path'), lp('lateral geniculate body', [-1.45, 0.35, -0.85], 'path'), lp('optic radiation', [-1.95, 1.45, -1.67], 'path'),
     lp('right-hemisphere V1', [-1.4, 1.5, -4.3], 'path', VIS_FIELD_COL.L), lp('left-hemisphere V1', [1.4, 1.5, -4.3], 'path', VIS_FIELD_COL.R),
-    lp('eye muscles', [1.66, 0.25, 3.0], 'path'), lp('cerebellum', [0.1, -2.6, -2.4], 'path'), lp('orbit', [2.9, -0.2, 4.6], 'path'),
+    ...(matchMedia('(max-width:700px)').matches ? [] : [lp('eye muscles', [1.66, 0.25, 3.0], 'path'), lp('cerebellum', [0.1, -2.6, -2.4], 'path')]),   /* телефон: меньше подписей — остальные не налезают */ lp('orbit', [2.9, -0.2, 4.6], 'path'),
     lp('cornea', [-1.85, 0.0, 4.36], 'eye'), lp('lens', [-1.85, -0.25, 4.02], 'eye'), lp('vitreous body', [-1.85, -0.15, 3.55], 'eye'),
     lp('retina', [-1.85, -0.95, 3.25], 'eye'), lp('optic nerve', [-1.85, -0.55, 2.75], 'eye'), lp('object', [RAY_X, AXIS_Y + 0.6, 7.0], 'eye'),
   ];
@@ -254,7 +254,7 @@ function makeVision() {
   }
   const lesUpd = update;
   const self = {
-    scene, camera, controls, ui, onKey, stats, labels, drawScope, accent: '#7FB8FF',
+    mobZoom: 0.72, scene, camera, controls, ui, onKey, stats, labels, drawScope, accent: '#7FB8FF',
     update(dt) { lesUpd(dt); const L = LES[st.lesion]; if (L.pos) { const o = st.lesion === 'chiasm' ? [0.45, -0.35, 0.2] : [0.3, 0.45, 0]; lesLabel.pos.set(L.pos[0] + o[0], L.pos[1] + o[1], L.pos[2] + o[2]); } lesionSpr.material.opacity = 0.7 + 0.3 * Math.sin(st.t * 5); },
     kicker: 'Sense organs · vision', title: 'Vision',
     lede: 'The signal pathway from the retina to the occipital cortex, and the optics of the eye. Choose a lesion and see which part of the visual field disappears.',

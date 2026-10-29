@@ -26,11 +26,11 @@ function makeFedfast() {
   om('brain', ell3(0.3, 0.25, 0.35, BODY.head), '#E0A0B8');
   om('liver', blobGeo(0.75, 0.42, 0.45, 5, 0.08, 4), '#B0523A', 0.5).position.set(-0.35, 1.55, 0.15);
   om('gut', tube(Array.from({ length: 14 }, (_, i) => V3(Math.sin(i * 1.3) * 0.45, 0.95 - i * 0.05, 0.2 + Math.cos(i * 1.3) * 0.15)), 0.09, 120, 8), '#E8A0A0');
-  om('fat', ell3(0.55, 0.3, 0.25, V3(0.95, 0.35, 0.3)), '#F2D08A', 0.38);
+  om('fat', ell3(0.55, 0.3, 0.25, V3(0.95, -0.1, 0.3)), '#F2D08A', 0.38);   /* ниже кишки — не лежит на ней */
   om('mus', tube([V3(-0.47, -0.3, 0.05), V3(-0.5, -1.2, 0.08), V3(-0.48, -2.0, 0.06)], 0.24), '#C0504A', 0.4);
   om('kid', ell3(0.14, 0.24, 0.12, V3(0.55, 1.15, -0.25)), '#A04A3A', 0.45);
   om('heart', ell3(0.22, 0.27, 0.2, BODY.heart), '#C84A50', 0.45);
-  const P = { brain: BODY.head.clone().add(V3(0, -0.2, 0.2)), liver: V3(-0.35, 1.55, 0.45), gut: V3(0, 0.75, 0.4), fat: V3(0.95, 0.35, 0.5), mus: V3(-0.5, -0.9, 0.3), kid: V3(0.55, 1.15, 0.1), heart: BODY.heart.clone().add(V3(0, 0, 0.2)) };
+  const P = { brain: BODY.head.clone().add(V3(0, -0.2, 0.2)), liver: V3(-0.35, 1.55, 0.45), gut: V3(0, 0.75, 0.4), fat: V3(0.95, -0.1, 0.5), mus: V3(-0.5, -0.9, 0.3), kid: V3(0.55, 1.15, 0.1), heart: BODY.heart.clone().add(V3(0, 0, 0.2)) };
   const C = { glu: '#F2C14E', fa: '#FFB070', ket: '#FF8AB0', aa: '#7FE0A0', lac: '#FF6A6A', gly: '#C8C8D0', tag: '#E8C060' };
   // поток: [откуда, куда, вещество, вес(s)] — s от 0 (еда) до 3 (длительный голод)
   const W = (pts) => (s) => { const i = Math.min(2, Math.floor(s)), f = s - i; return pts[i] + (pts[i + 1] - pts[i]) * f; };
@@ -58,7 +58,7 @@ function makeFedfast() {
   }
   const stateName = (s) => (s < 0.5 ? 'after a meal' : s < 1.5 ? 'fasting 12 h' : s < 2.5 ? 'starvation 3 days' : 'starvation 3–6 wk');
   function drawScope(ctx, w, h) {
-    const A = plotAxes(ctx, w, h, { title: 'blood: glucose · ketones · insulin', xl: 'meal → 6 weeks', yl: '' });
+    const A = plotAxes(ctx, w, h, { title: w < 260 ? 'glucose · ketones · insulin' : 'blood: glucose · ketones · insulin', xl: 'meal → 6 weeks', yl: '' });
     const curve = (arr, sc) => (u) => { const s = u * 3; const i = Math.min(2, Math.floor(s)), f = s - i; return (arr[i] + (arr[i + 1] - arr[i]) * f) / sc; };
     plotLine(ctx, A, curve([7.5, 4.8, 3.8, 3.6], 8), '#F2C14E'); plotLine(ctx, A, curve([0.05, 0.2, 3.0, 7.0], 8), '#FF8AB0'); plotLine(ctx, A, curve([1, 0.25, 0.1, 0.08], 1.1), '#7FD6FF', { lw: 1.4, dash: [4, 3] });
     const x = A.X(Math.min(3, st.s) / 3); ctx.strokeStyle = 'rgba(255,255,255,.5)'; ctx.beginPath(); ctx.moveTo(x, A.Y(0)); ctx.lineTo(x, A.Y(1)); ctx.stroke();
@@ -66,9 +66,9 @@ function makeFedfast() {
   }
   const ORG = { brain: '<b>The brain</b> uses ~20% of resting energy, about 120 g of glucose a day, and cannot use fatty acids (they do not cross the blood–brain barrier). In starvation it switches to ketone bodies.', liver: '<b>The liver</b> is the distribution center: it stores and releases glucose (glycogen, gluconeogenesis), makes VLDL and ketone bodies, and converts amino acids into urea. In starvation it runs on fatty acids itself.', gut: '<b>The intestine</b> absorbs the products of digestion; its own cells feed mainly on glutamine.', fat: '<b>Adipose tissue</b> is the main energy store (TAG). Insulin makes it store; glucagon and epinephrine make it release fatty acids and glycerol. It is also an endocrine organ (leptin, adiponectin).', mus: '<b>Muscles</b> make up 40% of body mass. After a meal they store glycogen and build protein; at rest and in starvation they run on fatty acids and ketones; in prolonged starvation their protein is a reserve of amino acids for gluconeogenesis.', kid: '<b>The kidneys</b>, in prolonged starvation, synthesize up to half of the glucose and excrete ammonia, compensating for the acidity of ketone bodies.', heart: '<b>The heart</b> prefers fatty acids (up to 70% of its energy) and readily uses lactate and ketone bodies.' };
   const labels = [
-    { text: 'brain', pos: V3(0.4, 4.5, 0), color: '#E0A0B8', show: () => st.labels }, { text: 'liver', pos: V3(-1.3, 1.6, 0.3), color: '#E07A5A', show: () => st.labels }, { text: 'intestine', pos: V3(0.3, 0.55, 0.6), color: '#E8A0A0', show: () => st.labels },
-    { text: 'adipose tissue', pos: V3(1.5, 0.3, 0.3), color: '#F2D08A', show: () => st.labels }, { text: 'muscles', pos: V3(-1.3, -1.2, 0.2), color: '#C0504A', show: () => st.labels }, { text: 'kidneys', pos: V3(0.8, 1.2, 0.2), color: '#C07060', show: () => st.labels }, { text: 'heart', pos: V3(0.55, 2.1, 0.3), color: '#C84A50', show: () => st.labels },
-    ...[['glucose', 'glu'], ['fatty acids', 'fa'], ['ketone bodies', 'ket'], ['amino acids', 'aa'], ['lactate', 'lac'], ['fats (TAG)', 'tag'], ['glycerol', 'gly']].map(([n, k], i) => ({ text: n, pos: V3(3.0, 3.6 - i * 0.42, 0), color: C[k], show: () => st.labels })),
+    { text: 'brain', pos: V3(0.4, 4.5, 0), color: '#E0A0B8', show: () => st.labels }, { text: 'liver', pos: V3(-1.3, 1.6, 0.3), left: true, color: '#E07A5A', show: () => st.labels }, { text: 'intestine', pos: V3(0.3, 0.55, 0.6), color: '#E8A0A0', show: () => st.labels },
+    { text: 'adipose tissue', pos: V3(1.5, -0.1, 0.3), color: '#F2D08A', show: () => st.labels }, { text: 'muscles', pos: V3(-1.3, -1.2, 0.2), color: '#C0504A', show: () => st.labels }, { text: 'kidneys', pos: V3(0.8, 1.2, 0.2), color: '#C07060', show: () => st.labels }, { text: 'heart', pos: V3(0.55, 2.1, 0.3), color: '#C84A50', show: () => st.labels },
+    ...[['glucose', 'glu'], ['fatty acids', 'fa'], ['ketone bodies', 'ket'], ['amino acids', 'aa'], ['lactate', 'lac'], ['fats (TAG)', 'tag'], ['glycerol', 'gly']].map(([n, k], i) => ({ text: n, pos: V3(3.0, 3.6 - i * 0.42, 0), color: C[k], show: () => st.labels && !matchMedia('(max-width:700px)').matches })),   /* телефон: легенда веществ ложилась на тело — цвета объяснены в тексте */
   ];
   const refs = {};
   function ui(el) {
