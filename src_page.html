@@ -1316,11 +1316,12 @@ function makeBrain() {
   hemiGeos.forEach((g, gi) => { const pos = g.attributes.position; for (let i = 0; i < pos.count; i += 37) { const p = V3(pos.getX(i), pos.getY(i), pos.getZ(i)); const side = gi ? -1 : 1; if (p.y > -0.15 && p.z * side > 0.5) cortexPts.push(p.multiplyScalar(0.94)); } });
   const pick = (n, filter = () => true) => { const a = cortexPts.filter(filter); const out = []; for (let i = 0; i < n; i++) out.push(a[Math.floor(rnd() * a.length)]); return out; };
 
+  /* все пути одной системы — одна геометрия и один материал (было 76 мешей со своими шейдерами); фаза бегущей волны — атрибут вершин */
   const flowMat = (color) => new THREE.ShaderMaterial({
-    uniforms: { uColor: { value: new THREE.Color(color) }, uTime: { value: 0 }, uOn: { value: 1 }, uPhase: { value: rnd() * 10 } },
-    vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
-    fragmentShader: `uniform vec3 uColor; uniform float uTime,uOn,uPhase; varying vec2 vUv;
-      void main(){ float s = fract(vUv.x*1.6 - uTime*0.45 + uPhase); float p = smoothstep(0.0,0.06,s)*(1.0-smoothstep(0.06,0.32,s)); float a = (0.16 + 1.1*p)*uOn*smoothstep(0.0,0.04,vUv.x); gl_FragColor = vec4(uColor*(0.7+2.2*p), a); }`,
+    uniforms: { uColor: { value: new THREE.Color(color) }, uTime: { value: 0 }, uOn: { value: 1 } },
+    vertexShader: `attribute float aPhase; varying vec2 vUv; varying float vPh; void main(){ vUv = uv; vPh = aPhase; gl_Position = projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
+    fragmentShader: `uniform vec3 uColor; uniform float uTime,uOn; varying vec2 vUv; varying float vPh;
+      void main(){ float s = fract(vUv.x*1.6 - uTime*0.45 + vPh); float p = smoothstep(0.0,0.06,s)*(1.0-smoothstep(0.06,0.32,s)); float a = (0.16 + 1.1*p)*uOn*smoothstep(0.0,0.04,vUv.x); gl_FragColor = vec4(uColor*(0.7+2.2*p), a); }`,
     transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
   });
   const groups = {}, nucleiLabels = [];
@@ -1330,8 +1331,10 @@ function makeBrain() {
     const via = MFB[sys.id] && b.y > -0.2 && b.x > -0.3 && a.x < 0.3 ? V3(0.5, -0.25, 0.1 * Math.sign(b.z || 1)) : null;
     const a2 = via || a, mid = a2.clone().lerp(b, 0.5); mid.y += lift; mid.x += (b.x - a2.x) * 0.08;
     const c = new THREE.CatmullRomCurve3(via ? [a, a.clone().lerp(via, 0.5).add(V3(0, 0.05, 0)), via, mid, b] : [a, a.clone().lerp(mid, 0.5).add(V3(0, lift * 0.3, 0)), mid, b]);
-    const m = new THREE.Mesh(new THREE.TubeGeometry(c, 60, r, 6), flowMat(sys.color)); groups[sys.id].add(m);
+    const g = new THREE.TubeGeometry(c, 60, r, 6); g.setAttribute('aPhase', new THREE.Float32BufferAttribute(new Float32Array(g.attributes.position.count).fill(rnd() * 10), 1));
+    (PATHS[sys.id] = PATHS[sys.id] || []).push(g);
   }
+  const PATHS = {};
   function nucleus(sys, p, name, size = 0.05, lp = null) {
     const g = groups[sys.id];
     const core = new THREE.Mesh(new THREE.SphereGeometry(size, 16, 12), new THREE.MeshBasicMaterial({ color: new THREE.Color(sys.color).multiplyScalar(2) })); core.position.copy(p); g.add(core);
@@ -1364,6 +1367,7 @@ function makeBrain() {
   const TM = [V3(0.12, -0.5, 0.09), V3(0.12, -0.5, -0.09)];
   TM.forEach((p, i) => nucleus(S.his, p, i ? null : 'задний гипоталамус', 0.04, V3(0.28, -0.3, 0.12)));
   pick(12).forEach((t) => path(S.his, TM[t.z > 0 ? 0 : 1], t, 0.35, 0.009));
+  Object.entries(PATHS).forEach(([id, gs]) => { groups[id].add(new THREE.Mesh(mergeGeometries(gs), flowMat(S[id].color))); gs.forEach((g) => g.dispose()); });
 
   const st = { sys: 'all', rot: true, labels: true, t: 0 };
   function apply() {
@@ -6880,7 +6884,8 @@ function makeHeart() {
   const controls = makeControls(camera, VIEW.heart.target); controls.minDistance = 2; controls.maxDistance = 25;
   const hg = new THREE.Group(); scene.add(hg);
   const PART = Object.fromEntries(HT_PARTS.map((p) => [p.id, { ...p, mats: [] }])), pick = [];
-  const add = (id, g, o = {}, parent = hg) => { const m = organMat(PART[id].color, o.k ?? 0.42, o.mat || {}); PART[id].mats.push(m); const me = new THREE.Mesh(g, m); me.userData.pick = id; pick.push(me); parent.add(me); return me; };
+  const MC = {};   /* один материал на часть с одинаковыми настройками: меньше переключений программ и заливки униформ */
+  const add = (id, g, o = {}, parent = hg) => { const mk = id + '|' + (o.k ?? 0.42) + '|' + JSON.stringify(o.mat || {}); let m = MC[mk]; if (!m) { m = MC[mk] = organMat(PART[id].color, o.k ?? 0.42, o.mat || {}); PART[id].mats.push(m); } const me = new THREE.Mesh(g, m); me.userData.pick = id; pick.push(me); parent.add(me); return me; };
   /* ---------- камеры (объёмы крови) ---------- */
   const CH = {
     ra: { c: V3(-0.55, 0.32, 0.08), r: V3(0.36, 0.38, 0.34) }, la: { c: V3(0.32, 0.48, -0.42), r: V3(0.4, 0.28, 0.28) },
@@ -7165,7 +7170,8 @@ function makeLungs() {
   const body = new THREE.Group(); scene.add(body);
   bodyShell(body, { rim: 0.2, arms: true });
   const PART = Object.fromEntries(LG_PARTS.map((p) => [p.id, { ...p, mats: [] }])), pick = [];
-  const add = (id, g, o = {}, parent = body) => { const m = organMat(PART[id].color, o.k ?? 0.42, o.mat || {}); PART[id].mats.push(m); const me = new THREE.Mesh(g, m); me.userData.pick = id; pick.push(me); parent.add(me); return me; };
+  const MC = {};
+  const add = (id, g, o = {}, parent = body) => { const mk = id + '|' + (o.k ?? 0.42) + '|' + JSON.stringify(o.mat || {}); let m = MC[mk]; if (!m) { m = MC[mk] = organMat(PART[id].color, o.k ?? 0.42, o.mat || {}); PART[id].mats.push(m); } const me = new THREE.Mesh(g, m); me.userData.pick = id; pick.push(me); parent.add(me); return me; };
   /* ---------- лёгкие ---------- */
   const LUNG = [1, -1].map((s) => ({ s, c: V3(0.5 * s, 2.25, -0.04), r: s < 0 ? V3(0.45, 0.66, 0.44) : V3(0.4, 0.72, 0.42) }));  // правое шире и короче (печень), левое уже (сердце)
   const inLung = (p, L, k = 0.92) => { const d = p.clone().sub(L.c), n = V3(d.x / L.r.x, d.y / L.r.y, d.z / L.r.z);
@@ -7403,7 +7409,8 @@ function makeDigest() {
   const body = new THREE.Group(); scene.add(body);
   bodyShell(body, { rim: 0.2 });
   const PART = Object.fromEntries(DG_PARTS.map((p) => [p.id, { ...p, mats: [] }])), pick = [];
-  const add = (id, g, o = {}, parent = body) => { const m = organMat(PART[id].color, o.k ?? 0.42, o.mat || {}); PART[id].mats.push(m); const me = new THREE.Mesh(g, m); me.userData.pick = id; pick.push(me); parent.add(me); return me; };
+  const MC = {};
+  const add = (id, g, o = {}, parent = body) => { const mk = id + '|' + (o.k ?? 0.42) + '|' + JSON.stringify(o.mat || {}); let m = MC[mk]; if (!m) { m = MC[mk] = organMat(PART[id].color, o.k ?? 0.42, o.mat || {}); PART[id].mats.push(m); } const me = new THREE.Mesh(g, m); me.userData.pick = id; pick.push(me); parent.add(me); return me; };
   /* ---------- путь пищи: сегменты ---------- */
   const SEG = {
     mouth: [V3(0, 3.95, 0.42), V3(0, 3.93, 0.25), V3(0, 3.82, 0.02), V3(0, 3.6, -0.1)],
@@ -9999,7 +10006,14 @@ function show(id) {
     if (seq !== showSeq) return;
     const L = []; building = L; buildingId = id; let sc;
     try { sc = mk(); } finally { building = null; buildingId = null; }
-    sc.__listen = L; built[id] = sc; loadEl.hidden = true; activate(id);
+    sc.__listen = L; built[id] = sc;
+    const go = () => { if (seq !== showSeq) return; loadEl.hidden = true; activate(id); };
+    /* шейдеры новой сцены компилируются заранее (в цель композера — те же варианты программ): без подвисания первого кадра; не дольше 3 с */
+    if (!renderer.compileAsync || !composer || !renderer.extensions.has('KHR_parallel_shader_compile')) { go(); return; }   /* без расширения выигрыша нет */
+    let cp; const rt = renderer.getRenderTarget();
+    try { renderer.setRenderTarget(composer.readBuffer); cp = renderer.compileAsync(sc.scene, sc.camera); } catch (e) { cp = null; } finally { renderer.setRenderTarget(rt); }
+    if (!cp) { go(); return; }
+    Promise.race([cp.catch(() => {}), new Promise((r) => setTimeout(r, 3000))]).then(go);
   }).catch((e) => { if (seq !== showSeq) return; delete chunkP[BUILDERS[id][0]];
     loadEl.textContent = 'Не удалось загрузить раздел: ' + (e && e.message || e) + '. ' + (navigator.onLine === false ? 'Нет сети — эта тема ещё не сохранена для офлайна.' : 'Возможно, сайт обновился — обновите страницу.');
     loadEl.append(h('div', {}, button('Обновить', () => location.reload(), true))); console.error(e); });
