@@ -8,7 +8,7 @@ function makeNitrogen() {
   rnd = mulberry(9401);
   const scene = bioStage({ rim: 0x9fe0ff });
   const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: свой ракурс (телефон — прежний)
-  const VIEW = { npn: DK ? [V3(-1.0, -1.1, 0), V3(-0.6, 0.8, 17.4)] : [V3(-0.6, -1.2, 0), V3(-0.2, 0.7, 16.5)], buffer: [V3(39.0, -1.0, 0), V3(39.4, 1.0, 15.5)], abg: [V3(79.5, 1.2, 0), V3(80.0, 2.4, 12.5)] };
+  const VIEW = { npn: DK ? [V3(1.7, -1.1, 0), V3(2.1, 0.8, 17.4)] : [V3(-0.6, -1.2, 0), V3(-0.2, 0.7, 16.5)], buffer: DK ? [V3(39.0, -1.0, 0), V3(39.4, 1.0, 15.5)] : [V3(39.0, -0.7, 0), V3(39.4, 1.3, 11.5)], abg: DK ? [V3(79.5, 1.2, 0), V3(80.0, 2.4, 12.5)] : [V3(79.5, 1.4, 0), V3(80.0, 2.6, 9.5)] };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VIEW.npn[1]);
   const controls = makeControls(camera, VIEW.npn[0]); controls.minDistance = 3; controls.maxDistance = 40;
   const fx = new Sparks(2000, 0.07); scene.add(fx.obj);

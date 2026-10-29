@@ -8,7 +8,7 @@ function makeHeme() {
   rnd = mulberry(2501);
   const scene = bioStage({ bg: 0x09080a, rim: 0xf2c14e });
   const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: кадр уходит из-под заголовка и описания (телефон — прежний ракурс)
-  const VIEW = { synth: DK ? flyTarget(V3(-2.3, -1.8, 0), V3(-1.5, 0.1, 22.0)) : flyTarget(V3(0.2, -2.3, 0), V3(1.0, -0.5, 20.5)), chem: flyTarget(V3(41.2, -2.2, 0), V3(41.6, -0.6, 19)), body: flyTarget(V3(80.3, -0.75, 0), V3(80.9, 0.5, 11.2)) };
+  const VIEW = { synth: DK ? flyTarget(V3(-2.3, -1.8, 0), V3(-1.5, 0.1, 22.0)) : flyTarget(V3(0.2, -2.1, 0), V3(1.0, -0.3, 17.5)), chem: flyTarget(V3(41.2, -2.2, 0), V3(41.6, -0.6, 19)), body: flyTarget(V3(80.3, -0.75, 0), V3(80.9, 0.5, 11.2)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.synth.pos);
   const controls = makeControls(camera, VIEW.synth.target); controls.minDistance = 3; controls.maxDistance = 40;
   const fx = new Sparks(1600, 0.08); scene.add(fx.obj);

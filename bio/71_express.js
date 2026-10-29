@@ -14,7 +14,7 @@ const EX_AB = [
 function makeExpress() {
   rnd = mulberry(2001);
   const scene = bioStage({ rim: 0xff9a50 });
-  const VIEW = { tx: flyTarget(V3(0, 0.2, 0), V3(0.5, 2.2, 17)), splice: flyTarget(V3(40, -1.2, 0), V3(40.3, 0.6, 16)), tl: flyTarget(V3(80, -1.0, 0), V3(81.5, 1.2, 15)) };
+  const VIEW = { tx: flyTarget(V3(0, 0.2, 0), V3(0.5, 2.2, 17)), splice: flyTarget(V3(40, 0.3, 0), V3(40.3, 2.1, 16)), tl: flyTarget(V3(80.3, 0.1, 0), V3(81.8, 2.3, 17.5)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.tx.pos);
   const controls = makeControls(camera, VIEW.tx.target); controls.minDistance = 2; controls.maxDistance = 40;
   const fx = new Sparks(1400, 0.08); scene.add(fx.obj);
@@ -43,7 +43,7 @@ function makeExpress() {
   EXONS.forEach(([a, b, c], k) => { preM.push(segM(a, b, c, false)); if (k < EXONS.length - 1) preM.push(segM(b, EXONS[k + 1][0], '#6A7080', true)); });
   const cap = new THREE.Mesh(new THREE.SphereGeometry(0.2, 16, 12), organMat('#C77DFF', 0.6, { emissiveIntensity: 0.2 })); G2.add(cap);
   const polyA = new THREE.Group(); for (let k = 0; k < 14; k++) { const s = new THREE.Mesh(new THREE.SphereGeometry(0.08, 10, 8), organMat('#FF6A6A', 0.6)); s.position.set(k * 0.17, 0.04 * Math.sin(k), 0); polyA.add(s); } G2.add(polyA);
-  const spl = new THREE.Mesh(blobGeo(0.8, 0.65, 0.65, 44, 0.12, 4), glassMat(0x7fd6ff, { rim: 0.4, base: 0.01 })); G2.add(spl);
+  const spl = new THREE.Mesh(blobGeo(0.8, 0.65, 0.65, 44, 0.12, 4), glassMat(0x7fd6ff, { rim: 0.4, base: 0.01, keep: true })); G2.add(spl);
   /* ---------- 3. трансляция ---------- */
   const G3 = new THREE.Group(); G3.position.set(80, 0, 0); scene.add(G3);
   const RIB = new THREE.Group(); RIB.position.set(0, 1.4, 0); G3.add(RIB);
