@@ -70,8 +70,9 @@ function makeLipoprot() {
   const foam = []; for (let k = 0; k < 7; k++) { const g = new THREE.Group(); const b = new THREE.Mesh(blobGeo(0.2, 0.16, 0.18, k + 60, 0.12, 3), protMat('#E0C8A0', 0.4)); g.add(b); for (let q = 0; q < 5; q++) { const s = new THREE.Mesh(new THREE.SphereGeometry(0.045, 10, 8), new THREE.MeshPhysicalMaterial({ color: 0xc8a030, emissive: 0xc8a030, emissiveIntensity: 0.25 })); s.position.copy(randUnit().multiplyScalar(0.1)); g.add(s); } g.userData.l = V3(rand(-0.6, 0.6), rand(0.15, 0.5), rand(-0.5, 0.5)); G3.add(g); foam.push(g); }
   const LDLB = []; for (let k = 0; k < 16; k++) { const m = new THREE.Mesh(new THREE.SphereGeometry(0.1, 14, 10), new THREE.MeshPhysicalMaterial({ color: 0xb06a30, emissive: 0xff9a50, emissiveIntensity: 0.25, roughness: 0.3 })); G3.add(m); LDLB.push({ m, p: V3(rand(-4, 4), rand(-0.6, 1.2), rand(-0.6, 0.8)), v: V3(1, 0, 0), in: false, age: 0 }); }
   const HDLB = []; for (let k = 0; k < 8; k++) { const m = new THREE.Mesh(new THREE.SphereGeometry(0.06, 12, 8), new THREE.MeshPhysicalMaterial({ color: 0x3a7aa0, emissive: 0x7fd6ff, emissiveIntensity: 0.35 })); G3.add(m); HDLB.push({ m, p: V3(rand(-4, 4), rand(-0.6, 1.2), rand(-0.6, 0.8)) }); }
-  const statin = molMesh(MOL('simvastatin'), { scale: 0.09, hideH: true }); statin.position.set(3.2, 2.3, 0.4); G3.add(statin);
-  const chainM = ['acetyl', 'hmgcoa', 'mevalonate', 'cholesterol'].map((id, k) => { const m = molMesh(MOL(id), { scale: id === 'cholesterol' ? 0.075 : 0.11, hideH: true }); m.position.set(-3.6 + k * 1.75, 2.6, 0.3); G3.add(m); return m; });
+  const CX = DK ? 1.95 : 0, CY = DK ? -0.95 : 0;   /* компьютер: путь синтеза холестерина правее заголовка и ниже верхней кромки */
+  const statin = molMesh(MOL('simvastatin'), { scale: 0.09, hideH: true }); statin.position.set(3.2 + CX, 2.3 + CY, 0.4); G3.add(statin);
+  const chainM = ['acetyl', 'hmgcoa', 'mevalonate', 'cholesterol'].map((id, k) => { const m = molMesh(MOL(id), { scale: id === 'cholesterol' ? 0.075 : 0.11, hideH: true }); m.position.set(-3.6 + CX + k * 1.75, 2.6 + CY, 0.3); G3.add(m); return m; });
   const synA = [0, 1, 2].map((k) => flowArrow(G3, chainM[k].position.clone().add(V3(0.5, 0, 0)), chainM[k + 1].position.clone().add(V3(-0.5, 0, 0)), '#D9D2D8', { bend: 0.1, r: 0.02 })); // путь синтеза холестерина
   const block = new THREE.Mesh(new THREE.TorusGeometry(0.28, 0.035, 8, 32), new THREE.MeshBasicMaterial({ color: 0xff5a5a })); block.position.copy(synA[1].curve.getPoint(0.5)).add(V3(0, 0, 0.1)); G3.add(block);
   /* ---------- состояние ---------- */
@@ -122,8 +123,8 @@ function makeLipoprot() {
     { text: 'артерия', pos: V3(40.8, -1.8, 0.2), color: '#FF6A6A', show: () => st.labels && st.mode === 'trans' },
     { text: 'просвет артерии', pos: V3(80 - 3.6, 0.8, 0.5), color: '#F0B0B0', show: () => st.labels && st.mode === 'athero' },
     { text: 'бляшка, пенистые клетки', pos: V3(80 + 1.3, -0.5, -0.5), color: '#C8A030', show: () => st.labels && st.mode === 'athero' },
-    ...['ацетил-КоА', 'ГМГ-КоА', 'мевалонат', 'холестерин'].map((n, k) => ({ text: n, pos: V3(80 - 3.6 + k * 1.75 - 0.4, 2.0, 0.3), color: '#D9D2D8', show: () => st.labels && st.mode === 'athero' })),
-    { text: 'ГМГ-КоА-редуктаза', pos: V3(80 - 1.6, 3.1, 0.3), color: '#FF8A8A', show: () => st.labels && st.mode === 'athero' },
+    ...['ацетил-КоА', 'ГМГ-КоА', 'мевалонат', 'холестерин'].map((n, k) => ({ text: n, pos: V3(80 - 3.6 + CX + k * 1.75 - 0.4, 2.0 + CY, 0.3), color: '#D9D2D8', show: () => st.labels && st.mode === 'athero' })),
+    { text: 'ГМГ-КоА-редуктаза', pos: V3(80 - 1.6 + CX, 3.1 + CY, 0.3), color: '#FF8A8A', show: () => st.labels && st.mode === 'athero' },
   ];
   const refs = {};
   function ui(el) {
