@@ -8,7 +8,7 @@ function makeJoints() {
   rnd = mulberry(1101);
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x07070b); scene.environment = envTex;
   labLights(scene, 0xffc89f);
-  const VIEW = { bone: [V3(-2.2, -1.3, 0), V3(1.8, 0.9, 24)], osteon: [V3(8.4, -1.0, -0.2), V3(10.6, 4.0, 7.5)], joint: [V3(38.9, -0.4, 0), V3(40.6, 1.4, 17.5)], types: [V3(82.0, 6.6, 0), V3(85, 9.0, 47)] };
+  const VIEW = { bone: [V3(-1.83, -1.08, 0), V3(1.5, 0.75, 20)], osteon: [V3(8.4, -1.0, -0.2), V3(10.6, 4.0, 7.5)], joint: [V3(38.9, -0.4, 0), V3(40.6, 1.4, 17.5)], types: [V3(82.0, 6.6, 0), V3(85, 9.0, 47)] };
   const VIEWM = { bone: [V3(0.5, -0.8, 0), V3(3.0, 0.8, 24)], osteon: [V3(9.0, -0.2, -0.2), V3(11.2, 4.4, 8.5)], joint: [V3(40, 1.8, 0), V3(41.2, 3.0, 15)], types: [V3(84.6, 8.6, 0), V3(87, 10.5, 52)] }, mqm = window.matchMedia('(max-width:700px)'), VV = (m) => (mqm.matches && VIEWM[m]) || VIEW[m];
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300);
   const controls = makeControls(camera, VIEW.bone[0]); controls.minDistance = 2; controls.maxDistance = 70;
@@ -180,7 +180,7 @@ function makeJoints() {
   Object.values(M).forEach((m) => { m.g.userData.s0 = 1.25; });
 
   /* ---------- состояние ---------- */
-  function setMode(m) { st.mode = m; refs.modeSeg && refs.modeSeg.sync(); [G1, G2, G3].forEach((g, k) => { g.visible = ['bone', 'joint', 'types'][k] === m; }); OS.visible = st.view === 'osteon'; const v = VV(m === 'bone' ? st.view : m); st.fly = flyTarget(v[0], v[1]); st.msg = null; refs.rebuild && refs.rebuild(); refs.setInfo && refs.setInfo(); }
+  function setMode(m) { st.mode = m; refs.modeSeg && refs.modeSeg.sync(); [G1, G2, G3].forEach((g, k) => { g.visible = ['bone', 'joint', 'types'][k] === m; }); OS.visible = st.view === 'osteon'; G1.children.forEach((c) => { if (c !== OS) c.visible = st.view !== 'osteon'; }); const v = VV(m === 'bone' ? st.view : m); st.fly = flyTarget(v[0], v[1]); st.msg = null; refs.rebuild && refs.rebuild(); refs.setInfo && refs.setInfo(); }
   const JD = { norm: [0.12, 0.12, 0.04, 0.05], oa: [0.05, 0.04, 0.015, 0.14], ra: [0.09, 0.09, 0.14, 0.04], gout: [0.11, 0.11, 0.09, 0.05] };
   function setJd(v) {
     st.jd = v; JG = buildJoint(...JD[v]); placeExtras();
@@ -279,7 +279,7 @@ function makeJoints() {
     const box = h('div', { class: 'grp', style: 'flex:1 1 440px' });
     refs.rebuild = () => {
       box.innerHTML = '';
-      if (st.mode === 'bone') box.append(h('div', { class: 'glabel' }, 'Показать'), h('div', { class: 'gctl' }, seg([{ id: 'bone', label: 'Кость целиком' }, { id: 'osteon', label: 'Остеоны' }], () => st.view, (v) => { st.view = v; OS.visible = v === 'osteon'; const vv = VV(v); st.fly = flyTarget(vv[0], vv[1]); refs.setInfo(); }), toggle('Остеопороз', () => st.op, (v) => { setOp(v); refs.setInfo(); })));
+      if (st.mode === 'bone') box.append(h('div', { class: 'glabel' }, 'Показать'), h('div', { class: 'gctl' }, seg([{ id: 'bone', label: 'Кость целиком' }, { id: 'osteon', label: 'Остеоны' }], () => st.view, (v) => { st.view = v; OS.visible = v === 'osteon'; G1.children.forEach((c) => { if (c !== OS) c.visible = v !== 'osteon'; }); const vv = VV(v); st.fly = flyTarget(vv[0], vv[1]); refs.setInfo(); }), toggle('Остеопороз', () => st.op, (v) => { setOp(v); refs.setInfo(); })));
       else if (st.mode === 'joint') box.append(h('div', { class: 'glabel' }, 'Состояние'), h('div', { class: 'gctl' }, seg([{ id: 'norm', label: 'Норма' }, { id: 'oa', label: 'Остеоартроз' }, { id: 'ra', label: 'Ревматоидный артрит' }, { id: 'gout', label: 'Подагра' }], () => st.jd, (v) => { setJd(v); refs.setInfo(); })));
       else box.append(h('div', { class: 'glabel' }, 'Тип сустава'), h('div', { class: 'gctl' }, seg(Object.entries(TYPES).map(([id, T]) => ({ id, label: T.name, color: T.col })), () => st.typ, (v) => { st.typ = v; refs.setInfo(); })));
     };

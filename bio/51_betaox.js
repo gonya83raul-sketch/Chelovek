@@ -7,7 +7,7 @@ function makeBetaox() {
   rnd = mulberry(1501);
   const scene = bioStage({ rim: 0xf2c14e });
   const MOB = matchMedia('(max-width:700px)').matches;   /* телефон: клетка крупнее */
-  const VIEW = { lipo: flyTarget(V3(-1.6, 0.2, 0), MOB ? V3(-1.0, 2.4, 17.5) : V3(-1.0, 2.4, 21.5)), beta: flyTarget(V3(39.9, -1.9, 0), V3(40.5, 0.6, 17.5)), keto: flyTarget(V3(80, -1.0, 0), V3(80.6, 1.2, 18.5)), syn: flyTarget(V3(120, -1.6, 0), V3(120.6, 0.6, 16)) };
+  const VIEW = { lipo: flyTarget(V3(-1.6, 0.2, 0), MOB ? V3(-1.0, 2.4, 15.2) : V3(-1.0, 2.4, 21.5)), beta: flyTarget(MOB ? V3(39.9, -1.9, 0) : V3(38.4, -1.9, 0), MOB ? V3(40.57, 0.9, 19.6) : V3(39.13, 1.15, 21.35)), keto: flyTarget(V3(80, -0.2, 0), V3(80.6, 2.0, 18.5)), syn: flyTarget(V3(116.4, -0.5, 0), V3(117, 1.7, 16)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.lipo.pos);
   const controls = makeControls(camera, VIEW.lipo.target); controls.minDistance = 3; controls.maxDistance = 40;
   const fx = new Sparks(1800, 0.08); scene.add(fx.obj);
@@ -141,9 +141,9 @@ function makeBetaox() {
       return;
     }
     if (st.mode === 'beta') {
-      scopeShow(true); ctx.clearRect(0, 0, w, h); ctx.font = '500 10px JetBrains Mono, monospace'; ctx.fillStyle = '#EFEAE6'; ctx.fillText('пальмитат C16: 7 оборотов → 8 ацетил-КоА', 8, 12);
+      scopeShow(true); ctx.clearRect(0, 0, w, h); ctx.font = '500 ' + (w < 260 ? 8 : 10) + 'px JetBrains Mono, monospace'; ctx.fillStyle = '#EFEAE6'; ctx.fillText('пальмитат C16: 7 оборотов → 8 ацетил-КоА', 8, 12);
       const rows = [['7 ФАДН₂ × 2', 14, '#FFE45A'], ['7 НАДН × 3', 21, '#FFD070'], ['8 ацетил-КоА × 12', 96, '#7FD6FF'], ['активация (АТФ → АМФ)', -2, '#FF6A6A']];
-      rows.forEach(([n, v, c], k) => { const y = 20 + k * 20; ctx.fillStyle = 'rgba(255,255,255,.7)'; ctx.font = '500 9px JetBrains Mono, monospace'; ctx.fillText(n, 8, y + 10); ctx.fillStyle = c; ctx.globalAlpha = 0.85; ctx.fillRect(120, y, (w - 160) * Math.abs(v) / 96, 13); ctx.globalAlpha = 1; ctx.fillStyle = '#EFEAE6'; ctx.fillText(String(v), 124 + (w - 160) * Math.abs(v) / 96, y + 10); });
+      rows.forEach(([n, v, c], k) => { const y = 20 + k * (h < 110 ? 17 : 20); ctx.fillStyle = 'rgba(255,255,255,.7)'; ctx.font = '500 9px JetBrains Mono, monospace'; ctx.fillText(n, 8, y + 10); ctx.fillStyle = c; ctx.globalAlpha = 0.85; ctx.fillRect(120, y, (w - 160) * Math.abs(v) / 96, 13); ctx.globalAlpha = 1; ctx.fillStyle = '#EFEAE6'; ctx.fillText(String(v), 124 + (w - 160) * Math.abs(v) / 96, y + 10); });
       ctx.fillStyle = 'rgba(255,255,255,.6)'; ctx.fillText('итого ≈ 129 АТФ (по совр. данным ≈ 106)', 8, h - 6);
       return;
     }
@@ -162,7 +162,7 @@ function makeBetaox() {
     { text: 'β-адренорецептор', pos: V3(2.45, 1.95, 0.4), color: '#FF8A5C', show: () => st.labels && st.mode === 'lipo' },
     { text: 'жирные кислоты → кровь', pos: V3(2.6, -1.4, 0.4), color: '#F2E6C8', show: () => st.labels && st.mode === 'lipo' && !st.ins },
     { text: 'ядро', pos: V3(1.85, -0.6, 0.5), color: '#9F7BFF', show: () => st.labels && st.mode === 'lipo' },
-    { text: 'карнитиновый челнок', pos: V3(40 - 5.0, 1.65, 0.3), color: '#C77DFF', show: () => st.labels && st.mode === 'beta' },
+    { text: 'карнитиновый челнок', pos: MOB ? V3(40 - 5.0, 1.65, 0.3) : V3(40 - 4.2, 0.1, 0.3), color: '#C77DFF', show: () => st.labels && st.mode === 'beta' },
     { text: 'ацил-КоА', pos: V3(40 - 7.2, 1.45, 0.3), color: '#F2E6C8', show: () => st.labels && st.mode === 'beta' && st.cyc % 20 < 2 },
     { text: 'спираль β-окисления (матрикс)', pos: V3(40 + 0.4, 1.45, 0.3), color: '#FFB070', show: () => st.labels && st.mode === 'beta' },
     { text: 'наружная мембрана', pos: V3(40 - 1.0, 2.55, 0.3), color: '#FFB070', show: () => st.labels && st.mode === 'beta' },

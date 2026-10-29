@@ -9171,7 +9171,7 @@ function makeChemo() {
   rnd = mulberry(2222);
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x07060a); scene.environment = envTex;
   labLights(scene, 0x7fe0a0);
-  const VIEW = { smell: flyTarget(V3(-0.15, -0.05, 0), V3(-1.9, -0.2, 6.5)), tongue: flyTarget(V3(29.7, -0.57, -0.11), V3(29.7, 3.33, 4.09)), bud: flyTarget(V3(60, -0.55, 0), V3(61.8, 0.8, 5.8)) };
+  const VIEW = { smell: flyTarget(V3(-0.15, -0.05, 0), V3(-1.9, -0.2, 6.5)), tongue: matchMedia('(max-width:700px)').matches ? flyTarget(V3(30.0, -0.57, -0.11), V3(30.0, 2.16, 2.83)) : flyTarget(V3(29.7, -0.57, -0.11), V3(29.7, 3.33, 4.09)), bud: flyTarget(V3(60, -0.55, 0), matchMedia('(max-width:700px)').matches ? V3(61.2, 0.35, 3.9) : V3(61.8, 0.8, 5.8)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 120); camera.position.copy(VIEW.smell.pos);
   const controls = makeControls(camera, VIEW.smell.target); controls.minDistance = 1; controls.maxDistance = 16;
   /* ---------- обоняние ---------- */
@@ -9236,7 +9236,7 @@ function makeChemo() {
   [1, -1].forEach((s) => { for (let k = 0; k < 5; k++) { const g = new THREE.BoxGeometry(0.02, 0.06, 0.12); g.translate(0.8 * s, 0.12, -0.3 + k * 0.08); tg.add(new THREE.Mesh(g, organMat('#FFB0B8', 0.5))); } });
   /* ---------- вкусовая почка ---------- */
   const bud = new THREE.Group(); bud.position.set(60, 0, 0); scene.add(bud); bud.visible = false;
-  const epi = new THREE.Mesh(new THREE.BoxGeometry(3, 1.6, 1.6), new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xe8a0a8).multiplyScalar(0.35), roughness: 0.5, transparent: true, opacity: 0.12, depthWrite: false })); epi.position.y = -0.38; bud.add(epi);   // верх эпителия = верх почки: пора открывается на поверхность
+  const epi = new THREE.Mesh(new THREE.BoxGeometry(2.2, 1.6, 1.6), new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xe8a0a8).multiplyScalar(0.35), roughness: 0.5, transparent: true, opacity: 0.12, depthWrite: false })); epi.position.y = -0.38; bud.add(epi);   // верх эпителия = верх почки: пора открывается на поверхность
   { const g = new THREE.TorusGeometry(0.07, 0.018, 8, 28); g.rotateX(Math.PI / 2); g.translate(0, 0.42, 0); bud.add(new THREE.Mesh(g, new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xffe0d0).multiplyScalar(0.5), roughness: 0.4, emissive: 0x402820, emissiveIntensity: 0.4 }))); }
   const budShell = displaceGeo(new THREE.SphereGeometry(1, 40, 30), (v) => { v.set(v.x * 0.42, v.y * 0.62, v.z * 0.42); }); budShell.translate(0, -0.2, 0);
   bud.add(new THREE.Mesh(budShell, new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xf2d8c0).multiplyScalar(0.4), transparent: true, opacity: 0.2, depthWrite: false, roughness: 0.3 })), new THREE.Mesh(budShell, glassMat(0xffe0d0, { rim: 0.4, base: 0.01, pow: 2 })));

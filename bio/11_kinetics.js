@@ -146,7 +146,7 @@ function makeKinetics() {
     }
   }
   const labels = [
-    { text: 'фермент (модель — лизоцим, PDB 1AKI)', pos: E[4].p.clone().add(V3(-0.6, 1.0, 0)), color: '#E46FA8', show: () => st.labels },
+    { text: 'фермент (модель — лизоцим, PDB 1AKI)', pos: E[4].p.clone().add(V3(-0.6, DK ? 1.0 : 2.4, 0)), color: '#E46FA8', show: () => st.labels },
     { text: 'субстрат', pos: V3(-0.2, BY + 0.5, -BZ), color: PT.S, show: () => st.labels },
     { text: 'продукт', pos: V3(1.6, BY + 0.5, -BZ), color: PT.P, show: () => st.labels },
     ...['comp', 'nonc', 'irr'].map((k) => ({ text: 'ингибитор', pos: V3(3.3, BY + 0.5, -BZ), color: KN_INH[k].color, show: () => st.labels && st.inh === k })),
