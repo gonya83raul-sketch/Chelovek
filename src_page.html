@@ -1267,8 +1267,8 @@ function makeSynapse() {
     { text: 'пресинаптическое окончание', pos: V3(-3.0, 3.6, 1.0) },
     { text: 'пузырьки с медиатором', pos: V3(1.9, 2.6, 1.6) },
     { text: 'щель ≈ 20 нм', pos: V3(2.6, CLEFT_Y, 1.4) },
-    { text: 'рецепторы', pos: V3(0.6, POST_T - 0.15, 2.0) },
-    { text: 'Ca²⁺-каналы', pos: caPos[3].clone().add(V3(-0.15, -0.12, 0.1)) },
+    { text: 'рецепторы', pos: V3(0.9, POST_T - 0.6, 2.0) },
+    { text: 'Ca²⁺-каналы', pos: caPos[3].clone().add(V3(-0.15, 0.55, 0.1)) },
     { text: 'переносчики', pos: V3(-1.95, PRE_B + 0.4, 0.5), show: () => M.inact === 'uptake' },
     { text: 'фермент АХЭ', pos: V3(1.6, 0.6, -1.6), show: () => M.inact === 'enzyme' },
     { text: 'астроцит', pos: V3(Math.cos(2.5) * 6, CLEFT_Y - 1.0, Math.sin(2.5) * 6), show: () => M.inact === 'astro' },
@@ -2676,11 +2676,11 @@ function makeTypes() {
   }
 
   /* ---------- камера ---------- */
-  const views = { all: { tgt: V3(-8.5 + TPX, 0.5, 0), pos: V3(-8.5 + TPX, 2.5, 55) }, net: { tgt: NET.clone().add(NC).add(V3(0, -3, 0)), pos: NET.clone().add(NC).add(V3(0, 1, 40)) } };
+  const views = { all: { tgt: V3(-8.5 + TPX, 0.5, 0), pos: V3(-8.5 + TPX, 2.5, 55) }, net: { tgt: NET.clone().add(NC).add(V3(0, -3, 0)), pos: NET.clone().add(NC).add(V3(0, 1, TPX ? 56 : 40)) } };
   cells.slice(0, 7).forEach((c) => { views[c.def.id] = { tgt: c.origin.clone().add(V3(0, -2.6, 0)), pos: c.origin.clone().add(V3(4.5, 0.5, 24)) }; });
-  views.purk.pos = byId.purk.origin.clone().add(V3(13, 1.5, 20));
+  views.purk.pos = byId.purk.origin.clone().add(V3(13, 2.7, 20)); views.purk.tgt.y += 1.2;   /* дендриты не у верхней кромки */
   const st = { view: 'all', stain: 'live', auto: true, labels: true, t: 0, next: 0.8, fly: 1, twitch: 0, twitchT: -9, touchT: -9 };
-  function go(id) { st.view = id; st.fly = 1; st.next = st.t + 1.2; pulses = []; }
+  function go(id) { st.view = id; st.fly = 1; st.next = st.t + 1.2; pulses = []; cells.slice(0, 7).forEach((c) => { c.g.visible = id === 'all' || id === 'net' || c.def.id === id; }); }
 
   /* ---------- клик по клетке ---------- */
   const ray = new THREE.Raycaster(), ndc = new THREE.Vector2(); let down = null;
@@ -2689,7 +2689,7 @@ function makeTypes() {
     if (!controls.enabled || !down || Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 5) return;
     const r = canvas.getBoundingClientRect(); ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
     ray.setFromCamera(ndc, camera);
-    const hit = ray.intersectObjects(cells.flatMap((c) => c.pick), false)[0]; if (!hit) return;
+    const hit = ray.intersectObjects(cells.filter((cc) => cc.g.visible).flatMap((c) => c.pick), false)[0]; if (!hit) return;
     const c = cells.find((cc) => cc.pick.includes(hit.object));
     if (c && c.def && st.view !== c.def.id) { go(c.def.id); refs.viewSeg && refs.viewSeg.sync(); refs.setInfo && refs.setInfo(); }
     else if (c) fireNow();
@@ -4731,8 +4731,8 @@ function makeSpinal() {
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x060509); scene.environment = envTex; scene.fog = new THREE.FogExp2(0x060509, 0.018);
   labLights(scene, 0xffb070);
   // правая часть (мышца, кожа и нервы к ним) сжата к срезу по x: x > 3,4 → 3,4 + (x − 3,4)·0,58 — срез в кадре крупнее
-  const SQX = (v) => { if (v.x > 3.4) v.x = 3.4 + (v.x - 3.4) * 0.58; return v; };
-  const HOME = flyTarget(V3(1.5, -0.6, 0), V3(3.5, 4.3, 10.9));
+  const MOBS = matchMedia('(max-width:700px)').matches; const SQX = (v) => { if (v.x > 3.4) v.x = 3.4 + (v.x - 3.4) * (MOBS ? 0.4 : 0.58); return v; };
+  const HOME = MOBS ? flyTarget(V3(1.2, -0.6, 0), V3(3.2, 4.3, 10.9)) : flyTarget(V3(1.3, -0.6, 0), V3(3.3, 4.3, 10.9));
   const camera = new THREE.PerspectiveCamera(36, 1, 0.05, 300); camera.position.copy(HOME.pos);
   const controls = makeControls(camera, HOME.target); controls.minDistance = 2; controls.maxDistance = 60;
   const mat = (c, o = {}) => tissue(new THREE.Color(c).multiplyScalar(0.33), o);
@@ -4938,7 +4938,7 @@ function makeSpinal() {
     MY.forEach((f, i) => { m4.makeScale(f.l, f.r, f.r).setPosition(f.x, f.y, f.z); myI.setMatrixAt(i, m4); }); AX.forEach((f, i) => { m4.makeScale(f.l, f.r, f.r).setPosition(f.x, f.y, f.z); axI.setMatrixAt(i, m4); }); NV.add(myI, axI); }
   // продольные сосуды нерва (vasa nervorum) в эпиневрии
   [[0.86, 0.3, '#E0505A'], [-0.84, -0.28, '#5C7CE8'], [0.1, -0.86, '#E0505A']].forEach(([y, z, c]) => { const g = nx(new THREE.CylinderGeometry(0.045, 0.045, NL + 0.1, 12)); g.translate(0.02, y, z); NV.add(new THREE.Mesh(g, organMat(c, 0.6))); });
-  const NERVE_VIEW = flyTarget(V3(40.2, -1.35, 1.2), V3(47.6, 1.4, 5.6));
+  const NERVE_VIEW = MOBS ? flyTarget(V3(42.3, -0.5, 0.3), V3(48.4, 1.6, 4.2)) : flyTarget(V3(40.2, -0.8, 1.2), V3(47.6, 1.95, 5.6));
 
   /* ---------- режимы ---------- */
   function setMode(m) {
@@ -4950,7 +4950,7 @@ function makeSpinal() {
     NV.visible = nv; col.visible = seg2; cord.visible = dura.visible = !seg2 && !nv; vert.visible = m === 'anat' && st.vert;
     [muscle, skin, fibMesh, fx.obj, ...Object.values(somas)].forEach((o) => { o.visible = !seg2 && !nv && m !== 'tracts'; });
     if (nv) st.fly = NERVE_VIEW;
-    else if (seg2) st.fly = flyTarget(COL_POS, COL_POS.clone().add(V3(13, 2.5, 25)));
+    else if (seg2) st.fly = MOBS ? flyTarget(COL_POS.clone().add(V3(0, 0.8, 0)), COL_POS.clone().add(V3(9.1, 2.55, 17.5))) : flyTarget(COL_POS, COL_POS.clone().add(V3(13, 2.5, 25)));
     else if (m === 'tracts') st.fly = flyTarget(V3(0, 0, 1.6), V3(1.3, 1.1, 7.2));
     else st.fly = HOME;
     st.msg = null; refs.setInfo && refs.setInfo();
@@ -4988,14 +4988,14 @@ function makeSpinal() {
     { text: 'задний рог', pos: V3(0.42, 0.66, L / 2), color: '#c9a0c8', show: () => st.labels && st.mode === 'anat' },
     { text: 'передний рог', pos: V3(0.5, -0.36, L / 2), color: '#ff9a8a', show: () => st.labels && st.mode === 'anat' },
     { text: 'боковой рог', pos: V3(0.55, -0.06, L / 2), color: '#ffb070', show: () => st.labels && st.mode === 'anat' },
-    { text: 'белое вещество', pos: V3(-0.8, 0.35, L / 2), left: true, color: '#efe8dc', show: () => st.labels && st.mode === 'anat' },
+    { text: 'белое вещество', pos: V3(-0.8, 0.35, L / 2), left: true, color: '#efe8dc', show: () => st.labels && st.mode === 'anat' && !MOBS },
     { text: 'центральный канал', pos: V3(0.02, 0.05, L / 2), color: '#9a92a6', show: () => st.labels && st.mode === 'tracts' },
     { text: 'задний корешок', pos: V3(-1.05, 0.72, 0.2), color: '#efe2c8', show: () => st.labels && st.mode === 'anat' },
     { text: 'передний корешок', pos: V3(-1.3, -0.75, -0.5), left: true, color: '#efe2c8', show: () => st.labels && st.mode === 'anat' },
     { text: 'спинномозговой ганглий', pos: V3(-1.95, 0.85, 0.2), left: true, color: '#e8c8a0', show: () => st.labels && st.mode === 'anat' },
     { text: 'спинномозговой нерв', pos: V3(-3.5, -0.05, 0), color: '#efe2c8', show: () => st.labels && st.mode === 'anat' },
     { text: 'симпатический ствол', pos: V3(-2.75, -2.0, 0.9), color: '#d8b890', show: () => st.labels && st.mode === 'anat' },
-    { text: 'белая и серая ветви', pos: V3(2.9, -0.9, 0.2), color: '#d8b890', show: () => st.labels && st.mode === 'anat' },
+    { text: 'белая и серая ветви', pos: V3(2.9, -0.9, 0.2), color: '#d8b890', show: () => st.labels && st.mode === 'anat' && !MOBS },
     { text: 'твёрдая оболочка', pos: V3(-1.15, -1.2, 1.2), color: '#e2ddd2', show: () => st.labels && st.mode === 'anat' },
     { text: 'позвонок', pos: V3(0, -2.9, 0.8), color: '#e0d4ba', show: () => st.labels && st.mode === 'anat' && st.vert },
     { text: 'мышечное веретено', pos: SP.clone().add(V3(0, 0.3, 0)), color: '#f0c060', show: () => st.labels && st.mode === 'anat' },
