@@ -1451,7 +1451,7 @@ function makeBrain() {
   function stats() { if (st.sys === 'all') return [['Систем', 5, ''], ['Медиаторов', 5, '']]; const s = S[st.sys]; return [['Нейронов', s.share, '']]; }
   apply();
   return {
-    deskShift: 1.3, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, get accent() { return st.sys === 'all' ? '#EFEAE6' : S[st.sys].color; },
+    deskShift: 1.3, mobZoom: 0.62, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, get accent() { return st.sys === 'all' ? '#EFEAE6' : S[st.sys].color; },
     kicker: 'Медиаторы · где они в мозге', title: 'Системы медиаторов',
     lede: 'Маленькие ядра в стволе и основании мозга раскидывают отростки по огромной территории. Поэтому одно вещество меняет состояние всего мозга сразу.',
     notes: `
@@ -8575,7 +8575,7 @@ function makeSkin() {
     heat: { name: 'Жара', text: '<b>Жара.</b> Сосуды кожи расширяются (кожа краснеет и отдаёт тепло), потовые железы выделяют пот — испаряясь, он охлаждает тело. За сутки при жаре может выделиться несколько литров пота.' },
   };
   function stim(k) { st.stim = k; st.stimT = st.t; st.msg = STIM[k].text; refs.setInfo(); refs.stSeg && refs.stSeg.sync(); }
-  const LVIEW = { epi: [V3(1.15, 0.55, 1.0), 2.9], der: [V3(0.1, -0.4, 0.6), 6.4], hyp: [V3(0.2, -1.95, 0.6), 5.6] };
+  const LVIEW = matchMedia('(max-width:700px)').matches ? { epi: [V3(1.0, 0.85, 1.0), 2.9], der: [V3(0.1, -0.4, 0.6), 6.4], hyp: [V3(0.2, -1.15, 0.6), 5.6] } : { epi: [V3(-0.5, 0.72, 1.7), 3.8], der: [V3(-0.8, -0.12, 1.0), 6.4], hyp: [V3(-0.8, -1.6, 1.0), 5.8] };
   function select(id) { st.sel = id === 'all' ? null : id; refs.seg && refs.seg.sync(); { const lv = st.sel && LVIEW[st.sel], dir = HOME.pos.clone().sub(HOME.target).normalize(); st.fly = lv ? flyTarget(lv[0], lv[0].clone().addScaledVector(dir, lv[1])) : (LVIEW[id] === undefined && id !== 'all' ? st.fly : HOME); } const all = [...SK_REC.map((r) => REC[r.id]), ...SK_LAYERS.map((l) => LAY[l.id])]; all.forEach((p) => p.mats.forEach((m) => { m.emissiveIntensity = st.sel === p.id ? 0.6 : (REC[p.id] ? 0.15 : 0); })); st.msg = null; refs.setInfo && refs.setInfo(); }
   pickOn(() => self, camera, pick, (id) => select(id));
   const fire = (id, rate, dt) => { const n = rate * dt; if (rnd() < n) { REC[id].spikes.push(st.t); const c = NERV[id][Math.floor(rnd() * NERV[id].length)]; for (let u = 0; u < 1; u += 0.2) fx.spawn(c.getPointAt(1 - u), V3(0, 0, 0), new THREE.Color(REC[id].color), 0.3 + u * 0.4, 0, 1.4); REC[id].flash = 1; } };
@@ -8942,7 +8942,7 @@ function makeRepro(initMode) {
   rnd = mulberry(2121);
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x08060a); scene.environment = envTex;
   labLights(scene, 0xf2b0c8);
-  const VIEW = { female: flyTarget(V3(-0.25, -0.3, 0), V3(1.0, 0.5, 3.75)), male: flyTarget(V3(0, -0.4, 0.1), V3(2.2, 0.3, 2.6)), cycle: flyTarget(V3(-0.08, 0.06, 0), V3(0.25, 0.3, 2.7)), dev: flyTarget(V3(0.1, -0.05, 0), V3(-0.9, 0.5, 2.8)) };
+  const VIEW = { female: flyTarget(V3(-0.25, -0.3, 0), V3(1.0, 0.5, 3.75)), male: flyTarget(V3(0, -0.4, 0.1), V3(2.2, 0.3, 2.6)), cycle: flyTarget(V3(-0.08, 0.06, 0), V3(0.25, 0.3, 2.7)), dev: flyTarget(V3(-0.3, 0.05, 0), V3(-1.1, 0.45, 2.6)) };
   const V0 = VIEW[initMode || 'female']; const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(V0.pos);
   const controls = makeControls(camera, V0.target); controls.minDistance = 0.8; controls.maxDistance = 14;
   bodyShell(scene, { rim: 0.18, arms: false });
@@ -9171,7 +9171,7 @@ function makeChemo() {
   rnd = mulberry(2222);
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x07060a); scene.environment = envTex;
   labLights(scene, 0x7fe0a0);
-  const VIEW = { smell: flyTarget(V3(-0.15, -0.05, 0), V3(-1.9, -0.2, 6.5)), tongue: flyTarget(V3(30, -0.9, 0.2), V3(30.0, 3.0, 4.4)), bud: flyTarget(V3(60, -0.75, 0), V3(61.8, 0.6, 5.8)) };
+  const VIEW = { smell: flyTarget(V3(-0.15, -0.05, 0), V3(-1.9, -0.2, 6.5)), tongue: flyTarget(V3(29.7, -0.57, -0.11), V3(29.7, 3.33, 4.09)), bud: flyTarget(V3(60, -0.55, 0), V3(61.8, 0.8, 5.8)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 120); camera.position.copy(VIEW.smell.pos);
   const controls = makeControls(camera, VIEW.smell.target); controls.minDistance = 1; controls.maxDistance = 16;
   /* ---------- обоняние ---------- */
@@ -9345,7 +9345,7 @@ function makeChest() {
   rnd = mulberry(2323);
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x07060a); scene.environment = envTex;
   labLights(scene, 0xf2b0c8);
-  const VIEW = { chest: flyTarget(V3(0, 1.75, 0), V3(2.25, 2.7, 6.95)), breast: flyTarget(V3(30.0, -0.5, 0), V3(33.4, 0.5, 5.6)), lact: flyTarget(V3(30.0, -0.8, 0), V3(30.8, 0.4, 6.6)) };
+  const VIEW = { chest: flyTarget(V3(0, 1.75, 0), V3(2.25, 2.7, 6.95)), breast: flyTarget(V3(30.0, 0.0, 0), V3(33.4, 1.0, 5.6)), lact: flyTarget(V3(30.0, -0.3, 0), V3(30.8, 0.9, 6.6)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(VIEW.chest.pos);
   const controls = makeControls(camera, VIEW.chest.target); controls.minDistance = 1; controls.maxDistance = 18;
   const body = new THREE.Group(); scene.add(body);
