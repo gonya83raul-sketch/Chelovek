@@ -7718,7 +7718,7 @@ function makeKidney() {
     const ad = ell3(0.11, 0.06, 0.06); ad.rotateZ(0.3 * K.s); ad.translate(K.c.x - 0.03 * K.s, K.c.y + 0.33, K.c.z); add('adr', ad, { k: 0.5 }); });  // сначала поворот, потом перенос на верхний полюс
   // аорта и полая вена
   // аорта и полая вена: сверху уходят под диафрагму (сужаются), внизу на уровне L4 делятся на общие подвздошные
-  const AO = new THREE.CatmullRomCurve3([V3(0.06, 1.8, -0.36), V3(0.06, 1.0, -0.4), V3(0.06, 0.45, -0.36)]), VC = new THREE.CatmullRomCurve3([V3(-0.1, 1.8, -0.32), V3(-0.1, 1.0, -0.36), V3(-0.1, 0.42, -0.32)]);
+  const AO = new THREE.CatmullRomCurve3([V3(0.06, 1.62, -0.36), V3(0.06, 1.0, -0.4), V3(0.06, 0.45, -0.36)]), VC = new THREE.CatmullRomCurve3([V3(-0.1, 1.62, -0.32), V3(-0.1, 1.0, -0.36), V3(-0.1, 0.42, -0.32)]);
   const topTaper = (r) => (u) => r * (0.8 + 0.2 * smooth(0, 0.06, u));   // верх срезан под диафрагмой, а не иглой
   add('ves', taperTube(AO, topTaper(0.05), 30, 12), { color: '#E0605A' }); add('ves', taperTube(VC, topTaper(0.06), 30, 12), { color: '#6C86E0' });
   // концы сосудов под диафрагмой — скруглённые, а не плоский срез
@@ -7824,9 +7824,9 @@ function makeKidney() {
   const labels = [
     { text: 'левая почка', pos: V3(0.72, 0.6, -0.35), color: '#D07060', show: () => st.labels && st.mode === 'sys' },
     { text: 'правая почка', pos: V3(-0.7, 0.62, -0.35), color: '#D07060', show: () => st.labels && st.mode === 'sys' },
-    { text: 'надпочечник', pos: V3(0.5, 1.45, -0.35), color: '#F2C14E', show: () => st.labels && st.mode === 'sys' },
-    { text: 'аорта', pos: V3(0.12, 1.45, -0.4), color: '#E0605A', show: () => st.labels && st.mode === 'sys' },
-    { text: 'нижняя полая вена', pos: V3(-0.2, 1.5, -0.35), left: true, color: '#8CA0F0', show: () => st.labels && st.mode === 'sys' },
+    { text: 'надпочечник', pos: V3(0.5, 1.45, -0.35), left: true, color: '#F2C14E', show: () => st.labels && st.mode === 'sys' },
+    { text: 'аорта', pos: V3(0.12, 1.5, -0.4), left: true, color: '#E0605A', show: () => st.labels && st.mode === 'sys' },
+    { text: 'нижняя полая вена', pos: V3(-0.2, 1.5, -0.35), color: '#8CA0F0', show: () => st.labels && st.mode === 'sys' },
     { text: 'мочеточник', pos: V3(0.21, 0.5, -0.3), color: '#E8D8A0', show: () => st.labels && st.mode === 'sys' },
     { text: 'мочевой пузырь', pos: V3(0.25, 0.05, 0.2), color: '#F2D860', show: () => st.labels && st.mode === 'sys' },
     { text: 'корковое вещество', pos: V3(30.55, 0.75, 0.05), color: '#d07a6a', show: () => st.labels && st.mode === 'kid' },
@@ -7903,7 +7903,7 @@ function makeEndo() {
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x07060a); scene.environment = envTex;
   labLights(scene, 0xc77dff);
   const MOBE = matchMedia('(max-width:700px)').matches;
-  const VIEW = { map: flyTarget(V3(0.0, 1.55, 0), V3(2.05, 2.22, 11.4)), sugar: flyTarget(V3(-0.1, 0.75, 0), V3(1.8, 1.8, 6.2)), stress: flyTarget(V3(0.1, 1.9, 0), V3(-2.6, 3.0, 8.4)), thy: flyTarget(V3(0.0, 3.25, 0.1), V3(1.3, 3.6, 3.6)) };
+  const VIEW = { map: flyTarget(V3(0.0, 1.8, 0), V3(2.05, 2.47, 11.4)), sugar: flyTarget(V3(-0.1, 0.75, 0), V3(1.8, 1.8, 6.2)), stress: flyTarget(V3(0.1, 1.9, 0), V3(-2.6, 3.0, 8.4)), thy: flyTarget(V3(0.0, 3.25, 0.1), V3(1.3, 3.6, 3.6)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(VIEW.map.pos);
   const controls = makeControls(camera, VIEW.map.target); controls.minDistance = 1.2; controls.maxDistance = 22;
   bodyShell(scene, { rim: 0.36 });
@@ -8689,7 +8689,7 @@ function makeBlood() {
   rnd = mulberry(2020);
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x0a0507); scene.environment = envTex;
   labLights(scene, 0xff7a7a);
-  const VIEW = { flow: MOBB ? flyTarget(V3(0, -0.4, 0), V3(3.0, 2.3, 14.4)) : flyTarget(V3(-2.6, -0.4, 0), V3(0.4, 2.3, 15.2)), clot: flyTarget(V3(0.3, -0.4, 0), V3(1.4, 3.2, 7.4)), groups: flyTarget(V3(30, -0.9, 0), V3(30.6, 0.8, 7.2)), tube: flyTarget(V3(60.55, -0.55, 0), V3(61.7, 0.9, 12.4)) };
+  const VIEW = { flow: MOBB ? flyTarget(V3(0, 0.7, 0), V3(3.0, 3.4, 14.4)) : flyTarget(V3(-2.6, -0.4, 0), V3(0.4, 2.3, 15.2)), clot: flyTarget(V3(0.3, -0.4, 0), V3(1.4, 3.2, 7.4)), groups: flyTarget(V3(30, -0.9, 0), V3(30.6, 0.8, 7.2)), tube: flyTarget(V3(60.55, -0.55, 0), V3(61.7, 0.9, 12.4)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(VIEW.flow.pos);
   const controls = makeControls(camera, VIEW.flow.target); controls.minDistance = 1.5; controls.maxDistance = 18;
   const pick = [];
@@ -8907,7 +8907,7 @@ function makeBlood() {
   }
   function stats() { return st.mode === 'tube' ? [['Гематокрит', '40–45', '%'], ['Плазма', '≈ 55', '%'], ['Белок плазмы', '65–80', 'г/л']] : st.mode === 'groups' ? [['Совместимость', compatible() ? 'да' : 'нет', '']] : [['Эритроцитов', '4–5', 'млн/мкл'], ['Лейкоцитов', '4–9', 'тыс/мкл'], ['Тромбоцитов', '150–400', 'тыс/мкл']]; }
   const self = {
-    labelBg: true, mobZoom: 0.9, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#E0505A',
+    labelBg: true, mobZoom: 0.8, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#E0505A',
     kicker: 'Тело · кровь', title: 'Кровь',
     lede: 'Пять литров жидкой ткани: 25 триллионов эритроцитов, армия лейкоцитов и тромбоциты, которые за минуты закрывают любую ранку.',
     notes: `
