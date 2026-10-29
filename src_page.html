@@ -4646,7 +4646,7 @@ function makeVentricles() {
   }
   function stats() { return [['Ликвора', '≈150', 'мл'], ['Давление', Math.round(st.press), 'мм рт. ст.'], ['Желудочков', 4, '']]; }
   const self = {
-    mobZoom: 0.72, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#6FC3FF',
+    mobZoom: 0.66, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#6FC3FF',
     kicker: 'Мозг · вспомогательные структуры', title: 'Желудочки и оболочки',
     lede: 'Внутри мозга — система полостей с ликвором, снаружи — три оболочки. Они питают, защищают и служат удобными ориентирами в анатомии.',
     notes: `
@@ -4986,11 +4986,11 @@ function makeSpinal() {
     { text: 'задний рог', pos: V3(0.42, 0.66, L / 2), color: '#c9a0c8', show: () => st.labels && st.mode === 'anat' },
     { text: 'передний рог', pos: V3(0.5, -0.36, L / 2), color: '#ff9a8a', show: () => st.labels && st.mode === 'anat' },
     { text: 'боковой рог', pos: V3(0.55, -0.06, L / 2), color: '#ffb070', show: () => st.labels && st.mode === 'anat' },
-    { text: 'белое вещество', pos: V3(-0.8, 0.35, L / 2), color: '#efe8dc', show: () => st.labels && st.mode === 'anat' },
+    { text: 'белое вещество', pos: V3(-0.8, 0.35, L / 2), left: true, color: '#efe8dc', show: () => st.labels && st.mode === 'anat' },
     { text: 'центральный канал', pos: V3(0.02, 0.05, L / 2), color: '#9a92a6', show: () => st.labels && st.mode === 'tracts' },
     { text: 'задний корешок', pos: V3(-1.05, 0.72, 0.2), color: '#efe2c8', show: () => st.labels && st.mode === 'anat' },
-    { text: 'передний корешок', pos: V3(-1.3, -0.75, -0.5), color: '#efe2c8', show: () => st.labels && st.mode === 'anat' },
-    { text: 'спинномозговой ганглий', pos: V3(-1.95, 1.05, 0.2), color: '#e8c8a0', show: () => st.labels && st.mode === 'anat' },
+    { text: 'передний корешок', pos: V3(-1.3, -0.75, -0.5), left: true, color: '#efe2c8', show: () => st.labels && st.mode === 'anat' },
+    { text: 'спинномозговой ганглий', pos: V3(-1.95, 0.85, 0.2), left: true, color: '#e8c8a0', show: () => st.labels && st.mode === 'anat' },
     { text: 'спинномозговой нерв', pos: V3(-3.5, -0.05, 0), color: '#efe2c8', show: () => st.labels && st.mode === 'anat' },
     { text: 'симпатический ствол', pos: V3(-2.75, -2.0, 0.9), color: '#d8b890', show: () => st.labels && st.mode === 'anat' },
     { text: 'белая и серая ветви', pos: V3(2.9, -0.9, 0.2), color: '#d8b890', show: () => st.labels && st.mode === 'anat' },
@@ -5091,7 +5091,7 @@ function makeCranial() {
   rnd = mulberry(404);
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x060509); scene.environment = envTex;
   labLights(scene, 0xc77dff);
-  const HOME = flyTarget(V3(0.25, -1.3, 0), V3(6.6, -5.4, 2.0));
+  const HOME = flyTarget(V3(0.25, -1.3, 0), V3(7.17, -5.77, 2.18));
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(HOME.pos);
   const controls = makeControls(camera, HOME.target); controls.minDistance = 1.2; controls.maxDistance = 14;
   const shell = brainShell(scene, { opacity: 0.24, rim: 0.3, stem: false, color: 0xb89aa6 });
@@ -5695,7 +5695,7 @@ function makeDien() {
     hypo: '<b>Гипоталамус</b> — нижняя часть промежуточного мозга, более 30 пар ядер. Здесь центры голода и жажды, полового и родительского поведения, страха и агрессии, сна и биологических часов. Вместе с <b>гипофизом</b> он управляет всеми эндокринными железами: задняя доля выпускает гормоны, сделанные в нейронах гипоталамуса, передняя слушается его либеринов и статинов. Попробуйте опыты.',
   };
   const labels = [
-    ...THAL_CH.map((c) => ({ text: c.nuc, pos: TN[c.id][0].clone().add({ vision: V3(-0.1, -0.22, 0.25), hearing: V3(-0.2, 0.06, 0.3) }[c.id] || V3(0.05, 0.16, 0.2)), color: c.color, show: () => st.labels && st.mode === 'thal' && (st.att === 'none' || st.att === c.id) })),
+    ...THAL_CH.map((c) => ({ text: c.nuc, left: c.id === 'vision' || c.id === 'hearing', pos: TN[c.id][0].clone().add({ vision: V3(-0.1, -0.22, 0.25), hearing: V3(-0.2, 0.06, 0.3) }[c.id] || V3(0.05, 0.16, 0.2)), color: c.color, show: () => st.labels && st.mode === 'thal' && (st.att === 'none' || st.att === c.id) })),
     ...THAL_CH.map((c) => ({ text: c.cortex, pos: CX[c.id].clone().add(V3(0, 0.25, 0)), color: c.color, show: () => st.labels && st.mode === 'thal' && st.att === c.id })),
     { text: 'подушка', pos: V3(-1.15, 0.25, 0.7), color: '#B8E06A', show: () => st.labels && st.mode === 'thal' && st.att === 'none' },
     { text: 'медиальные ядра', pos: V3(0.1, 0.35, 0.3), color: '#C77DFF', show: () => st.labels && st.mode === 'thal' && st.att === 'none' },
@@ -5734,7 +5734,7 @@ function makeDien() {
   function stats() { return st.mode === 'thal' ? [['Ядер таламуса', '≈40', ''], ['Длина', '≈4', 'см']] : [['Ядер', '>30', 'пар'], ['Гипофиз', '≈0,5', 'г']]; }
   setMode('thal');
   const self = {
-    labelBg: true, mobZoom: 0.7, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#B9A4FF',
+    labelBg: true, mobZoom: 0.64, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#B9A4FF',
     kicker: 'Мозг · промежуточный мозг', title: 'Таламус и гипоталамус',
     lede: 'Таламус решает, какая информация попадёт в кору. Гипоталамус следит за потребностями тела и через гипофиз управляет гормонами.',
     notes: `
@@ -5958,7 +5958,7 @@ function makeHemis() {
   }
   function stats() { return st.mode === 'tracts' ? [['Передняя комиссура', '≈3', 'млн волокон']] : [['Моторная часть', '≈80', '%'], ['Лимбическая', '≈20', '%']]; }
   const self = {
-    labelBg: true, mobZoom: 0.7, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#5E8FEF',
+    labelBg: true, mobZoom: 0.6, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#5E8FEF',
     kicker: 'Мозг · конечный мозг', title: 'Полушария и базальные ганглии',
     lede: 'Под корой — белое вещество и ядра базальных ганглиев. Они собирают отдельные движения в программы и вместе с лимбической системой решают, что нам нужно.',
     notes: `
@@ -6525,7 +6525,7 @@ function makeHippo() {
   }
   function stats() { return st.mode === 'sec' ? [['Сила синапсов Шаффера', '×' + st.w.toFixed(1), ''], ['Синапсов в петле', 3, '']] : [['Звеньев круга', 6, ''], ['Новая кора', '≈96', '% коры']]; }
   const self = {
-    labelBg: true, mobZoom: 0.66, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#FF8A5C',
+    labelBg: true, mobZoom: 0.6, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#FF8A5C',
     kicker: 'Мозг · старая кора', title: 'Гиппокамп и память',
     lede: 'Гиппокамп держит память текущего дня: сигнал бегает по кругу Пейпеза и по трисинаптической петле, а частая стимуляция усиливает синапсы — так рождается память.',
     notes: `
@@ -6584,7 +6584,7 @@ function makeCereb() {
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x060509); scene.environment = envTex;
   labLights(scene, 0x7fd6c8);
   const VIEW = {
-    anat: flyTarget(V3(0.3, -0.1, 0), V3(3.55, 1.15, 6.5)),   // спереди-сбоку: видны ножки, олива, клочок
+    anat: flyTarget(V3(-0.15, -0.1, 0), V3(3.1, 1.15, 6.5)),   // спереди-сбоку: видны ножки, олива, клочок
     nuc: flyTarget(V3(-0.6, -0.3, 0), V3(-2.0, 4.9, 0.3)),
     micro: flyTarget(V3(0, -0.75, 0), V3(6.3, 3.0, 7.6)),
   };
