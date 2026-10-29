@@ -15,7 +15,7 @@ function makeEnzyme() {
   rnd = mulberry(501);
   const scene = bioStage({ rim: 0x7fd6ff });
   const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: кадр уходит из-под заголовка и описания (телефон — прежний ракурс)
-  const VIEW = { site: DK ? flyTarget(V3(-0.6, -0.9, 0), V3(0.65, 0.45, 14.2)) : flyTarget(V3(0.3, -1.0, 0), V3(1.4, 0.2, 9.8)), fit: flyTarget(V3(40, -1.0, 0), V3(41.6, 0.2, 14.8)), classes: flyTarget(V3(80, -3.2, 0), V3(80, 14, 24)) };
+  const VIEW = { site: DK ? flyTarget(V3(-0.6, -0.9, 0), V3(0.65, 0.45, 14.2)) : flyTarget(V3(0.3, -1.0, 0), V3(1.4, 0.2, 9.8)), fit: flyTarget(V3(40, -1.0, 0), V3(41.6, 0.2, 14.8)), classes: DK ? flyTarget(V3(75.3, -4.1, 0), V3(75.3, 18.3, 31.2)) : flyTarget(V3(80, -3.2, 0), V3(80, 14, 24)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.site.pos);
   const controls = makeControls(camera, VIEW.site.target); controls.minDistance = 2; controls.maxDistance = 40;
   const fx = new Sparks(1600, 0.08); scene.add(fx.obj);
