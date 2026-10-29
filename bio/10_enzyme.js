@@ -87,7 +87,7 @@ function makeEnzyme() {
   /* ---------- состояние ---------- */
   const st = { t: 0, mode: 'site', labels: true, rot: false, fly: null, surf: true, slow: false, cyc: 0, cls: null, msg: null, phase: '' };
   function setMode(m) {
-    st.mode = m; refs.modeSeg && refs.modeSeg.sync(); G1.visible = m === 'site'; G2.visible = m === 'fit'; G3.visible = m === 'classes'; st.fly = VIEW[m]; st.cls = null; st.msg = null; st.cyc = 0; refs.clsSeg && refs.clsSeg.sync(); refs.setInfo && refs.setInfo(); scopeShow(m !== 'classes');
+    st.mode = m; refs.modeSeg && refs.modeSeg.sync(); G1.visible = m === 'site'; G2.visible = m === 'fit'; G3.visible = m === 'classes'; st.fly = VIEW[m]; st.cls = null; st.msg = null; st.cyc = 0; refs.clsSeg && refs.clsSeg.sync(); refs.clsGrp && (refs.clsGrp.style.display = m === 'classes' ? '' : 'none'); refs.setInfo && refs.setInfo(); scopeShow(m !== 'classes');
   }
   function selCls(id) {
     st.cls = id; if (st.mode !== 'classes') setMode('classes'); st.cls = id;
@@ -176,7 +176,9 @@ function makeEnzyme() {
     refs.rot = toggle('Вращение', () => st.rot, (v) => { st.rot = v; });
     const lab = toggle('Подписи', () => st.labels, (v) => { st.labels = v; });
     Object.assign(refs, { lab, slow });
-    el.append(group('Режим', '1–3', refs.modeSeg), h('div', { class: 'grp', style: 'flex:1 1 520px' }, h('div', { class: 'glabel' }, 'Классы', h('kbd', {}, 'клик')), refs.clsSeg), group('Вид', 'S · R · N', surf, slow, refs.rot, lab), ib.el);
+    refs.clsGrp = h('div', { class: 'grp', style: 'flex:1 1 520px' }, h('div', { class: 'glabel' }, 'Классы', h('kbd', {}, 'клик')), refs.clsSeg);
+    refs.clsGrp.style.display = st.mode === 'classes' ? '' : 'none';
+    el.append(group('Режим', '1–3', refs.modeSeg), refs.clsGrp, group('Вид', 'S · R · N', surf, slow, refs.rot, lab), ib.el);
     refs.setInfo();
   }
   function onKey(e) {
