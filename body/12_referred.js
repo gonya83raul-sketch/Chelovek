@@ -153,7 +153,7 @@ function makeReferred() {
     const list = st.sel ? [ORG[st.sel]] : RF_ORG.map((o) => ORG[o.id]); const out = {};
     list.forEach((o) => o.z.forEach((z) => { if (!out[z]) out[z] = new THREE.Color(o.col); })); return out;
   };
-  function applyZones() { const zs = zoneSet(); BL.forEach((b) => { b.tw = zs[b.zid] ? 1 : 0; if (zs[b.zid]) b.col.copy(zs[b.zid]); }); }
+  function applyZones() { const zs = zoneSet(); BL.forEach((b) => { b.tw = zs[b.zid] ? (st.sel ? 1 : 0.5) : 0;   /* в обзоре штриховка зон слабее — органы видны */ if (zs[b.zid]) b.col.copy(zs[b.zid]); }); }
   function orgFocus(id) { RF_ORG.forEach((o) => ORG[o.id].mats.forEach((m) => { const on = !id || id === o.id; m.opacity = !on ? 0.18 : id === o.id ? 0.5 : 1; m.depthWrite = on; m.emissiveIntensity = id === o.id ? 0.45 : 0.06; m.needsUpdate = true; })); }
   function select(id) { st.sel = id === 'all' ? null : id; const was = st.mode; if (st.mode !== 'map') { setMode('map', true); } st.msg = null; orgFocus(st.sel); applyZones(); if (!st.side || was !== 'map') st.fly = VV(st.side || (st.sel ? ORG[st.sel].view : 'front')); refs.seg && refs.seg.sync(); refs.setInfo && refs.setInfo(); }
   function setMode(m, keepSel, sig) { st.mode = m; st.msg = null; G.visible = m !== 'mech'; MG.visible = m === 'mech';
