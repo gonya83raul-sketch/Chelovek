@@ -25,7 +25,7 @@ function makeProtein() {
   __set_rnd(mulberry(1701));
   const scene = bioStage({ rim: 0x7fd6ff });
   const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: кадр уходит из-под заголовка и описания (телефон — прежний ракурс)
-  const VIEW = { aa: DK ? flyTarget(V3(0, -0.15, 0), V3(0, 2.55, 24)) : flyTarget(V3(0, -1.1, 0), V3(0, -0.3, 13.8)), lv: DK ? flyTarget(V3(38.9, -0.85, 0), V3(39.7, 1.15, 14.5)) : flyTarget(V3(40, -1.2, 0), V3(40.8, 0.8, 14.5)), fold: flyTarget(V3(80.6, -2.1, 0), V3(81.6, 0.6, 22)) };
+  const VIEW = { aa: DK ? flyTarget(V3(0, -0.15, 0), V3(0, 2.55, 24)) : flyTarget(V3(0, -1.1, 0), V3(0, -0.3, 13.8)), lv1: DK ? flyTarget(V3(39.1, 0.0, 0), V3(39.9, 2.4, 17.5)) : null, lv: DK ? flyTarget(V3(38.9, -0.85, 0), V3(39.7, 1.15, 14.5)) : flyTarget(V3(40, -1.2, 0), V3(40.8, 0.8, 14.5)), fold: flyTarget(V3(80.6, -2.1, 0), V3(81.6, 0.6, 22)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.aa.pos);
   const controls = makeControls(camera, VIEW.aa.target); controls.minDistance = 2; controls.maxDistance = 45;
   const fx = new Sparks(1200, 0.08); scene.add(fx.obj);
@@ -58,7 +58,7 @@ function makeProtein() {
   const axAt = (i) => { const v = V3(0, 0, 0); let n = 0; for (let j = Math.max(0, i - 2); j <= Math.min(caB.length - 1, i + 2); j++) { v.add(caB[j]); n++; } return v.multiplyScalar(1 / n); };
   const outP = (i, j, f) => { const p = caB[i].clone().lerp(caB[j], f); const d = p.clone().sub(axAt(i)); return p.add(d.lengthSq() > 1e-6 ? d.normalize().multiplyScalar(0.09) : d); };
   { const c = HB.chains[1]; for (let i = 0; i + 4 < c.seq.length; i++) if (c.ss[i] === 'H' && c.ss[i + 4] === 'H') { const a = outP(i, i + 1, 0.45), b = outP(i + 4, i + 3, 0.45); const m = new THREE.Mesh(new THREE.CylinderGeometry(0.016, 0.016, 1, 5), new THREE.MeshBasicMaterial({ color: 0xffb0cc, transparent: true, opacity: 0.85 })); m.position.copy(a).lerp(b, 0.5); const d = b.clone().sub(a); m.scale.y = d.length(); m.quaternion.setFromUnitVectors(V3(0, 1, 0), d.normalize()); hbonds.add(m); } }
-  const pep = new THREE.Group(); pep.position.set(-3.6, 2.2, 0); G2.add(pep);
+  const pep = new THREE.Group(); pep.position.set(DK ? 2.0 : -3.6, 2.2, 0); G2.add(pep);
   const aa1 = molMesh(MOL('ala'), { scale: 0.18, hideH: true }), aa2 = molMesh(MOL('gly'), { scale: 0.18, hideH: true }); pep.add(aa1, aa2); const wat = molMesh(MOL('h2o'), { scale: 0.22 }); pep.add(wat);
   /* ---------- 3. укладка и шаперон ---------- */
   const G3 = new THREE.Group(); G3.position.set(80, 0, 0); scene.add(G3);
@@ -85,8 +85,8 @@ function makeProtein() {
   const heat = new THREE.PointLight(0xff6a3a, 0, 8, 1.6); heat.position.set(-3, 1, 2); G3.add(heat);
   /* ---------- состояние ---------- */
   const st = { t: 0, mode: 'aa', labels: true, rot: true, fly: null, sel: null, lv: 4, msg: null, cyc: 0, fmode: 'chap', u: 0 };
-  function setMode(m) { st.mode = m; refs.modeSeg && refs.modeSeg.sync(); [G1, G2, G3].forEach((g, k) => { g.visible = ['aa', 'lv', 'fold'][k] === m; }); st.fly = VIEW[m]; st.sel = null; st.msg = null; st.cyc = 0; refs.rebuild && refs.rebuild(); refs.setInfo && refs.setInfo(); }
-  function setLv(v) { st.lv = v; refs.lvSeg && refs.lvSeg.sync(); st.cyc = 0; refs.setInfo(); }
+  function setMode(m) { st.mode = m; refs.modeSeg && refs.modeSeg.sync(); [G1, G2, G3].forEach((g, k) => { g.visible = ['aa', 'lv', 'fold'][k] === m; }); st.fly = (m === 'lv' && DK && st.lv === 1) ? VIEW.lv1 : VIEW[m]; st.sel = null; st.msg = null; st.cyc = 0; refs.rebuild && refs.rebuild(); refs.setInfo && refs.setInfo(); }
+  function setLv(v) { st.lv = v; refs.lvSeg && refs.lvSeg.sync(); st.cyc = 0; refs.setInfo(); if (st.mode === 'lv' && DK) st.fly = v === 1 ? VIEW.lv1 : VIEW.lv; }
   pickOn(() => self, camera, () => AAM.map((a) => a.g.children[a.g.children.length - 1]), (id) => { st.sel = id; refs.setInfo(); });
   const ease = (x) => { const u = clamp(x, 0, 1); return u * u * (3 - 2 * u); };
   function update(dt) {
@@ -129,9 +129,9 @@ function makeProtein() {
   };
   const labels = [
     ...AAM.map((a) => ({ text: `${MOL(a.id).name}${DK ? ' · ' + a.l : ''}${a.ess === 1 ? ' ★' : a.ess === 2 ? ' ☆' : ''}`, pos: a.g.position.clone().add(DK ? V3(-0.55, -1.02, 0) : V3(-0.75, -1.12, 0)), color: PR_GR[a.gr][1], show: () => st.labels && st.mode === 'aa' })),
-    { text: 'N-конец', pos: V3(40 - 6.2, -0.4, 0), color: '#5B8CFF', show: () => st.labels && st.mode === 'lv' && st.lv === 1 },
-    { text: 'C-конец', pos: V3(40 + 6.2, -0.4, 0), color: '#FF6A6A', show: () => st.labels && st.mode === 'lv' && st.lv === 1 },
-    { text: 'пептидная связь + H₂O', pos: V3(40 - 3.8, 3.0, 0), color: '#F2E6C8', show: () => st.labels && st.mode === 'lv' && st.lv === 1 },
+    { text: 'N-конец', pos: V3(40 - 6.2, -1.2, 0), color: '#5B8CFF', show: () => st.labels && st.mode === 'lv' && st.lv === 1 },
+    { text: 'C-конец', pos: V3(40 + 6.2, -1.2, 0), color: '#FF6A6A', show: () => st.labels && st.mode === 'lv' && st.lv === 1 },
+    { text: 'пептидная связь + H₂O', pos: V3(DK ? 41.6 : 36.2, 3.0, 0), color: '#F2E6C8', show: () => st.labels && st.mode === 'lv' && st.lv === 1 },
     { text: 'водородные связи α-спирали', pos: V3(41.3, 2.6, 0), color: '#FF8AB0', show: () => st.labels && st.mode === 'lv' && st.lv === 2 },
     { text: 'гем', get pos() { return scrOut(st.lv === 4 ? feC : feB, 1.0); }, color: '#E0773A', show: () => st.labels && st.mode === 'lv' && st.lv >= 3 },
     { text: 'α-цепи', get pos() { return scrOut(cA, 1.8); }, color: '#7FD6FF', show: () => st.labels && st.mode === 'lv' && st.lv === 4 },

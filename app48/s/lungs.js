@@ -5,11 +5,11 @@ import { BODY, Sparks, THREE, V3, __set_rnd, bodyShell, button, dimOthers, displ
    ТЕЛО · ДЫХАТЕЛЬНАЯ СИСТЕМА
    ========================================================= */
 const LG_PARTS = [
-  { id: 'nose', name: 'Nose and pharynx', color: '#E8A890', text: 'The <b>nasal cavity</b> warms, humidifies and cleans the air: hairs and mucus trap dust, and the cilia of the ciliated epithelium sweep it toward the pharynx. The nasal conchae swirl the airflow. Then the air passes through the <b>pharynx</b> — a crossroads with the digestive tract.' },
-  { id: 'lar', name: 'Larynx', color: '#F2D18A', text: 'The <b>larynx</b> is a cartilaginous “box” housing the vocal cords. During swallowing the epiglottis closes it so that food does not enter the airway. Vibration of the closed vocal cords produces the voice.' },
-  { id: 'tr', name: 'Trachea and bronchi', color: '#E8DCC8', text: 'The <b>trachea</b> (10–12 cm) is held open by 16–20 cartilaginous half-rings. It divides into two main bronchi, and these into lobar, segmental and ever smaller bronchi: about 23 generations of branching down to the alveoli. This is the bronchial tree.' },
-  { id: 'lung', name: 'Lungs', color: '#E89AA8', text: 'The <b>lungs</b> are spongy organs in the pleural sacs. The right lung is larger and has three lobes, the left has two: part of the space is taken up by the heart (the cardiac notch). Inside are about 300–500 million alveoli.' },
-  { id: 'dia', name: 'Diaphragm', color: '#C86A6A', text: 'The <b>diaphragm</b> is the main breathing muscle, a dome between the thoracic and abdominal cavities. When it contracts, it flattens and descends by 1.5–7 cm, the volume of the chest increases — and air flows in. It is assisted by the external intercostal muscles, which raise the ribs.' },
+  { id: 'nose', name: 'Нос и глотка', color: '#E8A890', text: '<b>Носовая полость</b> согревает, увлажняет и очищает воздух: волоски и слизь задерживают пыль, реснички мерцательного эпителия гонят её к глотке. Раковины носа закручивают поток. Дальше воздух проходит через <b>глотку</b> — перекрёсток с пищеварительным путём.' },
+  { id: 'lar', name: 'Гортань', color: '#F2D18A', text: '<b>Гортань</b> — хрящевая «коробка» с голосовыми связками. При глотании её закрывает надгортанник, чтобы пища не попала в дыхательные пути. Колебания сомкнутых связок рождают голос.' },
+  { id: 'tr', name: 'Трахея и бронхи', color: '#E8DCC8', text: '<b>Трахея</b> (10–12 см) держится открытой благодаря 16–20 хрящевым полукольцам. Она делится на два главных бронха, те — на долевые, сегментарные и всё более мелкие: около 23 поколений ветвлений до альвеол. Это бронхиальное дерево.' },
+  { id: 'lung', name: 'Лёгкие', color: '#E89AA8', text: '<b>Лёгкие</b> — губчатые органы в плевральных мешках. Правое лёгкое больше и делится на три доли, левое — на две: часть места занимает сердце (сердечная вырезка). Внутри около 300–500 млн альвеол.' },
+  { id: 'dia', name: 'Диафрагма', color: '#C86A6A', text: '<b>Диафрагма</b> — главная дыхательная мышца, купол между грудной и брюшной полостями. Сокращаясь, она уплощается и опускается на 1,5–7 см, объём грудной клетки растёт — воздух входит. Ей помогают наружные межрёберные мышцы, поднимающие рёбра.' },
 ];
 function makeLungs() {
   __set_rnd(mulberry(1313));
@@ -53,8 +53,7 @@ function makeLungs() {
   // гортань: щитовидный хрящ — две пластины углом вперёд (кадык), под ним перстневидное кольцо, внутри — просвет
   const lar = add('lar', (() => { const a = [];
     [1, -1].forEach((sd) => { const pl = new THREE.BoxGeometry(0.15, 0.17, 0.018, 2, 2, 1); pl.translate(0.075 * sd, 0, 0); pl.rotateY(-0.55 * sd); pl.translate(0, 3.52, 0.22); a.push(pl); });
-    const cr = new THREE.TorusGeometry(0.085, 0.022, 10, 28); cr.rotateX(Math.PI / 2); cr.translate(0, 3.39, 0.14); a.push(cr);
-    const lum = new THREE.CylinderGeometry(0.085, 0.08, 0.26, 16, 1); lum.translate(0, 3.5, 0.14); a.push(lum);
+    const cr = new THREE.TorusGeometry(0.095, 0.03, 10, 28); cr.rotateX(Math.PI / 2); cr.translate(0, 3.39, 0.14); a.push(cr);
     return mergeGeometries(a.map((g) => g.toNonIndexed())); })(), { k: 0.5 });
   const epig = add('lar', ell3(0.07, 0.02, 0.06, V3(0, 3.66, 0.12)), { k: 0.6 });
   const NOSE = new THREE.CatmullRomCurve3([V3(0, 4.05, 0.5), V3(0, 4.12, 0.3), V3(0, 4.05, 0.05), V3(0, 3.85, -0.06), V3(0, 3.65, 0.02), V3(0, 3.5, 0.12)]);
@@ -128,10 +127,10 @@ function makeLungs() {
   /* ---------- состояние и дыхание ---------- */
   const st = { t: 0, mode: 'tract', sel: null, labels: true, rot: false, fly: null, rr: 16, act: 'calm', actT: -9, V: 2400, spiro: [], msg: null, ph: 0 };
   const ACT = {
-    calm: { name: 'Quiet breathing', text: '<b>Quiet breathing.</b> 12–18 breaths per minute, tidal volume ~500 mL. Inhalation is active (the diaphragm and external intercostal muscles contract); exhalation is passive: the elastic lungs recoil on their own.' },
-    deep: { name: 'Deep breath', text: '<b>Maximal inhalation.</b> Beyond a normal breath you can take in another ~3000 mL — the inspiratory reserve volume. The accessory muscles of the neck and chest are also recruited.' },
-    forced: { name: 'Forced exhalation', text: '<b>Forced exhalation.</b> The abdominal and internal intercostal muscles push out another ~1200 mL — the expiratory reserve volume. About 1200 mL always remains in the lungs (residual volume). Maximal inhalation + maximal exhalation = vital capacity, VC ≈ 3.5–5 L.' },
-    hold: { name: 'Hold breath', text: '<b>Breath-holding.</b> CO₂ in the blood rises, chemoreceptors in the medulla oblongata and the carotid arteries send an ever stronger signal to the respiratory center — and inhalation becomes unavoidable. The main stimulus for breathing is CO₂, not a lack of oxygen.' },
+    calm: { name: 'Спокойное дыхание', text: '<b>Спокойное дыхание.</b> 12–18 вдохов в минуту, дыхательный объём ~500 мл. Вдох активный (сокращаются диафрагма и наружные межрёберные мышцы), выдох пассивный: эластичные лёгкие сами спадаются.' },
+    deep: { name: 'Глубокий вдох', text: '<b>Максимальный вдох.</b> Сверх обычного вдоха можно набрать ещё ~3000 мл — резервный объём вдоха. Работают и вспомогательные мышцы шеи и груди.' },
+    forced: { name: 'Форсированный выдох', text: '<b>Форсированный выдох.</b> Брюшные и внутренние межрёберные мышцы выталкивают ещё ~1200 мл — резервный объём выдоха. Около 1200 мл остаётся в лёгких всегда (остаточный объём). Максимальный вдох + максимальный выдох = жизненная ёмкость лёгких, ЖЕЛ ≈ 3,5–5 л.' },
+    hold: { name: 'Задержка дыхания', text: '<b>Задержка дыхания.</b> CO₂ в крови растёт, хеморецепторы продолговатого мозга и сонных артерий посылают всё более сильный сигнал в дыхательный центр — и вдох становится неизбежным. Главный стимул дыхания — именно CO₂, а не нехватка кислорода.' },
   };
   function volAt(t) {
     const base = 2400, tid = 500, w = 2 * Math.PI * st.rr / 60;
@@ -172,28 +171,28 @@ function makeLungs() {
     ctx.clearRect(0, 0, w, hgt); scopeShow(st.mode === 'mech'); if (st.mode !== 'mech') return;
     const Y = (v) => hgt - 10 - (v / 6200) * (hgt - 22), x = (tt) => 8 + (1 - (st.t - tt) / 12) * (w - 16);
     ctx.font = '500 9px JetBrains Mono, monospace';
-    [[1200, 'RV'], [2400, 'rest'], [2900, '+TV'], [5900, 'max']].forEach(([v, l]) => { ctx.strokeStyle = 'rgba(255,255,255,.12)'; ctx.setLineDash([3, 4]); ctx.beginPath(); ctx.moveTo(8, Y(v)); ctx.lineTo(w - 8, Y(v)); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle = 'rgba(255,255,255,.4)'; ctx.fillText(l, w - 40, Y(v) - 2); });
+    [[1200, 'ОО'], [2400, 'покой'], [2900, '+ДО'], [5900, 'макс.']].forEach(([v, l]) => { ctx.strokeStyle = 'rgba(255,255,255,.12)'; ctx.setLineDash([3, 4]); ctx.beginPath(); ctx.moveTo(8, Y(v)); ctx.lineTo(w - 8, Y(v)); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle = 'rgba(255,255,255,.4)'; ctx.fillText(l, w - 40, Y(v) - 2); });
     ctx.lineWidth = 2; ctx.strokeStyle = '#9FE0FF'; ctx.beginPath(); st.spiro.forEach(([tt, v], i) => { i ? ctx.lineTo(x(tt), Y(v)) : ctx.moveTo(x(tt), Y(v)); }); ctx.stroke();
-    ctx.fillStyle = '#9FE0FF'; ctx.font = '500 10px JetBrains Mono, monospace'; ctx.fillText('spirogram, mL', 10, 13);
+    ctx.fillStyle = '#9FE0FF'; ctx.font = '500 10px JetBrains Mono, monospace'; ctx.fillText('спирограмма, мл', 10, 13);
   }
   const TXT = {
-    tract: '<b>Respiratory system.</b> Air travels through the nose, pharynx, larynx and trachea into the bronchial tree and ends up in the alveoli — microscopic sacs where oxygen passes into the blood and carbon dioxide passes from the blood into the air. Click an organ.',
-    alv: '<b>Alveoli and gas exchange.</b> Each alveolus (0.2–0.3 mm) is wrapped in capillaries. The barrier between air and blood is thinner than 1 µm, and the total area of all alveoli is 70–100 m², about a third of a tennis court. Oxygen (light blue) diffuses into the blood, where it is bound by the hemoglobin of red blood cells — they turn red. CO₂ (yellow) leaves into the air. The inside of the alveoli is coated with surfactant, which keeps them from sticking together.',
-    mech: '<b>Mechanics of breathing.</b> The lungs do not contract by themselves: they follow the chest wall. The diaphragm descends, the ribs rise — the pressure in the lungs falls below atmospheric, and air flows in. The rhythm is set by the respiratory center of the medulla oblongata. Try the buttons on the right.',
+    tract: '<b>Дыхательная система.</b> Воздух идёт через нос, глотку, гортань и трахею в бронхиальное дерево и заканчивается в альвеолах — микроскопических пузырьках, где кислород переходит в кровь, а углекислый газ — из крови в воздух. Нажмите на орган.',
+    alv: '<b>Альвеолы и газообмен.</b> Каждая альвеола (0,2–0,3 мм) оплетена капиллярами. Барьер между воздухом и кровью тоньше 1 мкм, а общая площадь всех альвеол — 70–100 м², примерно треть теннисного корта. Кислород (голубой) диффундирует в кровь, где его связывает гемоглобин эритроцитов — они краснеют. CO₂ (жёлтый) уходит в воздух. Изнутри альвеолы покрыты сурфактантом — он не даёт им слипаться.',
+    mech: '<b>Механика дыхания.</b> Лёгкие сами не сокращаются: они следуют за грудной клеткой. Диафрагма опускается, рёбра поднимаются — давление в лёгких падает ниже атмосферного, и воздух входит. Ритм задаёт дыхательный центр продолговатого мозга. Попробуйте кнопки справа.',
   };
   const labels = [
-    { text: 'nasal cavity', pos: V3(0.1, 4.2, 0.42), color: '#E8A890', show: () => st.labels && st.mode !== 'alv' },
-    { text: 'larynx', pos: V3(0.15, 3.5, 0.22), color: '#F2D18A', show: () => st.labels && st.mode !== 'alv' },
-    { text: 'trachea', pos: V3(0.12, 2.95, 0.12), color: '#E8DCC8', show: () => st.labels && st.mode !== 'alv' },
-    { text: 'right lung · 3 lobes', pos: V3(-0.95, 1.9, 0.2), left: true, color: '#E89AA8', show: () => st.labels && st.mode !== 'alv' },
-    { text: 'left lung · 2 lobes', pos: V3(1.05, 2.9, 0.2), color: '#E89AA8', show: () => st.labels && st.mode !== 'alv' },
-    { text: 'diaphragm', pos: V3(0.45, 1.45, 0.45), color: '#E89090', show: () => st.labels && st.mode !== 'alv' },
-    { text: 'heart', pos: BODY.heart.clone().add(V3(0.1, -0.05, 0.3)), color: '#FF8A7A', show: () => st.labels && st.mode === 'tract' },
-    { text: 'bronchiole', pos: V3(28.0, 0.9, 0.2), color: '#E8DCC8', show: () => st.labels && st.mode === 'alv' },
-    { text: 'alveoli', pos: V3(31.0, 0.75, 0.6), color: '#F0B0B8', show: () => st.labels && st.mode === 'alv' },
-    { text: 'capillaries', pos: V3(30.6, -0.4, 1.05), color: '#c86a80', show: () => st.labels && st.mode === 'alv' },
-    { text: 'from the heart (venous)', pos: V3(27.7, -0.5, -0.6), color: '#8CA0F0', show: () => st.labels && st.mode === 'alv' },
-    { text: 'to the heart (arterial)', pos: V3(27.7, -0.75, 0.75), color: '#E0605A', show: () => st.labels && st.mode === 'alv' },
+    { text: 'носовая полость', pos: V3(0.1, 4.2, 0.42), color: '#E8A890', show: () => st.labels && st.mode !== 'alv' },
+    { text: 'гортань', pos: V3(0.15, 3.5, 0.22), color: '#F2D18A', show: () => st.labels && st.mode !== 'alv' },
+    { text: 'трахея', pos: V3(0.12, 2.95, 0.12), color: '#E8DCC8', show: () => st.labels && st.mode !== 'alv' },
+    { text: matchMedia('(max-width:700px)').matches ? 'правое · 3 доли' : 'правое лёгкое · 3 доли', pos: V3(-0.95, 1.9, 0.2), left: true, color: '#E89AA8', show: () => st.labels && st.mode !== 'alv' },
+    { text: matchMedia('(max-width:700px)').matches ? 'левое · 2 доли' : 'левое лёгкое · 2 доли', pos: V3(1.05, 2.9, 0.2), color: '#E89AA8', show: () => st.labels && st.mode !== 'alv' },
+    { text: 'диафрагма', pos: V3(0.45, 1.45, 0.45), color: '#E89090', show: () => st.labels && st.mode !== 'alv' },
+    { text: 'сердце', pos: BODY.heart.clone().add(V3(0.1, -0.05, 0.3)), color: '#FF8A7A', show: () => st.labels && st.mode === 'tract' },
+    { text: 'бронхиола', pos: V3(28.0, 0.9, 0.2), color: '#E8DCC8', show: () => st.labels && st.mode === 'alv' },
+    { text: 'альвеолы', pos: V3(31.0, 0.75, 0.6), color: '#F0B0B8', show: () => st.labels && st.mode === 'alv' },
+    { text: 'капилляры', pos: V3(30.6, -0.4, 1.05), color: '#c86a80', show: () => st.labels && st.mode === 'alv' },
+    { text: 'от сердца (венозная)', pos: V3(27.7, -0.5, -0.6), color: '#8CA0F0', show: () => st.labels && st.mode === 'alv' },
+    { text: 'к сердцу (артериальная)', pos: V3(27.7, -0.75, 0.75), color: '#E0605A', show: () => st.labels && st.mode === 'alv' },
     { text: 'O₂', pos: V3(30.9, 0.1, 0.9), color: '#9FE0FF', show: () => st.labels && st.mode === 'alv' },
     { text: 'CO₂', pos: V3(29.7, 0.4, 0.9), color: '#F2C14E', show: () => st.labels && st.mode === 'alv' },
   ];
@@ -201,14 +200,14 @@ function makeLungs() {
   function ui(el) {
     const ib = infoBox('1 1 340px');
     refs.setInfo = () => { ib.info.innerHTML = st.msg || (st.mode !== 'alv' && st.sel ? PART[st.sel].text : TXT[st.mode]); };
-    refs.modeSeg = seg([{ id: 'tract', label: 'Airways' }, { id: 'alv', label: 'Alveoli' }, { id: 'mech', label: 'Inhale and exhale' }], () => st.mode, (v) => setMode(v));
-    refs.seg = seg([{ id: 'all', label: 'All' }, ...LG_PARTS.map((p) => ({ id: p.id, label: p.name, color: p.color }))], () => st.sel || 'all', (v) => { if (st.mode === 'alv') setMode('tract'); select(v); });
-    const rr = range('rr', 6, 40, 1, () => st.rr, (v) => { st.rr = v; }, (v) => v + '/min');
-    refs.rot = toggle('Rotate', () => st.rot, (v) => { st.rot = v; });
-    const lab = toggle('Labels', () => st.labels, (v) => { st.labels = v; });
+    refs.modeSeg = seg([{ id: 'tract', label: 'Дыхательные пути' }, { id: 'alv', label: 'Альвеолы' }, { id: 'mech', label: 'Вдох и выдох' }], () => st.mode, (v) => setMode(v));
+    refs.seg = seg([{ id: 'all', label: 'Все' }, ...LG_PARTS.map((p) => ({ id: p.id, label: p.name, color: p.color }))], () => st.sel || 'all', (v) => { if (st.mode === 'alv') setMode('tract'); select(v); });
+    const rr = range('rr', 6, 40, 1, () => st.rr, (v) => { st.rr = v; }, (v) => v + '/мин');
+    refs.rot = toggle('Вращение', () => st.rot, (v) => { st.rot = v; });
+    const lab = toggle('Подписи', () => st.labels, (v) => { st.labels = v; });
     Object.assign(refs, { lab });
-    el.append(group('Mode', '1–3', refs.modeSeg), h('div', { class: 'grp', style: 'flex:1 1 420px' }, h('div', { class: 'glabel' }, 'Organs', h('kbd', {}, 'click')), h('div', { class: 'gctl' }, refs.seg)),
-      group('Breathing', 'D · F · H', ...Object.entries(ACT).map(([k2, a], i) => button(a.name, () => act(k2), i === 1)), rr), group('View', 'R · N', refs.rot, lab), ib.el);
+    el.append(group('Режим', '1–3', refs.modeSeg), h('div', { class: 'grp', style: 'flex:1 1 420px' }, h('div', { class: 'glabel' }, 'Органы', h('kbd', {}, 'клик')), h('div', { class: 'gctl' }, refs.seg)),
+      group('Дыхание', 'D · F · H', ...Object.entries(ACT).map(([k2, a], i) => button(a.name, () => act(k2), i === 1)), rr), group('Вид', 'R · N', refs.rot, lab), ib.el);
     refs.setInfo();
   }
   function onKey(e) {
@@ -219,20 +218,20 @@ function makeLungs() {
     if (e.key === 'Escape') { select('all'); return true; }
     return false;
   }
-  function stats() { return st.mode === 'alv' ? [['Alveoli', '300–500', 'million'], ['Area', '70–100', 'm²']] : [['Lung volume', Math.round(st.V), 'mL'], ['Rate', st.rr, '/min']]; }
+  function stats() { return st.mode === 'alv' ? [['Альвеол', '300–500', 'млн'], ['Площадь', '70–100', 'м²']] : [['Объём лёгких', Math.round(st.V), 'мл'], ['Частота', st.rr, '/мин']]; }
   const self = {
     labelBg: true, mobZoom: 0.6, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#9FE0FF',
-    kicker: 'Body · respiration', title: 'Respiratory system',
-    lede: 'About 20,000 breaths a day. Air travels down the branching bronchial tree to hundreds of millions of alveoli, where oxygen passes into the blood in a fraction of a second.',
+    kicker: 'Тело · дыхание', title: 'Дыхательная система',
+    lede: 'Около 20 000 вдохов в сутки. Воздух проходит по ветвящемуся дереву бронхов к сотням миллионов альвеол, где кислород за доли секунды переходит в кровь.',
     notes: `
-      <div><h2>Lung volumes</h2><ul>
-        <li>Tidal volume — ~500 mL (of which ~150 mL remains in the airways’ “dead space”).</li>
-        <li>Inspiratory reserve volume — ~3000 mL, expiratory reserve volume — ~1200 mL.</li><li>Residual volume — ~1200 mL; it cannot be exhaled.</li>
-        <li>VC = TV + IRV + ERV ≈ 3.5–5 L; higher in athletes.</li></ul>
-        <h3>Gas transport</h3><p>Almost all oxygen is bound to the hemoglobin of red blood cells. Carbon dioxide is carried mainly as bicarbonate in the plasma.</p></div>
-      <div><h2>Regulation</h2><p>The respiratory center of the medulla oblongata sets the rhythm. Chemoreceptors monitor CO₂ and blood acidity: the more CO₂, the faster and deeper the breathing. You can breathe voluntarily (via the cortex), but you cannot override the center for long.</p>
-        <h2 style="margin-top:22px">Simplifications</h2><ul><li>The bronchial tree is shown down to the 7th generation out of ~23.</li><li>Alveoli are magnified about 10,000 times.</li></ul></div>
-      <div class="keys"><h2>Keys</h2><ul><li><code>1</code>–<code>3</code> mode</li><li><code>D</code> deep breath</li><li><code>F</code> forced exhalation</li><li><code>H</code> hold breath</li><li><code>R</code> rotate · <code>N</code> labels</li></ul></div>`,
+      <div><h2>Объёмы лёгких</h2><ul>
+        <li>Дыхательный объём — ~500 мл (из них ~150 мл остаются в «мёртвом пространстве» путей).</li>
+        <li>Резервный объём вдоха — ~3000 мл, выдоха — ~1200 мл.</li><li>Остаточный объём — ~1200 мл, выдохнуть его нельзя.</li>
+        <li>ЖЕЛ = ДО + РОвд + РОвыд ≈ 3,5–5 л; у спортсменов больше.</li></ul>
+        <h3>Перенос газов</h3><p>Кислород почти весь связан с гемоглобином эритроцитов. Углекислый газ переносится в основном в виде бикарбоната в плазме.</p></div>
+      <div><h2>Регуляция</h2><p>Дыхательный центр продолговатого мозга задаёт ритм. Хеморецепторы следят за CO₂ и кислотностью крови: чем больше CO₂, тем чаще и глубже дыхание. Можно дышать произвольно (кора), но надолго «перебить» центр нельзя.</p>
+        <h2 style="margin-top:22px">Условности</h2><ul><li>Бронхиальное дерево показано до 7-го поколения из ~23.</li><li>Альвеолы увеличены примерно в 10 000 раз.</li></ul></div>
+      <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>3</code> режим</li><li><code>D</code> глубокий вдох</li><li><code>F</code> форсированный выдох</li><li><code>H</code> задержка</li><li><code>R</code> вращение · <code>N</code> подписи</li></ul></div>`,
   };
   return self;
 }

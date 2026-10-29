@@ -6,17 +6,17 @@ import { Sparks, THREE, V3, __set_rnd, displaceGeo, envTex, flyStep, flyTarget, 
    ========================================================= */
 const OD_TYPES = ['#FF6A5A', '#F2C14E', '#7FE0A0', '#4FA3FF', '#C77DFF', '#FF8AB0', '#7FD6C8', '#E8E0C0'];
 const ODORS = [
-  { id: 'rose', name: 'Rose', rec: [0, 5, 4], text: '<b>Rose.</b> The scent is a mixture of dozens of molecules (phenylethyl alcohol, geraniol, citronellol…). Each one excites several types of receptors, and the brain recognizes the smell by the <b>pattern</b> of active glomeruli.' },
-  { id: 'coffee', name: 'Coffee', rec: [1, 2, 6, 3], text: '<b>Coffee</b> contains more than 800 volatile compounds. The pattern is broader and more complex: this is how the brain tells “coffee” apart from its individual components.' },
-  { id: 'orange', name: 'Orange', rec: [1, 7, 2], text: '<b>Orange</b> is mostly limonene. A different set of receptors means a different pattern of glomeruli in the bulb.' },
-  { id: 'smoke', name: 'Smoke', rec: [3, 4, 0, 6], text: '<b>Smoke.</b> The smell of burning is processed quickly and triggers alarm: the olfactory pathway goes straight to the amygdala and the paleocortex, bypassing the thalamus.' },
+  { id: 'rose', name: 'Роза', rec: [0, 5, 4], text: '<b>Роза.</b> Аромат — смесь десятков молекул (фенилэтиловый спирт, гераниол, цитронеллол…). Каждая возбуждает несколько типов рецепторов, и мозг узнаёт запах по <b>узору</b> активных клубочков.' },
+  { id: 'coffee', name: 'Кофе', rec: [1, 2, 6, 3], text: '<b>Кофе</b> — больше 800 летучих веществ. Узор шире и сложнее: так мозг отличает «кофе» от отдельных его компонентов.' },
+  { id: 'orange', name: 'Апельсин', rec: [1, 7, 2], text: '<b>Апельсин</b> — в основном лимонен. Другой набор рецепторов — другой узор клубочков в луковице.' },
+  { id: 'smoke', name: 'Дым', rec: [3, 4, 0, 6], text: '<b>Дым.</b> Запах гари обрабатывается быстро и вызывает тревогу: обонятельный путь идёт прямо в миндалину и древнюю кору, минуя таламус.' },
 ];
 const TASTES = [
-  { id: 'sweet', name: 'Sweet', color: '#FF8AB0', text: '<b>Sweet</b> — sugars and some proteins and sweeteners. The T1R2+T1R3 receptor on type II cells. The signal: “energy here”.' },
-  { id: 'umami', name: 'Umami', color: '#F2C14E', text: '<b>Umami</b> is the taste of glutamate (broth, cheese, tomatoes, soy sauce); receptor T1R1+T1R3. The signal: “protein here”. It was described by the Japanese chemist Kikunae Ikeda in 1908.' },
-  { id: 'bitter', name: 'Bitter', color: '#7FE0A0', text: '<b>Bitter</b> — about 25 different T2R receptors. The highest sensitivity of all tastes: many poisons are bitter. The signal: “careful”.' },
-  { id: 'sour', name: 'Sour', color: '#7FD6FF', text: '<b>Sour</b> — hydrogen ions (acids), type III cells. A signal of unripe or spoiled food.' },
-  { id: 'salty', name: 'Salty', color: '#E8E0C0', text: '<b>Salty</b> — sodium ions pass through ENaC sodium channels. Needed for water and salt balance.' },
+  { id: 'sweet', name: 'Сладкое', color: '#FF8AB0', text: '<b>Сладкое</b> — сахара и некоторые белки и подсластители. Рецептор T1R2+T1R3 в клетках II типа. Сигнал «здесь энергия».' },
+  { id: 'umami', name: 'Умами', color: '#F2C14E', text: '<b>Умами</b> — вкус глутамата (бульон, сыр, томаты, соевый соус), рецептор T1R1+T1R3. Сигнал «здесь белок». Описан японским химиком Кикунаэ Икэдой в 1908 году.' },
+  { id: 'bitter', name: 'Горькое', color: '#7FE0A0', text: '<b>Горькое</b> — около 25 разных рецепторов T2R. Самая высокая чувствительность: многие яды горькие. Сигнал «осторожно».' },
+  { id: 'sour', name: 'Кислое', color: '#7FD6FF', text: '<b>Кислое</b> — ионы водорода (кислоты), клетки III типа. Сигнал о незрелых или испорченных продуктах.' },
+  { id: 'salty', name: 'Солёное', color: '#E8E0C0', text: '<b>Солёное</b> — ионы натрия проходят через натриевые каналы ENaC. Нужно для водно-солевого баланса.' },
 ];
 function makeChemo() {
   __set_rnd(mulberry(2222));
@@ -39,7 +39,7 @@ function makeChemo() {
   // к стенке; верхняя короткая (у обонятельной зоны), средняя, нижняя — самая длинная. Сечение — дуга θ ∈ [0; 0,92π]
   const conchaGeo = (x0, x1, yTop, h, w, slope) => {
     const NU = 48, NV = 18, pos = [], idx = [];
-    for (let i = 0; i <= NU; i++) { const u = i / NU, x = x0 + (x1 - x0) * u, sc = 0.3 + 0.7 * Math.pow(Math.sin(Math.PI * Math.min(1, u * 1.15)), 0.5), yc = yTop - h * sc + slope * (u - 0.5);
+    for (let i = 0; i <= NU; i++) { const u = i / NU, x = x0 + (x1 - x0) * u, sc = 0.12 + 0.88 * Math.pow(Math.sin(Math.PI * u), 0.45), yc = yTop - h * sc + slope * (u - 0.5);
       for (let j = 0; j <= NV; j++) { const th = 0.92 * Math.PI * j / NV; pos.push(x, yc + h * sc * Math.cos(th), -0.3 + w * sc * Math.sin(th) * (1 - 0.25 * j / NV)); } }
     for (let i = 0; i < NU; i++) for (let j = 0; j < NV; j++) { const a = i * (NV + 1) + j, b = a + NV + 1; idx.push(a, b, a + 1, b, b + 1, a + 1); }
     const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx); g.computeVertexNormals(); return g;
@@ -123,36 +123,36 @@ function makeChemo() {
     fx.update(dt);
   }
   const TXT = {
-    smell: '<b>Smell.</b> In the roof of the nasal cavity lies the olfactory epithelium (~5 cm²) with ~10 million receptor neurons. Each neuron carries one receptor type out of ~400; all neurons of the same type send their axons through the ethmoid bone to the same <b>glomerulus</b> of the olfactory bulb. An odor is coded by the pattern of active glomeruli. Olfactory neurons live 1–2 months and are constantly replaced. Choose a smell.',
-    tongue: '<b>The tongue</b> is covered with papillae: fungiform (all over the surface), circumvallate (large, in a V near the root) and foliate (along the sides). The taste papillae contain 2,000–8,000 taste buds. The “tongue map” with a sweet zone at the tip and a bitter zone at the root is a myth: all five tastes are sensed by the whole surface.',
-    bud: '<b>A taste bud</b> is a “barrel” of 50–100 cells with a pore at the top. Cells of different types respond to different tastes and pass the signal to fibers of the facial, glossopharyngeal and vagus nerves → brainstem → thalamus → gustatory cortex of the insula. The cells live 10–14 days. Choose a taste.',
+    smell: '<b>Обоняние.</b> В своде носовой полости — обонятельный эпителий (~5 см²) с ~10 млн рецепторных нейронов. Каждый нейрон несёт рецептор одного типа из ~400; все нейроны одного типа отправляют аксоны через решётчатую кость в один и тот же <b>клубочек</b> обонятельной луковицы. Запах кодируется узором активных клубочков. Обонятельные нейроны живут 1–2 месяца и постоянно обновляются. Выберите запах.',
+    tongue: '<b>Язык</b> покрыт сосочками: грибовидными (по всей поверхности), желобоватыми (крупные, буквой V у корня) и листовидными (по бокам). Во вкусовых сосочках — 2000–8000 вкусовых почек. «Карта вкусов» с зонами сладкого на кончике и горького у корня — миф: все пять вкусов чувствуются всей поверхностью.',
+    bud: '<b>Вкусовая почка</b> — «бочонок» из 50–100 клеток с порой на вершине. Клетки разных типов реагируют на разные вкусы и передают сигнал волокнам лицевого, языкоглоточного и блуждающего нервов → ствол → таламус → вкусовая кора островка. Клетки живут 10–14 дней. Выберите вкус.',
   };
   const labels = [
-    { text: 'nostril', pos: V3(-2.35, -0.95, 0.1), color: '#E8A0A0', show: () => st.labels && st.mode === 'smell' },
-    { text: 'nasal conchae', pos: V3(-0.6, -0.5, 0.05), color: '#E8A0A0', show: () => st.labels && st.mode === 'smell' },
-    { text: 'olfactory epithelium', pos: V3(-0.55, 0.26, 0.2), color: '#7FE0A0', show: () => st.labels && st.mode === 'smell' },
-    { text: 'cribriform plate', pos: V3(0.9, 0.5, 0.3), color: '#e8d8bb', show: () => st.labels && st.mode === 'smell' },
-    { text: 'olfactory bulb · glomeruli', pos: V3(-0.6, 1.05, 0.2), color: '#F2D8C0', show: () => st.labels && st.mode === 'smell' },
-    { text: 'olfactory tract → cortex and amygdala', pos: TRACT.getPointAt(0.3).add(V3(0, 0.05, 0)), color: '#F4C542', show: () => st.labels && st.mode === 'smell' },
-    { text: 'tip', pos: V3(30, 0.3, 1.5), color: '#ffb0b8', show: () => st.labels && st.mode === 'tongue' },
-    { text: 'circumvallate papillae', pos: V3(30.6, 0.35, -0.45), color: '#ffb0b8', show: () => st.labels && st.mode === 'tongue' },
-    { text: 'foliate', pos: V3(30.95, 0.2, -0.1), color: '#ffb0b8', show: () => st.labels && st.mode === 'tongue' },
-    { text: 'fungiform', pos: V3(29.5, 0.35, 0.6), color: '#ffb0b8', show: () => st.labels && st.mode === 'tongue' },
-    { text: 'taste pore', pos: V3(60.12, 0.5, 0.05), color: '#ffe0d0', show: () => st.labels && st.mode === 'bud' },
-    { text: 'receptor cells', pos: V3(60.5, -0.1, 0.3), color: '#ffb0b8', show: () => st.labels && st.mode === 'bud' },
-    { text: 'nerve fibers', pos: V3(60.3, -1.15, 0.1), color: '#F4C542', show: () => st.labels && st.mode === 'bud' },
+    { text: 'ноздря', pos: V3(-2.35, -0.95, 0.1), color: '#E8A0A0', show: () => st.labels && st.mode === 'smell' },
+    { text: 'носовые раковины', pos: V3(-0.6, -0.5, 0.05), color: '#E8A0A0', show: () => st.labels && st.mode === 'smell' },
+    { text: 'обонятельный эпителий', pos: V3(-0.2, 0.12, 0.25), left: true, color: '#7FE0A0', show: () => st.labels && st.mode === 'smell' },
+    { text: 'решётчатая пластинка', pos: V3(0.9, 0.5, 0.3), color: '#e8d8bb', show: () => st.labels && st.mode === 'smell' },
+    { text: matchMedia('(max-width:700px)').matches ? 'луковица · клубочки' : 'обонятельная луковица · клубочки', pos: V3(-0.6, 1.05, 0.2), color: '#F2D8C0', show: () => st.labels && st.mode === 'smell' },
+    { text: matchMedia('(max-width:700px)').matches ? 'тракт → кора' : 'обонятельный тракт → кора и миндалина', pos: TRACT.getPointAt(0.3).add(V3(0, 0.05, 0)), color: '#F4C542', show: () => st.labels && st.mode === 'smell' },
+    { text: 'кончик', pos: V3(30, 0.3, 1.5), color: '#ffb0b8', show: () => st.labels && st.mode === 'tongue' },
+    { text: 'желобоватые сосочки', pos: V3(30.6, 0.35, -0.45), color: '#ffb0b8', show: () => st.labels && st.mode === 'tongue' },
+    { text: 'листовидные', pos: V3(30.95, 0.2, -0.1), color: '#ffb0b8', show: () => st.labels && st.mode === 'tongue' },
+    { text: 'грибовидные', pos: V3(29.5, 0.35, 0.6), color: '#ffb0b8', show: () => st.labels && st.mode === 'tongue' },
+    { text: 'вкусовая пора', pos: V3(60.12, 0.5, 0.05), color: '#ffe0d0', show: () => st.labels && st.mode === 'bud' },
+    { text: 'рецепторные клетки', pos: V3(60.5, -0.1, 0.3), color: '#ffb0b8', show: () => st.labels && st.mode === 'bud' },
+    { text: 'нервные волокна', pos: V3(60.3, -1.15, 0.1), color: '#F4C542', show: () => st.labels && st.mode === 'bud' },
   ];
   const refs = {};
   function ui(el) {
     const ib = infoBox('1 1 360px');
     refs.setInfo = () => { ib.info.innerHTML = st.msg || TXT[st.mode]; };
-    refs.modeSeg = seg([{ id: 'smell', label: 'Smell' }, { id: 'tongue', label: 'Tongue' }, { id: 'bud', label: 'Taste bud' }], () => st.mode, (v) => setMode(v));
+    refs.modeSeg = seg([{ id: 'smell', label: 'Обоняние' }, { id: 'tongue', label: 'Язык' }, { id: 'bud', label: 'Вкусовая почка' }], () => st.mode, (v) => setMode(v));
     refs.oSeg = seg(ODORS.map((o) => ({ id: o.id, label: o.name })), () => st.odor && st.odor.id, (v) => smell(v));
     refs.tSeg = seg(TASTES.map((x) => ({ id: x.id, label: x.name, color: x.color })), () => st.taste && st.taste.id, (v) => taste(v));
-    refs.rot = toggle('Rotate', () => st.rot, (v) => { st.rot = v; });
-    const lab = toggle('Labels', () => st.labels, (v) => { st.labels = v; });
+    refs.rot = toggle('Вращение', () => st.rot, (v) => { st.rot = v; });
+    const lab = toggle('Подписи', () => st.labels, (v) => { st.labels = v; });
     Object.assign(refs, { lab });
-    el.append(group('Mode', '1–3', refs.modeSeg), group('Smell it', '', refs.oSeg), group('Taste it', '', refs.tSeg), group('View', 'R · N', refs.rot, lab), ib.el);
+    el.append(group('Режим', '1–3', refs.modeSeg), group('Понюхать', '', refs.oSeg), group('Попробовать', '', refs.tSeg), group('Вид', 'R · N', refs.rot, lab), ib.el);
     refs.setInfo();
   }
   function onKey(e) {
@@ -161,16 +161,16 @@ function makeChemo() {
     if (k === 'r' || k === 'к') { refs.rot.click(); return true; } if (k === 'n' || k === 'т') { refs.lab.click(); return true; }
     return false;
   }
-  function stats() { return st.mode === 'smell' ? [['Receptor types', '≈400', ''], ['Active glomeruli', GLOM.filter((g) => g.act > 0.5).length, '']] : [['Taste buds', '2–8', 'thousand'], ['Basic tastes', 5, '']]; }
+  function stats() { return st.mode === 'smell' ? [['Типов рецепторов', '≈400', ''], ['Активных клубочков', GLOM.filter((g) => g.act > 0.5).length, '']] : [['Вкусовых почек', '2–8', 'тыс.'], ['Базовых вкусов', 5, '']]; }
   const self = {
     labelBg: true, mobZoom: 0.85, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#7FE0A0',
-    kicker: 'Sense organs · chemical', title: 'Smell and taste',
-    lede: 'Two chemical senses: the nose tells thousands of smells apart by the pattern of hundreds of receptors, and the tongue senses five basic tastes. Together they give what we call the flavor of food.',
+    kicker: 'Органы чувств · химические', title: 'Обоняние и вкус',
+    lede: 'Два химических чувства: нос различает тысячи запахов по узору сотен рецепторов, язык — пять базовых вкусов. Вместе они дают то, что мы называем вкусом еды.',
     notes: `
-      <div><h2>The flavor of food is mostly smell</h2><p>When we chew, volatile substances rise from the oropharynx into the nose (retronasal smell). That is why food seems tasteless when you have a cold: the tongue still senses sweet and salty, but the “aroma” disappears.</p>
-        <h3>What makes smell special</h3><p>It is the only sense whose signals reach the cortex without passing through the thalamus — directly to the paleocortex, the amygdala and the entorhinal cortex. That is why smells are so strongly linked to emotions and memories. For discovering the olfactory receptors, Richard Axel and Linda Buck received the 2004 Nobel Prize.</p></div>
-      <div><h2>Simplifications</h2><ul><li>8 receptor types are shown instead of ~400.</li><li>The taste bud and the epithelium are greatly enlarged.</li></ul></div>
-      <div class="keys"><h2>Keys</h2><ul><li><code>1</code>–<code>3</code> mode</li><li><code>R</code> rotate · <code>N</code> labels</li></ul></div>`,
+      <div><h2>Вкус еды — это в основном запах</h2><p>Когда мы жуём, летучие вещества поднимаются из ротоглотки в нос (ретроназальное обоняние). Поэтому при насморке еда кажется безвкусной: язык по-прежнему чувствует сладкое и солёное, а «аромат» пропадает.</p>
+        <h3>Особенность обоняния</h3><p>Это единственное чувство, сигналы которого попадают в кору, минуя таламус, — прямо в древнюю кору, миндалину и энторинальную кору. Поэтому запахи так сильно связаны с эмоциями и воспоминаниями. За открытие обонятельных рецепторов Ричард Аксель и Линда Бак получили Нобелевскую премию 2004 года.</p></div>
+      <div><h2>Условности</h2><ul><li>Показаны 8 типов рецепторов вместо ~400.</li><li>Почка и эпителий сильно увеличены.</li></ul></div>
+      <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>3</code> режим</li><li><code>R</code> вращение · <code>N</code> подписи</li></ul></div>`,
   };
   return self;
 }

@@ -5,13 +5,13 @@ import { Sparks, THREE, V3, __set_rnd, button, clamp, dimOthers, displaceGeo, el
    ОРГАНЫ ЧУВСТВ · СЛУХ И РАВНОВЕСИЕ
    ========================================================= */
 const EAR_PARTS = [
-  { id: 'outer', name: 'Outer ear', color: '#E8B8A0', text: '<b>The outer ear</b> is the auricle (pinna) and the ear canal (~2.5 cm). The auricle collects sound and helps tell where it comes from (above, below, behind) by the way its folds distort the spectrum. The canal resonates at 2–4 kHz — the frequencies of speech.' },
-  { id: 'drum', name: 'Eardrum', color: '#F2D8C0', text: '<b>The eardrum</b> (tympanic membrane) is a thin (0.1 mm) membrane that vibrates with the pressure of the sound wave. It separates the outer ear from the middle ear.' },
-  { id: 'oss', name: 'Auditory ossicles', color: '#F2E6C8', text: '<b>The malleus, incus and stapes</b> are the smallest bones in the body (the stapes is ~3 mm). They form a lever: they transmit vibrations from the large eardrum to the small oval window of the cochlea and amplify the pressure about 20 times — otherwise the sound would bounce off the fluid of the inner ear. The muscles of the ossicles damp sounds that are too loud.' },
-  { id: 'eust', name: 'Auditory tube', color: '#D8A8B0', text: '<b>The auditory (Eustachian) tube</b> connects the middle ear with the nasopharynx and equalizes the pressure on both sides of the eardrum — which is why swallowing or yawning helps on a plane.' },
-  { id: 'coch', name: 'Cochlea', color: '#7FD6FF', text: '<b>The cochlea</b> is a fluid-filled bony canal of 2.75 turns. Along it stretches the <b>basilar membrane</b> with the organ of Corti: ~3,500 inner and ~12,000 outer hair cells. High-pitched sounds vibrate the membrane near the base, low-pitched ones near the apex (tonotopy).' },
-  { id: 'vest', name: 'Vestibular apparatus', color: '#C77DFF', text: '<b>The vestibular apparatus</b>: three semicircular canals in three mutually perpendicular planes sense rotation of the head, while the sacs of the vestibule with their otolith crystals sense tilt and linear acceleration (gravity).' },
-  { id: 'nerve', name: 'Auditory nerve', color: '#F4C542', text: '<b>The vestibulocochlear nerve</b> (cranial nerve VIII) carries signals to the brainstem. The auditory pathway runs through the cochlear nuclei, the superior olives, the inferior colliculi and the medial geniculate body of the thalamus to the auditory cortex of the temporal lobe (Brodmann area 41).' },
+  { id: 'outer', name: 'Наружное ухо', color: '#E8B8A0', text: '<b>Наружное ухо</b> — ушная раковина и слуховой проход (~2,5 см). Раковина собирает звук и помогает понять, откуда он идёт (сверху, снизу, сзади) по тому, как её складки искажают спектр. Проход резонирует на 2–4 кГц — частотах речи.' },
+  { id: 'drum', name: 'Барабанная перепонка', color: '#F2D8C0', text: '<b>Барабанная перепонка</b> — тонкая (0,1 мм) мембрана, которая колеблется вместе с давлением звуковой волны. Она отделяет наружное ухо от среднего.' },
+  { id: 'oss', name: 'Слуховые косточки', color: '#F2E6C8', text: '<b>Молоточек, наковальня и стремечко</b> — самые маленькие кости тела (стремечко ~3 мм). Это рычаг: они передают колебания с большой перепонки на маленькое овальное окно улитки и усиливают давление примерно в 20 раз — иначе звук отразился бы от жидкости внутреннего уха. Мышцы косточек гасят слишком громкие звуки.' },
+  { id: 'eust', name: 'Слуховая труба', color: '#D8A8B0', text: '<b>Слуховая (евстахиева) труба</b> соединяет среднее ухо с носоглоткой и выравнивает давление по обе стороны перепонки — поэтому в самолёте помогает глотать или зевать.' },
+  { id: 'coch', name: 'Улитка', color: '#7FD6FF', text: '<b>Улитка</b> — костный канал в 2,75 витка, заполненный жидкостью. Вдоль него натянута <b>основная мембрана</b> с кортиевым органом: ~3500 внутренних и ~12 000 наружных волосковых клеток. Высокие звуки раскачивают мембрану у основания, низкие — у вершины (тонотопия).' },
+  { id: 'vest', name: 'Вестибулярный аппарат', color: '#C77DFF', text: '<b>Вестибулярный аппарат</b>: три полукружных канала в трёх взаимно перпендикулярных плоскостях чувствуют вращение головы, а мешочки преддверия с кристаллами-отолитами — наклон и линейное ускорение (гравитацию).' },
+  { id: 'nerve', name: 'Слуховой нерв', color: '#F4C542', text: '<b>Преддверно-улитковый нерв</b> (VIII пара) несёт сигналы в ствол мозга. Слуховой путь идёт через кохлеарные ядра, оливы, нижние холмики четверохолмия и медиальное коленчатое тело таламуса в слуховую кору височной доли (поле 41).' },
 ];
 function makeEar() {
   __set_rnd(mulberry(1818));
@@ -66,7 +66,7 @@ function makeEar() {
   const glowSpot = glowNucleus(ear, COC.clone(), '#ffffff', 0.05, 8);
   add('vest', ell3(0.2, 0.14, 0.13, V3(-0.16, 0.12, 0.0)), { k: 0.4, mat: { transparent: true, opacity: 0.75 } });   // латеральная стенка — у подножной пластинки стремечка
   const CAN = [
-    { c: V3(0.0, 0.55, -0.05), n: V3(0, 0, 1), name: 'anterior' }, { c: V3(0.05, 0.42, -0.35), n: V3(1, 0, 0), name: 'posterior' }, { c: V3(-0.25, 0.25, 0.05), n: V3(0, 1, 0.15), name: 'lateral' },
+    { c: V3(0.0, 0.55, -0.05), n: V3(0, 0, 1), name: 'передний' }, { c: V3(0.05, 0.42, -0.35), n: V3(1, 0, 0), name: 'задний' }, { c: V3(-0.25, 0.25, 0.05), n: V3(0, 1, 0.15), name: 'латеральный' },
   ].map((k) => { const g = new THREE.TorusGeometry(0.28, 0.03, 10, 48); g.lookAt(k.n); g.translate(k.c.x, k.c.y, k.c.z); const m = add('vest', g, { k: 0.5, mat: { transparent: true, opacity: 0.85 } }); return { ...k, m }; });
   // ампула — на самом кольце, в точке, ближайшей к преддверию
   const VC = V3(-0.16, 0.12, 0.0), AMP = [];
@@ -139,42 +139,42 @@ function makeEar() {
     ctx.clearRect(0, 0, w, hgt); const on = st.mode !== 'vest'; scopeShow(on); if (!on) return;
     const f = freq(), cyc = Math.min(40, Math.max(1.5, Math.log10(f) * 6 - 6)); ctx.strokeStyle = '#9FD0FF'; ctx.lineWidth = 2; ctx.beginPath();
     for (let i = 0; i <= 200; i++) { const xx = 8 + i / 200 * (w - 16), yy = hgt / 2 + 8 - Math.sin(i / 200 * cyc * Math.PI * 2 - st.t * 8) * st.vol * (hgt * 0.32); i ? ctx.lineTo(xx, yy) : ctx.moveTo(xx, yy); }
-    ctx.stroke(); ctx.fillStyle = '#9FD0FF'; ctx.font = '500 10px JetBrains Mono, monospace'; ctx.fillText('sound · ' + (f >= 1000 ? (f / 1000).toFixed(1) + ' kHz' : Math.round(f) + ' Hz'), 10, 13);
+    ctx.stroke(); ctx.fillStyle = '#9FD0FF'; ctx.font = '500 10px JetBrains Mono, monospace'; ctx.fillText('звук · ' + (f >= 1000 ? (f / 1000).toFixed(1) + ' кГц' : Math.round(f) + ' Гц'), 10, 13);
   }
   const TXT = {
-    anat: '<b>The ear</b> has three parts. The outer ear collects sound, the middle ear (eardrum and ossicles) converts vibrations of air into vibrations of fluid, and the inner ear (cochlea) turns them into nerve impulses. Change the frequency: the glowing spot on the cochlea shows where the membrane vibrates most. Humans hear from ~20 Hz to ~20 kHz.',
-    coch: '<b>The cochlea unrolled.</b> The basilar membrane is narrow and stiff at the base (left), wide and floppy at the apex (right). Sound sets up a traveling wave that builds up and dies out at the point tuned to its frequency. There the stereocilia of the hair cells bend: the inner hair cells (yellow) send the signal to the nerve, the outer ones (green) tune the membrane and amplify faint sounds. This is how the ear splits sound into frequencies, the way a prism splits light.',
-    vest: '<b>The vestibular apparatus.</b> Each semicircular canal is filled with endolymph; in its widened part — the ampulla — sits the gelatinous cupula with hair cells. Click “Spin”.',
-    spin: '<b>Rotation.</b> The head turns, but the fluid in the canal lags behind by inertia and deflects the cupula (purple particles move the opposite way) — the brain learns that the head is rotating. During prolonged steady rotation the fluid catches up with the walls and the sensation fades. After a sudden stop it keeps flowing — the world seems to spin in the opposite direction: this is dizziness.',
+    anat: '<b>Ухо</b> — три отдела. Наружное собирает звук, среднее (перепонка и косточки) переводит колебания воздуха в колебания жидкости, внутреннее (улитка) превращает их в нервные импульсы. Меняйте частоту: светящееся пятно на улитке показывает, где сильнее всего колеблется мембрана. Человек слышит от ~20 Гц до ~20 кГц.',
+    coch: '<b>Улитка в развёрнутом виде.</b> Основная мембрана узкая и жёсткая у основания (слева), широкая и мягкая у вершины (справа). Звук рождает бегущую волну, которая нарастает и затухает в точке, настроенной на эту частоту. Там сгибаются стереоцилии волосковых клеток: внутренние (жёлтые) передают сигнал в нерв, наружные (зелёные) подстраивают мембрану и усиливают слабые звуки. Так ухо раскладывает звук на частоты, как призма — свет.',
+    vest: '<b>Вестибулярный аппарат.</b> Каждый полукружный канал заполнен эндолимфой; в его расширении — ампуле — студенистая купула с волосковыми клетками. Нажмите «Покружиться».',
+    spin: '<b>Вращение.</b> Голова поворачивается, а жидкость в канале по инерции отстаёт и отклоняет купулу (фиолетовые частицы идут навстречу) — мозг узнаёт о вращении. При долгом равномерном вращении жидкость догоняет стенки, и ощущение пропадает. А после резкой остановки она продолжает течь — кажется, что мир кружится в обратную сторону: это головокружение.',
   };
   const labels = [
-    { text: 'auricle', pos: V3(-2.6, 0.95, -0.1), color: '#E8B8A0', show: () => st.labels && st.mode === 'anat' },
-    { text: 'ear canal', pos: V3(-1.7, 0.28, 0.1), color: '#E8B8A0', show: () => st.labels && st.mode === 'anat' },
-    { text: 'eardrum', pos: V3(-0.95, -0.3, 0.2), color: '#F2D8C0', show: () => st.labels && st.mode === 'anat' },
-    { text: 'malleus · incus · stapes', pos: V3(-0.75, 0.55, 0.1), color: '#F2E6C8', show: () => st.labels && st.mode === 'anat' },
-    { text: 'auditory tube', pos: V3(-0.35, -1.1, 0.7), color: '#D8A8B0', show: () => st.labels && st.mode === 'anat' },
-    { text: 'cochlea', pos: V3(0.25, -0.75, 0.35), color: '#7FD6FF', show: () => st.labels && st.mode === 'anat' },
-    { text: 'semicircular canals', pos: V3(0.25, 0.92, 0.0), color: '#C77DFF', show: () => st.labels && st.mode !== 'coch' },
-    { text: 'auditory nerve → brainstem', pos: V3(1.3, 0.4, -0.2), color: '#F4C542', show: () => st.labels && st.mode === 'anat' },
-    { text: 'base · 20 kHz', pos: V3(27.8, 0.35, 0.3), color: '#E07070', show: () => st.labels && st.mode === 'coch' },
-    { text: 'apex · 20 Hz', pos: V3(31.9, 0.35, 0.4), color: '#B08AFF', show: () => st.labels && st.mode === 'coch' },
-    { text: 'basilar membrane', pos: V3(29.4, -0.15, 0.5), color: '#c8d8f0', show: () => st.labels && st.mode === 'coch' },
-    { text: 'ampulla with cupula', pos: AMP[2].clone().add(V3(0, 0.06, 0.1)), color: '#C77DFF', show: () => st.labels && st.mode === 'vest' },
-    { text: 'vestibule (otoliths)', pos: V3(-0.15, 0.0, 0.2), color: '#C77DFF', show: () => st.labels && st.mode === 'vest' },
+    { text: 'ушная раковина', pos: V3(-2.6, 0.95, -0.1), color: '#E8B8A0', show: () => st.labels && st.mode === 'anat' },
+    { text: 'слуховой проход', pos: V3(-1.7, 0.28, 0.1), color: '#E8B8A0', show: () => st.labels && st.mode === 'anat' },
+    { text: 'барабанная перепонка', pos: V3(-0.95, -0.3, 0.2), color: '#F2D8C0', show: () => st.labels && st.mode === 'anat' },
+    { text: matchMedia('(max-width:700px)').matches ? 'косточки' : 'молоточек · наковальня · стремечко', pos: V3(-0.75, 0.55, 0.1), color: '#F2E6C8', show: () => st.labels && st.mode === 'anat' },
+    { text: 'слуховая труба', pos: V3(-0.35, -1.1, 0.7), color: '#D8A8B0', show: () => st.labels && st.mode === 'anat' },
+    { text: 'улитка', pos: V3(0.25, -0.75, 0.35), color: '#7FD6FF', show: () => st.labels && st.mode === 'anat' },
+    { text: 'полукружные каналы', pos: V3(0.25, 0.92, 0.0), color: '#C77DFF', show: () => st.labels && st.mode !== 'coch' },
+    { text: matchMedia('(max-width:700px)').matches ? 'слуховой нерв' : 'слуховой нерв → ствол мозга', pos: V3(1.3, 0.4, -0.2), color: '#F4C542', show: () => st.labels && st.mode === 'anat' },
+    { text: 'основание · 20 кГц', pos: V3(27.8, 0.35, 0.3), color: '#E07070', show: () => st.labels && st.mode === 'coch' },
+    { text: 'вершина · 20 Гц', pos: V3(31.9, 0.35, 0.4), color: '#B08AFF', show: () => st.labels && st.mode === 'coch' },
+    { text: 'основная мембрана', pos: V3(29.4, -0.15, 0.5), color: '#c8d8f0', show: () => st.labels && st.mode === 'coch' },
+    { text: 'ампула с купулой', pos: AMP[2].clone().add(V3(0, 0.06, 0.1)), color: '#C77DFF', show: () => st.labels && st.mode === 'vest' },
+    { text: 'преддверие (отолиты)', pos: V3(-0.15, 0.0, 0.2), color: '#C77DFF', show: () => st.labels && st.mode === 'vest' },
   ];
   const refs = {};
   function ui(el) {
     const ib = infoBox('1 1 340px');
     refs.setInfo = () => { ib.info.innerHTML = st.msg || (st.mode === 'anat' && st.sel ? PART[st.sel].text : TXT[st.mode]); };
-    refs.modeSeg = seg([{ id: 'anat', label: 'Ear anatomy' }, { id: 'coch', label: 'Inside the cochlea' }, { id: 'vest', label: 'Balance' }], () => st.mode, (v) => setMode(v));
-    refs.seg = seg([{ id: 'all', label: 'All' }, ...EAR_PARTS.map((p) => ({ id: p.id, label: p.name, color: p.color }))], () => st.sel || 'all', (v) => { if (st.mode === 'coch') setMode('anat'); select(v); });
-    const fr = range('freq', Math.log10(20), Math.log10(20000), 0.01, () => st.logf, (v) => { st.logf = v; }, (v) => { const f = Math.pow(10, v); return f >= 1000 ? (f / 1000).toFixed(1) + ' kHz' : Math.round(f) + ' Hz'; });
+    refs.modeSeg = seg([{ id: 'anat', label: 'Строение уха' }, { id: 'coch', label: 'Улитка изнутри' }, { id: 'vest', label: 'Равновесие' }], () => st.mode, (v) => setMode(v));
+    refs.seg = seg([{ id: 'all', label: 'Все' }, ...EAR_PARTS.map((p) => ({ id: p.id, label: p.name, color: p.color }))], () => st.sel || 'all', (v) => { if (st.mode === 'coch') setMode('anat'); select(v); });
+    const fr = range('freq', Math.log10(20), Math.log10(20000), 0.01, () => st.logf, (v) => { st.logf = v; }, (v) => { const f = Math.pow(10, v); return f >= 1000 ? (f / 1000).toFixed(1) + ' кГц' : Math.round(f) + ' Гц'; });
     const vo = range('vol', 0, 1, 0.01, () => st.vol, (v) => { st.vol = v; }, (v) => Math.round(v * 100) + '%');
-    refs.rot = toggle('Rotate', () => st.rot, (v) => { st.rot = v; });
-    const lab = toggle('Labels', () => st.labels, (v) => { st.labels = v; });
+    refs.rot = toggle('Вращение', () => st.rot, (v) => { st.rot = v; });
+    const lab = toggle('Подписи', () => st.labels, (v) => { st.labels = v; });
     Object.assign(refs, { lab });
-    el.append(group('Mode', '1–3', refs.modeSeg), h('div', { class: 'grp', style: 'flex:1 1 500px' }, h('div', { class: 'glabel' }, 'Parts', h('kbd', {}, 'click')), h('div', { class: 'gctl' }, refs.seg)),
-      group('Sound', 'frequency · loudness', fr, vo), group('Experiment', 'S', button('Spin', spin, true)), group('View', 'R · N', refs.rot, lab), ib.el);
+    el.append(group('Режим', '1–3', refs.modeSeg), h('div', { class: 'grp', style: 'flex:1 1 500px' }, h('div', { class: 'glabel' }, 'Части', h('kbd', {}, 'клик')), h('div', { class: 'gctl' }, refs.seg)),
+      group('Звук', 'частота · громкость', fr, vo), group('Опыт', 'S', button('Покружиться', spin, true)), group('Вид', 'R · N', refs.rot, lab), ib.el);
     refs.setInfo();
   }
   function onKey(e) {
@@ -185,17 +185,17 @@ function makeEar() {
     if (e.key === 'Escape') { select('all'); return true; }
     return false;
   }
-  function stats() { const f = freq(); return st.mode === 'vest' ? [['Rotate', st.omega.toFixed(1), 'rad/s'], ['Cupula signal', Math.abs(st.rel || 0).toFixed(2), '']] : [['Frequency', f >= 1000 ? (f / 1000).toFixed(1) : Math.round(f), f >= 1000 ? 'kHz' : 'Hz'], ['Place on cochlea', Math.round((1 - place(f)) * 100), '% from base']]; }
+  function stats() { const f = freq(); return st.mode === 'vest' ? [['Вращение', st.omega.toFixed(1), 'рад/с'], ['Сигнал купулы', Math.abs(st.rel || 0).toFixed(2), '']] : [['Частота', f >= 1000 ? (f / 1000).toFixed(1) : Math.round(f), f >= 1000 ? 'кГц' : 'Гц'], ['Место на улитке', Math.round((1 - place(f)) * 100), '% от основания']]; }
   const self = {
     mobZoom: 0.66, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#7FD6FF',
-    kicker: 'Sense organs · hearing', title: 'Hearing and balance',
-    lede: 'Three tiny bones, a fluid-filled cochlea and 15,000 hair cells turn vibrations of the air into sounds, while the neighboring canals track every turn of the head.',
+    kicker: 'Органы чувств · слух', title: 'Слух и равновесие',
+    lede: 'Три крошечные косточки, улитка с жидкостью и 15 000 волосковых клеток превращают колебания воздуха в звуки, а соседние каналы следят за каждым поворотом головы.',
     notes: `
-      <div><h2>Loudness and frequency</h2>
-        <p>The ear codes frequency by the place on the membrane (high frequencies near the base) and, for low sounds, by the rhythm of impulses. Loudness is coded by the number of active fibers and their firing rate. The range of loudness is enormous: from 0 dB (threshold of hearing) to 120–130 dB (threshold of pain).</p>
-        <h3>Why hearing declines</h3><p>Hair cells do not regenerate. Loud music and noise damage them; the cells at the base suffer first — so high frequencies are lost first.</p></div>
-      <div><h2>Simplifications</h2><ul><li>The proportions of the ear are distorted: the middle and inner ear are enlarged.</li><li>Vibrations are shown millions of times larger and slower than in reality.</li></ul></div>
-      <div class="keys"><h2>Keys</h2><ul><li><code>1</code>–<code>3</code> mode</li><li>click: part of the ear</li><li><code>S</code> spin</li><li><code>R</code> rotate · <code>N</code> labels</li></ul></div>`,
+      <div><h2>Громкость и частота</h2>
+        <p>Частоту ухо кодирует местом на мембране (высокие — у основания) и для низких звуков — ритмом импульсов. Громкость — числом и частотой разрядов волокон. Диапазон громкости огромен: от 0 дБ (порог) до 120–130 дБ (болевой порог).</p>
+        <h3>Почему портится слух</h3><p>Волосковые клетки не восстанавливаются. Громкая музыка и шум повреждают их, первыми страдают клетки основания — пропадают высокие частоты.</p></div>
+      <div><h2>Условности</h2><ul><li>Размеры отделов уха искажены: среднее и внутреннее ухо увеличены.</li><li>Колебания показаны в миллионы раз сильнее и медленнее реальных.</li></ul></div>
+      <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>3</code> режим</li><li>клик: часть уха</li><li><code>S</code> покружиться</li><li><code>R</code> вращение · <code>N</code> подписи</li></ul></div>`,
   };
   return self;
 }

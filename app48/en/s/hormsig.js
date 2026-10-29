@@ -136,7 +136,7 @@ function makeHormsig() {
     { text: 'protein kinase A', pos: V3(2.8, -0.75, 0), color: '#C77DFF', show: () => st.labels && st.mode === 'camp' },
     { text: 'phosphorylase → glycogen', pos: V3(5.5, -0.4, 0), color: '#F2C14E', show: () => st.labels && st.mode === 'camp' },
     { text: 'phosphodiesterase', pos: V3(1.1, -2.75, 0.3), color: '#9FA8B8', show: () => st.labels && st.mode === 'camp' },
-    { text: 'cortisol', pos: V3(40 - 3.6, 3.6, 0.4), color: '#F2C14E', show: () => st.labels && st.mode === 'ster' },
+    { text: 'cortisol', get pos() { return cort.position.clone().add(V3(40.45, 0.35, 0.2)); }, color: '#F2C14E', show: () => st.labels && st.mode === 'ster' },
     { text: 'nucleus', pos: V3(40 + 2.8, -0.2, 0), color: '#9F7BFF', show: () => st.labels && st.mode === 'ster' },
     { text: 'receptor + HSP90', pos: V3(40 - 2.6, -1.3, 0.4), color: '#FF8AB0', show: () => st.labels && st.mode === 'ster' },
     { text: 'cell membrane', pos: V3(40 - 4.0, 1.4, 0), color: '#FFB070', show: () => st.labels && st.mode === 'ster' },

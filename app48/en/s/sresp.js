@@ -5,10 +5,10 @@ import { BODY, Sparks, THREE, V3, __set_rnd, bodyShell, displaceGeo, ell3, envTe
    ТЕЛО · ЦИКЛ ПОЛОВОГО (СЕКСУАЛЬНОГО) ОТВЕТА — физиология
    ========================================================= */
 const SR_PH = [
-  { id: 'exc', name: 'Возбуждение', color: '#F2C14E', d: 6, text: '<b>1. Возбуждение.</b> Сигнал из мозга (мысли, образы, прикосновения) идёт по спинному мозгу к крестцовому парасимпатическому центру (S2–S4). Парасимпатические волокна расширяют артерии органов малого таза — к ним приливает кровь (вазоконгестия). Пульс, давление и дыхание начинают расти, повышается мышечный тонус. Длительность — от минут до часов.' },
-  { id: 'pla', name: 'Плато', color: '#FF8A5C', d: 5, text: '<b>2. Плато.</b> Возбуждение достигает высокого устойчивого уровня. Кровенаполнение тканей максимальное, пульс 100–150 уд/мин, дыхание учащено, кожа может краснеть («сексуальный румянец»). Мышцы тазового дна напряжены.' },
-  { id: 'org', name: 'Оргазм', color: '#FF5A7A', d: 2, text: '<b>3. Оргазм</b> — самая короткая фаза (секунды). Теперь ведущим становится <b>симпатический</b> центр (Th10–L2): ритмичные сокращения мышц тазового дна с интервалом ~0,8 с, пик пульса (до 110–180) и давления. Гипофиз выбрасывает <b>окситоцин</b>, в мозге активна система вознаграждения (дофамин).' },
-  { id: 'res', name: 'Разрешение', color: '#7FD6FF', d: 7, text: '<b>4. Разрешение.</b> Кровь оттекает, пульс, давление и дыхание возвращаются к исходным. Выделяется <b>пролактин</b> — он участвует в чувстве насыщения и расслабления. У мужчин наступает <b>рефрактерный период</b> (от минут до часов), когда повторный ответ невозможен; у женщин его может не быть, возможны повторные оргазмы.' },
+  { id: 'exc', name: 'Excitement', color: '#F2C14E', d: 6, text: '<b>1. Excitement.</b> A signal from the brain (thoughts, images, touch) travels down the spinal cord to the sacral parasympathetic center (S2–S4). Parasympathetic fibers dilate the arteries of the pelvic organs, and blood rushes to them (vasocongestion). Heart rate, blood pressure and breathing begin to rise, and muscle tone increases. Duration: from minutes to hours.' },
+  { id: 'pla', name: 'Plateau', color: '#FF8A5C', d: 5, text: '<b>2. Plateau.</b> Arousal reaches a high, stable level. Blood filling of the tissues is at its maximum, heart rate is 100–150 bpm, breathing is rapid, and the skin may redden (the “sex flush”). The pelvic floor muscles are tense.' },
+  { id: 'org', name: 'Orgasm', color: '#FF5A7A', d: 2, text: '<b>3. Orgasm</b> is the shortest phase (seconds). Now the <b>sympathetic</b> center (T10–L2) takes the lead: rhythmic contractions of the pelvic floor muscles (driven by the somatic S2–S4 nerves) at intervals of ~0.8 s, and a peak in heart rate (up to 110–180) and blood pressure. The pituitary releases <b>oxytocin</b>, and the brain’s reward system (dopamine) is active.' },
+  { id: 'res', name: 'Resolution', color: '#7FD6FF', d: 7, text: '<b>4. Resolution.</b> Blood drains away, and heart rate, blood pressure and breathing return to baseline. <b>Prolactin</b> is released — it contributes to the feeling of satiety and relaxation. Men enter a <b>refractory period</b> (from minutes to hours) during which another response is impossible; women may not have one and can have repeated orgasms.' },
 ];
 function makeSresp() {
   __set_rnd(mulberry(2424));
@@ -98,34 +98,34 @@ function makeSresp() {
   function drawScope(ctx, w, hgt) {
     ctx.clearRect(0, 0, w, hgt); scopeShow(true);
     const X = (x) => 8 + (x / (TOT + 3)) * (w - 16), Y = (v) => hgt - 10 - v * (hgt - 26);
-    if (st.model === 'basson') { const cx = w / 2 + 18, cy = hgt / 2 + 4, r = Math.min(w, hgt) * 0.28; const names = ['близость', 'стимулы', 'возбуждение', 'желание', 'удовлетворение']; ctx.strokeStyle = 'rgba(255,138,176,.7)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.stroke(); ctx.font = '500 9px JetBrains Mono, monospace'; names.forEach((n, i) => { const a = -Math.PI / 2 + i / names.length * Math.PI * 2, c = Math.cos(a), sn = Math.sin(a); ctx.fillStyle = '#ffd0e0'; ctx.textAlign = Math.abs(c) < 0.2 ? 'center' : c > 0 ? 'left' : 'right'; ctx.fillText(n, cx + c * (r + 7), cy + sn * (r + 7) + (sn < -0.5 ? -2 : sn > 0.5 ? 8 : 3)); }); ctx.textAlign = 'left'; const a = -Math.PI / 2 + (st.ct / (TOT + 3)) * Math.PI * 2; ctx.fillStyle = '#ff8ab0'; ctx.beginPath(); ctx.arc(cx + Math.cos(a) * r, cy + Math.sin(a) * r, 4, 0, Math.PI * 2); ctx.fill(); return; }
+    if (st.model === 'basson') { const cx = w / 2 + 18, cy = hgt / 2 + 4, r = Math.min(w, hgt) * 0.28; const names = ['intimacy', 'stimuli', 'arousal', 'desire', 'satisfaction']; ctx.strokeStyle = 'rgba(255,138,176,.7)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.stroke(); ctx.font = '500 9px JetBrains Mono, monospace'; names.forEach((n, i) => { const a = -Math.PI / 2 + i / names.length * Math.PI * 2, c = Math.cos(a), sn = Math.sin(a); ctx.fillStyle = '#ffd0e0'; ctx.textAlign = Math.abs(c) < 0.2 ? 'center' : c > 0 ? 'left' : 'right'; ctx.fillText(n, cx + c * (r + 7), cy + sn * (r + 7) + (sn < -0.5 ? -2 : sn > 0.5 ? 8 : 3)); }); ctx.textAlign = 'left'; const a = -Math.PI / 2 + (st.ct / (TOT + 3)) * Math.PI * 2; ctx.fillStyle = '#ff8ab0'; ctx.beginPath(); ctx.arc(cx + Math.cos(a) * r, cy + Math.sin(a) * r, 4, 0, Math.PI * 2); ctx.fill(); return; }
     let a = 0; SR_PH.forEach((p) => { ctx.fillStyle = p.color + '22'; ctx.fillRect(X(a), 14, X(a + p.d) - X(a), hgt - 24); a += p.d; });
     ctx.strokeStyle = 'rgba(255,255,255,.25)'; ctx.lineWidth = 1; ctx.beginPath(); for (let x = 0; x <= TOT + 3; x += 0.1) { const y = Y(level(Math.min(x, TOT), st.pattern)); x ? ctx.lineTo(X(x), y) : ctx.moveTo(X(x), y); } ctx.stroke();
     ctx.strokeStyle = '#FF8AB0'; ctx.lineWidth = 2.2; ctx.beginPath(); st.trace.forEach(([x, v], i) => (i ? ctx.lineTo(X(x), Y(v)) : ctx.moveTo(X(x), Y(v)))); ctx.stroke();
-    ctx.fillStyle = '#ffd0e0'; ctx.font = '500 10px JetBrains Mono, monospace'; ctx.fillText('уровень возбуждения', 10, 12);
+    ctx.fillStyle = '#ffd0e0'; ctx.font = '500 10px JetBrains Mono, monospace'; ctx.fillText('arousal level', 10, 12);
   }
-  const TXT_MJ = '<b>Цикл полового ответа</b> — последовательность физиологических изменений, описанная Уильямом Мастерсом и Вирджинией Джонсон (1966): возбуждение → плато → оргазм → разрешение. Им управляют мозг (кора, лимбическая система, гипоталамус) и вегетативная нервная система: <b>парасимпатическая</b> (зелёная, крестцовый отдел) отвечает за прилив крови, <b>симпатическая</b> (красная, грудопоясничный отдел) — за оргазм.';
-  const TXT_B = '<b>Круговая модель Розмари Бэссон</b> (2000). У многих людей, особенно в длительных отношениях, желание не всегда возникает первым: человек может начать с готовности к близости, а желание появляется уже в ответ на стимулы и возбуждение. Удовлетворение (эмоциональное и физическое) поддерживает мотивацию к следующему циклу. Модель дополняет линейную схему Мастерса и Джонсон.';
+  const TXT_MJ = '<b>The sexual response cycle</b> is the sequence of physiological changes described by William Masters and Virginia Johnson (1966): excitement → plateau → orgasm → resolution. It is controlled by the brain (cortex, limbic system, hypothalamus) and the autonomic nervous system: the <b>parasympathetic</b> division (green, sacral) is responsible for blood inflow, and the <b>sympathetic</b> division (red, thoracolumbar) for orgasm and emission.';
+  const TXT_B = '<b>Rosemary Basson’s circular model</b> (2000). For many people, especially in long-term relationships, desire does not always come first: a person may start from a willingness to be intimate, and desire appears only in response to stimuli and arousal. Satisfaction (emotional and physical) sustains the motivation for the next cycle. The model complements Masters and Johnson’s linear scheme.';
   const labels = [
-    { text: 'кора и лимбическая система', pos: V3(0.35, 4.42, 0.1), color: '#FF8AB0', show: () => st.labels },
-    { text: 'гипоталамус и гипофиз', pos: V3(0.3, 4.0, 0.15), color: '#C77DFF', show: () => st.labels },
-    { text: 'симпатический центр Th10–L2', pos: SYM.clone().add(V3(0.45, 0.05, 0)), color: '#FF6A5A', show: () => st.labels },
-    { text: 'парасимпатический центр S2–S4', pos: PARA.clone().add(V3(0.5, -0.08, 0)), color: '#5CC48A', show: () => st.labels },
-    { text: 'органы малого таза', pos: PEL.clone().add(V3(0.35, -0.05, 0.1)), color: '#FF5A7A', show: () => st.labels },
-    { text: 'сердце', pos: BODY.heart.clone().add(V3(0.3, 0, 0.2)), color: '#FF8A7A', show: () => st.labels },
+    { text: 'cortex and limbic system', pos: V3(0.35, 4.42, 0.1), color: '#FF8AB0', show: () => st.labels },
+    { text: 'hypothalamus and pituitary', pos: V3(0.3, 4.0, 0.15), color: '#C77DFF', show: () => st.labels },
+    { text: 'sympathetic center T10–L2', pos: SYM.clone().add(V3(0.45, 0.05, 0)), color: '#FF6A5A', show: () => st.labels },
+    { text: 'parasympathetic center S2–S4', pos: PARA.clone().add(V3(0.5, -0.08, 0)), color: '#5CC48A', show: () => st.labels },
+    { text: 'pelvic organs', pos: PEL.clone().add(V3(0.35, -0.05, 0.1)), color: '#FF5A7A', show: () => st.labels },
+    { text: 'heart', pos: BODY.heart.clone().add(V3(0.3, 0, 0.2)), color: '#FF8A7A', show: () => st.labels },
   ];
   const refs = {};
   function ui(el) {
     const ib = infoBox('1 1 380px');
     refs.setInfo = () => { ib.info.innerHTML = st.msg || (st.model === 'basson' ? TXT_B : (st.run || st.ct > 0 ? SR_PH[st.ph].text : TXT_MJ)); };
     refs.phSeg = seg(SR_PH.map((p) => ({ id: p.id, label: p.name, color: p.color })), () => SR_PH[st.ph].id, (v) => { const i = SR_PH.findIndex((p) => p.id === v); st.ct = SR_PH.slice(0, i).reduce((a, p) => a + p.d, 0) + 0.01; st.trace = []; st.ph = i; st.msg = null; refs.setInfo(); });
-    refs.patSeg = seg([{ id: 'm', label: 'Кривая A' }, { id: 'f', label: 'С повторным пиком' }, { id: 'b', label: 'Без оргазма' }], () => st.pattern, (v) => { st.pattern = v; st.ct = 0; st.trace = []; });
-    refs.modSeg = seg([{ id: 'mj', label: 'Мастерс и Джонсон' }, { id: 'basson', label: 'Бэссон' }], () => st.model, (v) => { st.model = v; st.msg = null; refs.setInfo(); });
-    const play = toggle('Идёт', () => st.run, (v) => { st.run = v; });
-    refs.rot = toggle('Вращение', () => st.rot, (v) => { st.rot = v; });
-    const lab = toggle('Подписи', () => st.labels, (v) => { st.labels = v; });
+    refs.patSeg = seg([{ id: 'm', label: 'Curve A' }, { id: 'f', label: 'With a repeated peak' }, { id: 'b', label: 'Without orgasm' }], () => st.pattern, (v) => { st.pattern = v; st.ct = 0; st.trace = []; });
+    refs.modSeg = seg([{ id: 'mj', label: 'Masters and Johnson' }, { id: 'basson', label: 'Basson' }], () => st.model, (v) => { st.model = v; st.msg = null; refs.setInfo(); });
+    const play = toggle('Play', () => st.run, (v) => { st.run = v; });
+    refs.rot = toggle('Rotate', () => st.rot, (v) => { st.rot = v; });
+    const lab = toggle('Labels', () => st.labels, (v) => { st.labels = v; });
     Object.assign(refs, { play, lab });
-    el.append(group('Фаза', '1–4', refs.phSeg, play), group('Вариант', '', refs.patSeg), group('Модель', '', refs.modSeg), group('Вид', 'R · N', refs.rot, lab), ib.el);
+    el.append(group('Phase', '1–4', refs.phSeg, play), group('Variant', '', refs.patSeg), group('Model', '', refs.modSeg), group('View', 'R · N', refs.rot, lab), ib.el);
     refs.setInfo();
   }
   function onKey(e) {
@@ -135,20 +135,20 @@ function makeSresp() {
     if (k === 'r' || k === 'к') { refs.rot.click(); return true; } if (k === 'n' || k === 'т') { refs.lab.click(); return true; }
     return false;
   }
-  function stats() { return [['Пульс', Math.round(st.hr || 70), 'уд/мин'], ['Дыхание', Math.round(st.rr || 14), '/мин'], ['Фаза', SR_PH[st.ph].name, '']]; }
+  function stats() { return [['Pulse', Math.round(st.hr || 70), 'bpm'], ['Breathing', Math.round(st.rr || 14), '/min'], ['Phase', SR_PH[st.ph].name, '']]; }
   const self = {
     scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#FF8AB0',
-    kicker: 'Тело · физиология', title: 'Цикл полового ответа',
-    lede: 'Как мозг, вегетативная нервная система, сосуды и гормоны согласованно проводят тело через четыре фазы полового ответа — от возбуждения до разрешения.',
+    kicker: 'Body · physiology', title: 'Sexual response cycle',
+    lede: 'How the brain, the autonomic nervous system, blood vessels and hormones work together to carry the body through the four phases of the sexual response — from excitement to resolution.',
     notes: `
-      <div><h2>Нервы и гормоны</h2><ul>
-        <li><b>Мозг:</b> кора (мысли, образы), лимбическая система и гипоталамус запускают и регулируют ответ; дофамин связан с желанием и вознаграждением.</li>
-        <li><b>Парасимпатическая система</b> (тазовые нервы из S2–S4) — расширение сосудов и прилив крови.</li>
-        <li><b>Симпатическая система</b> (Th10–L2) — сокращения гладких мышц и оргазм.</li>
-        <li><b>Окситоцин</b> — сокращения мышц и чувство близости; <b>пролактин</b> — расслабление и рефрактерность; <b>тестостерон</b> и <b>эстрогены</b> поддерживают либидо у обоих полов.</li></ul>
-        <h3>Важно</h3><p>Длительность фаз и форма кривой сильно различаются у разных людей и в разных ситуациях — «нормы» здесь широкие. Стойкие трудности с желанием, возбуждением или оргазмом — повод обратиться к врачу (урологу, гинекологу, сексологу): часто причина в гормонах, сосудах, лекарствах или стрессе.</p></div>
-      <div><h2>Условности</h2><ul><li>Кривые — усреднённые схемы из учебников физиологии.</li><li>Органы малого таза показаны обобщённо светящейся областью.</li></ul></div>
-      <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>4</code> фаза</li><li><code>Пробел</code> пауза</li><li><code>R</code> вращение · <code>N</code> подписи</li></ul></div>`,
+      <div><h2>Nerves and hormones</h2><ul>
+        <li><b>Brain:</b> the cortex (thoughts, images), the limbic system and the hypothalamus initiate and regulate the response; dopamine is linked to desire and reward.</li>
+        <li><b>Parasympathetic system</b> (pelvic nerves from S2–S4): vasodilation and blood inflow.</li>
+        <li><b>Sympathetic system</b> (T10–L2): smooth muscle contractions and orgasm.</li>
+        <li><b>Oxytocin</b>: muscle contractions and a feeling of closeness; <b>prolactin</b>: relaxation and refractoriness; <b>testosterone</b> and <b>estrogens</b> support libido in both sexes.</li></ul>
+        <h3>Important</h3><p>The duration of the phases and the shape of the curve vary greatly between people and situations — the “norms” here are broad. Persistent difficulties with desire, arousal or orgasm are a reason to see a doctor (a urologist, gynecologist or sexologist): the cause is often hormones, blood vessels, medications or stress.</p></div>
+      <div><h2>Simplifications</h2><ul><li>The curves are averaged diagrams from physiology textbooks.</li><li>The pelvic organs are shown generically as a glowing area.</li></ul></div>
+      <div class="keys"><h2>Keys</h2><ul><li><code>1</code>–<code>4</code> phase</li><li><code>Space</code> pause</li><li><code>R</code> rotate · <code>N</code> labels</li></ul></div>`,
   };
   return self;
 }

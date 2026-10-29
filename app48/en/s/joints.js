@@ -267,7 +267,7 @@ function makeJoints() {
     { text: 'pannus', pos: () => V3(40 - JG.ex - 0.1, JG.ey + 0.5, 0.62), color: '#FF6A6A', show: () => L2() && st.jd === 'ra' },
     { text: 'erosions', pos: () => V3(40 + JG.ex, JG.ey - 0.12, 0.62), color: '#FFB0A0', show: () => L2() && st.jd === 'ra' },
     { text: 'urate crystals', pos: () => V3(40 + 0.2, UPC.y - RB - 0.12, 0.62), color: '#FFFFFF', show: () => L2() && st.jd === 'gout' },
-    ...Object.entries(TYPES).map(([k, T]) => ({ text: T.name + (T.ax ? ` · axes: ${T.ax}` : ' · gliding'), pos: slot[k].clone().add(V3(80 - 1.0, -2.25, 0.6)), color: T.col, show: L3 })),
+    ...Object.entries(TYPES).map(([k, T]) => ({ text: T.name + (mqm.matches ? '' : T.ax ? ` · axes: ${T.ax}` : ' · gliding'), pos: slot[k].clone().add(V3(80 - 1.0, -2.25, 0.6)), color: T.col, show: L3 })),
     ...Object.entries(TYPES).flatMap(([k, T]) => T.at.filter(([, n]) => n).map(([p, n]) => ({ text: n, pos: p.clone().add(V3(80 + (p.x >= 0 ? 0.35 : -0.35), 0.05, 0.3)), color: T.col, show: () => L3() && st.typ === k }))),
   ];
   const dyn = labels.filter((l) => typeof l.pos === 'function'); dyn.forEach((l) => { l.fn = l.pos; l.pos = V3(0, 0, 0); });
