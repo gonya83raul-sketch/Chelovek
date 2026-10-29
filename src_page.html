@@ -7117,7 +7117,7 @@ function makeHeart() {
       ORGQ.forEach(([n, q, o], i) => { const x = 8 + i * gw + gw * 0.16, bw = gw * 0.3;
         ctx.fillStyle = '#FF6A5A'; ctx.fillRect(x, Y(q), bw, top + bh - Y(q)); ctx.fillStyle = '#7FD6FF'; ctx.fillRect(x + bw + 2, Y(o), bw, top + bh - Y(o));
         ctx.fillStyle = 'rgba(255,255,255,.6)'; ctx.font = '500 9px JetBrains Mono, monospace'; ctx.fillText(String(q), x, Y(q) - 2); ctx.fillText(String(o), x + bw + 2, Y(o) - 2);
-        ctx.fillStyle = 'rgba(255,255,255,.75)'; ctx.font = '500 10px Inter, sans-serif'; const tw = ctx.measureText(n).width; ctx.fillText(n, x + bw - tw / 2, hgt - 3); });
+        ctx.fillStyle = 'rgba(255,255,255,.75)'; ctx.font = w < 340 ? '500 8px Inter, sans-serif' : '500 10px Inter, sans-serif'; const tw = ctx.measureText(n).width; ctx.fillText(n, x + bw - tw / 2, hgt - 3); });
       return;
     }
     const x = (tt) => 8 + (1 - (st.t - tt) / 4) * (w - 16), y0 = hgt * 0.62, sc = hgt * 0.42;
@@ -7244,8 +7244,7 @@ function makeLungs() {
   // гортань: щитовидный хрящ — две пластины углом вперёд (кадык), под ним перстневидное кольцо, внутри — просвет
   const lar = add('lar', (() => { const a = [];
     [1, -1].forEach((sd) => { const pl = new THREE.BoxGeometry(0.15, 0.17, 0.018, 2, 2, 1); pl.translate(0.075 * sd, 0, 0); pl.rotateY(-0.55 * sd); pl.translate(0, 3.52, 0.22); a.push(pl); });
-    const cr = new THREE.TorusGeometry(0.085, 0.022, 10, 28); cr.rotateX(Math.PI / 2); cr.translate(0, 3.39, 0.14); a.push(cr);
-    const lum = new THREE.CylinderGeometry(0.085, 0.08, 0.26, 16, 1); lum.translate(0, 3.5, 0.14); a.push(lum);
+    const cr = new THREE.TorusGeometry(0.095, 0.03, 10, 28); cr.rotateX(Math.PI / 2); cr.translate(0, 3.39, 0.14); a.push(cr);
     return mergeGeometries(a.map((g) => g.toNonIndexed())); })(), { k: 0.5 });
   const epig = add('lar', ell3(0.07, 0.02, 0.06, V3(0, 3.66, 0.12)), { k: 0.6 });
   const NOSE = new THREE.CatmullRomCurve3([V3(0, 4.05, 0.5), V3(0, 4.12, 0.3), V3(0, 4.05, 0.05), V3(0, 3.85, -0.06), V3(0, 3.65, 0.02), V3(0, 3.5, 0.12)]);
@@ -7376,8 +7375,8 @@ function makeLungs() {
     { text: 'носовая полость', pos: V3(0.1, 4.2, 0.42), color: '#E8A890', show: () => st.labels && st.mode !== 'alv' },
     { text: 'гортань', pos: V3(0.15, 3.5, 0.22), color: '#F2D18A', show: () => st.labels && st.mode !== 'alv' },
     { text: 'трахея', pos: V3(0.12, 2.95, 0.12), color: '#E8DCC8', show: () => st.labels && st.mode !== 'alv' },
-    { text: 'правое лёгкое · 3 доли', pos: V3(-0.95, 1.9, 0.2), left: true, color: '#E89AA8', show: () => st.labels && st.mode !== 'alv' },
-    { text: 'левое лёгкое · 2 доли', pos: V3(1.05, 2.9, 0.2), color: '#E89AA8', show: () => st.labels && st.mode !== 'alv' },
+    { text: matchMedia('(max-width:700px)').matches ? 'правое · 3 доли' : 'правое лёгкое · 3 доли', pos: V3(-0.95, 1.9, 0.2), left: true, color: '#E89AA8', show: () => st.labels && st.mode !== 'alv' },
+    { text: matchMedia('(max-width:700px)').matches ? 'левое · 2 доли' : 'левое лёгкое · 2 доли', pos: V3(1.05, 2.9, 0.2), color: '#E89AA8', show: () => st.labels && st.mode !== 'alv' },
     { text: 'диафрагма', pos: V3(0.45, 1.45, 0.45), color: '#E89090', show: () => st.labels && st.mode !== 'alv' },
     { text: 'сердце', pos: BODY.heart.clone().add(V3(0.1, -0.05, 0.3)), color: '#FF8A7A', show: () => st.labels && st.mode === 'tract' },
     { text: 'бронхиола', pos: V3(28.0, 0.9, 0.2), color: '#E8DCC8', show: () => st.labels && st.mode === 'alv' },
@@ -7445,7 +7444,7 @@ function makeDigest() {
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x07060a); scene.environment = envTex;
   labLights(scene, 0xffb08a);
   const MOBD = matchMedia('(max-width:700px)').matches;
-  const VIEW = { org: flyTarget(V3(0.0, 1.72, 0), V3(2.75, 3.24, 12.87)), path: MOBD ? flyTarget(V3(0.0, 1.1, 0), V3(-2.4, 2.2, 10.2)) : flyTarget(V3(0.0, 1.72, 0), V3(-2.75, 3.24, 12.87)), villi: MOBD ? flyTarget(V3(30, -1.0, 0), V3(32.6, 1.3, 8.4)) : flyTarget(V3(29.1, -0.7, 0), V3(32.2, 2.05, 10.1)) };
+  const VIEW = { org: flyTarget(V3(0.0, 1.72, 0), V3(2.75, 3.24, 12.87)), path: MOBD ? flyTarget(V3(0.0, 1.1, 0), V3(-2.4, 2.2, 10.2)) : flyTarget(V3(0.0, 1.72, 0), V3(-2.75, 3.24, 12.87)), villi: MOBD ? flyTarget(V3(30.6, -1.0, 0), V3(33.2, 1.3, 11.5)) : flyTarget(V3(29.1, -0.7, 0), V3(32.2, 2.05, 10.1)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(VIEW.org.pos);
   const controls = makeControls(camera, VIEW.org.target); controls.minDistance = 1.5; controls.maxDistance = 22;
   const body = new THREE.Group(); scene.add(body);
@@ -8404,11 +8403,11 @@ function makeEar() {
     { text: 'ушная раковина', pos: V3(-2.6, 0.95, -0.1), color: '#E8B8A0', show: () => st.labels && st.mode === 'anat' },
     { text: 'слуховой проход', pos: V3(-1.7, 0.28, 0.1), color: '#E8B8A0', show: () => st.labels && st.mode === 'anat' },
     { text: 'барабанная перепонка', pos: V3(-0.95, -0.3, 0.2), color: '#F2D8C0', show: () => st.labels && st.mode === 'anat' },
-    { text: 'молоточек · наковальня · стремечко', pos: V3(-0.75, 0.55, 0.1), color: '#F2E6C8', show: () => st.labels && st.mode === 'anat' },
+    { text: matchMedia('(max-width:700px)').matches ? 'косточки' : 'молоточек · наковальня · стремечко', pos: V3(-0.75, 0.55, 0.1), color: '#F2E6C8', show: () => st.labels && st.mode === 'anat' },
     { text: 'слуховая труба', pos: V3(-0.35, -1.1, 0.7), color: '#D8A8B0', show: () => st.labels && st.mode === 'anat' },
     { text: 'улитка', pos: V3(0.25, -0.75, 0.35), color: '#7FD6FF', show: () => st.labels && st.mode === 'anat' },
     { text: 'полукружные каналы', pos: V3(0.25, 0.92, 0.0), color: '#C77DFF', show: () => st.labels && st.mode !== 'coch' },
-    { text: 'слуховой нерв → ствол мозга', pos: V3(1.3, 0.4, -0.2), color: '#F4C542', show: () => st.labels && st.mode === 'anat' },
+    { text: matchMedia('(max-width:700px)').matches ? 'слуховой нерв' : 'слуховой нерв → ствол мозга', pos: V3(1.3, 0.4, -0.2), color: '#F4C542', show: () => st.labels && st.mode === 'anat' },
     { text: 'основание · 20 кГц', pos: V3(27.8, 0.35, 0.3), color: '#E07070', show: () => st.labels && st.mode === 'coch' },
     { text: 'вершина · 20 Гц', pos: V3(31.9, 0.35, 0.4), color: '#B08AFF', show: () => st.labels && st.mode === 'coch' },
     { text: 'основная мембрана', pos: V3(29.4, -0.15, 0.5), color: '#c8d8f0', show: () => st.labels && st.mode === 'coch' },
