@@ -132,7 +132,7 @@ function makeBrain() {
   function stats() { if (st.sys === 'all') return [['Systems', 5, ''], ['Neurotransmitters', 5, '']]; const s = S[st.sys]; return [['Neurons', s.share, '']]; }
   apply();
   return {
-    deskShift: 1.3, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, get accent() { return st.sys === 'all' ? '#EFEAE6' : S[st.sys].color; },
+    deskShift: 1.3, mobZoom: 0.62, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, get accent() { return st.sys === 'all' ? '#EFEAE6' : S[st.sys].color; },
     kicker: 'Neurotransmitters · where they are in the brain', title: 'Neurotransmitter systems',
     lede: 'Small nuclei in the brainstem and at the base of the brain send projections across a vast territory. That is why a single substance changes the state of the whole brain at once.',
     notes: `

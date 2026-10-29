@@ -132,7 +132,7 @@ function makeBrain() {
   function stats() { if (st.sys === 'all') return [['Систем', 5, ''], ['Медиаторов', 5, '']]; const s = S[st.sys]; return [['Нейронов', s.share, '']]; }
   apply();
   return {
-    deskShift: 1.3, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, get accent() { return st.sys === 'all' ? '#EFEAE6' : S[st.sys].color; },
+    deskShift: 1.3, mobZoom: 0.62, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, get accent() { return st.sys === 'all' ? '#EFEAE6' : S[st.sys].color; },
     kicker: 'Медиаторы · где они в мозге', title: 'Системы медиаторов',
     lede: 'Маленькие ядра в стволе и основании мозга раскидывают отростки по огромной территории. Поэтому одно вещество меняет состояние всего мозга сразу.',
     notes: `

@@ -5,16 +5,16 @@ import { Sparks, THREE, V3, __set_rnd, branchTree, displaceGeo, ell3, envTex, fl
    ОРГАНЫ ЧУВСТВ · КОЖА И ОСЯЗАНИЕ
    ========================================================= */
 const SK_REC = [
-  { id: 'meis', short: 'Мейсснер', name: 'Тельца Мейсснера', color: '#7FD6FF', fast: true, text: '<b>Тельца Мейсснера</b> лежат в сосочках дермы прямо под эпидермисом, особенно много их на кончиках пальцев и губах. Быстро адаптируются: отвечают на начало и конец лёгкого касания, на скольжение — так мы чувствуем фактуру.' },
-  { id: 'merk', short: 'Меркель', name: 'Диски Меркеля', color: '#7FE0A0', fast: false, text: '<b>Диски Меркеля</b> — у основания эпидермиса. Медленно адаптируются: пока давление длится, они продолжают разряжаться. Различают форму, края, точки — с их помощью читают шрифт Брайля.' },
-  { id: 'pac', short: 'Пачини', name: 'Тельца Пачини', color: '#C77DFF', fast: true, text: '<b>Тельца Пачини</b> — крупные (до 1–2 мм) слоистые «луковицы» в глубине кожи. Очень быстро адаптируются и чувствуют вибрацию 50–500 Гц: например, дрожание инструмента в руке.' },
-  { id: 'ruf', short: 'Руффини', name: 'Окончания Руффини', color: '#F2C14E', fast: false, text: '<b>Окончания Руффини</b> — веретёна в дерме, медленно адаптируются и чувствуют растяжение кожи — важны для ощущения положения пальцев и суставов.' },
-  { id: 'free', short: 'Боль', name: 'Свободные окончания', color: '#FF6A5A', fast: false, text: '<b>Свободные нервные окончания</b> проникают даже в эпидермис. Это ноцицепторы (боль), терморецепторы (тепло и холод) и рецепторы зуда. Боль проводится двумя типами волокон: быстрыми (острая, точная боль) и медленными (тупая, ноющая).' },
+  { id: 'meis', short: 'Meissner', name: 'Meissner corpuscles', color: '#7FD6FF', fast: true, text: '<b>Meissner corpuscles</b> lie in the dermal papillae just beneath the epidermis and are especially numerous in the fingertips and lips. They adapt rapidly: they respond to the beginning and end of a light touch and to sliding — this is how we feel texture.' },
+  { id: 'merk', short: 'Merkel', name: 'Merkel discs', color: '#7FE0A0', fast: false, text: '<b>Merkel discs</b> lie at the base of the epidermis. They adapt slowly: as long as pressure lasts, they keep firing. They detect shape, edges and points — they are what let us read Braille.' },
+  { id: 'pac', short: 'Pacini', name: 'Pacinian corpuscles', color: '#C77DFF', fast: true, text: '<b>Pacinian corpuscles</b> are large (up to 1–2 mm) layered “onions” deep in the skin. They adapt very rapidly and sense vibration at 50–500 Hz: for example, the trembling of a tool in your hand.' },
+  { id: 'ruf', short: 'Ruffini', name: 'Ruffini endings', color: '#F2C14E', fast: false, text: '<b>Ruffini endings</b> are spindle-shaped structures in the dermis; they adapt slowly and sense stretching of the skin — important for sensing the position of the fingers and joints.' },
+  { id: 'free', short: 'Pain', name: 'Free nerve endings', color: '#FF6A5A', fast: false, text: '<b>Free nerve endings</b> reach even into the epidermis. They are nociceptors (pain), thermoreceptors (warmth and cold) and itch receptors. Pain is carried by two types of fibers: fast ones (sharp, well-localized pain) and slow ones (dull, aching pain).' },
 ];
 const SK_LAYERS = [
-  { id: 'epi', name: 'Эпидермис', color: '#E8C8B0', text: '<b>Эпидермис</b> (0,05–1,5 мм) — многослойный эпителий без сосудов. Снизу вверх: <b>базальный</b> слой (клетки делятся), <b>шиповатый</b> (клетки скреплены «шипами»-десмосомами), <b>зернистый</b> (зёрна кератогиалина, клетки начинают умирать), на ладонях и подошвах ещё <b>блестящий</b>, и <b>роговой</b> — мёртвые чешуйки, которые слущиваются; эпидермис обновляется за ~4 недели. В базальном слое сидят <b>меланоциты</b>: своими отростками они передают пигмент меланин соседним клеткам, и он закрывает их ядра от ультрафиолета. Число меланоцитов у людей примерно одинаковое, цвет кожи зависит от того, сколько меланина они делают.' },
-  { id: 'der', name: 'Дерма', color: '#D89090', text: '<b>Дерма</b> (1–4 мм) — соединительная ткань из волокон коллагена (прочность) и эластина (упругость). Тонкий <b>сосочковый</b> слой под эпидермисом рыхлый, в нём капиллярные петли и тельца Мейсснера; толстый <b>сетчатый</b> слой плотный, его коллаген держит кожу. Сосуды образуют два сплетения: глубокое на границе с клетчаткой и подсосочковое, от которого петли поднимаются в каждый сосочек. В ней сосуды, нервы и рецепторы, корни волос, сальные и потовые железы. Сосочки дермы образуют папиллярные узоры — отпечатки пальцев.' },
-  { id: 'hyp', name: 'Гиподерма', color: '#F2D890', text: '<b>Подкожная жировая клетчатка</b> — запас энергии, теплоизоляция и амортизатор. Её толщина сильно зависит от места тела и от человека. Жировые дольки разделены соединительнотканными тяжами, связывающими кожу с глубокой фасцией; здесь проходят подкожные артерия и вена и ствол кожного нерва, от которого веточки поднимаются к рецепторам.' },
+  { id: 'epi', name: 'Epidermis', color: '#E8C8B0', text: '<b>The epidermis</b> (0.05–1.5 mm) is a stratified epithelium without blood vessels. From the bottom up: the <b>basal</b> layer (cells divide), the <b>spinous</b> layer (cells held together by desmosome “spines”), the <b>granular</b> layer (keratohyalin granules; cells begin to die), on palms and soles also the <b>clear</b> layer, and the <b>horny</b> layer — dead flakes that are shed; the epidermis renews in about 4 weeks. <b>Melanocytes</b> sit in the basal layer: through their processes they hand the pigment melanin to neighboring cells, where it shields the nuclei from ultraviolet. Everyone has roughly the same number of melanocytes; skin color depends on how much melanin they make.' },
+  { id: 'der', name: 'Dermis', color: '#D89090', text: '<b>The dermis</b> (1–4 mm) is connective tissue of collagen fibers (strength) and elastin (elasticity). The thin <b>papillary</b> layer under the epidermis is loose and holds capillary loops and Meissner corpuscles; the thick <b>reticular</b> layer is dense, and its collagen holds the skin together. Vessels form two plexuses: a deep one at the border with the subcutis and a subpapillary one, from which loops rise into every papilla. The dermis contains vessels, nerves and receptors, hair roots, sebaceous and sweat glands. Dermal papillae form the ridges of fingerprints.' },
+  { id: 'hyp', name: 'Hypodermis', color: '#F2D890', text: '<b>Subcutaneous fat</b> is an energy store, insulation and a shock absorber. Its thickness varies greatly between body sites and between people. Fat lobules are separated by connective-tissue strands that tie the skin to the deep fascia; the subcutaneous artery and vein and the trunk of the cutaneous nerve run here, with twigs rising to the receptors.' },
 ];
 function makeSkin() {
   __set_rnd(mulberry(1919));
@@ -116,15 +116,15 @@ function makeSkin() {
   /* ---------- состояние ---------- */
   const st = { t: 0, sel: null, labels: true, rot: false, fly: null, stim: null, stimT: -99, msg: null, raster: [], temp: 0, sweat: 0 };
   const STIM = {
-    touch: { name: 'Лёгкое касание', text: '<b>Касание.</b> Зонд прижимается к коже. Тельца Мейсснера дают короткую пачку импульсов в начале и в конце касания (быстрая адаптация), диски Меркеля разряжаются всё время, пока давление длится (медленная). Справа — импульсы каждого типа рецепторов.' },
-    vib: { name: 'Вибрация', text: '<b>Вибрация.</b> Зонд дрожит с частотой ~200 Гц. Слоистая капсула Пачини гасит медленное давление и пропускает только быстрые изменения — поэтому именно эти тельца отвечают на каждое колебание.' },
-    stretch: { name: 'Растяжение', text: '<b>Растяжение кожи.</b> Пока кожа растянута, окончания Руффини разряжаются постоянно — мозг знает, как согнуты пальцы и в каком положении сустав.' },
-    pain: { name: 'Укол', text: '<b>Укол.</b> Повреждение ткани возбуждает свободные нервные окончания — ноцицепторы. Сначала по быстрым миелиновым волокнам приходит острая боль, затем по медленным — тупая. Спинной мозг запускает рефлекс отдёргивания ещё до того, как боль осознана.' },
-    cold: { name: 'Холод', text: '<b>Холод.</b> Терморецепторы сообщают в гипоталамус. Сосуды кожи сужаются (меньше тепла уходит), мышцы, поднимающие волос, сокращаются — «гусиная кожа», у предков-зверей это пушило мех. Потоотделение прекращается.' },
-    heat: { name: 'Жара', text: '<b>Жара.</b> Сосуды кожи расширяются (кожа краснеет и отдаёт тепло), потовые железы выделяют пот — испаряясь, он охлаждает тело. За сутки при жаре может выделиться несколько литров пота.' },
+    touch: { name: 'Light touch', text: '<b>Touch.</b> The probe presses on the skin. Meissner corpuscles give a short burst of impulses at the beginning and end of the touch (rapid adaptation); Merkel discs fire the whole time the pressure lasts (slow adaptation). On the right are the impulses from each type of receptor.' },
+    vib: { name: 'Vibration', text: '<b>Vibration.</b> The probe vibrates at ~200 Hz. The layered capsule of the Pacinian corpuscle filters out slow pressure and passes only rapid changes — so these corpuscles respond to every oscillation.' },
+    stretch: { name: 'Stretch', text: '<b>Skin stretch.</b> As long as the skin is stretched, Ruffini endings fire continuously — the brain knows how the fingers are bent and what position a joint is in.' },
+    pain: { name: 'Prick', text: '<b>Prick.</b> Tissue damage excites free nerve endings — nociceptors. First, sharp pain arrives along fast myelinated fibers, then dull pain along slow ones. The spinal cord triggers the withdrawal reflex even before the pain is consciously felt.' },
+    cold: { name: 'Cold', text: '<b>Cold.</b> Thermoreceptors report to the hypothalamus. Skin blood vessels constrict (less heat is lost), and the arrector pili muscles contract — “goose bumps”, which in our furry ancestors fluffed up the fur. Sweating stops.' },
+    heat: { name: 'Heat', text: '<b>Heat.</b> Skin blood vessels dilate (the skin reddens and gives off heat), and sweat glands secrete sweat — as it evaporates, it cools the body. In hot weather, several liters of sweat can be lost in a day.' },
   };
   function stim(k) { st.stim = k; st.stimT = st.t; st.msg = STIM[k].text; refs.setInfo(); refs.stSeg && refs.stSeg.sync(); }
-  const LVIEW = { epi: [V3(1.15, 0.55, 1.0), 2.9], der: [V3(0.1, -0.4, 0.6), 6.4], hyp: [V3(0.2, -1.95, 0.6), 5.6] };
+  const LVIEW = matchMedia('(max-width:700px)').matches ? { epi: [V3(1.0, 0.85, 1.0), 2.9], der: [V3(0.1, -0.4, 0.6), 6.4], hyp: [V3(0.2, -1.15, 0.6), 5.6] } : { epi: [V3(-0.5, 0.72, 1.7), 3.8], der: [V3(-0.8, -0.12, 1.0), 6.4], hyp: [V3(-0.8, -1.6, 1.0), 5.8] };
   function select(id) { st.sel = id === 'all' ? null : id; refs.seg && refs.seg.sync(); { const lv = st.sel && LVIEW[st.sel], dir = HOME.pos.clone().sub(HOME.target).normalize(); st.fly = lv ? flyTarget(lv[0], lv[0].clone().addScaledVector(dir, lv[1])) : (LVIEW[id] === undefined && id !== 'all' ? st.fly : HOME); } const all = [...SK_REC.map((r) => REC[r.id]), ...SK_LAYERS.map((l) => LAY[l.id])]; all.forEach((p) => p.mats.forEach((m) => { m.emissiveIntensity = st.sel === p.id ? 0.6 : (REC[p.id] ? 0.15 : 0); })); st.msg = null; refs.setInfo && refs.setInfo(); }
   pickOn(() => self, camera, pick, (id) => select(id));
   const fire = (id, rate, dt) => { const n = rate * dt; if (rnd() < n) { REC[id].spikes.push(st.t); const c = NERV[id][Math.floor(rnd() * NERV[id].length)]; for (let u = 0; u < 1; u += 0.2) fx.spawn(c.getPointAt(1 - u), V3(0, 0, 0), new THREE.Color(REC[id].color), 0.3 + u * 0.4, 0, 1.4); REC[id].flash = 1; } };
@@ -163,45 +163,45 @@ function makeSkin() {
     const rows = SK_REC.length, rh = (hgt - 18) / rows, x = (tt) => 8 + (1 - (st.t - tt) / 6) * (w - 16);
     ctx.font = '500 9px JetBrains Mono, monospace';
     SK_REC.forEach((r, i) => { const y = 16 + i * rh; ctx.fillStyle = r.color; ctx.globalAlpha = 0.7; ctx.fillText(r.short, 8, y + rh * 0.6); ctx.globalAlpha = 1; ctx.strokeStyle = r.color; ctx.lineWidth = 1.5; REC[r.id].spikes.forEach((tt) => { const xx = x(tt); if (xx < 70) return; ctx.beginPath(); ctx.moveTo(xx, y + 2); ctx.lineTo(xx, y + rh - 2); ctx.stroke(); }); });
-    ctx.fillStyle = 'rgba(255,255,255,.6)'; ctx.font = '500 10px JetBrains Mono, monospace'; ctx.fillText('импульсы рецепторов', 8, 11);
+    ctx.fillStyle = 'rgba(255,255,255,.6)'; ctx.font = '500 10px JetBrains Mono, monospace'; ctx.fillText('receptor impulses', 8, 11);
   }
-  const TXT = '<b>Кожа</b> — самый большой орган: 1,5–2 м² и около 4 кг у взрослого. Она защищает от микробов, ультрафиолета и потери воды, регулирует температуру, делает витамин D и служит огромным органом чувств: на 1 см² кончика пальца — сотни рецепторов. Нажмите на слой или рецептор, попробуйте опыты.';
+  const TXT = '<b>The skin</b> is the largest organ: 1.5–2 m² and about 4 kg in an adult. It protects against microbes, ultraviolet light and water loss, regulates temperature, makes vitamin D and serves as a huge sense organ: one cm² of a fingertip holds hundreds of receptors. Click a layer or receptor, and try the experiments.';
   const labels = [
-    { text: 'эпидермис', pos: V3(-W / 2 - 0.05, (Y_TOP + Y_EPI) / 2, D / 2), color: '#E8C8B0', show: () => st.labels },
-    { text: 'дерма', pos: V3(-W / 2 - 0.05, 0.25, D / 2), color: '#D89090', show: () => st.labels },
-    { text: 'роговой', pos: V3(W / 2 + 0.03, Y_TOP + 0.02, D / 2), color: '#F2E6D8', show: () => st.labels && st.sel === 'epi' },
-    { text: 'зернистый', pos: V3(W / 2 + 0.03, Y_TOP - 0.06, D / 2), color: '#D8B080', show: () => st.labels && st.sel === 'epi' },
-    { text: 'шиповатый', pos: V3(W / 2 + 0.03, Y_EPI + 0.12, D / 2), color: '#E8C8B0', show: () => st.labels && st.sel === 'epi' },
-    { text: 'базальный', pos: V3(W / 2 + 0.03, Y_EPI + 0.04, D / 2), color: '#C09070', show: () => st.labels && st.sel === 'epi' },
-    { text: 'сосочковый слой', pos: V3(W / 2 + 0.03, 0.82, D / 2), color: '#F0B0B0', show: () => st.labels && st.sel === 'der' },
-    { text: 'сетчатый слой', pos: V3(-W / 2 + 0.05, -0.05, D / 2), color: '#D89090', show: () => st.labels && st.sel === 'der' },
-    { text: 'меланоцит', pos: MEL0.clone().add(V3(0.04, 0.03, 0.04)), color: '#C08060', show: () => st.labels && st.sel === 'epi' },
-    { text: 'эластические волокна', pos: V3(-0.25, -0.15, 0.85), color: '#F2E6A0', show: () => st.labels && st.sel === 'der' },
-    { text: 'глубокое сплетение', pos: V3(-1.6, Y_DER + 0.06, 0.12), color: '#E0605A', show: () => st.labels && st.sel === 'der' },
-    { text: 'подсосочковое сплетение', pos: V3(-1.6, 0.7, 0.32), color: '#E0605A', show: () => st.labels && st.sel === 'der' },
-    { text: 'кожный нерв', pos: V3(1.2, Y_DER - 0.3, -0.05), color: '#F4C542', show: () => st.labels && st.sel === 'hyp' },
-    { text: 'сосочек волоса', pos: V3(-0.95, -0.92, -0.25), color: '#D89090', show: () => st.labels && st.sel === 'hyp' },
-    { text: 'подкожная клетчатка', pos: V3(-W / 2 - 0.05, -1.0, D / 2), color: '#F2D890', show: () => st.labels },
-    { text: 'волос', pos: V3(-0.42, Y_TOP + 0.85, -0.3), color: '#c8a080', show: () => st.labels },
-    { text: 'сальная железа', pos: V3(-0.6, 0.18, -0.05), color: '#F2E08A', show: () => st.labels },
-    { text: 'мышца волоса', pos: ARR.getPointAt(0.75).add(V3(0.05, 0.05, 0)), color: '#E07070', show: () => st.labels },
-    { text: 'потовая железа', pos: V3(1.1, -0.35, 0.6), color: '#9FD8F0', show: () => st.labels },
-    { text: 'Мейсснер', pos: V3(-0.95, Y_EPI - 0.12, -0.55), color: '#7FD6FF', show: () => st.labels },
-    { text: 'Меркель', pos: V3(-0.3, Y_EPI + 0.12, 0.62), color: '#7FE0A0', show: () => st.labels },
-    { text: 'Пачини', pos: V3(0.5, -0.95, 0.35), color: '#C77DFF', show: () => st.labels },
-    { text: 'Руффини', pos: V3(0.32, 0.32, -0.45), color: '#F2C14E', show: () => st.labels },
-    { text: 'свободные окончания', pos: V3(1.55, Y_EPI + 0.05, 0.15), color: '#FF6A5A', show: () => st.labels },
+    { text: 'epidermis', pos: V3(-W / 2 - 0.05, (Y_TOP + Y_EPI) / 2, D / 2), color: '#E8C8B0', show: () => st.labels },
+    { text: 'dermis', pos: V3(-W / 2 - 0.05, 0.25, D / 2), color: '#D89090', show: () => st.labels },
+    { text: 'corneum', pos: V3(W / 2 + 0.03, Y_TOP + 0.02, D / 2), color: '#F2E6D8', show: () => st.labels && st.sel === 'epi' },
+    { text: 'granulosum', pos: V3(W / 2 + 0.03, Y_TOP - 0.06, D / 2), color: '#D8B080', show: () => st.labels && st.sel === 'epi' },
+    { text: 'spinosum', pos: V3(W / 2 + 0.03, Y_EPI + 0.12, D / 2), color: '#E8C8B0', show: () => st.labels && st.sel === 'epi' },
+    { text: 'basale', pos: V3(W / 2 + 0.03, Y_EPI + 0.04, D / 2), color: '#C09070', show: () => st.labels && st.sel === 'epi' },
+    { text: 'papillary layer', pos: V3(W / 2 + 0.03, 0.82, D / 2), color: '#F0B0B0', show: () => st.labels && st.sel === 'der' },
+    { text: 'reticular layer', pos: V3(-W / 2 + 0.05, -0.05, D / 2), color: '#D89090', show: () => st.labels && st.sel === 'der' },
+    { text: 'melanocyte', pos: MEL0.clone().add(V3(0.04, 0.03, 0.04)), color: '#C08060', show: () => st.labels && st.sel === 'epi' },
+    { text: 'elastic fibers', pos: V3(-0.25, -0.15, 0.85), color: '#F2E6A0', show: () => st.labels && st.sel === 'der' },
+    { text: 'deep plexus', pos: V3(-1.6, Y_DER + 0.06, 0.12), color: '#E0605A', show: () => st.labels && st.sel === 'der' },
+    { text: 'subpapillary plexus', pos: V3(-1.6, 0.7, 0.32), color: '#E0605A', show: () => st.labels && st.sel === 'der' },
+    { text: 'cutaneous nerve', pos: V3(1.2, Y_DER - 0.3, -0.05), color: '#F4C542', show: () => st.labels && st.sel === 'hyp' },
+    { text: 'hair papilla', pos: V3(-0.95, -0.92, -0.25), color: '#D89090', show: () => st.labels && st.sel === 'hyp' },
+    { text: 'subcutaneous fat', pos: V3(-W / 2 - 0.05, -1.0, D / 2), color: '#F2D890', show: () => st.labels },
+    { text: 'hair', pos: V3(-0.42, Y_TOP + 0.85, -0.3), color: '#c8a080', show: () => st.labels },
+    { text: 'sebaceous gland', pos: V3(-0.6, 0.18, -0.05), color: '#F2E08A', show: () => st.labels },
+    { text: 'arrector pili muscle', pos: ARR.getPointAt(0.75).add(V3(0.05, 0.05, 0)), color: '#E07070', show: () => st.labels },
+    { text: 'sweat gland', pos: V3(1.1, -0.35, 0.6), color: '#9FD8F0', show: () => st.labels },
+    { text: 'Meissner', pos: V3(-0.95, Y_EPI - 0.12, -0.55), color: '#7FD6FF', show: () => st.labels },
+    { text: 'Merkel', pos: V3(-0.3, Y_EPI + 0.12, 0.62), color: '#7FE0A0', show: () => st.labels },
+    { text: 'Pacini', pos: V3(0.5, -0.95, 0.35), color: '#C77DFF', show: () => st.labels },
+    { text: 'Ruffini', pos: V3(0.32, 0.32, -0.45), color: '#F2C14E', show: () => st.labels },
+    { text: 'free nerve endings', pos: V3(1.55, Y_EPI + 0.05, 0.15), color: '#FF6A5A', show: () => st.labels },
   ];
   const refs = {};
   function ui(el) {
     const ib = infoBox('1 1 340px');
     refs.setInfo = () => { const all = [...SK_REC, ...SK_LAYERS]; const s = all.find((x) => x.id === st.sel); ib.info.innerHTML = st.msg || (s ? s.text : TXT); };
-    refs.seg = seg([{ id: 'all', label: 'Все' }, ...SK_LAYERS.map((l) => ({ id: l.id, label: l.name, color: l.color })), ...SK_REC.map((r) => ({ id: r.id, label: r.name, color: r.color }))], () => st.sel || 'all', (v) => select(v));
+    refs.seg = seg([{ id: 'all', label: 'All' }, ...SK_LAYERS.map((l) => ({ id: l.id, label: l.name, color: l.color })), ...SK_REC.map((r) => ({ id: r.id, label: r.name, color: r.color }))], () => st.sel || 'all', (v) => select(v));
     refs.stSeg = seg(Object.entries(STIM).map(([k, s]) => ({ id: k, label: s.name })), () => st.stim, (v) => stim(v));
-    refs.rot = toggle('Вращение', () => st.rot, (v) => { st.rot = v; });
-    const lab = toggle('Подписи', () => st.labels, (v) => { st.labels = v; });
+    refs.rot = toggle('Rotate', () => st.rot, (v) => { st.rot = v; });
+    const lab = toggle('Labels', () => st.labels, (v) => { st.labels = v; });
     Object.assign(refs, { lab });
-    el.append(h('div', { class: 'grp', style: 'flex:1 1 560px' }, h('div', { class: 'glabel' }, 'Слои и рецепторы', h('kbd', {}, 'клик')), h('div', { class: 'gctl' }, refs.seg)), group('Опыт', '1–6', refs.stSeg), group('Вид', 'R · N', refs.rot, lab), ib.el);
+    el.append(h('div', { class: 'grp', style: 'flex:1 1 560px' }, h('div', { class: 'glabel' }, 'Layers and receptors', h('kbd', {}, 'click')), h('div', { class: 'gctl' }, refs.seg)), group('Experiment', '1–6', refs.stSeg), group('View', 'R · N', refs.rot, lab), ib.el);
     refs.setInfo();
   }
   function onKey(e) {
@@ -211,17 +211,17 @@ function makeSkin() {
     if (e.key === 'Escape') { select('all'); return true; }
     return false;
   }
-  function stats() { return [['Площадь кожи', '1,5–2', 'м²'], ['Температура', st.temp > 0.3 ? 'жарко' : st.temp < -0.3 ? 'холодно' : 'норма', '']]; }
+  function stats() { return [['Skin area', '1.5–2', 'm²'], ['Temperature', st.temp > 0.3 ? 'hot' : st.temp < -0.3 ? 'cold' : 'normal', '']]; }
   const self = {
     labelBg: true, mobZoom: 0.6, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#FFB08A',
-    kicker: 'Органы чувств · осязание', title: 'Кожа и осязание',
-    lede: 'Кусочек кожи в разрезе: три слоя, волос, железы, сосуды и пять видов рецепторов, каждый из которых отвечает на своё — касание, давление, вибрацию, растяжение или боль.',
+    kicker: 'Sense organs · touch', title: 'Skin and touch',
+    lede: 'A cross-section of skin: three layers, a hair, glands, blood vessels and five kinds of receptors, each responding to its own stimulus — touch, pressure, vibration, stretch or pain.',
     notes: `
-      <div><h2>Как кожа держит температуру</h2>
-        <p>Терморегуляцией управляет гипоталамус. В холод сосуды кожи сужаются, появляется дрожь и «гусиная кожа»; в жару сосуды расширяются и включается потоотделение (у человека 2–4 млн потовых желёз).</p>
-        <h3>Куда идёт сигнал</h3><p>От рецепторов по чувствительным нервам — в спинной мозг, по задним столбам и медиальной петле — в таламус и постцентральную извилину (поля 3, 1, 2). Боль и температура идут по спинно-таламическому пути.</p></div>
-      <div><h2>Условности</h2><ul><li>Толщина слоёв и размеры рецепторов увеличены и выровнены для наглядности.</li><li>Частоты импульсов — схема, а не запись.</li></ul></div>
-      <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>6</code> опыты</li><li>клик: слой или рецептор</li><li><code>R</code> вращение · <code>N</code> подписи</li></ul></div>`,
+      <div><h2>How the skin controls temperature</h2>
+        <p>Thermoregulation is controlled by the hypothalamus. In the cold, skin blood vessels constrict, shivering and “goose bumps” appear; in the heat, the vessels dilate and sweating begins (humans have 2–4 million sweat glands).</p>
+        <h3>Where the signal goes</h3><p>From the receptors, along sensory nerves to the spinal cord, then via the dorsal columns and the medial lemniscus to the thalamus and the postcentral gyrus (areas 3, 1, 2). Pain and temperature travel along the spinothalamic tract.</p></div>
+      <div><h2>Simplifications</h2><ul><li>Layer thickness and receptor sizes are enlarged and evened out for clarity.</li><li>Impulse rates are schematic, not a recording.</li></ul></div>
+      <div class="keys"><h2>Keys</h2><ul><li><code>1</code>–<code>6</code> experiments</li><li>click: layer or receptor</li><li><code>R</code> rotate · <code>N</code> labels</li></ul></div>`,
   };
   return self;
 }

@@ -22,7 +22,7 @@ function makeChest() {
   __set_rnd(mulberry(2323));
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x07060a); scene.environment = envTex;
   labLights(scene, 0xf2b0c8);
-  const VIEW = { chest: flyTarget(V3(0, 1.75, 0), V3(2.25, 2.7, 6.95)), breast: flyTarget(V3(30.0, -0.5, 0), V3(33.4, 0.5, 5.6)), lact: flyTarget(V3(30.0, -0.8, 0), V3(30.8, 0.4, 6.6)) };
+  const VIEW = { chest: flyTarget(V3(0, 1.75, 0), V3(2.25, 2.7, 6.95)), breast: flyTarget(V3(30.0, 0.0, 0), V3(33.4, 1.0, 5.6)), lact: flyTarget(V3(30.0, -0.3, 0), V3(30.8, 0.9, 6.6)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(VIEW.chest.pos);
   const controls = makeControls(camera, VIEW.chest.target); controls.minDistance = 1; controls.maxDistance = 18;
   const body = new THREE.Group(); scene.add(body);

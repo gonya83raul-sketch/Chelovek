@@ -20,7 +20,7 @@ function makeRepro(initMode) {
   __set_rnd(mulberry(2121));
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x08060a); scene.environment = envTex;
   labLights(scene, 0xf2b0c8);
-  const VIEW = { female: flyTarget(V3(-0.25, -0.3, 0), V3(1.0, 0.5, 3.75)), male: flyTarget(V3(0, -0.4, 0.1), V3(2.2, 0.3, 2.6)), cycle: flyTarget(V3(-0.08, 0.06, 0), V3(0.25, 0.3, 2.7)), dev: flyTarget(V3(0.1, -0.05, 0), V3(-0.9, 0.5, 2.8)) };
+  const VIEW = { female: flyTarget(V3(-0.25, -0.3, 0), V3(1.0, 0.5, 3.75)), male: flyTarget(V3(0, -0.4, 0.1), V3(2.2, 0.3, 2.6)), cycle: flyTarget(V3(-0.08, -0.04, 0), V3(0.25, 0.2, 2.7)), dev: flyTarget(V3(-0.3, 0.05, 0), V3(-1.1, 0.45, 2.6)) };
   const V0 = VIEW[initMode || 'female']; const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(V0.pos);
   const controls = makeControls(camera, V0.target); controls.minDistance = 0.8; controls.maxDistance = 14;
   bodyShell(scene, { rim: 0.18, arms: false });
@@ -173,7 +173,7 @@ function makeRepro(initMode) {
   const labels = [
     { text: 'ovary', pos: V3(0.42, 0.17, 0.05), color: '#F2B0C8', show: () => st.labels && schem() },
     { text: 'uterine tube', pos: V3(0.38, 0.36, 0.05), color: '#F2C88A', show: () => st.labels && schem() },
-    { text: 'uterus', pos: V3(0.0, 0.36, 0.1), color: '#E88A9A', show: () => st.labels && schem() },
+    { text: 'uterus', pos: matchMedia('(max-width:700px)').matches ? V3(-0.05, 0.25, 0.12) : V3(0.0, 0.36, 0.1), color: '#E88A9A', show: () => st.labels && schem() },
     { text: 'endometrium', pos: V3(-0.06, 0.12, 0.12), color: '#ff7a8a', show: () => st.labels && st.mode === 'cycle' },
     { text: 'cervix and vagina', pos: V3(0.08, -0.3, -0.02), color: '#D8A0B0', left: true, show: () => st.labels && schem() },
     { text: 'urinary bladder', pos: V3(0.1, -0.02, 0.36), color: '#F2D860', show: () => st.labels && ((st.mode === 'female' && schem()) || st.mode === 'male') },
