@@ -64,9 +64,10 @@ function makeVitamins() {
     RING.forEach((r) => { r.g.visible = r.v.g === st.mode; });
     list.forEach((r, k) => { const a = Math.PI * (0.12 + 0.76 * (k + 0.5) / list.length); r.home = V3(-Math.cos(a) * 6.4, -1.75 + Math.sin(a) * 0.25, -3.2 - Math.sin(a) * 1.2); });
   }
+  function syncCo() { const v = VT.find((x) => x.id === st.sel); if (refs.coBtn) refs.coBtn.style.display = v.co === v.mol ? 'none' : ''; }   /* у A, C, E, B7, B12 активная форма = сама молекула — кнопку прячем */
   function showVit() {
     if (curMesh) center.remove(curMesh);
-    const v = VT.find((x) => x.id === st.sel); curMesh = big(st.co ? v.co : v.mol); center.add(curMesh);
+    const v = VT.find((x) => x.id === st.sel); curMesh = big(st.co ? v.co : v.mol); center.add(curMesh); syncCo();
     halo.material.color.set(v.color).multiplyScalar(0.6); refs.setInfo && refs.setInfo();
   }
   function setMode(m) {
@@ -145,7 +146,7 @@ function makeVitamins() {
       box.innerHTML = '';
       if (st.mode === 'water' || st.mode === 'fat') {
         refs.vitSeg = seg(VT.filter((v) => v.g === st.mode).map((v) => ({ id: v.id, label: v.name.split(' · ')[0], color: v.color })), () => st.sel, (v) => selVit(v));
-        refs.coBtn = toggle('Активная форма', () => st.co, (v) => { st.co = v; showVit(); });
+        refs.coBtn = toggle('Активная форма', () => st.co, (v) => { st.co = v; showVit(); }); syncCo();
         box.append(h('div', { class: 'glabel' }, 'Витамин', h('kbd', {}, 'клик · C')), h('div', { class: 'gctl' }, refs.vitSeg, refs.coBtn));
       } else box.append(h('div', { class: 'glabel' }, 'Цикл'), h('div', { class: 'gctl' }, button('Сначала', () => { st.cyc = 0; }, true)));
     };
@@ -158,7 +159,7 @@ function makeVitamins() {
   function onKey(e) {
     const k = e.key.toLowerCase(), n = parseInt(e.key, 10);
     if (n >= 1 && n <= 4) { setMode(['water', 'fat', 'nad', 'vision'][n - 1]); return true; }
-    if ((k === 'c' || k === 'с') && refs.coBtn && G1.visible) { refs.coBtn.click(); return true; }
+    if ((k === 'c' || k === 'с') && refs.coBtn && G1.visible && refs.coBtn.style.display !== 'none') { refs.coBtn.click(); return true; }
     if (k === 'r' || k === 'к') { refs.rot.click(); return true; } if (k === 'n' || k === 'т') { refs.lab.click(); return true; }
     return false;
   }

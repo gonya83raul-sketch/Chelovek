@@ -23,7 +23,7 @@ function makeMembrane() {
   rnd = mulberry(1401);
   const scene = bioStage({ rim: 0xf2c14e });
   const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: кадр уходит из-под заголовка и описания (телефон — прежний ракурс)
-  const VIEW = { bilayer: DK ? flyTarget(V3(-0.9, -0.3, 1.5), V3(4.0, 0.9, 17.2)) : flyTarget(V3(0.4, -1.4, 1.5), V3(5.0, -0.2, 17)), fa: flyTarget(V3(40, -1.2, 0), V3(40, 0.8, 13.5)), classes: flyTarget(V3(80, -1.2, 0), V3(80, 0.9, 14.5)), digest: flyTarget(V3(120, -1.2, 0), V3(120.4, 0.6, 13.5)) };
+  const VIEW = { bilayer: DK ? flyTarget(V3(-1.1, -0.3, 1.5), V3(3.8, 0.9, 17.2)) : flyTarget(V3(0.4, -0.7, 1.5), V3(4.0, 0.25, 13.6)), fa: flyTarget(V3(40, -1.2, 0), V3(40, 0.8, 13.5)), classes: flyTarget(V3(80, -1.2, 0), V3(80, 0.9, 14.5)), digest: flyTarget(V3(120, -1.2, 0), V3(120.4, 0.6, 13.5)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.bilayer.pos);
   const controls = makeControls(camera, VIEW.bilayer.target); controls.minDistance = 2; controls.maxDistance = 40;
   const fx = new Sparks(1400, 0.08); scene.add(fx.obj);
@@ -87,8 +87,8 @@ function makeMembrane() {
     digest: '<b>Переваривание жиров</b> идёт в тонкой кишке. Желчные кислоты (зелёные) из печени дробят большую каплю жира на мелкие — <b>эмульгируют</b>, увеличивая поверхность в тысячи раз. <b>Панкреатическая липаза</b> с колипазой (розовые) отщепляет жирные кислоты, оставляя 2-моноацилглицерин. Вместе с желчными кислотами продукты образуют <b>мицеллы</b> и всасываются клетками ворсинок; там ТАГ собираются заново и упаковываются в <b>хиломикроны</b>, которые уходят в лимфу, а не в кровь. Без желчи (закупорка протока) жир выходит с калом — стеаторея — и теряются жирорастворимые витамины.',
   };
   const labels = [
-    { text: 'полярные головы', pos: DK ? V3(3.4, 2.1, 2.4) : V3(-2.5, 2.3, 2.4), color: '#FF9A30', show: () => st.labels && st.mode === 'bilayer' },
-    { text: 'гидрофобные хвосты', pos: DK ? V3(3.9, 0.3, 2.4) : V3(-2.6, 0.75, 2.4), color: '#C9B98A', show: () => st.labels && st.mode === 'bilayer' },
+    { text: 'полярные головы', pos: DK ? V3(2.9, 2.1, 2.4) : V3(-2.5, 2.3, 2.4), color: '#FF9A30', show: () => st.labels && st.mode === 'bilayer' },
+    { text: 'гидрофобные хвосты', pos: DK ? V3(3.1, 0.3, 2.4) : V3(-2.6, 0.75, 2.4), color: '#C9B98A', show: () => st.labels && st.mode === 'bilayer' },
     { text: 'холестерин', pos: V3(-1.0, 1.45, 3.1), color: '#F2C14E', show: () => st.labels && st.mode === 'bilayer' },
     { text: 'белок родопсин', pos: V3(1.2, 3.4, 2.4), color: '#9FD0FF', show: () => st.labels && st.mode === 'bilayer' },
     { text: 'вода', pos: V3(2.0, 2.8, 0), color: '#7FB8E0', show: () => st.labels && st.mode === 'bilayer' },

@@ -246,7 +246,7 @@ function plotAxes(ctx, w, h, { x0 = 34, y0 = 16, xl = '', yl = '', title = '' } 
   ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.font = '500 9px JetBrains Mono, monospace';
   if (xl) ctx.fillText(xl, w - 8 - ctx.measureText(xl).width, h - 4);
   if (yl) { ctx.save(); ctx.translate(10, h - 18); ctx.rotate(-Math.PI / 2); ctx.fillText(yl, 0, 0); ctx.restore(); }
-  if (title) { ctx.fillStyle = '#EFEAE6'; ctx.font = '500 10px JetBrains Mono, monospace'; ctx.fillText(title, x0 + 4, 11); }
+  if (title) { let fs = 10; ctx.font = `500 ${fs}px JetBrains Mono, monospace`; while (fs > 7 && ctx.measureText(title).width > w - x0 - 8) ctx.font = `500 ${--fs}px JetBrains Mono, monospace`; ctx.fillStyle = '#EFEAE6'; ctx.fillText(title, x0 + 4, 11); }   /* длинный заголовок на телефоне — шрифт мельче, до 7 px */
   return { X: (u) => x0 + u * (w - 8 - x0), Y: (v) => h - 16 - v * (h - 16 - y0) };
 }
 function plotLine(ctx, A, fn, color, { lw = 2, n = 80, dash = null } = {}) {

@@ -13,7 +13,7 @@ function makeLipoprot() {
   rnd = mulberry(1601);
   const scene = bioStage({ rim: 0xff8ab0 });
   const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: кадр уходит из-под заголовка и описания (телефон — прежний ракурс)
-  const VIEW = { part: DK ? flyTarget(V3(-3.2, -1.5, 0), V3(-3.2, 1.4, 25)) : flyTarget(V3(0.0, -1.5, 0), V3(0.0, 1.0, 25.5)), trans: flyTarget(V3(40, -0.9, 0), V3(40.6, 1.2, 18.5)), athero: flyTarget(V3(80, -1.2, 0), V3(81.5, 1.6, 15)) };
+  const VIEW = { part: DK ? flyTarget(V3(-3.2, -1.5, 0), V3(-3.2, 1.4, 25)) : flyTarget(V3(0.0, -1.5, 0), V3(0.0, 1.0, 23.5)), trans: flyTarget(V3(40, -0.9, 0), V3(40.6, 1.2, 18.5)), athero: flyTarget(V3(80, -1.2, 0), V3(81.5, 1.6, 15)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.part.pos);
   const controls = makeControls(camera, VIEW.part.target); controls.minDistance = 2; controls.maxDistance = 40;
   const fx = new Sparks(1600, 0.08); scene.add(fx.obj);
@@ -110,7 +110,7 @@ function makeLipoprot() {
     athero: '<b>Атеросклероз.</b> При избытке ЛПНП (оранжевые) частицы проникают под эндотелий артерии и окисляются. Макрофаги поглощают их и превращаются в <b>пенистые клетки</b>, набитые каплями холестерина → жировая полоска → <b>бляшка</b> с фиброзной покрышкой, сужающая просвет. Разрыв покрышки вызывает тромб — инфаркт или инсульт. ЛПВП (голубые) уносят холестерин обратно. Двигайте уровень ЛПНП и включите <b>статин</b>: он блокирует ГМГ-КоА-редуктазу — ключевой фермент синтеза холестерина (вверху), клетки печени выставляют больше ЛПНП-рецепторов и забирают ЛПНП из крови.',
   };
   const labels = [
-    ...LP.map((d, k) => ({ text: `${d.name} · ${d.size}`, pos: V3(XS[k] - (k === 3 ? 0.9 : 0.5), 0.6 - Math.max(d.R, 0.3) - (k === 3 ? 0.6 : 0.45), 0), color: d.apo, show: () => st.labels && st.mode === 'part' })),
+    ...LP.map((d, k) => ({ text: `${d.name} · ${d.size}`, pos: k === 3 ? V3(XS[3] - 0.15, 1.3, 0) : V3(XS[k] - 0.5, 0.6 - Math.max(d.R, 0.3) - 0.45, 0),   /* ЛПВП — над шаром, чтобы не читалась как подпись ЛПНП */ color: d.apo, show: () => st.labels && st.mode === 'part' })),
     { text: 'ЛПВП крупным планом (реальная модель)', pos: V3(4.9, -0.7, 0), color: '#7FD6FF', show: () => st.labels && st.mode === 'part' },
     { text: 'апоA-I', pos: V3(6.6, 1.4, 0.5), color: '#9FE0FF', show: () => st.labels && st.mode === 'part' },
     { text: 'ядро: ТАГ и эфиры холестерина', pos: V3(-4.6, 2.4, 1.5), color: '#E8C060', show: () => st.labels && st.mode === 'part' },
