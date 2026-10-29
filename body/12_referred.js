@@ -56,7 +56,7 @@ function makeReferred() {
   const BC = V3(0.1, 12.0, 0.2), MC = V3(36.9, 0.3, 0);
   const VIEW = { front: VW(BC, V3(0.1, 0.08, 1), 26), back: VW(BC, V3(-0.1, 0.08, -1), 26), rback: VW(BC, V3(-0.75, 0.08, -0.66), 26), lback: VW(BC, V3(0.75, 0.08, -0.66), 26), lfront: VW(BC.clone().add(V3(0, -0.6, 0)), V3(0.55, 0.05, 0.85), 26), mech: VW(MC, V3(0.02, 0.04, 1), 31, 0.14, 0.1) };
   const VIEWM = { front: VW(BC, V3(0.1, 0.05, 1), 13.5, 0, -0.03), back: VW(BC, V3(-0.1, 0.05, -1), 13.5, 0, -0.03), rback: VW(BC, V3(-0.75, 0.05, -0.66), 13.5, 0, -0.03), lback: VW(BC, V3(0.75, 0.05, -0.66), 13.5, 0, -0.03), lfront: VW(BC, V3(0.55, 0.05, 0.85), 13.5, 0, -0.03),
-    mech: VW(MC, V3(0, 0.03, 1), 17.5, -0.06, 0) }, mqm = window.matchMedia('(max-width:700px)'), VV = (m) => (mqm.matches && VIEWM[m]) || VIEW[m];
+    mech: VW(MC, V3(0, 0.03, 1), 21, 0, -0.03) }, mqm = window.matchMedia('(max-width:700px)'), VV = (m) => (mqm.matches && VIEWM[m]) || VIEW[m];
   const FT = VIEW.front.target;
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300);
   const controls = makeControls(camera, FT); controls.minDistance = 4; controls.maxDistance = 60;

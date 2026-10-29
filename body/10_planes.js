@@ -157,7 +157,7 @@ function makePlanes() {
     if (st.mode === 'planes' && mqm.matches) v = [V3(0, 10.2, 0), PVIEW[st.plane][1].clone().sub(PVIEW[st.plane][0]).multiplyScalar(0.98).add(V3(0, 10.2, 0))];
     if (st.mode === 'cav' && (st.cav === 'all' || st.cav === 'dorsal')) v = mqm.matches ? [V3(0, 12.0, -1.5), V3(24, 12.5, 4)] : VIEW.cavSide;
     if (st.mode === 'cav' && st.cav === 'reg') v = mqm.matches ? VIEWM.reg : [V3(-1.7, 8.9, 0), V3(-0.4, 9.8, 14)];
-    if (st.mode === 'dirs') v = mqm.matches ? [DIRS[st.dir].view[0].clone().setX(0).setY(Math.max(8.6, DIRS[st.dir].view[0].y)), DIRS[st.dir].view[1].clone().multiplyScalar(0.75)] : [DIRS[st.dir].view[0].clone().add(V3(-0.9, 0, 0)), DIRS[st.dir].view[1]];
+    if (st.mode === 'dirs') v = mqm.matches ? [DIRS[st.dir].view[0].clone().setX(0).setY(Math.max(7.6, DIRS[st.dir].view[0].y)), DIRS[st.dir].view[1].clone().multiplyScalar(0.8)] : [DIRS[st.dir].view[0].clone().add(V3(-0.9, DIRS[st.dir].view[1].z > 40 ? 3.0 : 0, 0)), DIRS[st.dir].view[1].clone().add(V3(0, DIRS[st.dir].view[1].z > 40 ? 3.0 : 0, 0))];
     st.fly = flyTarget(v[0], v[1]);
   }
   let clipOn = null;
