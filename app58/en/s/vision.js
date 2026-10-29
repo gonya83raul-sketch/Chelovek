@@ -6,17 +6,17 @@ import { GLOW, LOOK, THREE, V3, __set_rnd, addLights, button, clamp, envTex, fet
    ========================================================= */
 const VIS_FIELD_COL = { L: '#5ED1C4', R: '#8C93FF' };   // левое поле → правое полушарие, правое поле → левое
 const VIS_LESIONS = [
-  { id: 'none', label: 'Нет', text: 'Все четыре пучка целы: каждый глаз видит всё поле, и обе половины поля доходят до коры.' },
-  { id: 'nerveR', label: 'Правый нерв', block: { Line010_0: 0.15, Shape018_0: 0.15 }, pos: [-1.5, -0.55, 1.97], text: '<b>Повреждён правый зрительный нерв</b> (до перекрёста). Правый глаз слепнет целиком, левый видит всё поле. Так бывает при неврите или травме нерва.' },
-  { id: 'chiasm', label: 'Перекрёст', block: { Shape017_0: 0.28, Shape018_0: 0.28 }, pos: [-0.02, -0.14, 0.94], text: '<b>Повреждён перекрёст (хиазма).</b> Рвутся только перекрещивающиеся волокна от носовых половин сетчаток, а они видят височные половины поля. Выпадают обе наружные половины: <b>битемпоральная гемианопсия</b>, «зрение в шорах». Классическая причина — опухоль гипофиза, который лежит прямо под хиазмой.' },
-  { id: 'tractR', label: 'Правый тракт', block: { Line010_0: 0.44, Shape017_0: 0.44 }, pos: [-1.11, -0.06, -0.21], text: '<b>Повреждён правый зрительный тракт</b> (после перекрёста). В нём идут волокна обоих глаз, отвечающие за <b>левую</b> половину поля. У обоих глаз выпадает левая половина: <b>левосторонняя гомонимная гемианопсия</b>. То же бывает при инсульте в правой затылочной доле.' },
-  { id: 'tractL', label: 'Левый тракт', block: { Line011_0: 0.44, Shape018_0: 0.44 }, pos: [1.05, -0.06, -0.21], text: '<b>Повреждён левый зрительный тракт.</b> Выпадает правая половина поля у обоих глаз: правосторонняя гомонимная гемианопсия.' },
+  { id: 'none', label: 'None', text: 'All four fiber bundles are intact: each eye sees the whole field, and both halves of the field reach the cortex.' },
+  { id: 'nerveR', label: 'Right nerve', block: { Line010_0: 0.15, Shape018_0: 0.15 }, pos: [-1.5, -0.55, 1.97], text: '<b>Right optic nerve damaged</b> (before the chiasm). The right eye goes completely blind, the left one sees the whole field. This happens with optic neuritis or nerve injury.' },
+  { id: 'chiasm', label: 'Chiasm', block: { Shape017_0: 0.28, Shape018_0: 0.28 }, pos: [-0.02, -0.14, 0.94], text: '<b>Optic chiasm damaged.</b> Only the crossing fibers from the nasal halves of the retinas are cut, and they see the temporal halves of the field. Both outer halves are lost: <b>bitemporal hemianopia</b>, “blinkered vision”. The classic cause is a tumor of the pituitary, which lies right below the chiasm.' },
+  { id: 'tractR', label: 'Right tract', block: { Line010_0: 0.44, Shape017_0: 0.44 }, pos: [-1.11, -0.06, -0.21], text: '<b>Right optic tract damaged</b> (after the chiasm). It carries the fibers from both eyes that serve the <b>left</b> half of the field. Both eyes lose the left half: <b>left homonymous hemianopia</b>. The same happens with a stroke in the right occipital lobe.' },
+  { id: 'tractL', label: 'Left tract', block: { Line011_0: 0.44, Shape018_0: 0.44 }, pos: [1.05, -0.06, -0.21], text: '<b>Left optic tract damaged.</b> Both eyes lose the right half of the field: right homonymous hemianopia.' },
 ];
 const VIS_EYES = [
-  { id: 'norm', label: 'Норма', E: 0, Amax: 10, text: 'Здоровый глаз: хрусталик сам меняет силу, и изображение и далёкого, и близкого предмета ложится точно на сетчатку.' },
-  { id: 'myo', label: 'Близорукость', E: 3, Amax: 10, text: '<b>Близорукость (миопия):</b> глаз слишком длинный или оптика слишком сильная. Лучи от далёкого предмета сходятся <b>перед</b> сетчаткой, вдаль видно размыто, а вблизи хорошо. Исправляют рассеивающими линзами (минус).' },
-  { id: 'hyp', label: 'Дальнозоркость', E: -3, Amax: 2, text: '<b>Дальнозоркость (гиперметропия):</b> глаз коротковат, фокус оказывается <b>за</b> сетчаткой. Хрусталик постоянно напрягается, и вблизи сил не хватает. Исправляют собирающими линзами (плюс).' },
-  { id: 'presb', label: 'Возрастная', E: 0, Amax: 0.6, text: '<b>Пресбиопия:</b> с возрастом хрусталик твердеет и почти перестаёт менять форму. Вдаль видно нормально, а близкий текст расплывается: фокус уходит за сетчатку. Отсюда очки для чтения после 40–45 лет.' },
+  { id: 'norm', label: 'Normal', E: 0, Amax: 10, text: 'A healthy eye: the lens adjusts its own power, and the image of both distant and near objects falls exactly on the retina.' },
+  { id: 'myo', label: 'Myopia', E: 3, Amax: 10, text: '<b>Nearsightedness (myopia):</b> the eye is too long or its optics too strong. Rays from a distant object converge <b>in front of</b> the retina: distant things look blurry, while near ones are sharp. Corrected with diverging lenses (minus).' },
+  { id: 'hyp', label: 'Hyperopia', E: -3, Amax: 2, text: '<b>Farsightedness (hyperopia):</b> the eye is a bit too short, and the focus falls <b>behind</b> the retina. The lens is constantly straining, and for near objects it runs out of power. Corrected with converging lenses (plus).' },
+  { id: 'presb', label: 'Age-related', E: 0, Amax: 0.6, text: '<b>Presbyopia:</b> with age the lens hardens and almost stops changing shape. Distance vision is normal, but close-up text blurs: the focus slips behind the retina. Hence reading glasses after age 40–45.' },
 ];
 
 function makeVision() {
@@ -78,7 +78,7 @@ function makeVision() {
     set('Group3_0', glassCb); set('Group5_0', glassStem); set('Group1_0', boneMat);
     if (parts.Group3_0) { const c2 = parts.Group3_0.clone(); c2.material = solidCb; parts.Group3_0.parent.add(c2); }
     if (parts.Group1_0) {   // подпись «глазница» — на ближайшую точку кости
-      holder.updateMatrixWorld(true); const lb = labels.find((l) => l.text === 'глазница'), o = parts.Group1_0, pa = o.geometry.attributes.position, v = new THREE.Vector3(), best = new THREE.Vector3(); let bd = 1e9;
+      holder.updateMatrixWorld(true); const lb = labels.find((l) => l.text === 'orbit'), o = parts.Group1_0, pa = o.geometry.attributes.position, v = new THREE.Vector3(), best = new THREE.Vector3(); let bd = 1e9;
       for (let i = 0; i < pa.count; i += 3) { v.fromBufferAttribute(pa, i).applyMatrix4(o.matrixWorld); const d = v.distanceToSquared(lb.pos); if (d < bd) { bd = d; best.copy(v); } }
       if (bd < 1e8) lb.pos.copy(best);
     }
@@ -130,7 +130,7 @@ function makeVision() {
   }
 
   /* ---------- камера ---------- */
-  const VIEWS = { path: { pos: V3(10 - 0.45 * VSX, 6, 11 + 0.4 * VSX), tgt: V3(-0.45 * VSX, -0.4, -0.3 + 0.4 * VSX) }, eye: { pos: V3(-6.4, 0.2, 3.9), tgt: V3(-1.8, -0.5, 3.75) } };
+  const VIEWS = { path: { pos: V3(10 - 0.45 * VSX, 6, 11 + 0.4 * VSX), tgt: V3(-0.45 * VSX, -0.4, -0.3 + 0.4 * VSX) }, eye: { pos: V3(-7.2, 0.8, 3.7), tgt: V3(-1.8, -0.1, 3.55) } };
   function setMode(m) {
     st.mode = m; st.fly = 1;
     const eyeMode = m === 'eye';
@@ -164,7 +164,7 @@ function makeVision() {
     ctx.clearRect(0, 0, w, hgt); ctx.font = '500 10px JetBrains Mono, monospace'; ctx.textBaseline = 'middle'; ctx.textAlign = 'center';
     if (st.mode === 'path') {
       const r = Math.min(hgt * 0.34, w * 0.16), cy = hgt * 0.46;
-      [['eyeL', 'левый глаз', w * 0.28], ['eyeR', 'правый глаз', w * 0.72]].forEach(([eye, name, cx]) => {
+      [['eyeL', 'left eye', w * 0.28], ['eyeR', 'right eye', w * 0.72]].forEach(([eye, name, cx]) => {
         ['L', 'R'].forEach((half) => {
           const fib = HALF[eye][half], off = blind(fib), dim = st.field !== 'both' && ((st.field === 'left') !== (half === 'L'));
           ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, r, half === 'L' ? Math.PI / 2 : -Math.PI / 2, half === 'L' ? Math.PI * 1.5 : Math.PI / 2); ctx.closePath();
@@ -173,29 +173,29 @@ function makeVision() {
         ctx.strokeStyle = '#3A3540'; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.stroke(); ctx.beginPath(); ctx.moveTo(cx, cy - r); ctx.lineTo(cx, cy + r); ctx.stroke();
         ctx.fillStyle = '#A49DA8'; ctx.fillText(name, cx, hgt - 9);
       });
-      ctx.fillStyle = '#6F6875'; ctx.textAlign = 'left'; ctx.fillText('поле зрения', 8, 10);
+      ctx.fillStyle = '#6F6875'; ctx.textAlign = 'left'; ctx.fillText('visual field', 8, 10);
     } else {
       const blur = Math.min(8, Math.abs(optics.err) * 2.4);
       ctx.save(); ctx.fillStyle = '#efeae6'; ctx.fillRect(8, 8, w - 16, hgt - 16);
       ctx.filter = blur > 0.05 ? `blur(${blur.toFixed(1)}px)` : 'none'; ctx.fillStyle = '#111';
       const near = st.near > 0.5;
-      ctx.font = `700 ${near ? 18 : 30}px Golos Text, system-ui, sans-serif`; ctx.fillText(near ? 'Ш Б М Н К' : 'Ш Б', w / 2, hgt * 0.4);
-      ctx.font = `600 ${near ? 11 : 16}px Golos Text, system-ui, sans-serif`; ctx.fillText(near ? 'мелкий текст вблизи' : 'М Н К', w / 2, hgt * 0.68);
-      ctx.restore(); ctx.fillStyle = '#6F6875'; ctx.textAlign = 'left'; ctx.font = '500 10px JetBrains Mono, monospace'; ctx.fillText('что видит глаз', 12, 16);
+      ctx.font = `700 ${near ? 18 : 30}px Golos Text, system-ui, sans-serif`; ctx.fillText(near ? 'E F P T O' : 'E F', w / 2, hgt * 0.4);
+      ctx.font = `600 ${near ? 11 : 16}px Golos Text, system-ui, sans-serif`; ctx.fillText(near ? 'small print up close' : 'P T O', w / 2, hgt * 0.68);
+      ctx.restore(); ctx.fillStyle = '#6F6875'; ctx.textAlign = 'left'; ctx.font = '500 10px JetBrains Mono, monospace'; ctx.fillText('what the eye sees', 12, 16);
     }
   }
 
   /* ---------- подписи ---------- */
   const lp = (text, p, mode, color) => ({ text, pos: V3(...p), color, show: () => st.labels && (mode === 'any' || st.mode === mode) && (st.loaded || mode === 'any') });
   const labels = [
-    lp('глаз', [-1.7, 0.15, 4.3], 'path'), lp('зрительный нерв', [-1.55, -0.95, 1.97], 'path'), lp('перекрёст (хиазма)', [0.05, -0.55, 0.94], 'path'),
-    lp('зрительный тракт', [-1.25, -0.45, -0.21], 'path'), lp('латеральное коленчатое тело', [-1.45, 0.35, -0.85], 'path'), lp('зрительная лучистость', [-1.95, 1.45, -1.67], 'path'),
-    lp('V1 правого полушария', [-1.4, 1.5, -4.3], 'path', VIS_FIELD_COL.L), lp('V1 левого полушария', [1.4, 1.5, -4.3], 'path', VIS_FIELD_COL.R),
-    ...(matchMedia('(max-width:700px)').matches ? [] : [lp('мышцы глаза', [1.66, 0.25, 3.0], 'path'), lp('мозжечок', [0.1, -2.6, -2.4], 'path')]),   /* телефон: меньше подписей — остальные не налезают */ lp('глазница', [2.9, -0.2, 4.6], 'path'),
-    lp('роговица', [-1.85, 0.0, 4.36], 'eye'), lp('хрусталик', [-1.85, -0.25, 4.02], 'eye'), lp('стекловидное тело', [-1.85, -0.15, 3.55], 'eye'),
-    lp('сетчатка', [-1.85, -0.95, 3.25], 'eye'), lp('зрительный нерв', [-1.85, -0.55, 2.75], 'eye'), lp('предмет', [RAY_X, AXIS_Y + 0.6, 7.0], 'eye'),
+    lp('eye', [-1.7, 0.15, 4.3], 'path'), lp('optic nerve', [-1.55, -0.95, 1.97], 'path'), lp('optic chiasm', [0.05, -0.55, 0.94], 'path'),
+    lp('optic tract', [-1.25, -0.45, -0.21], 'path'), lp('lateral geniculate body', [-1.45, 0.35, -0.85], 'path'), lp('optic radiation', [-1.95, 1.45, -1.67], 'path'),
+    lp('right-hemisphere V1', [-1.4, 1.5, -4.3], 'path', VIS_FIELD_COL.L), lp('left-hemisphere V1', [1.4, 1.5, -4.3], 'path', VIS_FIELD_COL.R),
+    ...(matchMedia('(max-width:700px)').matches ? [] : [lp('eye muscles', [1.66, 0.25, 3.0], 'path'), lp('cerebellum', [0.1, -2.6, -2.4], 'path')]),   /* телефон: меньше подписей — остальные не налезают */ lp('orbit', [2.9, -0.2, 4.6], 'path'),
+    lp('cornea', [-1.85, 0.0, 4.36], 'eye'), lp('lens', [-1.85, -0.25, 4.02], 'eye'), lp('vitreous body', [-1.85, -0.15, 3.55], 'eye'),
+    lp('retina', [-1.85, -0.95, 3.25], 'eye'), lp('optic nerve', [-1.85, -0.55, 2.75], 'eye'), lp('object', [RAY_X, AXIS_Y + 0.6, 7.0], 'eye'),
   ];
-  const lesLabel = { text: 'повреждение', pos: V3(0, 0, 0), color: '#ff6a5a', show: () => st.labels && st.mode === 'path' && st.lesion !== 'none' };
+  const lesLabel = { text: 'lesion', pos: V3(0, 0, 0), color: '#ff6a5a', show: () => st.labels && st.mode === 'path' && st.lesion !== 'none' };
   labels.push(lesLabel);
 
   let refs = {}, consoleRoot = null;
@@ -203,30 +203,30 @@ function makeVision() {
     consoleRoot = el; el.innerHTML = '';
     const info = h('div', { class: 'info' });
     refs.setInfo = () => {
-      if (st.err) { info.innerHTML = `Не удалось загрузить 3D-модель (${st.err}). Обновите страницу.`; return; }
-      if (!st.loaded) { info.innerHTML = 'Загружаю 3D-модель зрительной системы (около 2,3 МБ)…'; return; }
-      info.innerHTML = st.mode === 'path' ? LES[st.lesion].text + (st.lesion === 'none' ? ' Выберите повреждение и посмотрите на схему полей справа.' : '') : EYE[st.eye].text;
+      if (st.err) { info.innerHTML = `Couldn’t load the 3D model (${st.err}). Please reload the page.`; return; }
+      if (!st.loaded) { info.innerHTML = 'Loading the 3D model of the visual system (about 2.3 MB)…'; return; }
+      info.innerHTML = st.mode === 'path' ? LES[st.lesion].text + (st.lesion === 'none' ? ' Choose a lesion and look at the visual field diagram on the right.' : '') : EYE[st.eye].text;
     };
-    const modeSeg = seg([{ id: 'path', label: 'Путь сигнала' }, { id: 'eye', label: 'Глаз в разрезе' }], () => st.mode, (v) => setMode(v));
-    const lab = toggle('Подписи', () => st.labels, (v) => { st.labels = v; });
-    const groups = [group('Вид', 'V · N', modeSeg, lab)];
+    const modeSeg = seg([{ id: 'path', label: 'Signal pathway' }, { id: 'eye', label: 'Eye in section' }], () => st.mode, (v) => setMode(v));
+    const lab = toggle('Labels', () => st.labels, (v) => { st.labels = v; });
+    const groups = [group('View', 'V · N', modeSeg, lab)];
     if (st.mode === 'path') {
-      const fSeg = seg([{ id: 'both', label: 'Всё поле' }, { id: 'left', label: 'Левое', color: VIS_FIELD_COL.L }, { id: 'right', label: 'Правое', color: VIS_FIELD_COL.R }], () => st.field, (v) => { st.field = v; });
+      const fSeg = seg([{ id: 'both', label: 'Whole field' }, { id: 'left', label: 'Left', color: VIS_FIELD_COL.L }, { id: 'right', label: 'Right', color: VIS_FIELD_COL.R }], () => st.field, (v) => { st.field = v; });
       const lSeg = seg(VIS_LESIONS.map((l) => ({ id: l.id, label: l.label })), () => st.lesion, (v) => { st.lesion = v; applyLesion(); refs.setInfo(); });
-      const auto = toggle('Авто', () => st.auto, (v) => { st.auto = v; });
-      groups.push(group('Поле зрения', 'F', fSeg), group('Повреждение', '1–5', lSeg), group('Сигнал', 'пробел', button('Свет', fire, true), auto));
+      const auto = toggle('Auto', () => st.auto, (v) => { st.auto = v; });
+      groups.push(group('Visual field', 'F', fSeg), group('Lesion', '1–5', lSeg), group('Signal', 'Space', button('Light', fire, true), auto));
       refs.lSeg = lSeg; refs.fSeg = fSeg;
     } else {
       const eSeg = seg(VIS_EYES.map((e) => ({ id: e.id, label: e.label })), () => st.eye, (v) => { st.eye = v; refs.setInfo(); });
-      const inp = h('input', { type: 'range', id: 'vis-near', min: 0, max: 1, step: 0.01, value: st.near, 'aria-label': 'Расстояние до предмета' });
+      const inp = h('input', { type: 'range', id: 'vis-near', min: 0, max: 1, step: 0.01, value: st.near, 'aria-label': 'Distance to object' });
       const out = h('output', { for: 'vis-near' }, '');
-      const fmt = () => { out.textContent = optics.dist >= 1 ? `${optics.dist.toFixed(1)} м` : `${Math.round(optics.dist * 100)} см`; };
+      const fmt = () => { out.textContent = optics.dist >= 1 ? `${optics.dist.toFixed(1)} m` : `${Math.round(optics.dist * 100)} cm`; };
       inp.addEventListener('input', () => { st.near = +inp.value; updateOptics(); fmt(); });
       updateOptics(); fmt();
-      groups.push(group('Глаз', 'E', eSeg), group('Предмет', '← →', h('div', { class: 'rng' }, inp, out)));
+      groups.push(group('Eye', 'E', eSeg), group('Object', '← →', h('div', { class: 'rng' }, inp, out)));
       refs.eSeg = eSeg; refs.inp = inp; refs.fmt = fmt;
     }
-    el.append(...groups, h('div', { class: 'grp', style: 'flex:1 1 300px' }, h('div', { class: 'glabel' }, 'Что видно'), info));
+    el.append(...groups, h('div', { class: 'grp', style: 'flex:1 1 300px' }, h('div', { class: 'glabel' }, 'What you see'), info));
     refs.modeSeg = modeSeg; refs.lab = lab; refs.setInfo();
   }
   refs.rebuild = () => { if (consoleRoot) ui(consoleRoot); };
@@ -247,30 +247,30 @@ function makeVision() {
   function stats() {
     if (st.mode === 'path') {
       const lost = ['eyeL', 'eyeR'].reduce((a, eye) => a + ['L', 'R'].filter((hf) => blind(HALF[eye][hf])).length, 0);
-      return [['Пучков', 4, ''], ['Поле зрения', lost ? `−${lost * 25}%` : 'целое', '']];
+      return [['Fiber bundles', 4, ''], ['Visual field', lost ? `−${lost * 25}%` : 'intact', '']];
     }
-    const e = optics.err, where = Math.abs(e) < 0.25 ? 'на сетчатке' : e > 0 ? 'перед сетчаткой' : 'за сетчаткой';
-    return [['Хрусталик', `+${(19 + optics.A).toFixed(1)}`, 'дптр'], ['Фокус', where, '']];
+    const e = optics.err, where = Math.abs(e) < 0.25 ? 'on the retina' : e > 0 ? 'in front of the retina' : 'behind the retina';
+    return [['Lens', `+${(19 + optics.A).toFixed(1)}`, 'D'], ['Focus', where, '']];
   }
   const lesUpd = update;
   const self = {
     mobZoom: 0.72, scene, camera, controls, ui, onKey, stats, labels, drawScope, accent: '#7FB8FF',
     update(dt) { lesUpd(dt); const L = LES[st.lesion]; if (L.pos) { const o = st.lesion === 'chiasm' ? [0.45, -0.35, 0.2] : [0.3, 0.45, 0]; lesLabel.pos.set(L.pos[0] + o[0], L.pos[1] + o[1], L.pos[2] + o[2]); } lesionSpr.material.opacity = 0.7 + 0.3 * Math.sin(st.t * 5); },
-    kicker: 'Органы чувств · зрение', title: 'Зрение',
-    lede: 'Путь сигнала от сетчатки до затылочной коры и оптика глаза. Выберите повреждение и посмотрите, какая часть поля зрения пропадёт.',
+    kicker: 'Sense organs · vision', title: 'Vision',
+    lede: 'The signal pathway from the retina to the occipital cortex, and the optics of the eye. Choose a lesion and see which part of the visual field disappears.',
     notes: `
-      <div><h2>Как устроено зрение</h2>
-        <p><b>Оптика.</b> Свет преломляют роговица (около 43 диоптрий) и хрусталик (около 19 в покое). На сетчатке получается уменьшенное перевёрнутое изображение. Чтобы смотреть вблизи, ресничная мышца расслабляет связки, и хрусталик становится выпуклее: это <b>аккомодация</b>.</p>
-        <p><b>Сетчатка.</b> Около 120 млн палочек (сумеречное зрение) и около 6 млн колбочек (цвет и детали). Их сигналы сжимают нейроны сетчатки, и в мозг уходит примерно 1 млн волокон зрительного нерва.</p>
-        <h3>Перекрёст</h3>
-        <p>В хиазме волокна от носовых половин сетчаток переходят на другую сторону, от височных идут прямо. Поэтому правое полушарие получает <b>левую половину поля</b> от обоих глаз, а левое — правую. Это видно по цветам: бирюзовые волокна несут левое поле, сиреневые — правое.</p>
-        <h3>Дальше</h3>
-        <p>Зрительный тракт заканчивается в <b>латеральном коленчатом теле</b> таламуса. Оттуда <b>зрительная лучистость</b> огибает боковой желудочек и приходит в первичную зрительную кору (V1) затылочной доли, по краям шпорной борозды. Каждая точка поля зрения имеет своё место в коре.</p></div>
-      <div><h2>Что здесь настоящее</h2><ul>
-        <li>Ход четырёх пучков и дефекты полей при повреждении нерва, хиазмы и тракта.</li>
-        <li>Направление ошибки фокуса при близорукости, дальнозоркости и пресбиопии.</li></ul>
-        <h2 style="margin-top:22px">Условности</h2><ul><li>Лучи в глазу нарисованы схематично, без точного расчёта преломления.</li><li>Положение коленчатого тела подписано примерно.</li><li>Волна сигнала сильно замедлена.</li></ul></div>
-      <div class="keys"><h2>Клавиши</h2><ul><li><code>V</code> путь сигнала / глаз</li><li><code>пробел</code> свет</li><li><code>1</code>–<code>5</code> повреждение</li><li><code>F</code> поле зрения</li><li><code>E</code> тип глаза</li><li><code>←</code> <code>→</code> расстояние</li><li><code>N</code> подписи</li></ul></div>`,
+      <div><h2>How vision works</h2>
+        <p><b>Optics.</b> Light is refracted by the cornea (about 43 diopters) and the lens (about 19 at rest). The retina receives a reduced, inverted image. To look at something close, the ciliary muscle slackens the zonular fibers and the lens becomes more convex: this is <b>accommodation</b>.</p>
+        <p><b>Retina.</b> About 120 million rods (twilight vision) and about 6 million cones (color and detail). Retinal neurons compress their signals, and roughly 1 million optic nerve fibers carry them to the brain.</p>
+        <h3>The chiasm</h3>
+        <p>In the chiasm, fibers from the nasal halves of the retinas cross to the opposite side, while fibers from the temporal halves continue straight on. That is why the right hemisphere receives the <b>left half of the visual field</b> from both eyes, and the left hemisphere receives the right half. The colors show it: turquoise fibers carry the left field, lilac fibers the right.</p>
+        <h3>Further on</h3>
+        <p>The optic tract ends in the <b>lateral geniculate body</b> of the thalamus. From there the <b>optic radiation</b> curves around the lateral ventricle and reaches the primary visual cortex (V1) of the occipital lobe, along the banks of the calcarine sulcus. Every point of the visual field has its own place in the cortex.</p></div>
+      <div><h2>What is accurate here</h2><ul>
+        <li>The course of the four fiber bundles and the visual field defects caused by damage to the optic nerve, chiasm and tract.</li>
+        <li>The direction of the focusing error in myopia, hyperopia and presbyopia.</li></ul>
+        <h2 style="margin-top:22px">Simplifications</h2><ul><li>Rays inside the eye are drawn schematically, without an exact calculation of refraction.</li><li>The position of the geniculate body is labeled approximately.</li><li>The signal wave is greatly slowed down.</li></ul></div>
+      <div class="keys"><h2>Keys</h2><ul><li><code>V</code> signal pathway / eye</li><li><code>space</code> light</li><li><code>1</code>–<code>5</code> lesion</li><li><code>F</code> visual field</li><li><code>E</code> eye type</li><li><code>←</code> <code>→</code> distance</li><li><code>N</code> labels</li></ul></div>`,
   };
   setMode('path');
   return self;

@@ -21,7 +21,7 @@ function makeDien() {
   __set_rnd(mulberry(606));
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x060509); scene.environment = envTex;
   labLights(scene, 0xb9a4ff);
-  const VIEW = { thal: flyTarget(V3(-0.6, -0.55, 0), V3(7.3, 4.05, 11.4)), hypo: flyTarget(V3(0.35, -2.15, 0), V3(4.6, -0.9, 6.2)) };
+  const VIEW = { thal: flyTarget(V3(-0.6, -0.55, 0), V3(7.3, 4.05, 11.4)), hypo: matchMedia('(max-width:700px)').matches ? flyTarget(V3(0.35, -1.2, 0), V3(4.6, 0.05, 6.2)) : flyTarget(V3(0.35, -1.45, 0), V3(5.9, 0.15, 7.95)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 200); camera.position.copy(VIEW.thal.pos);
   const controls = makeControls(camera, VIEW.thal.target); controls.minDistance = 2; controls.maxDistance = 25;
   const mat = (c, o = {}) => tissue(new THREE.Color(c).multiplyScalar(0.4), o);
@@ -176,7 +176,7 @@ function makeDien() {
     { text: 'medial nuclei', pos: V3(0.1, 0.35, 0.3), color: '#C77DFF', show: () => st.labels && st.mode === 'thal' && st.att === 'none' },
     { text: 'reticular nucleus', pos: V3(0.3, 0.6, 1.15), color: '#8fb4ff', show: () => st.labels && st.mode === 'thal' && st.att !== 'none' },
     { text: 'third ventricle', pos: V3(0.3, -0.9, 0.05), color: '#8fd4ff', show: () => st.labels },
-    { text: 'cortex', pos: V3(-1.5, 2.3, -1.6), color: '#f2c7d6', show: () => st.labels && st.mode === 'thal' },
+    { text: 'cortex', pos: V3(-1.5, 2.3, -1.6), color: '#f2c7d6', show: () => st.labels && st.mode === 'thal' }, { text: 'thalamus', pos: V3(-0.5, 0.58, 0.9), color: '#d8c8ff', left: true, show: () => st.labels && st.mode === 'thal' && st.att === 'none' }, { text: 'pituitary gland', pos: ANT.clone().add(V3(0.2, -0.1, 0.25)), color: '#ffa070', show: () => st.labels && st.mode === 'thal' },
     { text: 'pineal gland', pos: pineal.position.clone().add(V3(-0.1, 0.2, 0)), color: '#d8c090', show: () => st.labels },
     ...Object.entries(HN).map(([id, n]) => ({ text: n.name, pos: n.p[0].clone().add(V3(0.04, 0.08, 0.12)), color: n.c, show: () => st.labels && st.mode === 'hypo' })),
     { text: 'anterior pituitary', pos: ANT.clone().add(V3(0.2, -0.1, 0.25)), color: '#ffa070', show: () => st.labels && st.mode === 'hypo' },

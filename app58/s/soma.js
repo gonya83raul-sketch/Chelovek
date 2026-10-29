@@ -5,18 +5,18 @@ import { GLOW, Sparks, THREE, V3, __set_rnd, button, clamp, displaceGeo, envTex,
    ЛЕКЦИЯ 1 · СТРОЕНИЕ НЕРВНОЙ КЛЕТКИ (рис. 1.4)
    ========================================================= */
 const SOMA_PARTS = [
-  { id: 'dend', name: 'Dendrites', color: '#C9A6E8', text: '<b>Dendrites</b> are the branching inputs of the neuron. They receive most of its synapses. Dendrites also contain Nissl substance and mitochondria: proteins are made right on the spot.' },
-  { id: 'spine', name: 'Spines', color: '#F0C8FF', text: '<b>Dendritic spines</b> are protrusions up to 3 µm long, each with a single synapse on its head. Spines grow, change shape and disappear during learning: this is synaptic plasticity you can actually see.' },
-  { id: 'nuc', name: 'Nucleus', color: '#9F7BFF', text: 'The <b>nucleus</b> stores DNA. RNA molecules leave through its large pores and travel to the ribosomes. A neuron’s nucleus is large and pale because its genes are very active.' },
-  { id: 'nucl', name: 'Nucleolus', color: '#D36FB6', text: 'The <b>nucleolus</b> is a dark region of the nucleus where ribosomes are assembled. In neurons it is especially prominent.' },
-  { id: 'nissl', name: 'Nissl substance', color: '#5FB6E6', text: '<b>Nissl substance</b> (tigroid substance) consists of stacks of rough ER packed with ribosomes. A neuron is constantly making proteins: channels, receptors, enzymes for transmitter synthesis. Franz Nissl saw these clumps by staining tissue with methylene blue. There is no Nissl substance in the axon hillock.' },
-  { id: 'golgi', name: 'Golgi apparatus', color: '#E9A94C', text: 'The <b>Golgi apparatus</b> finishes processing proteins from the ER and buds off vesicles, including the transmitter-filled vesicles for synapses.' },
-  { id: 'mito', name: 'Mitochondria', color: '#E0703F', text: '<b>Mitochondria</b> oxidize glucose and produce ATP. A neuron depends heavily on them: without oxygen it survives only a few minutes.' },
-  { id: 'lyso', name: 'Lysosomes', color: '#9B6BE0', text: '<b>Lysosomes</b> digest worn-out proteins and membranes. A neuron lives as long as the person does, so clearing out waste is especially important for it.' },
-  { id: 'fil', name: 'Neurofilaments and microtubules', color: '#8FE0C4', text: '<b>Neurofilaments and microtubules</b> hold the shape of the neuron’s processes and act as rails: motor proteins carry vesicles and mitochondria along them in both directions through the axon (bright dots).' },
-  { id: 'hill', name: 'Axon hillock', color: '#FFB070', text: 'The <b>axon hillock</b> is where the action potential arises. It has the highest density of sodium channels and the lowest threshold. All signals from the dendrites and the cell body are summed right here.' },
-  { id: 'myel', name: 'Myelin sheath', color: '#F1E7D6', text: 'The <b>myelin sheath</b> is a layered wrapping made from the membrane of a glial cell (a Schwann cell in the periphery, an oligodendrocyte in the brain). Between the wrappings are the nodes of Ranvier, and the impulse jumps from node to node.' },
-  { id: 'syn', name: 'Synapses', color: '#FFC07A', text: '<b>Synapses</b> are the endings of other neurons’ axons on the dendrites, spines and cell body. Orange ones excite, blue ones inhibit. A single cortical neuron has thousands of them.' },
+  { id: 'dend', name: 'Дендриты', color: '#C9A6E8', text: '<b>Дендриты</b> — ветвящиеся входы нейрона. На них приходится большая часть синапсов. В дендритах тоже есть субстанция Ниссля и митохондрии: белки делаются прямо на месте.' },
+  { id: 'spine', name: 'Шипики', color: '#F0C8FF', text: '<b>Дендритные шипики</b> — выросты до 3 мкм с одним синапсом на головке. Шипики растут, меняют форму и исчезают при обучении: это видимая глазом синаптическая пластичность.' },
+  { id: 'nuc', name: 'Ядро', color: '#9F7BFF', text: '<b>Ядро</b> хранит ДНК. Через крупные поры наружу выходят молекулы РНК и идут к рибосомам. У нейрона ядро крупное и светлое: гены работают очень активно.' },
+  { id: 'nucl', name: 'Ядрышко', color: '#D36FB6', text: '<b>Ядрышко</b> — тёмный участок ядра, здесь собирают рибосомы. У нейронов оно особенно заметное.' },
+  { id: 'nissl', name: 'Субстанция Ниссля', color: '#5FB6E6', text: '<b>Субстанция Ниссля</b> (тигроид) — стопки шероховатой ЭПС с массой рибосом. Нейрон всё время делает белки: каналы, рецепторы, ферменты синтеза медиаторов. Франц Ниссль увидел эти глыбки, окрасив ткань метиленовым синим. В аксонном холмике тигроида нет.' },
+  { id: 'golgi', name: 'Аппарат Гольджи', color: '#E9A94C', text: '<b>Аппарат Гольджи</b> дорабатывает белки из ЭПС и отпочковывает пузырьки, в том числе пузырьки с медиатором для синапсов.' },
+  { id: 'mito', name: 'Митохондрии', color: '#E0703F', text: '<b>Митохондрии</b> окисляют глюкозу и дают АТФ. Нейрон очень чувствителен к их работе: без кислорода он живёт считаные минуты.' },
+  { id: 'lyso', name: 'Лизосомы', color: '#9B6BE0', text: '<b>Лизосомы</b> переваривают отслужившие белки и мембраны. Нейрон живёт столько же, сколько человек, поэтому уборка мусора внутри него особенно важна.' },
+  { id: 'fil', name: 'Нейрофиламенты и микротрубочки', color: '#8FE0C4', text: '<b>Нейрофиламенты и микротрубочки</b> держат форму отростков и служат рельсами: по ним белки-моторы везут пузырьки и митохондрии по аксону в обе стороны (светлые точки).' },
+  { id: 'hill', name: 'Аксонный холмик', color: '#FFB070', text: '<b>Аксонный холмик</b> — место возникновения потенциала действия. Здесь больше всего натриевых каналов и самый низкий порог. Все сигналы с дендритов и тела суммируются именно тут.' },
+  { id: 'myel', name: 'Миелиновая оболочка', color: '#F1E7D6', text: '<b>Миелиновая оболочка</b> — слоистая муфта из мембраны глиальной клетки (шванновской на периферии, олигодендроцита в мозге). Между муфтами — перехваты Ранвье, по ним импульс прыгает.' },
+  { id: 'syn', name: 'Синапсы', color: '#FFC07A', text: '<b>Синапсы</b> — окончания чужих аксонов на дендритах, шипиках и теле нейрона. Оранжевые возбуждают, голубые тормозят. На одном нейроне коры их тысячи.' },
 ];
 
 function makeSoma() {
@@ -244,10 +244,10 @@ function makeSoma() {
     st.waves.push({ s, c: wavePath(s), t0: tFire, dur: dist * 0.12, kind: s.kind, arrived: false, amp });
   }
   const somaExc = () => syns.filter((s) => s.kind === 'exc');
-  function single() { const s = syns.find((q) => q.where === 'dend'); fire(s); say('<b>A single synapse.</b> The transmitter has opened channels, and a small wave of depolarization (an EPSP, orange) runs along the dendrite toward the hillock. It fades on the way: only +3–5 mV reaches the hillock, far from threshold. A single synapse usually cannot trigger an impulse.'); }
-  function spatial() { somaExc().filter((_, i) => i % 3 === 0).slice(0, 8).forEach((s) => fire(s, rand(0, 1))); say('<b>Spatial summation.</b> Eight synapses in different places fire almost simultaneously. Their waves add up at the hillock and cross the threshold (about −55…−50 mV): an action potential is born and travels down the axon, jumping between the nodes of Ranvier.'); }
-  function temporal() { const s = syns.find((q) => q.where === 'soma' && q.kind === 'exc'); for (let k = 0; k < 6; k++) fire(s, k * 3.2); say('<b>Temporal summation.</b> The same synapse fires six times in a row. Each new wave arrives before the previous one has faded, and they add up to threshold.'); }
-  function inhibit() { somaExc().filter((_, i) => i % 3 === 0).slice(0, 8).forEach((s) => fire(s, rand(0, 1))); syns.filter((s) => s.kind === 'inh').forEach((s) => { fire(s, 11); fire(s, 18); }); say('<b>Inhibition.</b> The same volley from eight synapses, but at the same moment inhibitory synapses right at the hillock fire too (blue, GABA). The inhibitory current cancels the excitation exactly where the fate of the impulse is decided, and no action potential arises.'); }
+  function single() { const s = syns.find((q) => q.where === 'dend'); fire(s); say('<b>Один синапс.</b> Медиатор открыл каналы, и по дендриту к холмику побежала небольшая волна деполяризации (ВПСП, оранжевая). По дороге она затухает: у холмика всего +3–5 мВ, до порога далеко. Один синапс обычно не может запустить импульс.'); }
+  function spatial() { somaExc().filter((_, i) => i % 3 === 0).slice(0, 8).forEach((s) => fire(s, rand(0, 1))); say('<b>Пространственная суммация.</b> Восемь синапсов в разных местах сработали почти одновременно. Их волны складываются у холмика и переходят порог (около −55…−50 мВ): рождается потенциал действия и бежит по аксону, перескакивая между перехватами Ранвье.'); }
+  function temporal() { const s = syns.find((q) => q.where === 'soma' && q.kind === 'exc'); for (let k = 0; k < 6; k++) fire(s, k * 3.2); say('<b>Временная суммация.</b> Один и тот же синапс сработал шесть раз подряд. Каждая следующая волна приходит, пока не угасла предыдущая, и они складываются до порога.'); }
+  function inhibit() { somaExc().filter((_, i) => i % 3 === 0).slice(0, 8).forEach((s) => fire(s, rand(0, 1))); syns.filter((s) => s.kind === 'inh').forEach((s) => { fire(s, 11); fire(s, 18); }); say('<b>Торможение.</b> Тот же залп из восьми синапсов, но одновременно сработали тормозные синапсы прямо у холмика (голубые, ГАМК). Тормозной ток гасит возбуждение там, где решается судьба импульса, и потенциал действия не возникает.'); }
   function say(html) { st.msg = html; refs.setInfo && refs.setInfo(); }
 
   function select(id) {
@@ -314,28 +314,28 @@ function makeSoma() {
     ctx.strokeStyle = '#FFB070'; ctx.lineWidth = 2; ctx.beginPath();
     st.trace.forEach(([tt, v], i) => (i ? ctx.lineTo(x(tt), y(v)) : ctx.moveTo(x(tt), y(v)))); ctx.stroke();
     ctx.fillStyle = '#A49DA8'; ctx.font = '500 10px JetBrains Mono, monospace';
-    ctx.fillText('hillock, mV', 10, 12); ctx.fillText('−70', w - 30, y(-70) - 3); ctx.fillStyle = '#c9a74a'; ctx.fillText('threshold −55', w - 70, y(-55) - 3);
+    ctx.fillText('холмик, мВ', 10, 12); ctx.fillText('−70', w - 30, y(-70) - 3); ctx.fillStyle = '#c9a74a'; ctx.fillText('порог −55', w - 70, y(-55) - 3);
   }
 
   { const seen = new Set(); scene.traverse((o) => { const m = o.material; if (m && m.isMeshPhysicalMaterial && !seen.has(m)) { seen.add(m); m.color.multiplyScalar(0.55); m.sheen = Math.min(m.sheen, 0.3); } }); }
   SOMA_PARTS.forEach((p) => PART[p.id].mats.forEach((m) => { m.userData.e0s = { c: m.emissive.clone(), i: m.emissiveIntensity }; }));
   pickOn(() => self, camera, pickables, (id) => select(id));
   const SMALL = new Set(['nucl', 'lyso', 'mito', 'golgi', 'fil']);
-  const labels = SOMA_PARTS.map((p) => ({ text: p.name, pos: PART[p.id].anchor, color: p.color, show: () => st.labels && (st.sel ? st.sel === p.id : !SMALL.has(p.id)) }));
+  const labels = SOMA_PARTS.map((p) => ({ text: p.name, pos: PART[p.id].anchor, color: p.color, show: () => st.labels && (st.sel ? st.sel === p.id : !SMALL.has(p.id)) && !(p.id === 'syn' && !st.sel && matchMedia('(max-width:700px)').matches) }));
   const refs = {};
   function ui(el) {
     const ib = infoBox('1 1 300px');
-    refs.setInfo = () => { ib.info.innerHTML = st.msg || (st.sel ? PART[st.sel].text : 'A neuron in section. Click any part of the cell or choose it from the list. Bottom right is the axon hillock potential: try summation.'); };
-    refs.seg = seg([{ id: 'all', label: 'Overview' }, ...SOMA_PARTS.map((p) => ({ id: p.id, label: p.name, color: p.color }))], () => st.sel || 'all', (v) => select(v));
-    const cutB = toggle('Cutaway', () => st.cut, (v) => { st.cut = v; });
-    const rot = toggle('Rotate', () => st.rot, (v) => { st.rot = v; });
-    const lab = toggle('Labels', () => st.labels, (v) => { st.labels = v; });
-    const auto = toggle('Background', () => st.auto, (v) => { st.auto = v; });
+    refs.setInfo = () => { ib.info.innerHTML = st.msg || (st.sel ? PART[st.sel].text : 'Нейрон в разрезе. Нажмите на любую часть клетки или выберите её в списке. Справа внизу — потенциал аксонного холмика: попробуйте суммацию.'); };
+    refs.seg = seg([{ id: 'all', label: 'Обзор' }, ...SOMA_PARTS.map((p) => ({ id: p.id, label: p.name, color: p.color }))], () => st.sel || 'all', (v) => select(v));
+    const cutB = toggle('Разрез', () => st.cut, (v) => { st.cut = v; });
+    const rot = toggle('Вращение', () => st.rot, (v) => { st.rot = v; });
+    const lab = toggle('Подписи', () => st.labels, (v) => { st.labels = v; });
+    const auto = toggle('Фон', () => st.auto, (v) => { st.auto = v; });
     Object.assign(refs, { cutB, rot, lab, auto });
     el.append(
-      h('div', { class: 'grp', style: 'flex:1 1 560px' }, h('div', { class: 'glabel' }, 'Parts of the neuron', h('kbd', {}, 'click the cell')), h('div', { class: 'gctl' }, refs.seg)),
-      group('Summation at the hillock', '1 · 2 · 3 · 4', button('Single synapse', single), button('Spatial', spatial, true), button('Temporal', temporal), button('Inhibition', inhibit), auto),
-      group('View', 'C · R · N', cutB, rot, lab),
+      h('div', { class: 'grp', style: 'flex:1 1 560px' }, h('div', { class: 'glabel' }, 'Части нейрона', h('kbd', {}, 'клик по клетке')), h('div', { class: 'gctl' }, refs.seg)),
+      group('Суммация у холмика', '1 · 2 · 3 · 4', button('Один синапс', single), button('Пространственная', spatial, true), button('Временная', temporal), button('Торможение', inhibit), auto),
+      group('Вид', 'C · R · N', cutB, rot, lab),
       ib.el);
     refs.setInfo();
   }
@@ -348,22 +348,22 @@ function makeSoma() {
     if (e.key === 'Escape') { select('all'); return true; }
     return false;
   }
-  function stats() { return [['Hillock', Math.round(st.vm), 'mV'], ['Synapses', syns.length, ''], ['Cell body', '20–30', 'µm']]; }
+  function stats() { return [['Холмик', Math.round(st.vm), 'мВ'], ['Синапсов', syns.length, ''], ['Тело', '20–30', 'мкм']]; }
   const self = {
     labelBg: true, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, get accent() { return st.sel ? PART[st.sel].color : '#C9A6E8'; },
-    kicker: 'Brain · neuron', title: 'Structure of the nerve cell',
-    lede: 'The neuron cell body in section: nucleus, Nissl substance, Golgi apparatus, mitochondria and cytoskeletal filaments. Signals from synapses converge on the axon hillock, where it is decided whether an impulse will fire.',
+    kicker: 'Мозг · нейрон', title: 'Строение нервной клетки',
+    lede: 'Тело нейрона в разрезе: ядро, субстанция Ниссля, аппарат Гольджи, митохондрии и нити цитоскелета. Сигналы с синапсов сходятся к аксонному холмику, где решается, будет ли импульс.',
     notes: `
-      <div><h2>What is inside a neuron</h2>
-        <p>Inside, a neuron is built like a typical cell: a nucleus with DNA, from whose large pores RNA emerges; ribosomes on the channels of the ER; a Golgi apparatus that buds off transmitter-filled vesicles; mitochondria that oxidize glucose and produce ATP.</p>
-        <h3>What makes a neuron special</h3>
-        <p>There are a great many ribosomes: a neuron synthesizes proteins all the time, so its rough ER is gathered into clumps, the <b>Nissl substance</b> (tigroid). In glial cells it is barely visible. The myelin around the axon is the layered membrane of a glial cell. Thousands of synaptic contacts reach the dendrites and cell body.</p>
-        <h3>How an impulse is born</h3>
-        <p>Each synapse produces a small shift in potential that fades along the way. An impulse arises only if the sum of these shifts at the axon hillock crosses the threshold: this is how <b>spatial</b> and <b>temporal summation</b> work. Inhibitory synapses sit closest to the hillock and can cancel even strong excitation.</p></div>
-      <div><h2>What is accurate here</h2><ul>
-        <li>There is no Nissl substance in the axon hillock, and the cytoskeletal filaments converge into the axon.</li><li>Excitatory synapses on spines, dendrites and the cell body; inhibitory ones at the hillock.</li><li>The EPSP fades with distance, and the threshold is about −55 mV.</li></ul>
-        <h2 style="margin-top:22px">Simplifications</h2><ul><li>Time is slowed down about 50-fold.</li><li>Organelles and ribosomes are larger than to scale; there are hundreds of times fewer synapses than on a real neuron.</li></ul></div>
-      <div class="keys"><h2>Keys</h2><ul><li>click a part of the cell: select</li><li><code>1</code>–<code>4</code> summation experiments</li><li><code>C</code> cutaway</li><li><code>R</code> rotate</li><li><code>N</code> labels</li><li><code>Esc</code> overview</li></ul></div>`,
+      <div><h2>Что внутри нейрона</h2>
+        <p>Внутреннее строение нейрона типично для клетки: ядро с ДНК, из крупных пор которого выходит РНК; рибосомы на каналах ЭПС; аппарат Гольджи, отпочковывающий пузырьки с медиаторами; митохондрии, которые окисляют глюкозу и дают АТФ.</p>
+        <h3>Чем нейрон особенный</h3>
+        <p>Рибосом очень много: нейрон всё время синтезирует белки, поэтому шероховатая ЭПС собрана в глыбки — <b>тигроид</b>, или субстанцию Ниссля. У глиальных клеток тигроид почти не виден. Миелин вокруг аксона — слоистая мембрана глиальной клетки. К дендритам и телу подходят тысячи синапсов-контактов.</p>
+        <h3>Как рождается импульс</h3>
+        <p>Каждый синапс даёт маленький сдвиг потенциала, который затухает по пути. Импульс возникает, только если у аксонного холмика сумма сдвигов перейдёт порог: так работают <b>пространственная</b> и <b>временная суммация</b>. Тормозные синапсы стоят ближе всего к холмику и могут погасить даже сильное возбуждение.</p></div>
+      <div><h2>Что здесь настоящее</h2><ul>
+        <li>В аксонном холмике нет тигроида, нити цитоскелета сходятся в аксон.</li><li>Возбуждающие синапсы на шипиках, дендритах и теле, тормозные у холмика.</li><li>Затухание ВПСП с расстоянием и порог около −55 мВ.</li></ul>
+        <h2 style="margin-top:22px">Условности</h2><ul><li>Время замедлено примерно в 50 раз.</li><li>Органоиды и рибосомы крупнее, чем в масштабе; синапсов в сотни раз меньше, чем на реальном нейроне.</li></ul></div>
+      <div class="keys"><h2>Клавиши</h2><ul><li>клик по части клетки: выбрать</li><li><code>1</code>–<code>4</code> опыты с суммацией</li><li><code>C</code> разрез</li><li><code>R</code> вращение</li><li><code>N</code> подписи</li><li><code>Esc</code> обзор</li></ul></div>`,
   };
   return self;
 }

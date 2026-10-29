@@ -124,7 +124,7 @@ function makeCranial() {
   function select(i) {
     st.sel = i === 'all' ? null : i; if (st.sel !== null) st.type = 'all';
     apply(); refs.seg && refs.seg.sync(); refs.tseg && refs.tseg.sync(); refs.setInfo && refs.setInfo();
-    if (st.sel !== null) { const nv = nerves[st.sel], p = nv.p1.clone().lerp(V3(0.3, -1.0, 0.5), 0.3); st.fly = flyTarget(p, p.clone().add(V3(2.3, -1.6, 1.6))); } else st.fly = HOME;
+    if (st.sel !== null) { const nv = nerves[st.sel], p = nv.p1.clone().lerp(V3(0.3, -1.0, 0.5), 0.3), pc = p.clone().add(V3(-0.45, 0, 0.65)); st.fly = flyTarget(pc, pc.clone().add(V3(4.3, -3.0, 3.0))); } else st.fly = HOME;
   }
   function update(dt) {
     st.t += dt; controls.autoRotate = st.rot; controls.autoRotateSpeed = 0.4;
