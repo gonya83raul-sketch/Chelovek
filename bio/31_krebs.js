@@ -24,10 +24,10 @@ function makeKrebs() {
   // митохондрия на фоне: оболочка и кристы
   const mito = new THREE.Mesh(new THREE.CapsuleGeometry(4.2, 9.5, 12, 48), glassMat(0xffb070, { rim: 0.2, base: 0.002, pow: 2.4, keep: true })); mito.rotation.z = Math.PI / 2; mito.scale.set(0.95, 0.85, 0.4); mito.position.set(0.5, -0.2, -5.5); scene.add(mito);
   for (let k = 0; k < 7; k++) { const g = new THREE.Mesh(displaceGeo(new THREE.CylinderGeometry(0.5, 0.5, 3.2 - Math.abs(k - 3) * 0.4, 24, 8, true, 0, Math.PI), (v) => { v.x *= 0.35; v.z *= 1.1; v.x += 0.12 * Math.sin(v.y * 2.2 + k); }), new THREE.MeshPhysicalMaterial({ color: 0x8a5a40, roughness: 0.7, transparent: true, opacity: 0.22, depthWrite: false, side: THREE.DoubleSide })); g.position.set(-6.7 + k * 2.2, -0.3 + (k % 2 ? 0.8 : -0.8), -5.5); scene.add(g); }
-  const C = V3(1.0, 0.1, 0), R = 3.0;
+  const C = V3(1.0, 0.1, 0), R = 2.7;
   const ang = (k) => Math.PI / 2 - 0.42 - k * (Math.PI * 2 / 8);
   const pos = (k, r = R) => V3(C.x + Math.cos(ang(k)) * r, C.y + Math.sin(ang(k)) * r, 0);
-  const NODES = KR.map((d, k) => { const m = molMesh(MOL(d.id), { scale: 0.19, hideH: true }); m.position.copy(pos(k)); scene.add(m); return { d, m, k }; });
+  const NODES = KR.map((d, k) => { const m = molMesh(MOL(d.id), { scale: 0.22, hideH: true }); m.position.copy(pos(k)); scene.add(m); return { d, m, k }; });
   // дуги
   const arcs = KR.map((d, k) => { const a0 = ang(k) - 0.2, a1 = ang(k + 1) + 0.2; const pts = []; for (let i = 0; i <= 24; i++) { const a = a0 + (a1 - a0) * i / 24; pts.push(V3(C.x + Math.cos(a) * R, C.y + Math.sin(a) * R, 0)); } const c = new THREE.CatmullRomCurve3(pts); const f = flowTubeMat('#7FD6FF', 0.5, 1.2); scene.add(new THREE.Mesh(new THREE.TubeGeometry(c, 40, 0.045, 6), f)); return { c, f }; });
   // ПДГ-комплекс
@@ -99,7 +99,7 @@ function makeKrebs() {
   const TXT = '<b>Цикл трикарбоновых кислот</b> (цикл Кребса, цитратный цикл) в матриксе митохондрий — «котёл», где сгорают остатки всех видов топлива. Ацетил-КоА (C2) соединяется с оксалоацетатом (C4) в цитрат (C6); за оборот уходят <b>2 CO₂</b>, образуются <b>3 НАДН, 1 ФАДН₂ и 1 ГТФ</b>, а оксалоацетат возвращается. Восстановленные коферменты (золотые шарики) летят в дыхательную цепь (справа). Слева — <b>пируватдегидрогеназный комплекс</b>, превращающий пируват в ацетил-КоА. Нажмите на молекулу или комплекс.';
   const PDHT = '<b>Пируватдегидрогеназный комплекс</b> — гигантский ансамбль (больше рибосомы) из трёх ферментов: E1 (декарбоксилаза, кофермент <b>ТПФ</b> — витамин B1), E2 (трансацетилаза, <b>липоевая кислота</b> и <b>КоА</b> — B5), E3 (дегидрогеназа, <b>ФАД</b> — B2 и <b>НАД⁺</b> — PP). Пируват + НАД⁺ + HS-КоА → ацетил-КоА + CO₂ + НАДН. Реакция необратима: из ацетил-КоА глюкозу уже не получить. Тормозится АТФ, ацетил-КоА, НАДН; при дефиците B1 (алкоголизм) пируват и лактат копятся в крови.';
   const labels = [
-    ...NODES.map((n) => ({ text: `${n.d.name} · C${n.d.c}`, pos: n.k === 3 ? n.m.position.clone().add(V3(-0.6, -0.6, 0)) : n.k === 4 ? n.m.position.clone().add(V3(-0.5, 0.55, 0)) : n.m.position.clone().add(pos(n.k, R + 1.0).sub(n.m.position).multiplyScalar(0.9)).add(V3(-0.4, 0, 0)), left: n.k === 3 || n.k === 4, color: '#EFEAE6', show: () => st.labels })),
+    ...NODES.map((n) => ({ text: `${n.d.name} · C${n.d.c}`, pos: n.k === 3 ? n.m.position.clone().add(V3(0.6, 0, 0)) : n.k === 4 ? n.m.position.clone().add(V3(-0.6, 0, 0)) : n.m.position.clone().add(pos(n.k, R + 1.0).sub(n.m.position).multiplyScalar(0.9)).add(V3(-0.4, 0, 0)), left: n.k === 4, color: '#EFEAE6', show: () => st.labels })),
     ...KR.map((d, k) => ({ text: KR[(k + 1) % 8].enz, pos: V3(C.x + Math.cos(ang(k) - 0.39) * (R - 1.15), C.y + Math.sin(ang(k) - 0.39) * (R - 1.15), 0.3).add(V3(-0.55, 0, 0)), color: '#7FD6FF', show: () => st.labels && st.step === k })),
     { text: 'пируватдегидрогеназа', pos: V3(-6.6, -2.2, 0), color: '#F2C14E', show: () => st.labels },
     { text: 'пируват', pos: V3(-8.2, -3.2, 0), color: '#FF8A5C', show: () => st.labels },

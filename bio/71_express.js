@@ -33,8 +33,8 @@ function makeExpress() {
   const rnap = new THREE.Mesh(blobGeo(1.4, 1.15, 1.15, 31, 0.12, 4), glassMat(0xff9a50, { rim: 0.45, base: 0.012 })); G1.add(rnap);
   const rnapCore = new THREE.Mesh(blobGeo(0.85, 0.7, 0.7, 32, 0.12, 4), protMat('#FF9A50', 0.25, { transparent: true, opacity: 0.55 })); rnap.add(rnapCore);
   const MRN = 140; const mrnaPts = []; const mrnaM = new THREE.InstancedMesh(new THREE.SphereGeometry(0.075, 10, 8), new THREE.MeshPhysicalMaterial({ roughness: 0.35, clearcoat: 0.6 }), MRN); mrnaM.count = 0; G1.add(mrnaM);
-  const GAL = new THREE.Group(); GAL.position.set(3.4, 2.5, 0.4); G1.add(GAL);   // врезка сверху — белок-регулятор на своём участке ДНК (другой ген)
-  const gp = proteinMesh('gal4', { scale: 0.035, colorBy: (c, ci) => ['#F2E6C8', '#F2E6C8', '#C77DFF', '#FF8AB0'][ci] || '#7FD6FF', nucColor: '#9FB4D8' }); GAL.add(gp);
+  const GAL = new THREE.Group(); GAL.position.set(3.4, 2.75, 0.4); G1.add(GAL);   // врезка сверху — белок-регулятор на своём участке ДНК (другой ген)
+  const gp = proteinMesh('gal4', { scale: 0.03, colorBy: (c, ci) => ['#F2E6C8', '#F2E6C8', '#C77DFF', '#FF8AB0'][ci] || '#7FD6FF', nucColor: '#9FB4D8' }); GAL.add(gp);
   const galLink = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.01, 1.6, 6), new THREE.MeshBasicMaterial({ color: 0x9fb4d8, transparent: true, opacity: 0.4 })); galLink.position.set(3.0, 1.45, 0.2); galLink.rotation.z = 0.35; galLink.scale.y = 0.6; G1.add(galLink);
   /* ---------- 2. сплайсинг ---------- */
   const G2 = new THREE.Group(); G2.position.set(40, 0, 0); scene.add(G2);
@@ -70,7 +70,7 @@ function makeExpress() {
       rnap.position.set(px, 0.4, 0); rnap.rotation.x = Math.sin(t) * 0.05; GAL.rotation.y += dt * 0.3;
       // мРНК: точки от старта до полимеразы, «хвост» выходит вверх
       const n = Math.max(0, Math.min(MRN, Math.floor((px + 5.2) / 0.1))); mrnaM.count = n;
-      for (let i = 0; i < n; i++) { const s = (n - i) * 0.1; const p = V3(px - 0.2 - s * 0.55, 0.4 + 0.8 + s * 0.35 + 0.18 * Math.sin(s * 3 + t), 0.4 * Math.cos(s * 2)); dm.position.copy(p); dm.scale.setScalar(1); dm.updateMatrix(); mrnaM.setMatrixAt(i, dm.matrix); mrnaM.setColorAt(i, new THREE.Color(Object.values(BASECOL)[(i * 7) % 4]).multiplyScalar(0.7)); }
+      for (let i = 0; i < n; i++) { const s = (n - i) * 0.1; const p = V3(px - 0.2 - s * 0.55, 0.4 + 0.8 + 0.45 * Math.min(s / 1.5, 1) + 0.12 * Math.sin(s * 3 + t), 0.4 * Math.cos(s * 2)); dm.position.copy(p); dm.scale.setScalar(1); dm.updateMatrix(); mrnaM.setMatrixAt(i, dm.matrix); mrnaM.setColorAt(i, new THREE.Color(Object.values(BASECOL)[(i * 7) % 4]).multiplyScalar(0.7)); }
       mrnaM.instanceMatrix.needsUpdate = true; if (mrnaM.instanceColor) mrnaM.instanceColor.needsUpdate = true;
       tata.material.opacity = c < 2 ? 0.45 : 0.18;
       st.txPh = c < 1 ? 'сборка на промоторе' : px < 6.6 ? 'элонгация: синтез РНК' : 'терминация';

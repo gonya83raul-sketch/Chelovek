@@ -84,7 +84,7 @@ function makeGlycolysis() {
     tok.core.position.copy(p); tok.spr.position.copy(p);
     // активные молекулы, стрелки
     const inRoute = new Set(route.map((e) => e.id)); const nodesOn = new Set(route.flatMap((e) => [e.a, e.b])); if (st.mode !== 'gng' && st.mode !== 'ppp') nodesOn.add('dhap');
-    Object.values(EDGE).forEach((e) => { e.fa.mat.uniforms.uTime.value = t; e.fa.mat.uniforms.uSpeed.value = route.some((r) => r.id === e.id && r.rev) ? -0.5 : 0.5; e.fa.mat.uniforms.uOn.value = e.id === c2.id ? 1 : inRoute.has(e.id) ? 0.35 : 0.05; if (e.fa.cone) { const r = route.find((q) => q.id === e.id); e.fa.cone.visible = !!r && !r.rev; e.fa.cone2.visible = !!r && !!r.rev; } });
+    Object.values(EDGE).forEach((e) => { e.fa.mesh.visible = inRoute.has(e.id); e.fa.mat.uniforms.uTime.value = t; e.fa.mat.uniforms.uSpeed.value = route.some((r) => r.id === e.id && r.rev) ? -0.5 : 0.5; e.fa.mat.uniforms.uOn.value = e.id === c2.id ? 1 : inRoute.has(e.id) ? 0.35 : 0.05; if (e.fa.cone) { const r = route.find((q) => q.id === e.id); e.fa.cone.visible = !!r && !r.rev; e.fa.cone2.visible = !!r && !!r.rev; } });
     Object.entries(NODE).forEach(([id, m]) => { const on = nodesOn.has(id); m.visible = on; molFade(m, 1); m.rotation.y += dt * 0.4; const hot = id === c2.b && st.u > 0.7 || id === c2.a && st.u < 0.3; const s = hot ? 1.25 : 1; m.scale.lerp(V3(s, s, s), 1 - Math.exp(-dt * 6)); });
     enol.visible = st.mode !== 'ppp'; enol.rotation.y += dt * 0.3;
     if (blocked && rnd() < 0.2) fx.spawn(p.clone(), randUnit().multiplyScalar(0.3), new THREE.Color(0xff6a6a), 0.5, 1, 1.2);

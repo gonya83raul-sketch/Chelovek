@@ -34,14 +34,14 @@ function makeAdrenal() {
     const back = new THREE.Mesh(new THREE.SphereGeometry(z.r1, 48, 24, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2), z.mat); back.rotation.x = Math.PI / 2; back.scale.z = 0.55; GL.add(back);
   });
   // узлы пути (молекулы)
-  const X0 = -0.6, DX = 1.32, RY = 1.45;
+  const X0 = -0.6, DX = 1.5, RY = 1.45;
   const NODE = {
     chol: { m: 'cholesterol', p: V3(X0, 0, 0) }, preg: { m: 'pregnenolone', p: V3(X0 + DX, 0, 0) }, prog: { m: 'progesterone', p: V3(X0 + 2 * DX, RY * 0.5, 0) },
     doc: { m: 'doc', p: V3(X0 + 3 * DX, RY, 0), z: 'glom' }, cort_b: { m: 'corticosterone', p: V3(X0 + 4 * DX, RY, 0), z: 'glom' }, aldo: { m: 'aldosterone', p: V3(X0 + 5 * DX, RY, 0), z: 'glom' },
     ohp: { m: 'ohprog', p: V3(X0 + 3 * DX, 0, 0), z: 'fasc' }, dcort: { m: 'deoxycortisol', p: V3(X0 + 4 * DX, 0, 0), z: 'fasc' }, cortisol: { m: 'cortisol', p: V3(X0 + 5 * DX, 0, 0), z: 'fasc' },
     dhea: { m: 'dhea', p: V3(X0 + 3 * DX, -RY, 0), z: 'ret' }, andro: { m: 'androstenedione', p: V3(X0 + 4 * DX, -RY, 0), z: 'ret' }, testo: { m: 'testosterone', p: V3(X0 + 5 * DX, -RY, 0), z: 'ret' },
   };
-  if (MOB) Object.values(NODE).forEach((n) => { n.p.set(n.p.y * 1.25, -(n.p.x - X0) * 1.05 + 2.6, 0); });
+  if (MOB) Object.values(NODE).forEach((n) => { n.p.set(n.p.y * 1.5, -(n.p.x - X0) * 1.05 + 2.6, 0); });
   Object.values(NODE).forEach((n) => { n.g = fit(n.m, MOB ? 0.62 : 0.56); n.g.position.copy(n.p); G1.add(n.g); n.glow = glowNucleus(G1, n.p.clone().add(V3(0, 0, -0.25)), '#FF6A5A', 0.08, 12); n.glow.core.visible = false; n.glow.spr.material.opacity = 0; });
   const ZC = { glom: '#7FE0A0', fasc: '#F2C14E', ret: '#FF8AB0' };
   const ST = [
@@ -59,7 +59,7 @@ function makeAdrenal() {
   const brainM = new THREE.Mesh(ell3(0.34, 0.27, 0.36, V3(0, 4.3, 0.02)), glassMat('#C8B8FF', { rim: 0.7, base: 0.04, keep: true })); G2.add(brainM);
   const kidM = organMat('#9A4A4A', 0.5); ADR.forEach((p, i) => { const k = new THREE.Mesh(ell3(0.16, 0.3, 0.12, p.clone().add(V3(i ? -0.02 : 0.02, -0.36, 0))), kidM); G2.add(k); });
   const adrM = organMat('#F2C14E', 0.55, { emissiveIntensity: 0.1 });
-  const adrG = ADR.map((p) => { const m = new THREE.Mesh(new THREE.ConeGeometry(0.09, 0.13, 3), adrM); m.position.copy(p); G2.add(m); return glowNucleus(G2, p.clone().add(V3(0, 0, 0.06)), '#F2C14E', 0.035, 10); });
+  const adrG = ADR.map((p) => { const m = new THREE.Mesh(new THREE.ConeGeometry(0.15, 0.2, 3), adrM); m.position.copy(p); G2.add(m); return glowNucleus(G2, p.clone().add(V3(0, 0, 0.06)), '#F2C14E', 0.035, 10); });
   const hypG = glowNucleus(G2, HYP, '#9F7BFF', 0.05, 9), pitG = glowNucleus(G2, PIT, '#7FD6FF', 0.05, 9);
   const heartM = new THREE.Mesh(ell3(0.22, 0.27, 0.2, HRT), organMat('#C84A50', 0.45)); G2.add(heartM);
   const livM = new THREE.Mesh(ell3(0.42, 0.22, 0.25, LIV), organMat('#9A4A3A', 0.5, { transparent: true, opacity: 0.55 })); G2.add(livM);
