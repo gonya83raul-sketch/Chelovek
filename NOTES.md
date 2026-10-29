@@ -345,4 +345,4 @@ C. Новые темы (п.1 ниже + сверить оглавление data
 - app45 (29.10): доделка r5j + r5k; sweep; превью 9; live.py joints, heart.en, liver — без ошибок.
 - r5l (review/score-r5l.md: brain 3,5; develop 3,5; skin 3,5; repro 3,5; chemo 3,0; chest 3,5): skin LVIEW (компьютер правее описания, телефон ниже), chemo tongue (29,7; −0,57; −0,11) и bud, chest breast/lact выше, repro dev (−0,3; 0,05), brain телефон mobZoom 0,62. Не сделано: develop кадр (CAM_HI/LO, цель) и info max-width 640 px, телефон DVP; repro «прямая кишка» над маткой (r_int), телефон 4 подписи и mobZoom 0,58; chemo раковины-хвост, подпись эпителия, длинные телефонные подписи; skin гиподерма-«булыжники».
 - r5m (review/score-r5m.md: sresp 4,0; menses 3,5): menses кадр cycle (y цели −0,04) — общий с repro «Цикл», телефон подпись «матка»; sresp кольцо Бэссон (названия по кругу, textAlign). Не сделано: sresp текст «Оргазм» — сокращения тазового дна соматические (S2–S4), нужен перевод.
-- app46 (29.10): r5l + r5m; превью 6. ВСЕ 74 сцены прошли раунд r5.
+- app46 (29.10): r5l + r5m; превью 6; live.py chemo, menses.en, skin — без ошибок. ВСЕ 74 сцены прошли раунд r5.
