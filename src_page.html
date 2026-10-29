@@ -1000,7 +1000,7 @@ function makeSynapse() {
   });
   astro.rotation.x = Math.PI / 2; astro.scale.set(1, 1, 0.45); astro.position.y = CLEFT_Y; astroAll.add(astro);
   SHEATH.forEach((c, i) => {
-    const d = V3(Math.cos(c), 0, Math.sin(c)), up = i === 1 ? -1 : 1;
+    const d = V3(Math.cos(c), 0, Math.sin(c)), up = i === 2 ? 1 : -1;   /* левый отросток вниз — не режет заголовок */
     const curve = new THREE.CatmullRomCurve3([d.clone().multiplyScalar(3.9).setY(CLEFT_Y), d.clone().multiplyScalar(5.4).setY(CLEFT_Y + 0.5 * up), d.clone().multiplyScalar(7.4).setY(CLEFT_Y + 2.2 * up), d.clone().multiplyScalar(9.5).setY(CLEFT_Y + 3.6 * up)]);
     const g = taperTube(curve, (u) => 0.3 - 0.16 * Math.sin(Math.min(1, u * 1.6) * Math.PI / 2) + 0.18 * u * u, 48, 12);
     astroAll.add(new THREE.Mesh(g, astroMatA), new THREE.Mesh(g, astroMatB));
@@ -1270,7 +1270,7 @@ function makeSynapse() {
     { text: 'Ca²⁺-каналы', pos: caPos[3].clone().add(V3(-0.15, -0.12, 0.1)) },
     { text: 'переносчики', pos: V3(-1.95, PRE_B + 0.4, 0.5), show: () => M.inact === 'uptake' },
     { text: 'фермент АХЭ', pos: V3(1.6, 0.6, -1.6), show: () => M.inact === 'enzyme' },
-    { text: 'астроцит', pos: V3(Math.cos(2.5) * 6, CLEFT_Y + 0.9, Math.sin(2.5) * 6), show: () => M.inact === 'astro' },
+    { text: 'астроцит', pos: V3(Math.cos(2.5) * 6, CLEFT_Y - 1.0, Math.sin(2.5) * 6), show: () => M.inact === 'astro' },
     { text: 'постсинаптическая клетка', pos: V3(-2.6, -2.4, 2.6) },
   ];
 
@@ -3133,7 +3133,7 @@ function makeGlia() {
   }
   function stats() { return [['ГЭБ', st.bbb ? 'закрыт' : 'открыт', ''], ['Глутамат в мозге', st.glu, ''], ['Синапсов', syn.filter((s) => s.alive).length, '']]; }
   return {
-    labelBg: true, mobZoom: 0.62, scene, camera, controls, update: update2, ui, onKey, stats, labels, drawScope: null, accent: '#7FD6C8',
+    labelBg: true, mobZoom: 0.58, scene, camera, controls, update: update2, ui, onKey, stats, labels, drawScope: null, accent: '#7FD6C8',
     kicker: 'Мозг · вспомогательные клетки', title: 'Нейроглия',
     lede: 'Glia по-гречески «клей». Глия упаковывает нейроны, изолирует их, охраняет вход из крови и убирает мусор.',
     notes: `
