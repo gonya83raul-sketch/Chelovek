@@ -66,8 +66,8 @@ function makeSpinal() {
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x060509); scene.environment = envTex; scene.fog = new THREE.FogExp2(0x060509, 0.018);
   labLights(scene, 0xffb070);
   // правая часть (мышца, кожа и нервы к ним) сжата к срезу по x: x > 3,4 → 3,4 + (x − 3,4)·0,58 — срез в кадре крупнее
-  const SQX = (v) => { if (v.x > 3.4) v.x = 3.4 + (v.x - 3.4) * 0.58; return v; };
-  const HOME = flyTarget(V3(1.5, -0.6, 0), V3(3.5, 4.3, 10.9));
+  const MOBS = matchMedia('(max-width:700px)').matches; const SQX = (v) => { if (v.x > 3.4) v.x = 3.4 + (v.x - 3.4) * (MOBS ? 0.4 : 0.58); return v; };
+  const HOME = MOBS ? flyTarget(V3(1.2, -0.6, 0), V3(3.2, 4.3, 10.9)) : flyTarget(V3(1.3, -0.6, 0), V3(3.3, 4.3, 10.9));
   const camera = new THREE.PerspectiveCamera(36, 1, 0.05, 300); camera.position.copy(HOME.pos);
   const controls = makeControls(camera, HOME.target); controls.minDistance = 2; controls.maxDistance = 60;
   const mat = (c, o = {}) => tissue(new THREE.Color(c).multiplyScalar(0.33), o);
@@ -273,7 +273,7 @@ function makeSpinal() {
     MY.forEach((f, i) => { m4.makeScale(f.l, f.r, f.r).setPosition(f.x, f.y, f.z); myI.setMatrixAt(i, m4); }); AX.forEach((f, i) => { m4.makeScale(f.l, f.r, f.r).setPosition(f.x, f.y, f.z); axI.setMatrixAt(i, m4); }); NV.add(myI, axI); }
   // продольные сосуды нерва (vasa nervorum) в эпиневрии
   [[0.86, 0.3, '#E0505A'], [-0.84, -0.28, '#5C7CE8'], [0.1, -0.86, '#E0505A']].forEach(([y, z, c]) => { const g = nx(new THREE.CylinderGeometry(0.045, 0.045, NL + 0.1, 12)); g.translate(0.02, y, z); NV.add(new THREE.Mesh(g, organMat(c, 0.6))); });
-  const NERVE_VIEW = flyTarget(V3(40.2, -1.35, 1.2), V3(47.6, 1.4, 5.6));
+  const NERVE_VIEW = MOBS ? flyTarget(V3(42.3, -0.5, 0.3), V3(48.4, 1.6, 4.2)) : flyTarget(V3(40.2, -0.8, 1.2), V3(47.6, 1.95, 5.6));
 
   /* ---------- режимы ---------- */
   function setMode(m) {
@@ -285,7 +285,7 @@ function makeSpinal() {
     NV.visible = nv; col.visible = seg2; cord.visible = dura.visible = !seg2 && !nv; vert.visible = m === 'anat' && st.vert;
     [muscle, skin, fibMesh, fx.obj, ...Object.values(somas)].forEach((o) => { o.visible = !seg2 && !nv && m !== 'tracts'; });
     if (nv) st.fly = NERVE_VIEW;
-    else if (seg2) st.fly = flyTarget(COL_POS, COL_POS.clone().add(V3(13, 2.5, 25)));
+    else if (seg2) st.fly = MOBS ? flyTarget(COL_POS.clone().add(V3(0, 0.8, 0)), COL_POS.clone().add(V3(9.1, 2.55, 17.5))) : flyTarget(COL_POS, COL_POS.clone().add(V3(13, 2.5, 25)));
     else if (m === 'tracts') st.fly = flyTarget(V3(0, 0, 1.6), V3(1.3, 1.1, 7.2));
     else st.fly = HOME;
     st.msg = null; refs.setInfo && refs.setInfo();
@@ -323,14 +323,14 @@ function makeSpinal() {
     { text: 'posterior horn', pos: V3(0.42, 0.66, L / 2), color: '#c9a0c8', show: () => st.labels && st.mode === 'anat' },
     { text: 'anterior horn', pos: V3(0.5, -0.36, L / 2), color: '#ff9a8a', show: () => st.labels && st.mode === 'anat' },
     { text: 'lateral horn', pos: V3(0.55, -0.06, L / 2), color: '#ffb070', show: () => st.labels && st.mode === 'anat' },
-    { text: 'white matter', pos: V3(-0.8, 0.35, L / 2), left: true, color: '#efe8dc', show: () => st.labels && st.mode === 'anat' },
+    { text: 'white matter', pos: V3(-0.8, 0.35, L / 2), left: true, color: '#efe8dc', show: () => st.labels && st.mode === 'anat' && !MOBS },
     { text: 'central canal', pos: V3(0.02, 0.05, L / 2), color: '#9a92a6', show: () => st.labels && st.mode === 'tracts' },
     { text: 'posterior root', pos: V3(-1.05, 0.72, 0.2), color: '#efe2c8', show: () => st.labels && st.mode === 'anat' },
     { text: 'anterior root', pos: V3(-1.3, -0.75, -0.5), left: true, color: '#efe2c8', show: () => st.labels && st.mode === 'anat' },
     { text: 'spinal ganglion', pos: V3(-1.95, 0.85, 0.2), left: true, color: '#e8c8a0', show: () => st.labels && st.mode === 'anat' },
     { text: 'spinal nerve', pos: V3(-3.5, -0.05, 0), color: '#efe2c8', show: () => st.labels && st.mode === 'anat' },
     { text: 'sympathetic trunk', pos: V3(-2.75, -2.0, 0.9), color: '#d8b890', show: () => st.labels && st.mode === 'anat' },
-    { text: 'white and gray rami', pos: V3(2.9, -0.9, 0.2), color: '#d8b890', show: () => st.labels && st.mode === 'anat' },
+    { text: 'white and gray rami', pos: V3(2.9, -0.9, 0.2), color: '#d8b890', show: () => st.labels && st.mode === 'anat' && !MOBS },
     { text: 'dura mater', pos: V3(-1.15, -1.2, 1.2), color: '#e2ddd2', show: () => st.labels && st.mode === 'anat' },
     { text: 'vertebra', pos: V3(0, -2.9, 0.8), color: '#e0d4ba', show: () => st.labels && st.mode === 'anat' && st.vert },
     { text: 'muscle spindle', pos: SP.clone().add(V3(0, 0.3, 0)), color: '#f0c060', show: () => st.labels && st.mode === 'anat' },

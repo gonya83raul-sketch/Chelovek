@@ -5,30 +5,30 @@ import { GLOW, Sparks, THREE, V3, __set_rnd, accentSet, addLights, button, clamp
    SCENE 2 · СИНАПС
    ========================================================= */
 const MEDIATORS = {
-  glu: { name: 'Глутамат', color: '#F2545B', rec: 'iono', ion: 'na', recName: 'AMPA / NMDA', inact: 'astro', effect: 'возбуждение', where: '~80% нейронов коры',
-    drugs: [{ id: 'ket', name: 'Кетамин', antag: 0.55, text: '<b>Кетамин</b> закупоривает NMDA-рецепторы: часть рецепторов не отвечает. Наркоз с «отключением» сознания.' },
-            { id: 'mem', name: 'Мемантин', antag: 0.25, text: '<b>Мемантин</b> мягко прикрывает NMDA и защищает нейроны от избытка Ca²⁺ при Альцгеймере.' }] },
-  gaba: { name: 'ГАМК', color: '#5B8CFF', rec: 'iono', ion: 'cl', recName: 'ГАМК-А, канал Cl⁻', inact: 'uptake', effect: 'торможение', where: '~20% нейронов коры',
-    drugs: [{ id: 'bzd', name: 'Феназепам', gain: 1.9, text: '<b>Бензодиазепины</b> садятся на свой участок ГАМК-А и усиливают каждый ответ: хлора входит больше.' },
-            { id: 'alc', name: 'Алкоголь', gain: 1.45, text: '<b>Алкоголь</b> среди прочего тоже усиливает ГАМК-А: расслабление, сонливость.' },
-            { id: 'val', name: 'Вальпроат', rel: 1.6, text: '<b>Вальпроаты</b> тормозят разрушение ГАМК: в пузырьках её больше, торможение сильнее.' }] },
-  ach: { name: 'Ацетилхолин', color: '#3FC1B0', rec: 'iono', ion: 'na', recName: 'никотиновые (N)', inact: 'enzyme', effect: 'возбуждение', where: 'мотонейроны и ядра ствола и переднего мозга',
-    drugs: [{ id: 'nic', name: 'Никотин', ago: 0.4, text: '<b>Никотин</b> — агонист N-рецепторов: открывает их сам, без медиатора.' },
-            { id: 'cur', name: 'Курарин', antag: 0.8, text: '<b>Курарин</b> — «сломанный ключ»: занимает N-рецепторы, мышца не получает команду.' },
-            { id: 'pro', name: 'Прозерин', enz: 0.92, text: '<b>Прозерин</b> тормозит ацетилхолинэстеразу: медиатор дольше живёт в щели.' }] },
-  da: { name: 'Дофамин', color: '#F4C542', rec: 'metabo', recName: 'D1 / D2', inact: 'uptake', effect: 'модуляция', where: '~0,5 млн нейронов среднего мозга',
-    drugs: [{ id: 'coc', name: 'Кокаин', block: 0.93, text: '<b>Кокаин</b> закупоривает переносчики DAT: дофамин застревает в щели.' },
-            { id: 'amp', name: 'Амфетамин', block: 0.6, rev: 1, text: '<b>Амфетамин</b> разворачивает переносчики: они выталкивают дофамин наружу даже без импульса.' },
-            { id: 'hal', name: 'Галоперидол', antag: 0.7, text: '<b>Галоперидол</b> блокирует D2-рецепторы. Так нейролептики гасят бред и галлюцинации.' },
-            { id: 'ldo', name: 'L-ДОФА', rel: 1.8, text: '<b>L-ДОФА</b> — сырьё для дофамина. Пузырьки полнее, выброс больше. Лекарство от Паркинсона.' }] },
-  ht: { name: 'Серотонин', color: '#C77DFF', rec: 'metabo', recName: '5-HT1 … 5-HT7', inact: 'uptake', effect: 'модуляция', where: '~0,3 млн нейронов ядер шва',
-    drugs: [{ id: 'flx', name: 'Флуоксетин', block: 0.9, text: '<b>Флуоксетин</b> (СИОЗС) блокирует переносчик SERT. Антидепрессант.' },
-            { id: 'mao', name: 'Ингибитор МАО', rel: 1.6, text: '<b>Ингибиторы МАО</b> не дают разрушать серотонин внутри окончания: в пузырьках его больше.' },
-            { id: 'lsd', name: 'ЛСД', ago: 0.35, text: '<b>ЛСД</b> — агонист 5-HT2A в коре: искажает восприятие.' }] },
-  na: { name: 'Норадреналин', color: '#F08A3C', rec: 'metabo', recName: 'α и β', inact: 'uptake', effect: 'модуляция', where: 'десятки тысяч нейронов голубого пятна',
-    drugs: [{ id: 'coc2', name: 'Кокаин', block: 0.85, text: '<b>Кокаин</b> блокирует и обратный захват норадреналина: пульс и давление растут.' },
-            { id: 'ate', name: 'Атенолол', antag: 0.65, text: '<b>Атенолол</b> блокирует β1-рецепторы сердца: пульс реже.' },
-            { id: 'naf', name: 'Нафтизин', ago: 0.35, text: '<b>Нафтизин</b> — агонист α1: сосуды носа сужаются.' }] },
+  glu: { name: 'Glutamate', color: '#F2545B', rec: 'iono', ion: 'na', recName: 'AMPA / NMDA', inact: 'astro', effect: 'excitation', where: '~80% of cortical neurons',
+    drugs: [{ id: 'ket', name: 'Ketamine', antag: 0.55, text: '<b>Ketamine</b> plugs NMDA receptors: some of the receptors fail to respond. Anesthesia that “switches off” consciousness.' },
+            { id: 'mem', name: 'Memantine', antag: 0.25, text: '<b>Memantine</b> gently blocks NMDA receptors and protects neurons from excess Ca²⁺ in Alzheimer’s disease.' }] },
+  gaba: { name: 'GABA', color: '#5B8CFF', rec: 'iono', ion: 'cl', recName: 'GABA-A, Cl⁻ channel', inact: 'uptake', effect: 'inhibition', where: '~20% of cortical neurons',
+    drugs: [{ id: 'bzd', name: 'Phenazepam', gain: 1.9, text: '<b>Benzodiazepines</b> bind to their own site on the GABA-A receptor and strengthen every response: more chloride flows in.' },
+            { id: 'alc', name: 'Alcohol', gain: 1.45, text: '<b>Alcohol</b>, among other things, also enhances GABA-A: relaxation, drowsiness.' },
+            { id: 'val', name: 'Valproate', rel: 1.6, text: '<b>Valproates</b> slow the breakdown of GABA: vesicles hold more of it, and inhibition is stronger.' }] },
+  ach: { name: 'Acetylcholine', color: '#3FC1B0', rec: 'iono', ion: 'na', recName: 'nicotinic (N)', inact: 'enzyme', effect: 'excitation', where: 'motor neurons and nuclei of the brainstem and forebrain',
+    drugs: [{ id: 'nic', name: 'Nicotine', ago: 0.4, text: '<b>Nicotine</b> is an N-receptor agonist: it opens them by itself, without the neurotransmitter.' },
+            { id: 'cur', name: 'Tubocurarine', antag: 0.8, text: '<b>Tubocurarine</b> is a “broken key”: it occupies N receptors, and the muscle never gets the command.' },
+            { id: 'pro', name: 'Neostigmine', enz: 0.92, text: '<b>Neostigmine</b> inhibits acetylcholinesterase: the neurotransmitter lingers longer in the cleft.' }] },
+  da: { name: 'Dopamine', color: '#F4C542', rec: 'metabo', recName: 'D1 / D2', inact: 'uptake', effect: 'modulation', where: '~0.5 million midbrain neurons',
+    drugs: [{ id: 'coc', name: 'Cocaine', block: 0.93, text: '<b>Cocaine</b> plugs the DAT transporters: dopamine gets stuck in the cleft.' },
+            { id: 'amp', name: 'Amphetamine', block: 0.6, rev: 1, text: '<b>Amphetamine</b> reverses the transporters: they push dopamine out even without an impulse.' },
+            { id: 'hal', name: 'Haloperidol', antag: 0.7, text: '<b>Haloperidol</b> blocks D2 receptors. This is how antipsychotics suppress delusions and hallucinations.' },
+            { id: 'ldo', name: 'L-DOPA', rel: 1.8, text: '<b>L-DOPA</b> is the raw material for dopamine. Vesicles are fuller, release is larger. A drug for Parkinson’s disease.' }] },
+  ht: { name: 'Serotonin', color: '#C77DFF', rec: 'metabo', recName: '5-HT1 … 5-HT7', inact: 'uptake', effect: 'modulation', where: '~0.3 million raphe neurons',
+    drugs: [{ id: 'flx', name: 'Fluoxetine', block: 0.9, text: '<b>Fluoxetine</b> (an SSRI) blocks the SERT transporter. An antidepressant.' },
+            { id: 'mao', name: 'MAO inhibitor', rel: 1.6, text: '<b>MAO inhibitors</b> prevent serotonin from being broken down inside the terminal: vesicles hold more of it.' },
+            { id: 'lsd', name: 'LSD', ago: 0.35, text: '<b>LSD</b> is a 5-HT2A agonist in the cortex: it distorts perception.' }] },
+  na: { name: 'Norepinephrine', color: '#F08A3C', rec: 'metabo', recName: 'α and β', inact: 'uptake', effect: 'modulation', where: 'tens of thousands of locus coeruleus neurons',
+    drugs: [{ id: 'coc2', name: 'Cocaine', block: 0.85, text: '<b>Cocaine</b> also blocks norepinephrine reuptake: heart rate and blood pressure rise.' },
+            { id: 'ate', name: 'Atenolol', antag: 0.65, text: '<b>Atenolol</b> blocks cardiac β1 receptors: the heart rate slows.' },
+            { id: 'naf', name: 'Naphazoline', ago: 0.35, text: '<b>Naphazoline</b> is an α1 agonist: the blood vessels of the nose constrict.' }] },
 };
 const MED_ORDER = ['glu', 'gaba', 'ach', 'da', 'ht', 'na'];
 
@@ -335,19 +335,19 @@ function makeSynapse() {
     ctx.strokeStyle = '#2A2630'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(8, hgt - 14); ctx.lineTo(w - 8, hgt - 14); ctx.stroke();
     ctx.strokeStyle = 'rgba(239,234,230,.45)'; ctx.lineWidth = 1.2; ctx.beginPath(); st.trace.forEach(([t, , c], i) => (i ? ctx.lineTo(x(t), yC(c)) : ctx.moveTo(x(t), yC(c)))); ctx.stroke();
     ctx.strokeStyle = M.color; ctx.lineWidth = 2; ctx.beginPath(); st.trace.forEach(([t, r], i) => (i ? ctx.lineTo(x(t), yR(r)) : ctx.moveTo(x(t), yR(r)))); ctx.stroke();
-    ctx.font = '500 10px JetBrains Mono, monospace'; ctx.fillStyle = M.color; ctx.fillText('ответ клетки', 10, 14); ctx.fillStyle = '#A49DA8'; ctx.fillText('медиатор в щели', 96, 14);
+    ctx.font = '500 10px JetBrains Mono, monospace'; ctx.fillStyle = M.color; ctx.fillText('cell response', 10, 14); ctx.fillStyle = '#A49DA8'; ctx.fillText('neurotransmitter in the cleft', 96, 14);
   }
 
   const labels = [
-    { text: 'пресинаптическое окончание', pos: V3(-3.0, 3.6, 1.0) },
-    { text: 'пузырьки с медиатором', pos: V3(1.9, 2.6, 1.6) },
-    { text: 'щель ≈ 20 нм', pos: V3(2.6, CLEFT_Y, 1.4) },
-    { text: 'рецепторы', pos: V3(0.6, POST_T - 0.15, 2.0) },
-    { text: 'Ca²⁺-каналы', pos: caPos[3].clone().add(V3(-0.15, -0.12, 0.1)) },
-    { text: 'переносчики', pos: V3(-1.95, PRE_B + 0.4, 0.5), show: () => M.inact === 'uptake' },
-    { text: 'фермент АХЭ', pos: V3(1.6, 0.6, -1.6), show: () => M.inact === 'enzyme' },
-    { text: 'астроцит', pos: V3(Math.cos(2.5) * 6, CLEFT_Y - 1.0, Math.sin(2.5) * 6), show: () => M.inact === 'astro' },
-    { text: 'постсинаптическая клетка', pos: V3(-2.6, -2.4, 2.6) },
+    { text: 'presynaptic terminal', pos: V3(-3.0, 3.6, 1.0) },
+    { text: 'neurotransmitter vesicles', pos: V3(1.9, 2.6, 1.6) },
+    { text: 'cleft ≈ 20 nm', pos: V3(2.6, CLEFT_Y, 1.4) },
+    { text: 'receptors', pos: V3(0.9, POST_T - 0.6, 2.0) },
+    { text: 'Ca²⁺ channels', pos: caPos[3].clone().add(V3(-0.15, 0.55, 0.1)) },
+    { text: 'transporters', pos: V3(-1.95, PRE_B + 0.4, 0.5), show: () => M.inact === 'uptake' },
+    { text: 'AChE enzyme', pos: V3(1.6, 0.6, -1.6), show: () => M.inact === 'enzyme' },
+    { text: 'astrocyte', pos: V3(Math.cos(2.5) * 6, CLEFT_Y - 1.0, Math.sin(2.5) * 6), show: () => M.inact === 'astro' },
+    { text: 'postsynaptic cell', pos: V3(-2.6, -2.4, 2.6) },
   ];
 
   let refs = {};
@@ -359,12 +359,12 @@ function makeSynapse() {
       M.drugs.forEach((d) => drugsBox.append(toggle(d.name, () => st.drugs.has(d.id), (v) => { v ? st.drugs.add(d.id) : st.drugs.delete(d.id); refreshDrugs(); info.innerHTML = v ? d.text : baseInfo(); })));
       info.innerHTML = baseInfo();
     }
-    function baseInfo() { const ina = { uptake: 'обратный захват в окончание', enzyme: 'фермент ацетилхолинэстераза прямо в щели', astro: 'захват астроцитом' }[M.inact]; return `<b>${M.name}</b>: ${M.where}, ${M.effect}. Рецепторы ${M.recName} (${M.rec === 'iono' ? 'ионотропные' : 'метаботропные'}). Выключение: ${ina}.`; }
+    function baseInfo() { const ina = { uptake: 'reuptake into the terminal', enzyme: 'the enzyme acetylcholinesterase right in the cleft', astro: 'uptake by astrocytes' }[M.inact]; return `<b>${M.name}</b>: ${M.where}, ${M.effect}. Receptors: ${M.recName} (${M.rec === 'iono' ? 'ionotropic' : 'metabotropic'}). Inactivation: ${ina}.`; }
     refs = { medSeg, buildDrugs };
     el.append(
-      group('Медиатор', '1–6', medSeg),
-      group('Импульсы', 'пробел', button('Импульс', ap, true), range('rate', 0, 5, 0.1, () => st.rate, (v) => { st.rate = v; st.nextAP = st.t + 0.2; }, (v) => (v === 0 ? 'выкл' : `${v.toFixed(1)}/с`))),
-      h('div', { class: 'grp', style: 'flex:1 1 300px' }, h('div', { class: 'glabel' }, 'Вещества'), drugsBox, info),
+      group('Neurotransmitter', '1–6', medSeg),
+      group('Impulses', 'Space', button('Impulse', ap, true), range('rate', 0, 5, 0.1, () => st.rate, (v) => { st.rate = v; st.nextAP = st.t + 0.2; }, (v) => (v === 0 ? 'off' : `${v.toFixed(1)}/s`))),
+      h('div', { class: 'grp', style: 'flex:1 1 300px' }, h('div', { class: 'glabel' }, 'Drugs'), drugsBox, info),
     );
     buildDrugs();
   }
@@ -373,25 +373,25 @@ function makeSynapse() {
     const n = parseInt(e.key, 10); if (n >= 1 && n <= 6) { st.med = MED_ORDER[n - 1]; applyMediator(); refs.medSeg.sync(); refs.buildDrugs(); return true; }
     return false;
   }
-  function stats() { return [['В щели', st.cleft, 'мол.'], ['Рецепторы', Math.round(st.occ * 100), '%'], ['Ответ', Math.round(st.resp * 100), '%']]; }
+  function stats() { return [['In the cleft', st.cleft, 'molec.'], ['Receptors', Math.round(st.occ * 100), '%'], ['Response', Math.round(st.resp * 100), '%']]; }
   applyMediator();
   return {
     labelBg: true, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, get accent() { return M.color; },
-    kicker: 'Мозг · синапс и медиаторы', title: 'Синапс и медиаторы',
-    lede: 'Импульс открывает кальциевые каналы, пузырьки выплёскивают медиатор, молекулы находят рецепторы, и сигнал выключают ферменты или переносчики.',
+    kicker: 'Brain · synapse and neurotransmitters', title: 'Synapse and neurotransmitters',
+    lede: 'An impulse opens calcium channels, vesicles release the neurotransmitter, molecules find their receptors, and the signal is switched off by enzymes or transporters.',
     notes: `
-      <div><h2>Как это работает</h2>
-        <p><b>Синтез.</b> Медиатор собирают ферменты окончания и упаковывают в пузырьки.</p>
-        <p><b>Выброс.</b> Импульс (светлое кольцо) приходит в окончание и открывает <b>Ca²⁺-каналы</b>. Кальций заставляет пристыкованные пузырьки слиться с мембраной.</p>
-        <p><b>Рецептор.</b> Молекулы пересекают щель и садятся на рецепторы. Ионотропные рецепторы — сами каналы: сквозь них идёт Na⁺ (оранжевый) или Cl⁻ (зелёный). Метаботропные включают G-белок под мембраной и вторичных посредников.</p>
-        <p><b>Инактивация.</b> Глутамат забирают астроциты, ацетилхолин режет фермент в щели, моноамины и ГАМК возвращаются в окончание переносчиками.</p>
-        <h3>Вещества</h3>
-        <p>Включайте препараты и смотрите на график: агонист открывает рецепторы сам, антагонист (серые шарики) занимает их и не пускает медиатор, блок захвата держит молекулы в щели, а усилитель делает каждый ответ сильнее.</p></div>
-      <div><h2>Что здесь настоящее</h2><ul>
-        <li>Порядок событий и роль кальция.</li><li>Тип рецепторов и способ выключения для каждого медиатора.</li><li>Механизмы препаратов из курса.</li></ul>
-        <h2 style="margin-top:22px">Условности</h2><ul>
-        <li>Один шарик — это много молекул: в пузырьке их тысячи.</li><li>Щель раздута, время замедлено: в жизни всё занимает миллисекунды.</li></ul></div>
-      <div class="keys"><h2>Клавиши</h2><ul><li><code>пробел</code> импульс</li><li><code>1</code>–<code>6</code> медиатор</li><li>мышь: вращать, колесо: приблизить</li></ul></div>`,
+      <div><h2>How it works</h2>
+        <p><b>Synthesis.</b> Enzymes in the terminal make the neurotransmitter, and it is packed into vesicles.</p>
+        <p><b>Release.</b> The impulse (bright ring) arrives at the terminal and opens <b>Ca²⁺ channels</b>. Calcium makes docked vesicles fuse with the membrane.</p>
+        <p><b>Receptor.</b> The molecules cross the cleft and bind to receptors. Ionotropic receptors are channels themselves: Na⁺ (orange) or Cl⁻ (green) passes through them. Metabotropic receptors activate a G protein beneath the membrane and second messengers.</p>
+        <p><b>Inactivation.</b> Glutamate is taken up by astrocytes, acetylcholine is cleaved by an enzyme in the cleft, and monoamines and GABA are returned to the terminal by transporters.</p>
+        <h3>Drugs</h3>
+        <p>Switch drugs on and watch the graph: an agonist opens receptors by itself, an antagonist (gray balls) occupies them and keeps the neurotransmitter out, a reuptake blocker keeps molecules in the cleft, and an enhancer makes each response stronger.</p></div>
+      <div><h2>What is accurate here</h2><ul>
+        <li>The order of events and the role of calcium.</li><li>The receptor type and the inactivation route for each neurotransmitter.</li><li>The mechanisms of the drugs from the course.</li></ul>
+        <h2 style="margin-top:22px">Simplifications</h2><ul>
+        <li>One ball stands for many molecules: a vesicle holds thousands.</li><li>The cleft is enlarged and time is slowed: in reality it all takes milliseconds.</li></ul></div>
+      <div class="keys"><h2>Keys</h2><ul><li><code>Space</code> impulse</li><li><code>1</code>–<code>6</code> neurotransmitter</li><li>mouse: rotate, wheel: zoom</li></ul></div>`,
   };
 }
 export { makeSynapse };

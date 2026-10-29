@@ -319,11 +319,11 @@ function makeTypes() {
   }
 
   /* ---------- камера ---------- */
-  const views = { all: { tgt: V3(-8.5 + TPX, 0.5, 0), pos: V3(-8.5 + TPX, 2.5, 55) }, net: { tgt: NET.clone().add(NC).add(V3(0, -3, 0)), pos: NET.clone().add(NC).add(V3(0, 1, 40)) } };
+  const views = { all: { tgt: V3(-8.5 + TPX, 0.5, 0), pos: V3(-8.5 + TPX, 2.5, 55) }, net: { tgt: NET.clone().add(NC).add(V3(0, -3, 0)), pos: NET.clone().add(NC).add(V3(0, 1, TPX ? 56 : 40)) } };
   cells.slice(0, 7).forEach((c) => { views[c.def.id] = { tgt: c.origin.clone().add(V3(0, -2.6, 0)), pos: c.origin.clone().add(V3(4.5, 0.5, 24)) }; });
-  views.purk.pos = byId.purk.origin.clone().add(V3(13, 1.5, 20));
+  views.purk.pos = byId.purk.origin.clone().add(V3(13, 2.7, 20)); views.purk.tgt.y += 1.2;   /* дендриты не у верхней кромки */
   const st = { view: 'all', stain: 'live', auto: true, labels: true, t: 0, next: 0.8, fly: 1, twitch: 0, twitchT: -9, touchT: -9 };
-  function go(id) { st.view = id; st.fly = 1; st.next = st.t + 1.2; pulses = []; }
+  function go(id) { st.view = id; st.fly = 1; st.next = st.t + 1.2; pulses = []; cells.slice(0, 7).forEach((c) => { c.g.visible = id === 'all' || id === 'net' || c.def.id === id; }); }
 
   /* ---------- клик по клетке ---------- */
   const ray = new THREE.Raycaster(), ndc = new THREE.Vector2(); let down = null;
@@ -332,7 +332,7 @@ function makeTypes() {
     if (!controls.enabled || !down || Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 5) return;
     const r = canvas.getBoundingClientRect(); ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
     ray.setFromCamera(ndc, camera);
-    const hit = ray.intersectObjects(cells.flatMap((c) => c.pick), false)[0]; if (!hit) return;
+    const hit = ray.intersectObjects(cells.filter((cc) => cc.g.visible).flatMap((c) => c.pick), false)[0]; if (!hit) return;
     const c = cells.find((cc) => cc.pick.includes(hit.object));
     if (c && c.def && st.view !== c.def.id) { go(c.def.id); refs.viewSeg && refs.viewSeg.sync(); refs.setInfo && refs.setInfo(); }
     else if (c) fireNow();
