@@ -23,7 +23,8 @@ function makeMembrane() {
   rnd = mulberry(1401);
   const scene = bioStage({ rim: 0xf2c14e });
   const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: кадр уходит из-под заголовка и описания (телефон — прежний ракурс)
-  const VIEW = { bilayer: DK ? flyTarget(V3(-1.1, -0.3, 1.5), V3(3.8, 0.9, 17.2)) : flyTarget(V3(0.4, -0.7, 1.5), V3(4.0, 0.25, 13.6)), fa: flyTarget(V3(40, -1.2, 0), V3(40, 0.8, 13.5)), classes: flyTarget(V3(80, -1.2, 0), V3(80, 0.9, 14.5)), digest: flyTarget(V3(120, -1.2, 0), V3(120.4, 0.6, 13.5)) };
+  const CSP = DK ? 2.0 : 2.7;   /* шаг ряда «Классы липидов» */
+  const VIEW = { bilayer: DK ? flyTarget(V3(-1.1, -0.3, 1.5), V3(3.8, 0.9, 17.2)) : flyTarget(V3(0.4, -0.7, 1.5), V3(4.0, 0.25, 13.6)), fa: DK ? flyTarget(V3(37.2, -1.2, 0), V3(37.2, 1.7, 19.5)) : flyTarget(V3(39.3, -1.2, 0), V3(39.3, 1.8, 19.9)), classes: DK ? flyTarget(V3(76.95, -1.2, 0), V3(76.95, 1.55, 19)) : flyTarget(V3(80, -1.2, 0), V3(80, 0.9, 14.5)), digest: flyTarget(V3(120, -1.2, 0), V3(120.4, 0.6, 13.5)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.bilayer.pos);
   const controls = makeControls(camera, VIEW.bilayer.target); controls.minDistance = 2; controls.maxDistance = 40;
   const fx = new Sparks(1400, 0.08); scene.add(fx.obj);
@@ -47,7 +48,7 @@ function makeMembrane() {
   const G3 = new THREE.Group(); G3.position.set(80, 0, 0); scene.add(G3);
   const CL = MB_CL.map((c, k) => { const mol = c.id === 'popc' ? lipidMol(68) : MOL(c.id); const lip = c.id === 'popc' || c.id === 'tag'; const m = molMesh(mol, { scale: lip ? 0.125 : 0.18, hideH: true });
     if (lip) { const X = (i) => V3(mol.xyz[i * 3], mol.xyz[i * 3 + 1], mol.xyz[i * 3 + 2]).multiplyScalar(0.125); const ax = pcaAxis(Array.from({ length: mol.n }, (_, i) => X(i))); const hd = mol.el.indexOf(c.id === 'tag' ? 'O' : 'P'); if (X(hd).sub(ax.c).dot(ax.v) < 0) ax.v.negate(); m.quaternion.setFromUnitVectors(ax.v, V3(0, 1, 0)); m.position.copy(ax.c.clone().applyQuaternion(m.quaternion).negate()); } /* голова вверху, хвосты вниз */
-    const g = new THREE.Group(); g.add(m); g.position.set((k - 2) * 2.7, 0.4, 0); G3.add(g); const pk = new THREE.Mesh(new THREE.SphereGeometry(1.2, 8, 6), new THREE.MeshBasicMaterial({ visible: false })); pk.userData.pick = c.id; g.add(pk); return { c, g, m, pk }; });
+    const g = new THREE.Group(); g.add(m); g.position.set((k - 2) * CSP, 0.4, 0); G3.add(g); const pk = new THREE.Mesh(new THREE.SphereGeometry(1.2, 8, 6), new THREE.MeshBasicMaterial({ visible: false })); pk.userData.pick = c.id; g.add(pk); return { c, g, m, pk }; });
   /* ---------- 4. переваривание ---------- */
   const G4 = new THREE.Group(); G4.position.set(120, 0, 0); scene.add(G4);
   const oilMat = new THREE.MeshPhysicalMaterial({ color: 0xc89a30, roughness: 0.1, clearcoat: 1, transmission: 0, transparent: true, opacity: 0.85, emissive: 0x6a4a10, emissiveIntensity: 0.15 });
@@ -93,7 +94,7 @@ function makeMembrane() {
     { text: 'белок родопсин', pos: V3(1.2, 3.4, 2.4), color: '#9FD0FF', show: () => st.labels && st.mode === 'bilayer' },
     { text: 'вода', pos: V3(2.0, 2.8, 0), color: '#7FB8E0', show: () => st.labels && st.mode === 'bilayer' },
     ...MB_FA.map((f, k) => ({ text: f.n, pos: V3(40 + (k - 3) * 1.55, -1.75, 0), color: f.id === 'elaidic' ? '#FF8A5C' : /ω/.test(f.n) ? '#7FE0A0' : '#F2E6C8', show: () => st.labels && st.mode === 'fa' })),
-    ...MB_CL.map((c, k) => ({ text: c.name, pos: V3(80 + (k - 2) * 2.7 - 0.6, -1.65, 0), color: '#F2C14E', show: () => st.labels && st.mode === 'classes' })),
+    ...MB_CL.map((c, k) => ({ text: c.name, pos: V3(80 + (k - 2) * CSP - 0.6, -1.65, 0), color: '#F2C14E', show: () => st.labels && st.mode === 'classes' })),
     { text: 'капли, покрытые желчными кислотами', pos: V3(120 - 1.5, 3.0, 0), color: '#7FE0A0', show: () => st.labels && st.mode === 'digest' && st.cyc % 14 > 4 },
     { text: 'липаза', pos: V3(120 + 2.6, 2.6, 0), color: '#FF8AB0', show: () => st.labels && st.mode === 'digest' && st.cyc % 14 > 4.5 && st.cyc % 14 < 11 },
     { text: 'ворсинки кишки', pos: V3(120 - 4.6, -2.9, 0.3), color: '#E8A0A0', show: () => st.labels && st.mode === 'digest' },

@@ -22,7 +22,7 @@ function makeAtp() {
   rnd = mulberry(901);
   const DK = !matchMedia('(max-width:700px)').matches;   /* компьютер / телефон */
   const scene = bioStage({ rim: 0x7fd6ff });
-  const VIEW = { cycle: flyTarget(V3(-0.4, -1.0, 0), V3(0.1, 1.4, 15.5)), funnel: flyTarget(V3(40, -0.6, 0), V3(40.4, 1.4, 16.5)) };
+  const VIEW = { cycle: flyTarget(V3(-0.4, -1.0, 0), V3(0.1, 1.4, 15.5)), funnel: DK ? flyTarget(V3(38.1, -1.15, 0), V3(38.62, 1.45, 21.4)) : flyTarget(V3(40, -0.6, 0), V3(40.4, 1.4, 16.5)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VIEW.cycle.pos);
   const controls = makeControls(camera, VIEW.cycle.target); controls.minDistance = 3; controls.maxDistance = 40;
   const fx = new Sparks(2000, 0.09); scene.add(fx.obj);

@@ -21,7 +21,8 @@ const VT = [
 function makeVitamins() {
   rnd = mulberry(820);
   const scene = bioStage({ rim: 0xf2c14e });
-  const VIEW = { water: flyTarget(V3(0, -1.3, 0), V3(0.6, 0.9, 14.5)), fat: flyTarget(V3(0, -1.3, 0), V3(0.6, 0.9, 14.5)), nad: flyTarget(V3(40, -1.0, 0), V3(40.5, 0.6, 12.5)), vision: flyTarget(V3(80, -1.4, 0), V3(81.8, 0.0, 14.5)) };
+  const DK = !matchMedia('(max-width:700px)').matches;   /* компьютер: режимы 3–4 из-под заголовка */
+  const VIEW = { water: flyTarget(V3(0, -1.3, 0), V3(0.6, 0.9, 14.5)), fat: flyTarget(V3(0, -1.3, 0), V3(0.6, 0.9, 14.5)), nad: DK ? flyTarget(V3(40.8, -0.3, 0), V3(41.4, 1.5, 14)) : flyTarget(V3(40, -1.0, 0), V3(40.5, 0.6, 12.5)), vision: DK ? flyTarget(V3(77.6, -1.2, 0), V3(79.4, 0.3, 16.2)) : flyTarget(V3(80, -1.4, 0), V3(81.8, 0.0, 14.5)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.water.pos);
   const controls = makeControls(camera, VIEW.water.target); controls.minDistance = 2; controls.maxDistance = 40;
   const fx = new Sparks(1400, 0.08); scene.add(fx.obj);
@@ -36,7 +37,7 @@ function makeVitamins() {
   const halo = new THREE.Line(new THREE.BufferGeometry().setFromPoints(Array.from({ length: 121 }, (_, i) => { const a = Math.PI * (0.06 + 0.88 * i / 120); return V3(-Math.cos(a) * 6.4, -1.75 + Math.sin(a) * 0.25 - 0.32, -3.2 - Math.sin(a) * 1.2); })), new THREE.LineBasicMaterial({ color: 0xf2c14e, transparent: true, opacity: 0.4 })); G1.add(halo);
   /* ---------- 3. НАД⁺ в работе ---------- */
   const G2 = new THREE.Group(); G2.position.set(40, 0, 0); scene.add(G2);
-  const nadFull = molMesh(MOL('nad'), { scale: molFit(MOL('nad'), 2.0) }); nadFull.position.set(-2.7, 0.2, -0.5); G2.add(nadFull);
+  const nadFull = molMesh(MOL('nad'), { scale: molFit(MOL('nad'), DK ? 1.3 : 2.0) }); nadFull.position.set(DK ? -3.4 : -2.7, DK ? -0.6 : 0.2, -0.5); G2.add(nadFull);
   const nicOx = molMesh(MOL('nicox'), { scale: 0.32 }), nicRed = molMesh(MOL('nicred'), { scale: 0.32 }); [nicOx, nicRed].forEach((m) => { m.position.set(1.4, 0.3, 0); G2.add(m); });
   const lac = molMesh(MOL('lactate'), { scale: 0.3 }), pyr = molMesh(MOL('pyruvate'), { scale: 0.3 }); [lac, pyr].forEach((m) => { m.position.set(4.0, 0.3, 0.3); G2.add(m); });
   const hyd = glowNucleus(G2, V3(0, 0, 0), '#FFE08A', 0.06, 5); const hp = glowNucleus(G2, V3(0, 0, 0), '#9FD8FF', 0.06, 7);
@@ -125,13 +126,13 @@ function makeVitamins() {
   const labels = [
     ...RING.map((r) => ({ text: r.v.name.split(' · ')[0], pos: r.lab, color: r.v.color, show: () => st.labels && r.g.visible && G1.visible })),
     { text: 'никотинамид (витамин PP)', pos: V3(40 + 1.4, 1.35, 0), color: '#FF8A5C', show: () => st.labels && st.mode === 'nad' },
-    { text: 'целая молекула НАД⁺', pos: V3(40 - 2.7, 2.4, -0.5), color: '#D9D2D8', show: () => st.labels && st.mode === 'nad' },
-    { text: 'лактат → пируват', pos: V3(40 + 4.0, -0.75, 0.3), color: '#F2C14E', show: () => st.labels && st.mode === 'nad' },
+    { text: 'целая молекула НАД⁺', pos: V3(DK ? 40 - 3.9 : 40 - 2.7, DK ? 0.3 : 2.4, -0.5), color: '#D9D2D8', show: () => st.labels && st.mode === 'nad' },
+    { text: 'лактат → пируват', pos: V3(40 + 4.0, DK ? 1.0 : -0.75, 0.3), color: '#F2C14E', show: () => st.labels && st.mode === 'nad' },
     { text: 'H⁻', pos: V3(40 + 2.5, 0.75, 0.2), color: '#FFE08A', show: () => st.labels && st.mode === 'nad' && st.cyc % 9 > 2 && st.cyc % 9 < 3.4 },
     { text: 'активный центр ЛДГ', pos: V3(40 + 3.6, 2.1, 0), color: '#FFB070', show: () => st.labels && st.mode === 'nad' },
     { text: 'ретиналь (витамин A)', pos: V3(80.4, 0.4, 0.6), color: '#FF9A50', show: () => st.labels && st.mode === 'vision' },
     { text: 'родопсин · 7 спиралей', pos: V3(81.5, 1.1, 0.8), color: '#9FD0FF', show: () => st.labels && st.mode === 'vision' },
-    { text: 'мембрана диска палочки', pos: V3(83.4, -1.5, -0.6), color: '#7FA8D8', show: () => st.labels && st.mode === 'vision' },
+    { text: 'мембрана диска палочки', pos: V3(DK ? 82.2 : 83.4, -1.5, -0.6), color: '#7FA8D8', show: () => st.labels && st.mode === 'vision' },
   ];
   const refs = {};
   function ui(el) {
