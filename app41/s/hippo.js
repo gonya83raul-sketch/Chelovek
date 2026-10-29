@@ -5,14 +5,14 @@ import { BKP, Sparks, THREE, V3, __set_rnd, brainShell, button, displaceGeo, env
    ЛЕКЦИЯ 4 · ГИППОКАМП И КРУГ ПЕЙПЕЗА
    ========================================================= */
 const PZ_PARTS = [
-  { id: 'hip', name: 'Hippocampus', color: '#FF8A5C', text: '<b>Hippocampus</b> (“seahorse”, described by Giulio Aranzi in the 16th century) — the key structure of the archicortex, lying deep in the temporal lobe on the floor of the inferior horn of the lateral ventricle. Memory of the current day, spatial learning, a “catalog” of long-term memory. It retains the capacity for neurogenesis and can grow with training: it is enlarged in taxi drivers and waiters.' },
-  { id: 'fx', name: 'Fornix', color: '#FFE08A', text: '<b>Fornix</b> — a bundle of white matter leaving the hippocampus. It arches around the thalamus toward the caudate nucleus, runs along the wall of the third ventricle and ends in the mammillary bodies.' },
-  { id: 'mam', name: 'Mammillary bodies', color: '#F2C14E', text: '<b>Mammillary bodies</b> — bulges on the underside of the diencephalon. From them the mammillothalamic tract runs to the anterior thalamic nuclei.' },
-  { id: 'ant', name: 'Anterior thalamic nuclei', color: '#B9A4FF', text: '<b>Anterior thalamic nuclei</b> — the limbic part of the thalamus; they relay the Papez circuit signal to the cingulate gyrus.' },
-  { id: 'cing', name: 'Cingulate gyrus', color: '#E58FC4', text: 'The <b>cingulate gyrus</b> lies above the corpus callosum. Through it the hippocampus is connected with many regions of the neocortex; its areas 24–26 detect mismatches and errors.' },
-  { id: 'ent', name: 'Entorhinal cortex', color: '#5CC48A', text: '<b>Parahippocampal gyrus and entorhinal cortex</b> — the entrance to the hippocampus: the perforant path to the dentate gyrus starts here. The circuit closes.' },
-  { id: 'amy', name: 'Amygdala', color: '#FF6A9A', text: '<b>Amygdala</b> — at the front end of the hippocampus. It gives memories their emotional coloring.' },
-  { id: 'olf', name: 'Olfactory brain', color: '#7FD6C8', text: '<b>Paleocortex (ancient cortex)</b>: the olfactory bulbs, tracts, olfactory trigones and tubercles, the uncus of the parahippocampal gyrus. Here whole odors are assembled from individual odorant molecules. In humans the neocortex makes up almost 96% of the entire cortex.' },
+  { id: 'hip', name: 'Гиппокамп', color: '#FF8A5C', text: '<b>Гиппокамп</b> («морской конёк», описан Джулио Аранци в XVI веке) — ключевая структура старой коры, лежит в глубине височной доли на дне нижнего рога бокового желудочка. Память текущего дня, пространственное обучение, «каталог» долговременной памяти. Сохраняет способность к нейрогенезу и может расти при тренировке: он увеличен у таксистов и официантов.' },
+  { id: 'fx', name: 'Свод', color: '#FFE08A', text: '<b>Свод</b> — пучок белого вещества, выходящий из гиппокампа. Он прокручивается вокруг таламуса навстречу хвостатому ядру, проходит по стенке III желудочка и заканчивается в мамиллярных телах.' },
+  { id: 'mam', name: 'Мамиллярные тела', color: '#F2C14E', text: '<b>Мамиллярные тела</b> — выступы на нижней стороне промежуточного мозга. От них мамиллоталамический тракт идёт в передние ядра таламуса.' },
+  { id: 'ant', name: 'Передние ядра таламуса', color: '#B9A4FF', text: '<b>Передние ядра таламуса</b> — лимбическая часть таламуса, переключают сигнал круга Пейпеза в поясную извилину.' },
+  { id: 'cing', name: 'Поясная извилина', color: '#E58FC4', text: '<b>Поясная извилина</b> лежит над мозолистым телом. Через неё гиппокамп связан со множеством отделов новой коры; её поля 24–26 распознают несовпадения и ошибки.' },
+  { id: 'ent', name: 'Энторинальная кора', color: '#5CC48A', text: '<b>Парагиппокампальная извилина и энторинальная кора</b> — вход в гиппокамп: отсюда начинается перфорантный путь к зубчатой извилине. Круг замыкается.' },
+  { id: 'amy', name: 'Миндалина', color: '#FF6A9A', text: '<b>Миндалина</b> — у переднего конца гиппокампа. Придаёт воспоминаниям эмоциональную окраску.' },
+  { id: 'olf', name: 'Обонятельный мозг', color: '#7FD6C8', text: '<b>Древняя кора (палеокортекс)</b>: обонятельные луковицы, тракты, обонятельные треугольники и бугорки, крючок парагиппокампальной извилины. Здесь из отдельных молекул-одорантов собираются целостные запахи. Новая кора у человека — почти 96% всей коры.' },
 ];
 function makeHippo() {
   __set_rnd(mulberry(909));
@@ -160,44 +160,44 @@ function makeHippo() {
     const x = (tt) => 8 + (1 - (st.t - tt) / 6) * (w - 16), y0 = hgt - 14, sc = (hgt - 30) / 2.6;
     ctx.strokeStyle = 'rgba(255,255,255,.15)'; ctx.setLineDash([3, 4]); ctx.beginPath(); ctx.moveTo(8, y0 - sc); ctx.lineTo(w - 8, y0 - sc); ctx.stroke(); ctx.setLineDash([]);
     ctx.lineWidth = 2; ctx.strokeStyle = '#F4C542'; ctx.beginPath(); st.trace.forEach(([tt, vv], i) => { const yy = y0 - Math.min(vv, 3.2) * sc; i ? ctx.lineTo(x(tt), yy) : ctx.moveTo(x(tt), yy); }); ctx.stroke();
-    ctx.font = '500 10px JetBrains Mono, monospace'; ctx.fillStyle = '#F4C542'; ctx.fillText('EPSP in CA1', 10, 13); ctx.fillStyle = 'rgba(255,255,255,.45)'; ctx.fillText('before LTP', w - 52, y0 - sc - 4);
+    ctx.font = '500 10px JetBrains Mono, monospace'; ctx.fillStyle = '#F4C542'; ctx.fillText('ВПСП в CA1', 10, 13); ctx.fillStyle = 'rgba(255,255,255,.45)'; ctx.fillText('до ДВП', w - 52, y0 - sc - 4);
   }
   const TXT = {
-    papez: '<b>Papez circuit</b> — a closed loop: hippocampus → fornix → mammillary bodies → mammillothalamic tract → anterior thalamic nuclei → cingulate gyrus → parahippocampal (entorhinal) cortex → back to the hippocampus. The loop makes it possible to hold information and transfer it from short-term to long-term memory (NMDA receptors are at work). Click a structure or start the circuit.',
-    circ: '<b>The signal travels around the Papez circuit.</b> The loop repeats: this way information “cycles” and is held for hours — the hippocampus stores the memory of the current day until it is rewritten into neocortical networks. With bilateral hippocampal damage, almost nothing new is remembered.',
-    sec: '<b>Cross-section of the hippocampus</b>. Blue triangles are pyramidal cells of Ammon’s horn (fields CA1–CA3), red dots are granule cells of the dentate gyrus. The trisynaptic loop: <b>perforant path</b> (green) from the entorhinal cortex → dentate granule cells → <b>mossy fibers</b> (orange) → CA3 pyramidal cells → <b>Schaffer collaterals</b> (yellow) → CA1 pyramidal cells → subiculum and entorhinal cortex (purple). Click “Stimulus”.',
-    stim: '<b>Single stimulus.</b> A volley passes through three synapses in a row. On the right is the excitatory postsynaptic potential (EPSP) in CA1: this is how strongly CA1 responds before learning. Now apply “Tetanus”.',
-    ltp: '<b>Tetanus</b> — a short burst of high-frequency volleys. CA1 pyramidal cells depolarize strongly, NMDA receptors open, calcium enters the spines — the Schaffer synapses are strengthened (the yellow boutons grow). This is <b>long-term potentiation</b>, the cellular basis of memory. Apply another single stimulus.',
-    after: '<b>After LTP</b> the same single stimulus evokes a noticeably larger response in CA1: the synapse has “remembered” the training. This is how maps of familiar places and the events of the day are written into the hippocampus.',
+    papez: '<b>Круг Пейпеза</b> — замкнутая петля: гиппокамп → свод → мамиллярные тела → мамиллоталамический тракт → передние ядра таламуса → поясная извилина → парагиппокампальная (энторинальная) кора → снова гиппокамп. Петля позволяет удерживать информацию и перезаписывать кратковременную память в долговременную (работают NMDA-рецепторы). Нажмите на структуру или запустите круг.',
+    circ: '<b>Сигнал идёт по кругу Пейпеза.</b> Обход повторяется: так информация «зацикливается» и удерживается часами — гиппокамп хранит память текущего дня, пока она не будет переписана в нейросети новой коры. При двустороннем повреждении гиппокампа новое почти не запоминается.',
+    sec: '<b>Поперечный срез гиппокампа</b>. Синие треугольники — пирамидные клетки аммонова рога (поля CA1–CA3), красные точки — зернистые клетки зубчатой извилины. Трисинаптическая петля: <b>перфорантный путь</b> (зелёный) из энторинальной коры → зёрна зубчатой извилины → <b>мшистые волокна</b> (оранжевые) → пирамиды CA3 → <b>коллатерали Шаффера</b> (жёлтые) → пирамиды CA1 → субикулум и энторинальная кора (фиолетовый). Нажмите «Стимул».',
+    stim: '<b>Одиночный стимул.</b> Залп проходит три синапса подряд. Справа — возбуждающий постсинаптический потенциал (ВПСП) в CA1: столько отвечает CA1 до обучения. Теперь подайте «Тетанус».',
+    ltp: '<b>Тетанус</b> — короткая серия частых залпов. Пирамиды CA1 сильно деполяризуются, NMDA-рецепторы открываются, кальций входит в шипики — синапсы Шаффера усиливаются (жёлтые бутоны растут). Это <b>долговременная потенциация</b>, клеточная основа памяти. Подайте ещё один одиночный стимул.',
+    after: '<b>После ДВП</b> тот же одиночный стимул вызывает в CA1 заметно больший ответ: синапс «запомнил» тренировку. Так в гиппокампе прописываются карты знакомых мест и события дня.',
   };
   const labels = [
     ...PZ_PARTS.map((p) => ({ text: p.name, pos: { hip: V3(-0.32, -0.2, 0.62), fx: V3(-0.2, 0.36, 0.12), mam: V3(0.12, -0.7, 0.12), ant: V3(0.32, 0.18, 0.22), cing: V3(0.1, 0.78, 0.12), ent: V3(-0.1, -0.74, 0.5), amy: V3(0.55, -0.28, 0.6), olf: V3(1.24, -0.62, 0.2) }[p.id], color: p.color, show: () => st.labels && st.mode === 'papez' && (!st.sel || st.sel === p.id) })),
-    { text: 'corpus callosum', pos: V3(-0.2, 0.5, 0.0), color: '#efe8dc', show: () => st.labels && st.mode === 'papez' && !st.sel },
-    { text: 'thalamus', pos: V3(-0.1, -0.05, 0.4), color: '#B9A4FF', show: () => st.labels && st.mode === 'papez' && !st.sel },
+    { text: 'мозолистое тело', pos: V3(-0.2, 0.5, 0.0), color: '#efe8dc', show: () => st.labels && st.mode === 'papez' && !st.sel },
+    { text: 'таламус', pos: V3(-0.1, -0.05, 0.4), color: '#B9A4FF', show: () => st.labels && st.mode === 'papez' && !st.sel },
     { text: 'CA1', pos: CA.getPointAt(0.2).add(V3(0.2, 0, 0.1)), color: '#86B6FF', show: () => st.labels && st.mode === 'sec' },
     { text: 'CA2', pos: CA.getPointAt(0.5).add(V3(0, 0.18, 0.1)), color: '#86B6FF', show: () => st.labels && st.mode === 'sec' },
     { text: 'CA3', pos: CA.getPointAt(0.76).add(V3(-0.2, 0.05, 0.1)), color: '#86B6FF', show: () => st.labels && st.mode === 'sec' },
-    { text: 'dentate gyrus', pos: DG.getPointAt(0.5).add(V3(-0.1, -0.12, 0.1)), color: '#FF8A7A', show: () => st.labels && st.mode === 'sec' },
-    { text: 'subiculum', pos: V3(1.95, -0.6, 0.1), color: '#C77DFF', show: () => st.labels && st.mode === 'sec' },
-    { text: 'entorhinal cortex', pos: V3(2.5, -1.0, 0.15), color: '#5CC48A', show: () => st.labels && st.mode === 'sec' },
-    { text: 'perforant path', pos: V3(1.0, -0.55, 0.12), color: '#5CC48A', show: () => st.labels && st.mode === 'sec' },
-    { text: 'mossy fibers', pos: DGc.clone().add(V3(-0.35, 0.22, 0.1)), color: '#FF8A5C', show: () => st.labels && st.mode === 'sec' },
-    { text: 'Schaffer collaterals', pos: V3(0.25, 0.48, 0.12), color: '#F4C542', show: () => st.labels && st.mode === 'sec' },
-    { text: 'inferior horn of the ventricle', pos: V3(-0.2, 1.4, 0.1), color: '#6fb4ff', show: () => st.labels && st.mode === 'sec' },
+    { text: 'зубчатая извилина', pos: DG.getPointAt(0.5).add(V3(-0.1, -0.12, 0.1)), color: '#FF8A7A', show: () => st.labels && st.mode === 'sec' },
+    { text: 'субикулум', pos: V3(1.95, -0.6, 0.1), color: '#C77DFF', show: () => st.labels && st.mode === 'sec' },
+    { text: 'энторинальная кора', pos: V3(2.5, -1.0, 0.15), color: '#5CC48A', show: () => st.labels && st.mode === 'sec' },
+    { text: 'перфорантный путь', pos: V3(1.0, -0.55, 0.12), color: '#5CC48A', show: () => st.labels && st.mode === 'sec' },
+    { text: 'мшистые волокна', pos: DGc.clone().add(V3(-0.35, 0.22, 0.1)), color: '#FF8A5C', show: () => st.labels && st.mode === 'sec' },
+    { text: 'коллатерали Шаффера', pos: V3(0.25, 0.48, 0.12), color: '#F4C542', show: () => st.labels && st.mode === 'sec' },
+    { text: 'нижний рог желудочка', pos: V3(-0.2, 1.4, 0.1), color: '#6fb4ff', show: () => st.labels && st.mode === 'sec' },
   ];
   pickOn(() => self, camera, pick, (id) => { if (st.mode === 'papez') select(id); });
   const refs = {};
   function ui(el) {
     const ib = infoBox('1 1 340px');
     refs.setInfo = () => { ib.info.innerHTML = st.msg || (st.mode === 'papez' && st.sel ? PART[st.sel].text : TXT[st.mode]); };
-    refs.modeSeg = seg([{ id: 'papez', label: 'Papez circuit' }, { id: 'sec', label: 'Hippocampal section' }], () => st.mode, (v) => setMode(v));
-    refs.seg = seg([{ id: 'all', label: 'All' }, ...PZ_PARTS.map((p) => ({ id: p.id, label: p.name, color: p.color }))], () => st.sel || 'all', (v) => { if (st.mode !== 'papez') setMode('papez'); select(v); });
-    refs.rot = toggle('Rotate', () => st.rot, (v) => { st.rot = v; });
-    const lab = toggle('Labels', () => st.labels, (v) => { st.labels = v; });
-    const reset = button('Reset LTP', () => { st.w = 1; st.tet = -99; st.msg = null; refs.setInfo(); });
+    refs.modeSeg = seg([{ id: 'papez', label: 'Круг Пейпеза' }, { id: 'sec', label: 'Срез гиппокампа' }], () => st.mode, (v) => setMode(v));
+    refs.seg = seg([{ id: 'all', label: 'Все' }, ...PZ_PARTS.map((p) => ({ id: p.id, label: p.name, color: p.color }))], () => st.sel || 'all', (v) => { if (st.mode !== 'papez') setMode('papez'); select(v); });
+    refs.rot = toggle('Вращение', () => st.rot, (v) => { st.rot = v; });
+    const lab = toggle('Подписи', () => st.labels, (v) => { st.labels = v; });
+    const reset = button('Сброс ДВП', () => { st.w = 1; st.tet = -99; st.msg = null; refs.setInfo(); });
     Object.assign(refs, { lab });
-    el.append(group('Mode', '1 · 2', refs.modeSeg), h('div', { class: 'grp', style: 'flex:1 1 460px' }, h('div', { class: 'glabel' }, 'Structures', h('kbd', {}, 'click')), h('div', { class: 'gctl' }, refs.seg)),
-      group('Experiment', 'C · S · T', button('Papez circuit', circuit, true), button('Stimulus', stim), button('Tetanus (LTP)', tetanus), reset), group('View', 'R · N', refs.rot, lab), ib.el);
+    el.append(group('Режим', '1 · 2', refs.modeSeg), h('div', { class: 'grp', style: 'flex:1 1 460px' }, h('div', { class: 'glabel' }, 'Структуры', h('kbd', {}, 'клик')), h('div', { class: 'gctl' }, refs.seg)),
+      group('Опыт', 'C · S · T', button('Круг Пейпеза', circuit, true), button('Стимул', stim), button('Тетанус (ДВП)', tetanus), reset), group('Вид', 'R · N', refs.rot, lab), ib.el);
     refs.setInfo();
   }
   function onKey(e) {
@@ -208,20 +208,20 @@ function makeHippo() {
     if (e.key === 'Escape') { select('all'); return true; }
     return false;
   }
-  function stats() { return st.mode === 'sec' ? [['Schaffer synapse strength', '×' + st.w.toFixed(1), ''], ['Synapses in the loop', 3, '']] : [['Links in the circuit', 6, ''], ['Neocortex', '≈96', '% of cortex']]; }
+  function stats() { return st.mode === 'sec' ? [['Сила синапсов Шаффера', '×' + st.w.toFixed(1), ''], ['Синапсов в петле', 3, '']] : [['Звеньев круга', 6, ''], ['Новая кора', '≈96', '% коры']]; }
   const self = {
-    labelBg: true, mobZoom: 0.66, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#FF8A5C',
-    kicker: 'Brain · archicortex', title: 'Hippocampus and memory',
-    lede: 'The hippocampus holds the memory of the current day: the signal runs around the Papez circuit and the trisynaptic loop, and high-frequency stimulation strengthens synapses — this is how memory is born.',
+    labelBg: true, mobZoom: 0.6, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#FF8A5C',
+    kicker: 'Мозг · старая кора', title: 'Гиппокамп и память',
+    lede: 'Гиппокамп держит память текущего дня: сигнал бегает по кругу Пейпеза и по трисинаптической петле, а частая стимуляция усиливает синапсы — так рождается память.',
     notes: `
-      <div><h2>Three kinds of cortex</h2>
-        <p><b>Neocortex</b> — almost 96% of the cortex in humans, six layers. <b>Paleocortex</b> (ancient cortex) — the olfactory brain: bulbs, tracts, olfactory trigones and tubercles, the periamygdaloid area. <b>Archicortex</b> (old cortex) — the hippocampus, dentate gyrus, subiculum, part of the cingulate and parahippocampal gyri.</p>
-        <h3>Spatial memory</h3>
-        <p>In rats learning a maze, its layout is literally “written” into the hippocampus. Thanks to the hippocampus, a person steps around a pothole on an unfamiliar road: as they move, the hippocampus retrieves knowledge from long-term memory and corrects the route.</p></div>
-      <div><h2>What is accurate here</h2><ul>
-        <li>The position of the hippocampus in the temporal lobe, the fornix around the thalamus, the mammillary bodies.</li><li>The order of the links in the Papez circuit.</li><li>The trisynaptic loop and long-term potentiation in CA1.</li></ul>
-        <h2 style="margin-top:22px">Simplifications</h2><ul><li>Structures are simplified; the circuit is shown for one hemisphere.</li><li>The LTP time scale is compressed: in real life potentiation lasts hours and days.</li></ul></div>
-      <div class="keys"><h2>Keys</h2><ul><li><code>1</code> · <code>2</code> mode</li><li><code>C</code> Papez circuit</li><li><code>S</code> stimulus</li><li><code>T</code> tetanus</li><li><code>R</code> rotate · <code>N</code> labels</li></ul></div>`,
+      <div><h2>Три вида коры</h2>
+        <p><b>Неокортекс</b> — почти 96% коры у человека, шесть слоёв. <b>Палеокортекс</b> (древняя кора) — обонятельный мозг: луковицы, тракты, обонятельные треугольники и бугорки, периамигдалярная область. <b>Архикортекс</b> (старая кора) — гиппокамп, зубчатая извилина, субикулум, часть поясной и парагиппокампальной извилин.</p>
+        <h3>Пространственная память</h3>
+        <p>У крыс, осваивающих лабиринт, его структура буквально «прописывается» в гиппокампе. Человек благодаря гиппокампу обходит яму на незнакомой дороге: гиппокамп по ходу движения извлекает знания из долговременной памяти и корректирует путь.</p></div>
+      <div><h2>Что здесь настоящее</h2><ul>
+        <li>Положение гиппокампа в височной доле, свод вокруг таламуса, мамиллярные тела.</li><li>Порядок звеньев круга Пейпеза.</li><li>Трисинаптическая петля и долговременная потенциация в CA1.</li></ul>
+        <h2 style="margin-top:22px">Условности</h2><ul><li>Структуры упрощены, круг показан для одного полушария.</li><li>Масштаб времени ДВП сжат: в жизни потенциация держится часы и дни.</li></ul></div>
+      <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code> · <code>2</code> режим</li><li><code>C</code> круг Пейпеза</li><li><code>S</code> стимул</li><li><code>T</code> тетанус</li><li><code>R</code> вращение · <code>N</code> подписи</li></ul></div>`,
   };
   return self;
 }

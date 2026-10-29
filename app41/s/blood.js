@@ -16,7 +16,7 @@ function makeBlood() {
   __set_rnd(mulberry(2020));
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x0a0507); scene.environment = envTex;
   labLights(scene, 0xff7a7a);
-  const VIEW = { flow: MOBB ? flyTarget(V3(0, -0.4, 0), V3(3.0, 2.3, 14.4)) : flyTarget(V3(-2.6, -0.4, 0), V3(0.4, 2.3, 15.2)), clot: flyTarget(V3(0.3, -0.4, 0), V3(1.4, 3.2, 7.4)), groups: flyTarget(V3(30, -0.9, 0), V3(30.6, 0.8, 7.2)), tube: flyTarget(V3(60.55, -0.55, 0), V3(61.7, 0.9, 12.4)) };
+  const VIEW = { flow: MOBB ? flyTarget(V3(0, 0.7, 0), V3(3.0, 3.4, 14.4)) : flyTarget(V3(-2.6, -0.4, 0), V3(0.4, 2.3, 15.2)), clot: flyTarget(V3(0.3, -0.4, 0), V3(1.4, 3.2, 7.4)), groups: flyTarget(V3(30, -0.9, 0), V3(30.6, 0.8, 7.2)), tube: flyTarget(V3(60.55, -0.55, 0), V3(61.7, 0.9, 12.4)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(VIEW.flow.pos);
   const controls = makeControls(camera, VIEW.flow.target); controls.minDistance = 1.5; controls.maxDistance = 18;
   const pick = [];
@@ -234,7 +234,7 @@ function makeBlood() {
   }
   function stats() { return st.mode === 'tube' ? [['Гематокрит', '40–45', '%'], ['Плазма', '≈ 55', '%'], ['Белок плазмы', '65–80', 'г/л']] : st.mode === 'groups' ? [['Совместимость', compatible() ? 'да' : 'нет', '']] : [['Эритроцитов', '4–5', 'млн/мкл'], ['Лейкоцитов', '4–9', 'тыс/мкл'], ['Тромбоцитов', '150–400', 'тыс/мкл']]; }
   const self = {
-    labelBg: true, mobZoom: 0.9, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#E0505A',
+    labelBg: true, mobZoom: 0.8, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#E0505A',
     kicker: 'Тело · кровь', title: 'Кровь',
     lede: 'Пять литров жидкой ткани: 25 триллионов эритроцитов, армия лейкоцитов и тромбоциты, которые за минуты закрывают любую ранку.',
     notes: `

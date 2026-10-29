@@ -5,31 +5,31 @@ import { THREE, V3, __set_rnd, accentSet, brainKit, brainShell, envTex, flowTube
    ЛЕКЦИЯ 2 · 12 ПАР ЧЕРЕПНЫХ НЕРВОВ (рис. 2.8)
    ========================================================= */
 const CN_TYPES = {
-  sens: { name: 'Sensory', color: '#4FA3FF' },
-  mot: { name: 'Motor', color: '#FF6A5A' },
-  motp: { name: 'Motor + parasympathetic', color: '#FFA040' },
-  mix: { name: 'Mixed', color: '#C77DFF' },
+  sens: { name: 'Чувствительные', color: '#4FA3FF' },
+  mot: { name: 'Двигательные', color: '#FF6A5A' },
+  motp: { name: 'Двигательные + парасимпатические', color: '#FFA040' },
+  mix: { name: 'Смешанные', color: '#C77DFF' },
 };
 const CN = [
-  { n: 'I', name: 'Olfactory', type: 'sens', target: 'nose', text: '<b>I — olfactory nerve.</b> About 20 fiber bundles (the olfactory filaments) rise from the nasal cavity through the ethmoid bone into the olfactory bulb. It enters the telencephalon directly: the only route into the cortex that bypasses the thalamus.' },
-  { n: 'II', name: 'Optic', type: 'sens', target: 'eye', text: '<b>II — the optic nerve</b> runs from the retina to the diencephalon and forms a crossing, the chiasm. By origin it is, like the olfactory nerve, a CNS tract rather than a true nerve.' },
-  { n: 'III', name: 'Oculomotor', type: 'motp', target: 'eye muscles, pupil', text: '<b>III — the oculomotor nerve</b> emerges from the underside of the midbrain. It controls four of the six eye muscles. Its parasympathetic fibers constrict the pupil and change the shape of the lens, bringing the image into focus.' },
-  { n: 'IV', name: 'Trochlear', type: 'mot', target: 'superior oblique muscle', text: '<b>IV — the trochlear nerve</b> is the only one that leaves the dorsal side of the brainstem (from below the inferior colliculi) and wraps around it from the side. It controls a single eye muscle.' },
-  { n: 'V', name: 'Trigeminal', type: 'mix', target: 'facial skin, muscles of mastication', text: '<b>V — the trigeminal nerve</b> is the largest. Its three branches, ophthalmic, maxillary and mandibular, converge on a large ganglion near the pons, the counterpart of a spinal ganglion. It collects pain, skin and muscle sensation from the head and controls the muscles of mastication.' },
-  { n: 'VI', name: 'Abducens', type: 'mot', target: 'lateral rectus muscle', text: '<b>VI — the abducens nerve</b> emerges at the border of the pons and the medulla. It turns the eye outward: horizontal movement.' },
-  { n: 'VII', name: 'Facial', type: 'mix', target: 'facial expression muscles, salivary and lacrimal glands', text: '<b>VII — the facial nerve</b> controls facial expression and the lacrimal and salivary glands, and carries taste from the front of the tongue. In fish it is linked to the lateral line, from which the inner ear arose in evolution.' },
-  { n: 'VIII', name: 'Vestibulocochlear', type: 'sens', target: 'inner ear', text: '<b>VIII — the vestibulocochlear nerve</b> emerges together with the facial nerve. In humans it is purely sensory: hearing from the cochlea and balance from the vestibule.' },
-  { n: 'IX', name: 'Glossopharyngeal', type: 'mix', target: 'tongue, pharynx, parotid gland', text: '<b>IX — the glossopharyngeal nerve</b>: taste from the back of the tongue, the pharyngeal muscles and swallowing, the parotid salivary gland (parasympathetic).' },
-  { n: 'X', name: 'Vagus', type: 'mix', target: 'heart, lungs, GI tract', text: '<b>X — the vagus nerve</b> is the body’s main parasympathetic nerve. It supplies the organs of the chest and abdomen, receives information from them, and controls the upper esophagus and the vocal cords.' },
-  { n: 'XI', name: 'Accessory', type: 'mot', target: 'trapezius and sternocleidomastoid muscles', text: '<b>XI — the accessory nerve</b> becomes a separate nerve in amniotes (reptiles, birds, mammals). It is purely motor; some of its roots come from the spinal cord. It works with the muscles of the shoulder girdle and neck: it turns the head.' },
-  { n: 'XII', name: 'Hypoglossal', type: 'mot', target: 'tongue muscles', text: '<b>XII — the hypoglossal nerve</b> emerges from the medulla between the pyramid and the olive. It arose in reptiles from the fusion of branches of spinal nerves. It controls the muscles of the tongue.' },
+  { n: 'I', name: 'Обонятельный', type: 'sens', target: 'нос', text: '<b>I — обонятельный нерв.</b> Около 20 пучков волокон (обонятельные нити) поднимаются из носовой полости через решётчатую кость в обонятельную луковицу. Входит прямо в конечный мозг — единственный путь в кору мимо таламуса.' },
+  { n: 'II', name: 'Зрительный', type: 'sens', target: 'глаз', text: '<b>II — зрительный нерв</b> идёт от сетчатки в промежуточный мозг и образует перекрёст (хиазму). По происхождению он, как и обонятельный, — тракт ЦНС, а не настоящий нерв.' },
+  { n: 'III', name: 'Глазодвигательный', type: 'motp', target: 'мышцы глаза, зрачок', text: '<b>III — глазодвигательный нерв</b> выходит снизу из среднего мозга. Управляет четырьмя из шести мышц глаза. Его парасимпатические волокна сужают зрачок и меняют форму хрусталика — наводят изображение на резкость.' },
+  { n: 'IV', name: 'Блоковый', type: 'mot', target: 'верхняя косая мышца глаза', text: '<b>IV — блоковый нерв</b> — единственный, который выходит с дорзальной стороны ствола (из-под нижних холмиков) и огибает его сбоку. Управляет одной мышцей глаза.' },
+  { n: 'V', name: 'Тройничный', type: 'mix', target: 'кожа лица, жевательные мышцы', text: '<b>V — тройничный нерв</b>, самый крупный. Три ветви — глазная, верхнечелюстная и нижнечелюстная — сходятся в большой ганглий у моста, аналог спинномозгового. Собирает боль, кожную и мышечную чувствительность головы и управляет жевательными мышцами.' },
+  { n: 'VI', name: 'Отводящий', type: 'mot', target: 'наружная прямая мышца глаза', text: '<b>VI — отводящий нерв</b> выходит на границе моста и продолговатого мозга. Отводит глаз наружу — движение по горизонтали.' },
+  { n: 'VII', name: 'Лицевой', type: 'mix', target: 'мимические мышцы, слюнные и слёзные железы', text: '<b>VII — лицевой нерв</b> управляет мимикой, слёзными и слюнными железами и чувствует вкус передней частью языка. У рыб он связан с боковой линией, из которой в эволюции получилось внутреннее ухо.' },
+  { n: 'VIII', name: 'Преддверно-улитковый', type: 'sens', target: 'внутреннее ухо', text: '<b>VIII — преддверно-улитковый нерв</b> выходит вместе с лицевым. У человека чисто чувствительный: слух от улитки и равновесие от преддверия.' },
+  { n: 'IX', name: 'Языкоглоточный', type: 'mix', target: 'язык, глотка, околоушная железа', text: '<b>IX — языкоглоточный нерв</b>: вкус задней части языка, мышцы глотки и глотание, околоушная слюнная железа (парасимпатика).' },
+  { n: 'X', name: 'Блуждающий', type: 'mix', target: 'сердце, лёгкие, ЖКТ', text: '<b>X — блуждающий нерв</b> — главный парасимпатический нерв тела. Иннервирует органы грудной и брюшной полости, получает от них информацию, управляет верхней частью пищевода и голосовыми связками.' },
+  { n: 'XI', name: 'Добавочный', type: 'mot', target: 'трапециевидная и грудино-ключично-сосцевидная мышцы', text: '<b>XI — добавочный нерв</b> обособляется у амниот (рептилий, птиц, млекопитающих). Чисто двигательный; корешки отчасти идут из спинного мозга. Работает с мышцами плечевого пояса и шеи: поворачивает голову.' },
+  { n: 'XII', name: 'Подъязычный', type: 'mot', target: 'мышцы языка', text: '<b>XII — подъязычный нерв</b> выходит из продолговатого мозга между пирамидой и оливой. Возник у рептилий при слиянии ветвей спинномозговых нервов. Управляет мышцами языка.' },
 ];
 
 function makeCranial() {
   __set_rnd(mulberry(404));
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x060509); scene.environment = envTex;
   labLights(scene, 0xc77dff);
-  const HOME = flyTarget(V3(0.25, -1.3, 0), V3(6.6, -5.4, 2.0));
+  const HOME = flyTarget(V3(0.25, -1.3, 0), V3(7.17, -5.77, 2.18));
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(HOME.pos);
   const controls = makeControls(camera, HOME.target); controls.minDistance = 1.2; controls.maxDistance = 14;
   const shell = brainShell(scene, { opacity: 0.24, rim: 0.3, stem: false, color: 0xb89aa6 });
@@ -135,24 +135,24 @@ function makeCranial() {
   pickOn(() => self, camera, () => nerves.flatMap((nv) => nv.meshes), (i) => select(i));
   const labels = [
     ...nerves.map((nv, i) => ({ text: nv.n, pos: nv.p1.clone().add(V3(0, -0.04, i % 2 ? 0.14 : 0.0)), color: CN_TYPES[nv.type].color, show: () => st.labels && (st.sel === null || st.sel === i) && (st.type === 'all' || st.type === nv.type) })),
-    { text: 'pons', pos: V3(0.16, -1.0, 0.0), show: () => st.labels && st.sel === null },
-    { text: 'medulla oblongata', pos: V3(-0.2, -1.55, 0.05), show: () => st.labels && st.sel === null },
-    { text: 'olives and pyramids', pos: V3(-0.13, -1.33, 0.14), show: () => st.labels && st.sel === null },
-    { text: 'chiasm', pos: CHI.clone().add(V3(0.02, -0.05, 0)), color: '#e8e0d0', show: () => st.labels && st.sel === null },
-    { text: 'pituitary gland', pos: V3(0.42, -0.86, 0), color: '#e8b090', show: () => st.labels && st.sel === null },
-    { text: 'olfactory bulb', pos: V3(1.32, -0.58, -0.22), color: '#e8d8c0', show: () => st.labels && st.sel === null },
+    { text: 'мост', pos: V3(0.16, -1.0, 0.0), show: () => st.labels && st.sel === null },
+    { text: 'продолговатый мозг', pos: V3(-0.2, -1.55, 0.05), show: () => st.labels && st.sel === null },
+    { text: 'оливы и пирамиды', pos: V3(-0.13, -1.33, 0.14), show: () => st.labels && st.sel === null },
+    { text: 'хиазма', pos: CHI.clone().add(V3(0.02, -0.05, 0)), color: '#e8e0d0', show: () => st.labels && st.sel === null },
+    { text: 'гипофиз', pos: V3(0.42, -0.86, 0), color: '#e8b090', show: () => st.labels && st.sel === null },
+    { text: 'обонятельная луковица', pos: V3(1.32, -0.58, -0.22), color: '#e8d8c0', show: () => st.labels && st.sel === null },
     ...nerves.map((nv, i) => ({ text: nv.target, pos: (ROUTES[nv.n](1)[0][nv.type === 'sens' ? 0 : ROUTES[nv.n](1)[0].length - 1]).clone().add(V3(0.05, -0.07, 0.05)), color: '#D2CBD0', show: () => st.labels && st.sel === i })),
   ];
   const refs = {};
   function ui(el) {
     const ib = infoBox('1 1 300px');
-    refs.setInfo = () => { ib.info.innerHTML = st.sel !== null ? nerves[st.sel].text : st.type !== 'all' ? `<b>${CN_TYPES[st.type].name}:</b> ` + nerves.filter((n) => n.type === st.type).map((n) => n.n + ' ' + n.name.toLowerCase()).join(', ') + '. The bright waves show the direction of the signal: toward the brain in sensory nerves, away from the brain in motor nerves.' : 'The underside of the brain. The spinal cord has 31 pairs of identical nerves, while the brain has 12 pairs of unique ones, each with its own name and functions. Click a nerve or choose its number.'; };
-    refs.seg = seg([{ id: 'all', label: 'All' }, ...nerves.map((nv, i) => ({ id: i, label: nv.n, color: CN_TYPES[nv.type].color }))], () => (st.sel === null ? 'all' : st.sel), (v) => select(v));
-    refs.tseg = seg([{ id: 'all', label: 'All types' }, ...Object.entries(CN_TYPES).map(([k, v]) => ({ id: k, label: v.name, color: v.color }))], () => st.type, (v) => { st.type = v; st.sel = null; apply(); refs.seg.sync(); refs.setInfo(); });
-    const rot = toggle('Rotate', () => st.rot, (v) => { st.rot = v; });
-    const lab = toggle('Labels', () => st.labels, (v) => { st.labels = v; });
+    refs.setInfo = () => { ib.info.innerHTML = st.sel !== null ? nerves[st.sel].text : st.type !== 'all' ? `<b>${CN_TYPES[st.type].name}:</b> ` + nerves.filter((n) => n.type === st.type).map((n) => n.n + ' ' + n.name.toLowerCase()).join(', ') + '. Светлые волны показывают направление сигнала: к мозгу у чувствительных, от мозга у двигательных.' : 'Нижняя поверхность мозга. В спинном мозге 31 пара одинаковых нервов, а в головном — 12 пар уникальных, у каждого своё имя и функции. Нажмите на нерв или выберите его номер.'; };
+    refs.seg = seg([{ id: 'all', label: 'Все' }, ...nerves.map((nv, i) => ({ id: i, label: nv.n, color: CN_TYPES[nv.type].color }))], () => (st.sel === null ? 'all' : st.sel), (v) => select(v));
+    refs.tseg = seg([{ id: 'all', label: 'Все типы' }, ...Object.entries(CN_TYPES).map(([k, v]) => ({ id: k, label: v.name, color: v.color }))], () => st.type, (v) => { st.type = v; st.sel = null; apply(); refs.seg.sync(); refs.setInfo(); });
+    const rot = toggle('Вращение', () => st.rot, (v) => { st.rot = v; });
+    const lab = toggle('Подписи', () => st.labels, (v) => { st.labels = v; });
     Object.assign(refs, { rot, lab });
-    el.append(h('div', { class: 'grp', style: 'flex:1 1 520px' }, h('div', { class: 'glabel' }, 'Nerve', h('kbd', {}, 'click a nerve · ← →')), h('div', { class: 'gctl' }, refs.seg), h('div', { class: 'gctl' }, refs.tseg)), group('View', 'R · N', rot, lab), ib.el);
+    el.append(h('div', { class: 'grp', style: 'flex:1 1 520px' }, h('div', { class: 'glabel' }, 'Нерв', h('kbd', {}, 'клик по нерву · ← →')), h('div', { class: 'gctl' }, refs.seg), h('div', { class: 'gctl' }, refs.tseg)), group('Вид', 'R · N', rot, lab), ib.el);
     refs.setInfo();
   }
   function onKey(e) {
@@ -164,23 +164,23 @@ function makeCranial() {
     if (k === 'n' || k === 'т') { refs.lab.click(); return true; }
     return false;
   }
-  function stats() { if (st.sel !== null) { const nv = nerves[st.sel]; return [['Pair', nv.n, ''], ['Type', CN_TYPES[nv.type].name.split(' ')[0], '']]; } return [['Pairs', 12, ''], ['Sensory', 3, ''], ['Mixed', 4, '']]; }
+  function stats() { if (st.sel !== null) { const nv = nerves[st.sel]; return [['Пара', nv.n, ''], ['Тип', CN_TYPES[nv.type].name.split(' ')[0], '']]; } return [['Пар', 12, ''], ['Чувствительных', 3, ''], ['Смешанных', 4, '']]; }
   apply();
   const self = {
     labelBg: true, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, get accent() { return st.sel !== null ? CN_TYPES[nerves[st.sel].type].color : '#C77DFF'; },
-    kicker: 'Brain · cranial nerves', title: 'Cranial nerves',
-    lede: 'Twelve pairs of nerves of the brain. Each is unique: some only sense, others only control muscles, still others do both.',
+    kicker: 'Мозг · черепные нервы', title: 'Черепные нервы',
+    lede: 'Двенадцать пар нервов головного мозга. Каждый уникален: одни только чувствуют, другие только управляют мышцами, третьи делают и то и другое.',
     notes: `
-      <div><h2>How to remember them</h2>
-        <p><b>Sensory</b>: I, II, VIII: smell, vision, the inner ear (hearing and balance). <b>Motor</b>: IV, VI, XI, XII. <b>Motor with parasympathetic fibers</b>: III (constricts the pupil). <b>Mixed</b>: V, VII, IX, X: in their set of functions they are closest to spinal nerves; parasympathetic fibers also run in VII, IX and X.</p>
-        <h3>Where they emerge</h3>
-        <p>I enters the telencephalon, II the diencephalon. III and IV emerge from the midbrain (IV is the only one on the dorsal side). V is associated with the pons. VI, VII and VIII emerge at the border of the pons and the medulla, IX–XII from the medulla.</p>
-        <h3>Evolution</h3>
-        <p>The set did not appear all at once: fish and amphibians have no separate XI and XII nerves (their fibers run within the vagus and spinal nerves), and the full set of 12 pairs is found in amniotes: reptiles, birds and mammals. The medulla and pons retain the plan of the spinal cord: sensory nuclei lie laterally, motor nuclei medially, and parasympathetic nuclei between them.</p></div>
-      <div><h2>What is accurate here</h2><ul>
-        <li>Where the nerves emerge on the underside of the brain.</li><li>Classification by function and the direction of the signal.</li><li>The ganglion and three branches of the trigeminal nerve.</li></ul>
-        <h2 style="margin-top:22px">Simplifications</h2><ul><li>The targets (eye, ear, tongue, heart) are moved close to the brain and drawn as icons.</li><li>The course of the nerves inside the skull is simplified.</li></ul></div>
-      <div class="keys"><h2>Keys</h2><ul><li>click a nerve: select</li><li><code>←</code> <code>→</code> next nerve</li><li><code>Esc</code> all</li><li><code>R</code> rotate</li><li><code>N</code> labels</li></ul></div>`,
+      <div><h2>Как их запомнить</h2>
+        <p><b>Чувствительные</b> — I, II, VIII: обоняние, зрение, внутреннее ухо (слух и равновесие). <b>Двигательные</b> — IV, VI, XI, XII. <b>Двигательный с парасимпатикой</b> — III (сужает зрачок). <b>Смешанные</b> — V, VII, IX, X: по набору функций они ближе всего к спинномозговым нервам; парасимпатические волокна идут также в VII, IX и X.</p>
+        <h3>Откуда выходят</h3>
+        <p>I входит в конечный мозг, II — в промежуточный. III и IV выходят из среднего мозга (IV — единственный с дорзальной стороны). V связан с мостом. VI, VII и VIII выходят на границе моста и продолговатого мозга, IX–XII — из продолговатого.</p>
+        <h3>Эволюция</h3>
+        <p>Набор формируется не сразу: у рыб и амфибий нет отдельных XI и XII нервов (их волокна идут в составе блуждающего и спинномозговых), полный набор из 12 пар — у амниот: рептилий, птиц и млекопитающих. В продолговатом мозге и мосту сохраняется план спинного: чувствительные ядра лежат латерально, двигательные — медиально, парасимпатические — между ними.</p></div>
+      <div><h2>Что здесь настоящее</h2><ul>
+        <li>Места выхода нервов на нижней поверхности мозга.</li><li>Классификация по функциям и направление сигнала.</li><li>Ганглий и три ветви тройничного нерва.</li></ul>
+        <h2 style="margin-top:22px">Условности</h2><ul><li>Мишени (глаз, ухо, язык, сердце) придвинуты к мозгу и нарисованы значками.</li><li>Ход нервов в черепе упрощён.</li></ul></div>
+      <div class="keys"><h2>Клавиши</h2><ul><li>клик по нерву: выбрать</li><li><code>←</code> <code>→</code> следующий нерв</li><li><code>Esc</code> все</li><li><code>R</code> вращение</li><li><code>N</code> подписи</li></ul></div>`,
   };
   return self;
 }

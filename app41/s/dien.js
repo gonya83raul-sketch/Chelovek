@@ -170,7 +170,7 @@ function makeDien() {
     hypo: '<b>Гипоталамус</b> — нижняя часть промежуточного мозга, более 30 пар ядер. Здесь центры голода и жажды, полового и родительского поведения, страха и агрессии, сна и биологических часов. Вместе с <b>гипофизом</b> он управляет всеми эндокринными железами: задняя доля выпускает гормоны, сделанные в нейронах гипоталамуса, передняя слушается его либеринов и статинов. Попробуйте опыты.',
   };
   const labels = [
-    ...THAL_CH.map((c) => ({ text: c.nuc, pos: TN[c.id][0].clone().add({ vision: V3(-0.1, -0.22, 0.25), hearing: V3(-0.2, 0.06, 0.3) }[c.id] || V3(0.05, 0.16, 0.2)), color: c.color, show: () => st.labels && st.mode === 'thal' && (st.att === 'none' || st.att === c.id) })),
+    ...THAL_CH.map((c) => ({ text: c.nuc, left: c.id === 'vision' || c.id === 'hearing', pos: TN[c.id][0].clone().add({ vision: V3(-0.1, -0.22, 0.25), hearing: V3(-0.2, 0.06, 0.3) }[c.id] || V3(0.05, 0.16, 0.2)), color: c.color, show: () => st.labels && st.mode === 'thal' && (st.att === 'none' || st.att === c.id) })),
     ...THAL_CH.map((c) => ({ text: c.cortex, pos: CX[c.id].clone().add(V3(0, 0.25, 0)), color: c.color, show: () => st.labels && st.mode === 'thal' && st.att === c.id })),
     { text: 'подушка', pos: V3(-1.15, 0.25, 0.7), color: '#B8E06A', show: () => st.labels && st.mode === 'thal' && st.att === 'none' },
     { text: 'медиальные ядра', pos: V3(0.1, 0.35, 0.3), color: '#C77DFF', show: () => st.labels && st.mode === 'thal' && st.att === 'none' },
@@ -209,7 +209,7 @@ function makeDien() {
   function stats() { return st.mode === 'thal' ? [['Ядер таламуса', '≈40', ''], ['Длина', '≈4', 'см']] : [['Ядер', '>30', 'пар'], ['Гипофиз', '≈0,5', 'г']]; }
   setMode('thal');
   const self = {
-    labelBg: true, mobZoom: 0.7, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#B9A4FF',
+    labelBg: true, mobZoom: 0.64, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#B9A4FF',
     kicker: 'Мозг · промежуточный мозг', title: 'Таламус и гипоталамус',
     lede: 'Таламус решает, какая информация попадёт в кору. Гипоталамус следит за потребностями тела и через гипофиз управляет гормонами.',
     notes: `

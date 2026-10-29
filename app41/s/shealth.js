@@ -50,7 +50,7 @@ function makeShealth() {
   const controls = makeControls(camera, VIEW.drive.target); controls.minDistance = 1.5; controls.maxDistance = 22;
   /* ---------- влечение ---------- */
   const dr = new THREE.Group(); scene.add(dr);
-  bodyShell(dr, { rim: 0.5 });
+  bodyShell(dr, { rim: 0.7 });   /* тело светлее на тёмном фоне */
   dr.add(new THREE.Mesh(ell3(0.34, 0.28, 0.4, V3(0, 4.25, 0)), new THREE.MeshPhysicalMaterial({ color: 0xe0b8c8, roughness: 0.6, transparent: true, opacity: 0.22, depthWrite: false })));
   const zb = new THREE.Group(); zb.position.copy(CB); zb.scale.setScalar(KB); dr.add(zb);
   brainShell(zb, { opacity: 0.06, rim: 0.9 });

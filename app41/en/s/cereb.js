@@ -5,20 +5,20 @@ import { GLOW, Sparks, THREE, V3, __set_rnd, branchTree, button, clamp, displace
    ЛЕКЦИЯ 4 · МОЗЖЕЧОК: ДОЛИ, ЯДРА, НОЖКИ, НЕЙРОСЕТЬ КОРЫ
    ========================================================= */
 const CB_ZONES = [
-  { id: 'arch', name: 'Древний мозжечок', color: '#5CC48A', text: '<b>Древний мозжечок</b> — клочок и узелок вместе с ядрами шатра. Настраивает врождённые рефлексы равновесия (с учётом вестибулярной информации) и движения глаз.' },
-  { id: 'paleo', name: 'Старый мозжечок', color: '#4F8FEF', text: '<b>Старый мозжечок</b> — кора червя и медиальная часть полушарий вместе с промежуточными (шаровидным и пробковидным) ядрами. Автоматизирует локомоцию — перемещение в пространстве. Получает мышечную и кожную чувствительность по спинно-мозжечковым трактам и управляет экстрапирамидной системой.' },
-  { id: 'neo', name: 'Новый мозжечок', color: '#F08A4B', text: '<b>Новый мозжечок</b> — латеральные части полушарий и зубчатые ядра. Сюда постепенно «переписываются» программы, возникшие в моторной и премоторной коре (поля 4, 6, 8): тонкие движения пальцев, речь, мимика. Подсказки идут через вентральное латеральное ядро таламуса обратно в поле 4.' },
+  { id: 'arch', name: 'Archicerebellum', color: '#5CC48A', text: '<b>Archicerebellum</b> — the flocculus and nodulus together with the fastigial nuclei. It tunes innate balance reflexes (taking vestibular information into account) and eye movements.' },
+  { id: 'paleo', name: 'Paleocerebellum', color: '#4F8FEF', text: '<b>Paleocerebellum</b> — the cortex of the vermis and the medial part of the hemispheres together with the interposed (globose and emboliform) nuclei. It automates locomotion — moving through space. It receives muscle and skin sensation via the spinocerebellar tracts and controls the extrapyramidal system.' },
+  { id: 'neo', name: 'Neocerebellum', color: '#F08A4B', text: '<b>Neocerebellum</b> — the lateral parts of the hemispheres and the dentate nuclei. Programs that arose in the motor and premotor cortex (areas 4, 6, 8) are gradually “rewritten” here: fine finger movements, speech, facial expressions. Corrections travel back to area 4 through the ventral lateral nucleus of the thalamus.' },
 ];
 const CB_NUC = [
-  { id: 'fast', name: 'Ядро шатра', z: 0.11, color: '#5CC48A', text: '<b>Ядро шатра</b> — самое медиальное, работает с древним мозжечком: равновесие и движения глаз. Его эфференты идут через нижние ножки к вестибулярным ядрам и ретикулярной формации.' },
-  { id: 'glob', name: 'Шаровидное ядро', z: 0.26, color: '#4F8FEF', text: '<b>Шаровидные ядра</b> (5) вместе с пробковидным образуют промежуточное ядро — у шимпанзе оно ещё единое. Работают со старым мозжечком: локомоция.' },
-  { id: 'emb', name: 'Пробковидное ядро', z: 0.39, color: '#7FB2FF', text: '<b>Пробковидное ядро</b> (6) — часть промежуточного ядра. Через верхние ножки влияет на красное ядро среднего мозга.' },
-  { id: 'dent', name: 'Зубчатое ядро', z: 0.66, color: '#F08A4B', text: '<b>Зубчатое ядро</b> (7) — самое крупное, складчатый «мешочек» с воротами, открытыми медиально. Работает с новым мозжечком; его выход — в таламус и кору.' },
+  { id: 'fast', name: 'Fastigial nucleus', z: 0.11, color: '#5CC48A', text: '<b>Fastigial nucleus</b> — the most medial; it works with the archicerebellum: balance and eye movements. Its efferents run through the inferior peduncles to the vestibular nuclei and the reticular formation.' },
+  { id: 'glob', name: 'Globose nucleus', z: 0.26, color: '#4F8FEF', text: '<b>Globose nuclei</b> (5) together with the emboliform nucleus form the interposed nucleus — in chimpanzees it is still a single one. They work with the paleocerebellum: locomotion.' },
+  { id: 'emb', name: 'Emboliform nucleus', z: 0.39, color: '#7FB2FF', text: '<b>Emboliform nucleus</b> (6) — part of the interposed nucleus. Through the superior peduncles it influences the red nucleus of the midbrain.' },
+  { id: 'dent', name: 'Dentate nucleus', z: 0.66, color: '#F08A4B', text: '<b>Dentate nucleus</b> (7) — the largest, a folded “pouch” with its hilum open medially. It works with the neocerebellum; its output goes to the thalamus and cortex.' },
 ];
 const CB_PED = [
-  { id: 'sup', name: 'Верхние ножки', color: '#FF6A5A', text: '<b>Верхние ножки</b> — к среднему мозгу. Вход: передний спинно-мозжечковый тракт. Выход: от ядер мозжечка к красному ядру (главный путь к экстрапирамидной системе) и к таламусу, а дальше в моторную кору.' },
-  { id: 'mid', name: 'Средние ножки', color: '#4FA3FF', text: '<b>Средние ножки</b> — самые толстые, от моста. Корково-мосто-мозжечковый путь: большие полушария отправляют сюда «копии» двигательных программ.' },
-  { id: 'inf', name: 'Нижние ножки', color: '#5CC48A', text: '<b>Нижние ножки</b> — к продолговатому мозгу. Вход: от нижних олив (коррекция движений), из спинного мозга, от ядер тонкого и клиновидного пучков, вестибулярных ядер и ретикулярной формации. Выход: от ядер шатра к вестибулярным ядрам.' },
+  { id: 'sup', name: 'Superior peduncles', color: '#FF6A5A', text: '<b>Superior peduncles</b> — to the midbrain. Input: the anterior spinocerebellar tract. Output: from the cerebellar nuclei to the red nucleus (the main route to the extrapyramidal system) and to the thalamus, and on to the motor cortex.' },
+  { id: 'mid', name: 'Middle peduncles', color: '#4FA3FF', text: '<b>Middle peduncles</b> — the thickest, from the pons. The cortico-ponto-cerebellar pathway: the cerebral hemispheres send “copies” of motor programs here.' },
+  { id: 'inf', name: 'Inferior peduncles', color: '#5CC48A', text: '<b>Inferior peduncles</b> — to the medulla oblongata. Input: from the inferior olives (movement correction), from the spinal cord, from the gracile and cuneate nuclei, the vestibular nuclei and the reticular formation. Output: from the fastigial nuclei to the vestibular nuclei.' },
 ];
 function cbCapCanvas(rx, rz) {
   const W = 1024, Hh = 512, c = document.createElement('canvas'); c.width = W; c.height = Hh; const g = c.getContext('2d');
@@ -44,7 +44,7 @@ function makeCereb() {
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x060509); scene.environment = envTex;
   labLights(scene, 0x7fd6c8);
   const VIEW = {
-    anat: flyTarget(V3(0.3, -0.1, 0), V3(3.55, 1.15, 6.5)),   // спереди-сбоку: видны ножки, олива, клочок
+    anat: flyTarget(V3(-0.15, -0.1, 0), V3(3.1, 1.15, 6.5)),   // спереди-сбоку: видны ножки, олива, клочок
     nuc: flyTarget(V3(-0.6, -0.3, 0), V3(-2.0, 4.9, 0.3)),
     micro: flyTarget(V3(0, -0.75, 0), V3(6.3, 3.0, 7.6)),
   };
@@ -254,54 +254,54 @@ function makeCereb() {
   }
   function drawScope(ctx, w, hgt) {
     ctx.clearRect(0, 0, w, hgt); const sv = st.mode === 'micro' && st.err.length > 0; scopeShow(sv); if (!sv) return;
-    const bw = (w - 30) / 8; ctx.font = '500 10px JetBrains Mono, monospace'; ctx.fillStyle = '#d59cff'; ctx.fillText('ошибка движения по пробам', 10, 13);
+    const bw = (w - 30) / 8; ctx.font = '500 10px JetBrains Mono, monospace'; ctx.fillStyle = '#d59cff'; ctx.fillText('movement error by trial', 10, 13);
     st.err.forEach((e, i) => { const bh = e * (hgt - 34); ctx.fillStyle = `rgba(213,156,255,${0.4 + 0.6 * e})`; ctx.fillRect(14 + i * bw, hgt - 12 - bh, bw * 0.7, bh); ctx.fillStyle = 'rgba(255,255,255,.5)'; ctx.fillText(String(i + 1), 14 + i * bw + bw * 0.2, hgt - 1); });
   }
   const TXT = {
-    anat: '<b>Мозжечок</b> — «малый мозг» за намётом мозжечка: поперечник 9–10 см, масса 120–160 г, 10% объёма мозга, но больше половины всех нейронов. Червь посередине, два полушария по бокам; листки увеличивают площадь коры. Цветом показаны функциональные части: <b>древний</b> (клочок и узелок), <b>старый</b> (червь и медиальные зоны), <b>новый</b> (латеральные полушария). На первом году жизни мозжечок растёт быстрее других отделов (40 г в 3 мес., 80 г в 9 мес.).',
-    nuc: '<b>Горизонтальный срез</b>. Как и в полушариях: снаружи кора (три слоя серого вещества), под ней белое вещество — «древо жизни», в глубине ядра. Изнутри наружу: <b>ядро шатра</b>, <b>шаровидное</b>, <b>пробковидное</b> и складчатое <b>зубчатое</b>. Нажмите на ядро.',
-    micro: '<b>Кора мозжечка: три слоя.</b> Внизу <b>зернистый</b> — плотнейший слой мозга, клетки-зёрна. Посередине <b>ганглионарный</b> — тела клеток Пуркинье. Вверху <b>молекулярный</b>: плоские веера дендритов Пуркинье стоят в одной плоскости, а параллельные волокна (аксоны зёрен с Т-образным ветвлением) пронизывают их поперёк — ортогональная решётка. Клетки Пуркинье — тормозные: постоянно сдерживают ядра мозжечка (голубые искры вниз).',
-    mossy: '<b>Моховидные волокна</b> (зелёные) несут сигнал из моста, спинного мозга и вестибулярных ядер к зёрнам → зёрна возбуждают пучок параллельных волокон → клетки Пуркинье под пучком возбуждаются и сильнее тормозят своё ядро. Одновременно звездчатые и корзинчатые (ГАМК) клетки тормозят соседние клетки Пуркинье — в «тормозной завесе» появляется дыра, и ядро под ней (оранжевое) запускает движение.',
-    climb: '<b>Лазящее волокно</b> (фиолетовое) приходит из нижней оливы и оплетает одну клетку Пуркинье — она даёт мощный комплексный разряд. Это сигнал «движение вышло неточным». Синапсы параллельных волокон, которые были активны вместе с ним, ослабевают — на дендритах Пуркинье формируется двигательная память.',
-    learn: '<b>Выработка навыка.</b> Каждая проба — контекст движения (моховидные волокна) и сигнал ошибки (лазящее волокно). Жёлтые синапсы пучка тускнеют, клетки Пуркинье под пучком меньше тормозят ядро — и оно выдаёт команду точнее. Справа ошибка падает от пробы к пробе.',
-    learned: '<b>Навык выработан.</b> Мозжечок запомнил, как быстро и точно выполнить это движение. Базальные ганглии собирают такие отдельные движения в длинную программу — весь танец, а мозжечок отвечает за каждое па.',
+    anat: '<b>Cerebellum</b> — the “little brain” beneath the tentorium cerebelli: 9–10 cm across, weighing 120–160 g, 10% of the brain’s volume but more than half of all its neurons. The vermis is in the middle, with two hemispheres at the sides; folia increase the cortical area. Colors show the functional parts: <b>archicerebellum</b> (flocculus and nodulus), <b>paleocerebellum</b> (vermis and medial zones), <b>neocerebellum</b> (lateral hemispheres). In the first year of life the cerebellum grows faster than other parts of the brain (40 g at 3 months, 80 g at 9 months).',
+    nuc: '<b>Horizontal section</b>. As in the cerebral hemispheres: cortex on the outside (three layers of gray matter), white matter beneath it — the “arbor vitae” (tree of life) — and nuclei deep inside. From the inside out: <b>fastigial nucleus</b>, <b>globose</b>, <b>emboliform</b> and the folded <b>dentate</b>. Click a nucleus.',
+    micro: '<b>Cerebellar cortex: three layers.</b> At the bottom is the <b>granular</b> layer — the densest layer in the brain, made of granule cells. In the middle is the <b>ganglionic</b> layer — the cell bodies of Purkinje cells. At the top is the <b>molecular</b> layer: the flat dendritic fans of Purkinje cells stand in a single plane, and parallel fibers (granule cell axons with T-shaped branching) pierce them crosswise — an orthogonal lattice. Purkinje cells are inhibitory: they constantly restrain the cerebellar nuclei (light-blue sparks heading down).',
+    mossy: '<b>Mossy fibers</b> (green) carry signals from the pons, spinal cord and vestibular nuclei to granule cells → granule cells excite a bundle of parallel fibers → the Purkinje cells under the bundle are excited and inhibit their nucleus more strongly. At the same time stellate and basket (GABA) cells inhibit neighboring Purkinje cells — a hole opens in the “inhibitory curtain”, and the nucleus beneath it (orange) launches a movement.',
+    climb: '<b>Climbing fiber</b> (purple) comes from the inferior olive and wraps around a single Purkinje cell, which fires a powerful complex spike. This is the signal “the movement was inaccurate”. Parallel-fiber synapses that were active at the same time weaken — motor memory forms on the Purkinje dendrites.',
+    learn: '<b>Learning a skill.</b> Each trial combines the context of the movement (mossy fibers) and an error signal (climbing fiber). The yellow synapses of the bundle fade, the Purkinje cells under the bundle inhibit the nucleus less — and it issues a more accurate command. On the right, the error falls from trial to trial.',
+    learned: '<b>Skill acquired.</b> The cerebellum has memorized how to perform this movement quickly and accurately. The basal ganglia assemble such individual movements into a long program — the whole dance — while the cerebellum is responsible for each step.',
   };
   const labels = [
-    { text: 'червь', pos: V3(-0.55, 0.55, 0.0), color: '#86B6FF', show: () => st.labels && st.mode === 'anat' && !st.sel },
-    { text: 'полушарие', pos: V3(-0.45, 0.4, 1.1), color: '#F4A070', show: () => st.labels && st.mode === 'anat' && !st.sel },
-    { text: 'клочок', pos: V3(0.5, -0.5, 1.25), color: '#7FE0A0', show: () => st.labels && st.mode === 'anat' && !st.sel },
-    { text: 'ствол', pos: V3(1.1, -1.4, 0.3), color: '#d8b2b8', show: () => st.labels && st.mode === 'anat' && !st.sel },
-    { text: 'олива', pos: V3(1.3, -0.75, 0.25), color: '#F2C14E', show: () => st.labels && st.mode === 'anat' && !st.sel },
+    { text: 'vermis', pos: V3(-0.55, 0.55, 0.0), color: '#86B6FF', show: () => st.labels && st.mode === 'anat' && !st.sel },
+    { text: 'hemisphere', pos: V3(-0.45, 0.4, 1.1), color: '#F4A070', show: () => st.labels && st.mode === 'anat' && !st.sel },
+    { text: 'flocculus', pos: V3(0.5, -0.5, 1.25), color: '#7FE0A0', show: () => st.labels && st.mode === 'anat' && !st.sel },
+    { text: 'brainstem', pos: V3(1.1, -1.4, 0.3), color: '#d8b2b8', show: () => st.labels && st.mode === 'anat' && !st.sel },
+    { text: 'olive', pos: V3(1.3, -0.75, 0.25), color: '#F2C14E', show: () => st.labels && st.mode === 'anat' && !st.sel },
     ...CB_PED.map((p) => ({ text: p.name.toLowerCase(), pos: { sup: V3(0.8, 0.95, 0.3), mid: V3(0.75, 0.15, 0.9), inf: V3(0.8, -0.7, 0.45) }[p.id], color: p.color, show: () => st.labels && st.mode === 'anat' && (!st.sel || st.sel === p.id) })),
     ...CB_NUC.map((n) => ({ text: n.name, pos: V3((n.id === 'dent' ? 0.05 : 0.18) + ({ glob: -0.14, emb: 0.14 }[n.id] || 0), 0.05, n.z + (n.id === 'dent' ? 0.12 : 0)), color: n.color, show: () => st.labels && st.mode === 'nuc' })),
-    { text: 'кора', pos: V3(-0.55, CUT, 1.35), color: '#c8b0c0', show: () => st.labels && st.mode === 'nuc' },
-    { text: 'белое вещество', pos: V3(-0.3, CUT, -0.95), color: '#e4dccf', show: () => st.labels && st.mode === 'nuc' },
-    { text: 'молекулярный слой', pos: V3(-BX - 0.05, 0.8, BZ), color: '#d8c8e8', show: () => st.labels && st.mode === 'micro' },
-    { text: 'слой клеток Пуркинье', pos: V3(-BX - 0.05, Y_PUR, BZ), color: '#FFB070', show: () => st.labels && st.mode === 'micro' },
-    { text: 'зернистый слой', pos: V3(-BX - 0.05, -0.45, BZ), color: '#86B6FF', show: () => st.labels && st.mode === 'micro' },
-    { text: 'белое вещество', pos: V3(-BX - 0.05, -1.15, BZ), color: '#c8c0b0', show: () => st.labels && st.mode === 'micro' },
-    { text: 'клетка Пуркинье', pos: V3(0.25, 1.0, 0.05), color: '#FFB070', show: () => st.labels && st.mode === 'micro' },
-    { text: 'параллельные волокна', pos: V3(1.6, 1.25, BZ), color: '#8fc0ff', show: () => st.labels && st.mode === 'micro' },
-    { text: 'моховидное волокно', pos: V3(-1.4, -1.9, -0.5), color: '#7FE0A0', show: () => st.labels && st.mode === 'micro' },
-    { text: 'лазящее волокно (из оливы)', pos: V3(0.65, -2.2, 0.15), color: '#d59cff', show: () => st.labels && st.mode === 'micro' },
-    { text: 'корзинчатая', pos: V3(-0.65, 0.3, 0.3), color: '#86B6FF', show: () => st.labels && st.mode === 'micro' },
-    { text: 'звездчатая', pos: V3(-0.6, 1.1, 0.1), color: '#86B6FF', show: () => st.labels && st.mode === 'micro' },
-    { text: 'ядро мозжечка', pos: V3(-0.9, -2.25, 0.2), color: '#F08A4B', show: () => st.labels && st.mode === 'micro' },
-    { text: 'к таламусу и красному ядру', pos: V3(1.2, -2.6, 0.2), color: '#FF8A4B', show: () => st.labels && st.mode === 'micro' },
+    { text: 'cortex', pos: V3(-0.55, CUT, 1.35), color: '#c8b0c0', show: () => st.labels && st.mode === 'nuc' },
+    { text: 'white matter', pos: V3(-0.3, CUT, -0.95), color: '#e4dccf', show: () => st.labels && st.mode === 'nuc' },
+    { text: 'molecular layer', pos: V3(-BX - 0.05, 0.8, BZ), color: '#d8c8e8', show: () => st.labels && st.mode === 'micro' },
+    { text: 'Purkinje cell layer', pos: V3(-BX - 0.05, Y_PUR, BZ), color: '#FFB070', show: () => st.labels && st.mode === 'micro' },
+    { text: 'granular layer', pos: V3(-BX - 0.05, -0.45, BZ), color: '#86B6FF', show: () => st.labels && st.mode === 'micro' },
+    { text: 'white matter', pos: V3(-BX - 0.05, -1.15, BZ), color: '#c8c0b0', show: () => st.labels && st.mode === 'micro' },
+    { text: 'Purkinje cell', pos: V3(0.25, 1.0, 0.05), color: '#FFB070', show: () => st.labels && st.mode === 'micro' },
+    { text: 'parallel fibers', pos: V3(1.6, 1.25, BZ), color: '#8fc0ff', show: () => st.labels && st.mode === 'micro' },
+    { text: 'mossy fiber', pos: V3(-1.4, -1.9, -0.5), color: '#7FE0A0', show: () => st.labels && st.mode === 'micro' },
+    { text: 'climbing fiber (from the olive)', pos: V3(0.65, -2.2, 0.15), color: '#d59cff', show: () => st.labels && st.mode === 'micro' },
+    { text: 'basket cell', pos: V3(-0.65, 0.3, 0.3), color: '#86B6FF', show: () => st.labels && st.mode === 'micro' },
+    { text: 'stellate cell', pos: V3(-0.6, 1.1, 0.1), color: '#86B6FF', show: () => st.labels && st.mode === 'micro' },
+    { text: 'cerebellar nucleus', pos: V3(-0.9, -2.25, 0.2), color: '#F08A4B', show: () => st.labels && st.mode === 'micro' },
+    { text: 'to the thalamus and red nucleus', pos: V3(1.2, -2.6, 0.2), color: '#FF8A4B', show: () => st.labels && st.mode === 'micro' },
   ];
   const refs = {};
   function ui(el) {
     const ib = infoBox('1 1 340px');
     const all = [...CB_ZONES, ...CB_NUC, ...CB_PED];
     refs.setInfo = () => { const s = all.find((x) => x.id === st.sel); ib.info.innerHTML = st.msg || (s && st.mode !== 'micro' ? s.text : TXT[st.mode]); };
-    refs.modeSeg = seg([{ id: 'anat', label: 'Строение' }, { id: 'nuc', label: 'Ядра на срезе' }, { id: 'micro', label: 'Нейросеть коры' }], () => st.mode, (v) => setMode(v));
-    refs.seg = seg([{ id: 'all', label: 'Все' }, ...CB_ZONES.map((z) => ({ id: z.id, label: z.name, color: z.color })), ...CB_PED.map((p) => ({ id: p.id, label: p.name, color: p.color }))], () => st.sel || 'all', (v) => { if (st.mode === 'micro') setMode('anat'); select(v); });
+    refs.modeSeg = seg([{ id: 'anat', label: 'Structure' }, { id: 'nuc', label: 'Nuclei in section' }, { id: 'micro', label: 'Cortical circuit' }], () => st.mode, (v) => setMode(v));
+    refs.seg = seg([{ id: 'all', label: 'All' }, ...CB_ZONES.map((z) => ({ id: z.id, label: z.name, color: z.color })), ...CB_PED.map((p) => ({ id: p.id, label: p.name, color: p.color }))], () => st.sel || 'all', (v) => { if (st.mode === 'micro') setMode('anat'); select(v); });
     refs.nseg = seg(CB_NUC.map((n) => ({ id: n.id, label: n.name, color: n.color })), () => st.sel, (v) => { if (st.mode !== 'nuc') setMode('nuc'); select(v); });
-    refs.rot = toggle('Вращение', () => st.rot, (v) => { st.rot = v; });
-    const lab = toggle('Подписи', () => st.labels, (v) => { st.labels = v; });
+    refs.rot = toggle('Rotate', () => st.rot, (v) => { st.rot = v; });
+    const lab = toggle('Labels', () => st.labels, (v) => { st.labels = v; });
     Object.assign(refs, { lab });
-    el.append(group('Режим', '1–3', refs.modeSeg), h('div', { class: 'grp', style: 'flex:1 1 460px' }, h('div', { class: 'glabel' }, 'Части и ножки', h('kbd', {}, 'клик')), h('div', { class: 'gctl' }, refs.seg)), refs.gN = group('Ядра', '', refs.nseg),
-      refs.gM = group('Нейросеть', 'M · C · L', button('Моховидный вход', mossy, true), button('Лазящее волокно', climb), button('Выработать навык', learn)), group('Вид', 'R · N', refs.rot, lab), ib.el);
+    el.append(group('Mode', '1–3', refs.modeSeg), h('div', { class: 'grp', style: 'flex:1 1 460px' }, h('div', { class: 'glabel' }, 'Parts and peduncles', h('kbd', {}, 'click')), h('div', { class: 'gctl' }, refs.seg)), refs.gN = group('Nuclei', '', refs.nseg),
+      refs.gM = group('Circuit', 'M · C · L', button('Mossy input', mossy, true), button('Climbing fiber', climb), button('Learn a skill', learn)), group('View', 'R · N', refs.rot, lab), ib.el);
     refs.gN.style.display = st.mode === 'nuc' ? '' : 'none'; refs.gM.style.display = st.mode === 'micro' ? '' : 'none';
     refs.setInfo();
   }
@@ -314,20 +314,20 @@ function makeCereb() {
     if (e.key === 'Escape') { select('all'); return true; }
     return false;
   }
-  function stats() { return st.mode === 'micro' ? [['Ошибка', st.err.length ? Math.round(st.err[st.err.length - 1] * 100) : 100, '%'], ['Слоёв коры', 3, '']] : [['Масса', '120–160', 'г'], ['Нейронов мозга', '>50', '%']]; }
+  function stats() { return st.mode === 'micro' ? [['Error', st.err.length ? Math.round(st.err[st.err.length - 1] * 100) : 100, '%'], ['Cortical layers', 3, '']] : [['Mass', '120–160', 'g'], ['Of all brain neurons', '>50', '%']]; }
   const self = {
     mobZoom: 0.62, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#7FD6C8',
-    kicker: 'Мозг · мозжечок', title: 'Мозжечок и двигательные навыки',
-    lede: 'Больше половины нейронов мозга — в мозжечке. На дендритах клеток Пуркинье записывается двигательная память: как быстро и точно сделать каждое движение.',
+    kicker: 'Brain · cerebellum', title: 'Cerebellum and motor skills',
+    lede: 'More than half of the brain’s neurons are in the cerebellum. Motor memory is written onto the dendrites of Purkinje cells: how to make each movement quickly and accurately.',
     notes: `
-      <div><h2>Доли и дольки</h2>
-        <p>Самые глубокие щели делят мозжечок на переднюю, заднюю и клочково-узелковую доли. Дольки червя: язычок, центральная, верхушка, скат, листок, бугор, пирамида, язычок червя, узелок. Дольки полушарий: крыло центральной, четырёхугольная, полулунные, двубрюшная, миндалина, клочок.</p>
-        <h3>Входы</h3>
-        <p>Вестибулярная информация от ядер VIII нерва, спинно-мозжечковые тракты и собственные ядра моста, через которые переключаются сигналы лобной коры.</p></div>
-      <div><h2>Что здесь настоящее</h2><ul>
-        <li>Червь, полушария, клочок, три пары ножек.</li><li>Четыре ядра и их порядок от середины наружу.</li><li>Ортогональная решётка: веера Пуркинье и параллельные волокна, моховидные и лазящие входы, корзинчатые и звездчатые клетки.</li></ul>
-        <h2 style="margin-top:22px">Условности</h2><ul><li>Форма мозжечка упрощена, листков меньше, чем в жизни.</li><li>В сети показаны 9 клеток Пуркинье вместо миллионов.</li></ul></div>
-      <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>3</code> режим</li><li>клик: часть, ножка, ядро</li><li><code>M</code> моховидный вход</li><li><code>C</code> лазящее волокно</li><li><code>L</code> навык</li><li><code>R</code> вращение · <code>N</code> подписи</li></ul></div>`,
+      <div><h2>Lobes and lobules</h2>
+        <p>The deepest fissures divide the cerebellum into the anterior, posterior and flocculonodular lobes. Lobules of the vermis: lingula, central lobule, culmen, declive, folium, tuber, pyramis, uvula, nodulus. Lobules of the hemispheres: ala of the central lobule, quadrangular, semilunar and biventral lobules, tonsil, flocculus.</p>
+        <h3>Inputs</h3>
+        <p>Vestibular information from the nuclei of cranial nerve VIII, the spinocerebellar tracts and the pontine nuclei, which relay signals from the frontal cortex.</p></div>
+      <div><h2>What is accurate here</h2><ul>
+        <li>The vermis, hemispheres, flocculus, three pairs of peduncles.</li><li>Four nuclei and their order from the midline outward.</li><li>The orthogonal lattice: Purkinje fans and parallel fibers, mossy and climbing inputs, basket and stellate cells.</li></ul>
+        <h2 style="margin-top:22px">Simplifications</h2><ul><li>The shape of the cerebellum is simplified, with fewer folia than in reality.</li><li>The circuit shows 9 Purkinje cells instead of millions.</li></ul></div>
+      <div class="keys"><h2>Keys</h2><ul><li><code>1</code>–<code>3</code> mode</li><li>click: part, peduncle, nucleus</li><li><code>M</code> mossy input</li><li><code>C</code> climbing fiber</li><li><code>L</code> skill</li><li><code>R</code> rotate · <code>N</code> labels</li></ul></div>`,
   };
   return self;
 }

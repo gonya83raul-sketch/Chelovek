@@ -170,7 +170,7 @@ function makeDien() {
     hypo: 'The <b>hypothalamus</b> is the lower part of the diencephalon, with more than 30 pairs of nuclei. It holds the centers of hunger and thirst, sexual and parental behavior, fear and aggression, sleep and the biological clock. Together with the <b>pituitary gland</b> it controls all the endocrine glands: the posterior lobe releases hormones made in hypothalamic neurons, and the anterior lobe obeys the hypothalamus’s releasing and inhibiting hormones (liberins and statins). Try the experiments.',
   };
   const labels = [
-    ...THAL_CH.map((c) => ({ text: c.nuc, pos: TN[c.id][0].clone().add({ vision: V3(-0.1, -0.22, 0.25), hearing: V3(-0.2, 0.06, 0.3) }[c.id] || V3(0.05, 0.16, 0.2)), color: c.color, show: () => st.labels && st.mode === 'thal' && (st.att === 'none' || st.att === c.id) })),
+    ...THAL_CH.map((c) => ({ text: c.nuc, left: c.id === 'vision' || c.id === 'hearing', pos: TN[c.id][0].clone().add({ vision: V3(-0.1, -0.22, 0.25), hearing: V3(-0.2, 0.06, 0.3) }[c.id] || V3(0.05, 0.16, 0.2)), color: c.color, show: () => st.labels && st.mode === 'thal' && (st.att === 'none' || st.att === c.id) })),
     ...THAL_CH.map((c) => ({ text: c.cortex, pos: CX[c.id].clone().add(V3(0, 0.25, 0)), color: c.color, show: () => st.labels && st.mode === 'thal' && st.att === c.id })),
     { text: 'pulvinar', pos: V3(-1.15, 0.25, 0.7), color: '#B8E06A', show: () => st.labels && st.mode === 'thal' && st.att === 'none' },
     { text: 'medial nuclei', pos: V3(0.1, 0.35, 0.3), color: '#C77DFF', show: () => st.labels && st.mode === 'thal' && st.att === 'none' },
@@ -209,7 +209,7 @@ function makeDien() {
   function stats() { return st.mode === 'thal' ? [['Thalamic nuclei', '≈40', ''], ['Length', '≈4', 'cm']] : [['Nuclei', '>30', 'pairs'], ['Pituitary', '≈0.5', 'g']]; }
   setMode('thal');
   const self = {
-    labelBg: true, mobZoom: 0.7, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#B9A4FF',
+    labelBg: true, mobZoom: 0.64, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#B9A4FF',
     kicker: 'Brain · diencephalon', title: 'Thalamus and hypothalamus',
     lede: 'The thalamus decides which information reaches the cortex. The hypothalamus monitors the body’s needs and controls hormones through the pituitary gland.',
     notes: `

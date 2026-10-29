@@ -97,14 +97,14 @@ function makeVentricles() {
   const men = new THREE.Group(); men.position.set(0.15, 1.95, 0.0); men.rotation.y = -0.35; scene.add(men); men.visible = false;
   const W = 1.5, D = 0.9;
   const LAY = [
-    { id: 'skin', t: 0.07, c: 0xb57a66, name: 'skin' },
-    { id: 'bone', t: 0.2, c: 0xd8ccb0, name: 'skull bone' },
-    { id: 'dura', t: 0.06, c: 0xe2ddd2, name: 'dura mater' },
-    { id: 'arach', t: 0.018, c: 0xaecbe6, name: 'arachnoid mater' },
-    { id: 'sas', t: 0.11, c: 0x2a6fa8, name: 'subarachnoid space' },
-    { id: 'pia', t: 0.014, c: 0xe07890, name: 'pia mater' },
-    { id: 'grey', t: 0.2, c: 0x8c7a88, name: 'cortex (gray matter)' },
-    { id: 'white', t: 0.14, c: 0xd9d0c8, name: 'white matter' },
+    { id: 'skin', t: 0.07, c: 0xb57a66, name: 'кожа' },
+    { id: 'bone', t: 0.2, c: 0xd8ccb0, name: 'кость черепа' },
+    { id: 'dura', t: 0.06, c: 0xe2ddd2, name: 'твёрдая оболочка' },
+    { id: 'arach', t: 0.018, c: 0xaecbe6, name: 'паутинная оболочка' },
+    { id: 'sas', t: 0.11, c: 0x2a6fa8, name: 'подпаутинное пространство' },
+    { id: 'pia', t: 0.014, c: 0xe07890, name: 'мягкая оболочка' },
+    { id: 'grey', t: 0.2, c: 0x8c7a88, name: 'кора (серое вещество)' },
+    { id: 'white', t: 0.14, c: 0xd9d0c8, name: 'белое вещество' },
   ];
   let yTop = 0;
   LAY.forEach((L, i) => {
@@ -206,39 +206,39 @@ function makeVentricles() {
     gran.forEach((g, i) => g.scale.setScalar(1 + 0.15 * Math.sin(t * 2 + i)));
     if (men.visible) { const sas = LAY[4]; if (rnd() < dt * 40) menCSF.spawn(V3(-W / 2 + 0.1, sas.y + rand(-0.04, 0.04), rand(-D / 2 + 0.05, D / 2 - 0.05)), V3(rand(0.15, 0.3), 0, rand(-0.03, 0.03)), CC, 6, 0, 1.4); menCSF.update(dt); men.updateMatrixWorld(true); labels.forEach((l) => { if (l.L) l.pos.copy(menLbl(l.L)); }); }
   }
-  const MEN_TEXT = 'The <b>meninges</b> are the transition from hard bone to delicate nervous tissue. Outermost is the <b>dura mater</b>: as tough as flexible plastic; between the hemispheres it forms the <b>falx cerebri</b>, and above the cerebellum the <b>tentorium</b>. Beneath it lies the <b>arachnoid mater</b>: a sponge of connective-tissue cells that cushions blows. Deeper still are the subarachnoid space with CSF and the <b>pia mater</b> with its blood vessels, fused to the surface of the brain.';
+  const MEN_TEXT = '<b>Оболочки мозга</b> — переход от твёрдой кости к нежной нервной ткани. Снаружи <b>твёрдая</b> (dura mater): прочная, как гибкий пластик; между полушариями она образует <b>серп мозга</b>, над мозжечком — <b>намёт</b>. Под ней <b>паутинная</b>: губка из соединительнотканных ячеек, гасит удары. Ещё глубже подпаутинное пространство с ликвором и <b>мягкая</b> оболочка с сосудами, сросшаяся с поверхностью мозга.';
   const TXT = {
-    vent: 'The <b>ventricles</b> developed from the canal of the neural tube. The telencephalon has two lateral ventricles (I and II), the diencephalon the narrow third ventricle, and the hindbrain the fourth ventricle, shaped like a four-sided pyramid with a rhomboid floor. The third and fourth ventricles are connected by the narrow <b>cerebral aqueduct</b> of the midbrain. The red beads are the <b>choroid plexuses</b>, which secrete CSF.',
-    flow: '<b>CSF flow</b>: choroid plexuses of the lateral ventricles → interventricular foramina → third ventricle → cerebral aqueduct → fourth ventricle. From there, through the foramina of <b>Magendie</b> and <b>Luschka</b>, CSF passes into the subarachnoid space, bathes the outside of the brain and is absorbed into a venous sinus through the arachnoid granulations. It carries ions, nutrients and regulatory molecules.',
+    vent: '<b>Желудочки</b> выросли из канала нервной трубки. В конечном мозге — два боковых (I и II), в промежуточном — узкий III, в заднем — IV, похожий на четырёхгранную пирамиду с ромбовидным дном. III и IV соединяет узкий <b>водопровод</b> среднего мозга. Красные бусины — <b>сосудистые сплетения</b>, они выделяют ликвор.',
+    flow: '<b>Ток ликвора</b>: сплетения боковых желудочков → межжелудочковые отверстия → III желудочек → водопровод → IV желудочек. Из него через отверстия <b>Мажанди</b> и <b>Люшки</b> ликвор выходит в подпаутинное пространство, омывает мозг снаружи и всасывается в венозный синус через грануляции паутинной оболочки. Он несёт ионы, питательные и регуляторные молекулы.',
     men: MEN_TEXT,
   };
   const labels = [
-    { text: 'lateral ventricle', pos: V3(0.25, 0.42, 0.3), color: '#8fd4ff', show: () => st.labels && st.mode !== 'men' },
-    { text: 'inferior horn', pos: V3(0.15, -0.5, 0.6), color: '#8fd4ff', show: () => st.labels && st.mode === 'vent' },
-    { text: 'interventricular foramen', pos: V3(0.34, 0.1, 0.1), color: '#8fd4ff', show: () => st.labels && st.mode === 'vent' },
-    { text: 'third ventricle', pos: V3(0.32, -0.3, 0.05), color: '#8fd4ff', show: () => st.labels && st.mode !== 'men' },
-    { text: 'cerebral aqueduct', pos: V3(-0.2, -0.52, 0.04), color: '#8fd4ff', show: () => st.labels && st.mode !== 'men' },
-    { text: 'fourth ventricle', pos: V3(-0.38, -0.95, 0.22), color: '#8fd4ff', show: () => st.labels && st.mode !== 'men' },
-    { text: 'central canal', pos: V3(-0.49, -1.85, 0.04), color: '#8fd4ff', show: () => st.labels && st.mode === 'vent' },
-    { text: 'choroid plexus', pos: V3(-0.2, 0.23, 0.33), color: '#ff8090', show: () => st.labels && st.mode === 'vent' },
-    { text: 'foramina of Magendie and Luschka', pos: MAG.clone().add(V3(-0.05, -0.04, 0.05)), color: '#9fdcff', show: () => st.labels && st.mode === 'flow' },
-    { text: 'sinus and granulations', pos: sinus.getPointAt(0.32).add(V3(0, 0.08, 0)), color: '#a8a0ff', show: () => st.labels && st.mode !== 'vent' },
-    { text: 'aqueduct blockage', pos: aq.getPointAt(0.55).add(V3(0.06, 0, 0.06)), color: '#ff7a6a', show: () => st.labels && st.hydro },
-    { text: 'falx cerebri', pos: V3(0.2, 0.9, 0.02), color: '#efe8dc', show: () => st.labels && st.mode === 'men' },
-    { text: 'tentorium cerebelli', pos: V3(-1.3, -0.5, 0.6), color: '#efe8dc', show: () => st.labels && st.mode === 'men' },
+    { text: 'боковой желудочек', pos: V3(0.25, 0.42, 0.3), color: '#8fd4ff', show: () => st.labels && st.mode !== 'men' },
+    { text: 'нижний рог', pos: V3(0.15, -0.5, 0.6), color: '#8fd4ff', show: () => st.labels && st.mode === 'vent' },
+    { text: 'межжелудочковое отверстие', pos: V3(0.34, 0.1, 0.1), color: '#8fd4ff', show: () => st.labels && st.mode === 'vent' },
+    { text: 'III желудочек', pos: V3(0.32, -0.3, 0.05), color: '#8fd4ff', show: () => st.labels && st.mode !== 'men' },
+    { text: 'водопровод', pos: V3(-0.2, -0.52, 0.04), color: '#8fd4ff', show: () => st.labels && st.mode !== 'men' },
+    { text: 'IV желудочек', pos: V3(-0.38, -0.95, 0.22), color: '#8fd4ff', show: () => st.labels && st.mode !== 'men' },
+    { text: 'центральный канал', pos: V3(-0.49, -1.85, 0.04), color: '#8fd4ff', show: () => st.labels && st.mode === 'vent' },
+    { text: 'сосудистое сплетение', pos: V3(-0.2, 0.23, 0.33), color: '#ff8090', show: () => st.labels && st.mode === 'vent' },
+    { text: 'отверстия Мажанди и Люшки', pos: MAG.clone().add(V3(-0.05, -0.04, 0.05)), color: '#9fdcff', show: () => st.labels && st.mode === 'flow' },
+    { text: 'синус и грануляции', pos: sinus.getPointAt(0.32).add(V3(0, 0.08, 0)), color: '#a8a0ff', show: () => st.labels && st.mode !== 'vent' },
+    { text: 'закупорка водопровода', pos: aq.getPointAt(0.55).add(V3(0.06, 0, 0.06)), color: '#ff7a6a', show: () => st.labels && st.hydro },
+    { text: 'серп мозга', pos: V3(0.2, 0.9, 0.02), color: '#efe8dc', show: () => st.labels && st.mode === 'men' },
+    { text: 'намёт мозжечка', pos: V3(-1.3, -0.5, 0.6), color: '#efe8dc', show: () => st.labels && st.mode === 'men' },
     ...LAY.map((L) => ({ text: L.name, pos: V3(0, 0, 0), L, color: '#' + new THREE.Color(L.c).getHexString(), show: () => st.labels && st.mode === 'men' })),
   ];
   const refs = {};
   function ui(el) {
     const ib = infoBox();
-    refs.setInfo = () => { ib.info.innerHTML = st.hydro ? '<b>Hydrocephalus.</b> The cerebral aqueduct is blocked (this can happen with birth injury, a tumor or inflammation). CSF is still being secreted but cannot drain: the lateral and third ventricles swell and press on the brain from the inside, and intracranial pressure rises. It is treated with a shunt that drains the CSF away.' : TXT[st.mode]; };
-    refs.modeSeg = seg([{ id: 'vent', label: 'Ventricles' }, { id: 'flow', label: 'CSF flow' }, { id: 'men', label: 'Meninges' }], () => st.mode, (v) => setMode(v));
-    const hy = toggle('Hydrocephalus', () => st.hydro, (v) => { st.hydro = v; if (v && st.mode === 'men') setMode('flow'); refs.setInfo(); });
-    const fl = toggle('Particles', () => st.flow, (v) => { st.flow = v; });
-    refs.rot = toggle('Rotate', () => st.rot, (v) => { st.rot = v; });
-    const lab = toggle('Labels', () => st.labels, (v) => { st.labels = v; });
+    refs.setInfo = () => { ib.info.innerHTML = st.hydro ? '<b>Гидроцефалия.</b> Водопровод перекрыт (бывает при родовой травме, опухоли, воспалении). Ликвор продолжает выделяться, но уйти не может: боковые и III желудочки раздуваются и давят на мозг изнутри, растёт внутричерепное давление. Лечат шунтом, отводящим ликвор.' : TXT[st.mode]; };
+    refs.modeSeg = seg([{ id: 'vent', label: 'Желудочки' }, { id: 'flow', label: 'Ток ликвора' }, { id: 'men', label: 'Оболочки' }], () => st.mode, (v) => setMode(v));
+    const hy = toggle('Гидроцефалия', () => st.hydro, (v) => { st.hydro = v; if (v && st.mode === 'men') setMode('flow'); refs.setInfo(); });
+    const fl = toggle('Частицы', () => st.flow, (v) => { st.flow = v; });
+    refs.rot = toggle('Вращение', () => st.rot, (v) => { st.rot = v; });
+    const lab = toggle('Подписи', () => st.labels, (v) => { st.labels = v; });
     Object.assign(refs, { hy, fl, lab });
-    el.append(group('What to show', '1 · 2 · 3', refs.modeSeg), group('Experiment', 'H', hy), group('View', 'P · R · N', fl, refs.rot, lab), ib.el);
+    el.append(group('Что показать', '1 · 2 · 3', refs.modeSeg), group('Опыт', 'H', hy), group('Вид', 'P · R · N', fl, refs.rot, lab), ib.el);
     refs.setInfo();
   }
   function onKey(e) {
@@ -250,22 +250,22 @@ function makeVentricles() {
     if (k === 'n' || k === 'т') { refs.lab.click(); return true; }
     return false;
   }
-  function stats() { return [['CSF', '≈150', 'mL'], ['Pressure', Math.round(st.press), 'mmHg'], ['Ventricles', 4, '']]; }
+  function stats() { return [['Ликвора', '≈150', 'мл'], ['Давление', Math.round(st.press), 'мм рт. ст.'], ['Желудочков', 4, '']]; }
   const self = {
-    mobZoom: 0.72, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#6FC3FF',
-    kicker: 'Brain · supporting structures', title: 'Ventricles and meninges',
-    lede: 'Inside the brain is a system of cavities filled with CSF; outside are three membranes. They nourish and protect the brain and serve as convenient landmarks in anatomy.',
+    mobZoom: 0.66, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#6FC3FF',
+    kicker: 'Мозг · вспомогательные структуры', title: 'Желудочки и оболочки',
+    lede: 'Внутри мозга — система полостей с ликвором, снаружи — три оболочки. Они питают, защищают и служат удобными ориентирами в анатомии.',
     notes: `
-      <div><h2>The ventricles of the brain</h2>
-        <p>It all starts with the canal of the neural tube: in the hindbrain it widens into the <b>fourth ventricle</b>, in the diencephalon into the <b>third</b>, and in the hemispheres into the <b>lateral</b> ventricles (I and II), with extensions into the frontal and temporal lobes. The third ventricle is narrow and slit-like and reaches almost to the pituitary gland. Between the third and fourth ventricles runs the <b>cerebral aqueduct</b> of the midbrain, similar in size to the central canal of the spinal cord. The floor of the fourth ventricle is the rhomboid fossa, with the cerebellum lying above it.</p>
-        <h3>CSF</h3>
-        <p>The total volume of the system is about 150 mL. CSF flows slowly from the lateral ventricles to the fourth and emerges onto the surface of the brain. If the flow is disrupted, for example by a birth injury, intracranial pressure rises and hydrocephalus may develop.</p>
-        <h3>Meninges</h3>
-        <p>The dura, arachnoid and pia mater cover both the brain and the spinal cord. In the spine, between the dura and the bone, there is the epidural space: this is where anesthetic is injected during epidural anesthesia.</p></div>
-      <div><h2>What is accurate here</h2><ul>
-        <li>The shape and connections of the ventricles: the lateral ventricles with their inferior horns, the foramina, the slit of the third ventricle, the aqueduct, the pyramid of the fourth ventricle, the central canal.</li><li>The route of CSF and the site of its absorption into the sinus.</li><li>The order of the meninges and the folds of the dura: the falx and the tentorium.</li></ul>
-        <h2 style="margin-top:22px">Simplifications</h2><ul><li>The thickness of the meninges is greatly exaggerated.</li><li>CSF flow is sped up: in reality CSF is renewed 3–4 times a day.</li></ul></div>
-      <div class="keys"><h2>Keys</h2><ul><li><code>1</code>–<code>3</code> mode</li><li><code>H</code> hydrocephalus</li><li><code>P</code> particles</li><li><code>R</code> rotate</li><li><code>N</code> labels</li></ul></div>`,
+      <div><h2>Желудочки мозга</h2>
+        <p>Всё начинается с канала нервной трубки: в заднем мозге он расширяется в <b>IV желудочек</b>, в промежуточном — в <b>III</b>, в полушариях — в <b>боковые</b> (I и II) с выростами в лобные и височные доли. III желудочек узкий, щелевидный, доходит почти до гипофиза. Между III и IV идёт <b>водопровод</b> среднего мозга, по размеру похожий на спинномозговой канал. Дно IV желудочка — ромбовидная ямка, над ним лежит мозжечок.</p>
+        <h3>Ликвор</h3>
+        <p>Общий объём системы — около 150 мл. Ликвор неспешно течёт от боковых желудочков к IV и выходит на поверхность мозга. Если ток нарушается, например при родовой травме, растёт внутричерепное давление и может развиться гидроцефалия.</p>
+        <h3>Оболочки</h3>
+        <p>Твёрдая, паутинная и мягкая оболочки одевают и головной, и спинной мозг. В позвоночнике между твёрдой оболочкой и костью есть эпидуральное пространство — туда вводят обезболивающее при эпидуральной анестезии.</p></div>
+      <div><h2>Что здесь настоящее</h2><ul>
+        <li>Форма и связи желудочков: боковые с нижними рогами, отверстия, щель III, водопровод, пирамида IV, центральный канал.</li><li>Маршрут ликвора и место всасывания в синус.</li><li>Порядок оболочек и складки твёрдой: серп и намёт.</li></ul>
+        <h2 style="margin-top:22px">Условности</h2><ul><li>Толщина оболочек сильно увеличена.</li><li>Ток ликвора ускорен: на деле он обновляется 3–4 раза в сутки.</li></ul></div>
+      <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>3</code> режим</li><li><code>H</code> гидроцефалия</li><li><code>P</code> частицы</li><li><code>R</code> вращение</li><li><code>N</code> подписи</li></ul></div>`,
   };
   return self;
 }

@@ -23,7 +23,7 @@ function makeEndo() {
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x07060a); scene.environment = envTex;
   labLights(scene, 0xc77dff);
   const MOBE = matchMedia('(max-width:700px)').matches;
-  const VIEW = { map: flyTarget(V3(0.0, 1.55, 0), V3(2.05, 2.22, 11.4)), sugar: flyTarget(V3(-0.1, 0.75, 0), V3(1.8, 1.8, 6.2)), stress: flyTarget(V3(0.1, 1.9, 0), V3(-2.6, 3.0, 8.4)), thy: flyTarget(V3(0.0, 3.25, 0.1), V3(1.3, 3.6, 3.6)) };
+  const VIEW = { map: flyTarget(V3(0.0, 1.8, 0), V3(2.05, 2.47, 11.4)), sugar: flyTarget(V3(-0.1, 0.75, 0), V3(1.8, 1.8, 6.2)), stress: flyTarget(V3(0.1, 1.9, 0), V3(-2.6, 3.0, 8.4)), thy: flyTarget(V3(0.0, 3.25, 0.1), V3(1.3, 3.6, 3.6)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(VIEW.map.pos);
   const controls = makeControls(camera, VIEW.map.target); controls.minDistance = 1.2; controls.maxDistance = 22;
   bodyShell(scene, { rim: 0.36 });

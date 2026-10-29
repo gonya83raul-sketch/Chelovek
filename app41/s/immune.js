@@ -18,11 +18,11 @@ function makeImmune() {
   __set_rnd(mulberry(1717));
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x06080a); scene.environment = envTex;
   labLights(scene, 0x7fd6ff);
-  const VIEW = { sys: MOBI ? flyTarget(V3(0.0, 0.8, 0), V3(2.75, 1.7, 14.6)) : flyTarget(V3(-0.9, 0.8, 0), V3(1.85, 1.7, 14.6)), node: flyTarget(V3(30, -0.8, 0), V3(31.6, 0.6, 8.0)), resp: flyTarget(V3(30, -0.8, 0), V3(28.4, 0.7, 8.0)) };
+  const VIEW = { sys: MOBI ? flyTarget(V3(0.0, 1.4, 0), V3(2.75, 2.3, 14.6)) : flyTarget(V3(-0.9, 0.8, 0), V3(1.85, 1.7, 14.6)), node: flyTarget(V3(30, -0.8, 0), V3(31.6, 0.6, 8.0)), resp: flyTarget(V3(30, -0.8, 0), V3(28.4, 0.7, 8.0)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(VIEW.sys.pos);
   const controls = makeControls(camera, VIEW.sys.target); controls.minDistance = 1.5; controls.maxDistance = 22;
   const body = new THREE.Group(); scene.add(body);
-  const shell = bodyShell(body, { rim: 0.34 });
+  const shell = bodyShell(body, { rim: 0.5 });   /* контур тела заметнее */
   // зоны оттока: правый лимфатический проток (правая половина головы, шеи, груди и правая рука) и грудной проток (всё остальное)
   const zoneM = new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.13, depthWrite: false });
   const zones = new THREE.Group(); zones.visible = false; body.add(zones);
@@ -167,7 +167,7 @@ function makeImmune() {
     { text: 'подвздошные', pos: V3(-0.42, 0.18, 0.0), color: '#7FD6FF', show: () => st.labels && st.mode === 'sys' },
     { text: 'цистерна протока', pos: V3(0.16, 0.98, -0.3), color: '#9FE8C0', show: () => st.labels && st.mode === 'sys' },
     { text: 'левый венозный угол', pos: V3(0.42, 2.92, 0.08), color: '#8AA6FF', show: () => st.labels && st.mode === 'sys' },
-    { text: 'правый лимфатический проток', pos: V3(-0.55, 3.1, 0.1), color: '#9FE8C0', show: () => st.labels && st.mode === 'sys' && (!st.sel || st.sel === 'lv') },
+    { text: 'правый лимфатический проток', pos: V3(-0.55, 3.1, 0.1), color: '#9FE8C0', show: () => st.labels && st.mode === 'sys' && st.sel === 'lv' },   /* в обзоре прятался за «шейные узлы» */
     { text: 'пейеровы бляшки', pos: V3(-0.25, 0.3, 0.42), color: '#E8C070', show: () => st.labels && st.mode === 'sys' && st.sel === 'galt' },
     { text: 'фолликул (B-клетки)', pos: V3(31.0, 0.8, 0.3), color: '#8FB8FF', show: () => st.labels && st.mode !== 'sys' },
     { text: 'T-зона', pos: V3(30.4, -0.1, 0.5), color: '#7FE0A0', show: () => st.labels && st.mode !== 'sys' },
@@ -202,7 +202,7 @@ function makeImmune() {
   }
   function stats() { return st.mode === 'resp' && st.titre.length ? [['День', Math.min(40, Math.floor(st.days)), ''], ['Память', st.mem || st.second ? 'есть' : 'нет', '']] : [['Лимфоузлов', '500–700', ''], ['Лимфы', '2–3', 'л/сут']]; }
   const self = {
-    labelBg: true, mobZoom: 0.6, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#7FD6FF',
+    labelBg: true, mobZoom: 0.55, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#7FD6FF',
     kicker: 'Тело · иммунитет', title: 'Лимфа и иммунитет',
     lede: 'Сеть сосудов и узлов, где триллион лимфоцитов патрулирует тело, узнаёт чужое и запоминает его на годы вперёд.',
     notes: `
