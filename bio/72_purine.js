@@ -11,7 +11,8 @@ function makePurine() {
   // телефон: «Строение» столбиком — аденин сверху, пурины, пиримидины, АМФ внизу
   const MOB = matchMedia('(max-width:700px)').matches;
   if (MOB) VIEW.build = flyTarget(V3(0.2, -0.3, 0), V3(0.5, 0.9, 12.5));
-  else VIEW.synth = flyTarget(V3(78.1, 0.05, 0), V3(78.9, 2.45, 17.9));   /* компьютер: «Синтез» из-под заголовка и описания */
+  else VIEW.synth = flyTarget(V3(78.1, 0.05, 0), V3(78.9, 2.45, 17.9));
+  if (MOB) { VIEW.catab = flyTarget(V3(39.65, 1.5, 0), V3(40.15, 3.0, 25)); VIEW.synth = flyTarget(V3(79.7, 0.0, 0), V3(80.2, 1.8, 24)); }   /* телефон: режимы 2–3 в ширину экрана */   /* компьютер: «Синтез» из-под заголовка и описания */
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.build.pos);
   const controls = makeControls(camera, VIEW.build.target); controls.minDistance = 2; controls.maxDistance = 40;
   const fx = new Sparks(1200, 0.08); scene.add(fx.obj);
