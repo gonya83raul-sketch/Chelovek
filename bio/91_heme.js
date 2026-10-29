@@ -211,7 +211,7 @@ function makeHeme() {
     { text: 'O₂', get pos() { return side[1].getWorldPosition(V3(0, 0, 0)).add(V3(0.3, -0.05, 0)); }, color: '#F04848', show: () => st.labels && st.mode === 'chem' },
     { text: 'синий свет 460 нм', pos: V3(40 + 2.9, 4.3, 0), color: '#7FA8FF', show: () => st.labels && st.mode === 'chem' && st.photo },
     ...[['селезёнка', 'spleen', V3(1.25, 1.9, 0)], ['печень', 'liver', V3(-1.25, 1.75, 0.3)], ['желчный пузырь', 'gb', V3(-1.0, 1.05, 0.6)], ['кишечник', 'gut', V3(0.75, 0.35, 0.5)], ['почки', 'kid', V3(1.1, 1.05, 0)], ['моча', 'bladder', V3(0.5, -0.5, 0.4)], ['кал', 'out', V3(-0.45, -1.0, 0.2)]].map(([n, id, p]) => ({ text: n, pos: p.clone().add(V3(80, 0, 0)), color: '#EFEAE6', show: () => st.labels && st.mode === 'body' })),
-    ...[['непрямой билирубин + альбумин', 'ub'], ['прямой (конъюгированный)', 'cb'], ['уробилиноген / уробилин', 'uro'], ['стеркобилин', 'st']].map(([n, k], i) => ({ text: n, pos: V3(80 + 2.4, 1.95 - i * 0.36, 0), color: BC[k], show: () => st.labels && st.mode === 'body' })),
+    ...[['непрямой билирубин + альбумин', 'ub'], ['прямой (конъюгированный)', 'cb'], ['уробилиноген / уробилин', 'uro'], ['стеркобилин', 'st']].map(([n, k], i) => ({ text: n, pos: V3(80 + 2.4, 1.95 - i * 0.36, 0), color: BC[k], show: () => st.labels && st.mode === 'body' && DK })),
   ];
   const refs = {};
   function ui(el) {
@@ -247,7 +247,7 @@ function makeHeme() {
   function stats() {
     if (st.mode === 'synth') return [['Поток к гему', st.block !== 'none' ? 'снижен' : st.fb ? 'подавлен' : 'норма', ''], ['Копится', st.acc > 0 ? ACC[st.block] : '—', '']];
     if (st.mode === 'chem') return [['Билирубина в сутки', '250–300', 'мг'], ['Эритроцит живёт', '~120', 'дней']];
-    const C = COND[st.cond]; return [['Общий билирубин', C.tot, 'мкмоль/л'], ['Прямой', C.dir, 'мкмоль/л']];   /* 4 цифры не помещались и уходили под описание; моча и кал — в тексте состояния */
+    const C = COND[st.cond]; return [['Общий билирубин', C.tot, 'мкмоль/л'], ['Прямой', String(C.dir).replace('.', ','), 'мкмоль/л']];   /* 4 цифры не помещались и уходили под описание; моча и кал — в тексте состояния */
   }
   const self = {
     mobZoom: 0.78, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#F2C14E',

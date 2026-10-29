@@ -14,7 +14,8 @@ const EX_AB = [
 function makeExpress() {
   rnd = mulberry(2001);
   const scene = bioStage({ rim: 0xff9a50 });
-  const VIEW = { tx: flyTarget(V3(0, 0.2, 0), V3(0.5, 2.2, 17)), splice: flyTarget(V3(40, 0.3, 0), V3(40.3, 2.1, 16)), tl: flyTarget(V3(80.3, 0.1, 0), V3(81.8, 2.3, 17.5)) };
+  const DK = !matchMedia('(max-width:700px)').matches;   /* телефон: спираль транскрипции целиком */
+  const VIEW = { tx: DK ? flyTarget(V3(0, 0.2, 0), V3(0.5, 2.2, 17)) : flyTarget(V3(0, 0.2, 0), V3(0.5, 2.2, 19.5)), splice: flyTarget(V3(40, 0.3, 0), V3(40.3, 2.1, 16)), tl: flyTarget(V3(80.3, 0.1, 0), V3(81.8, 2.3, 17.5)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.tx.pos);
   const controls = makeControls(camera, VIEW.tx.target); controls.minDistance = 2; controls.maxDistance = 40;
   const fx = new Sparks(1400, 0.08); scene.add(fx.obj);
@@ -30,8 +31,8 @@ function makeExpress() {
   const G1 = new THREE.Group(); scene.add(G1);
   const dna = duplex(14.5, '#8FA8C8', '#8FA8C8'); dna.position.set(-7.3, 0.4, 0); G1.add(dna);
   const tata = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.42, 0.6, 24, 1, true), new THREE.MeshBasicMaterial({ color: 0xf2c14e, transparent: true, opacity: 0.25, side: THREE.DoubleSide, depthWrite: false })); tata.rotation.z = Math.PI / 2; tata.position.set(-5.8, 0.4, 0); G1.add(tata);
-  const rnap = new THREE.Mesh(blobGeo(1.4, 1.15, 1.15, 31, 0.12, 4), glassMat(0xff9a50, { rim: 0.45, base: 0.012 })); G1.add(rnap);
-  const rnapCore = new THREE.Mesh(blobGeo(0.85, 0.7, 0.7, 32, 0.12, 4), protMat('#FF9A50', 0.25, { transparent: true, opacity: 0.55 })); rnap.add(rnapCore);
+  const rnap = new THREE.Mesh(blobGeo(1.4, 1.15, 1.15, 31, 0.12, 4), glassMat(0xff9a50, { rim: 0.45, base: 0.012, keep: true })); G1.add(rnap);
+  const rnapCore = new THREE.Mesh(blobGeo(0.85, 0.7, 0.7, 32, 0.12, 4), protMat('#FF9A50', 0.25, { transparent: true, opacity: 0.25 })); rnap.add(rnapCore);
   const MRN = 140; const mrnaPts = []; const mrnaM = new THREE.InstancedMesh(new THREE.SphereGeometry(0.075, 10, 8), new THREE.MeshPhysicalMaterial({ roughness: 0.35, clearcoat: 0.6 }), MRN); mrnaM.count = 0; G1.add(mrnaM);
   const GAL = new THREE.Group(); GAL.position.set(3.4, 2.75, 0.4); G1.add(GAL);   // врезка сверху — белок-регулятор на своём участке ДНК (другой ген)
   const gp = proteinMesh('gal4', { scale: 0.03, colorBy: (c, ci) => ['#F2E6C8', '#F2E6C8', '#C77DFF', '#FF8AB0'][ci] || '#7FD6FF', nucColor: '#9FB4D8' }); GAL.add(gp);
@@ -39,8 +40,8 @@ function makeExpress() {
   /* ---------- 2. сплайсинг ---------- */
   const G2 = new THREE.Group(); G2.position.set(40, 0, 0); scene.add(G2);
   const EXONS = [[0, 1.6, '#FF8A5C'], [3.2, 4.6, '#F2C14E'], [6.6, 8.0, '#7FE0A0'], [9.4, 11.0, '#7FD6FF']];
-  const preM = []; const segM = (a, b, col, intron) => { const m = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.11, 1, 12), organMat(col, intron ? 0.35 : 0.6, { emissiveIntensity: intron ? 0.02 : 0.1 })); m.rotation.z = Math.PI / 2; G2.add(m); return { m, a, b, intron }; };
-  EXONS.forEach(([a, b, c], k) => { preM.push(segM(a, b, c, false)); if (k < EXONS.length - 1) preM.push(segM(b, EXONS[k + 1][0], '#6A7080', true)); });
+  const preM = []; const segM = (a, b, col, intron) => { const m = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.11, 1, 12), organMat(col, intron ? 0.35 : 0.6, { emissiveIntensity: intron ? 0.25 : 0.1 })); m.rotation.z = Math.PI / 2; G2.add(m); return { m, a, b, intron }; };
+  EXONS.forEach(([a, b, c], k) => { preM.push(segM(a, b, c, false)); if (k < EXONS.length - 1) preM.push(segM(b, EXONS[k + 1][0], '#A8B0C4', true)); });
   const cap = new THREE.Mesh(new THREE.SphereGeometry(0.2, 16, 12), organMat('#C77DFF', 0.6, { emissiveIntensity: 0.2 })); G2.add(cap);
   const polyA = new THREE.Group(); for (let k = 0; k < 14; k++) { const s = new THREE.Mesh(new THREE.SphereGeometry(0.08, 10, 8), organMat('#FF6A6A', 0.6)); s.position.set(k * 0.17, 0.04 * Math.sin(k), 0); polyA.add(s); } G2.add(polyA);
   const spl = new THREE.Mesh(blobGeo(0.8, 0.65, 0.65, 44, 0.12, 4), glassMat(0x7fd6ff, { rim: 0.4, base: 0.01, keep: true })); G2.add(spl);
@@ -106,13 +107,13 @@ function makeExpress() {
   }
   function drawScope(ctx, w, h) {
     if (st.mode !== 'tl') { scopeShow(false); return; } scopeShow(true);
-    ctx.clearRect(0, 0, w, h); ctx.font = '500 10px JetBrains Mono, monospace'; ctx.fillStyle = '#EFEAE6'; ctx.fillText('генетический код: кодон в A-участке', 8, 12);
+    ctx.clearRect(0, 0, w, h); ctx.font = (w < 250 ? '500 8.5px' : '500 10px') + ' JetBrains Mono, monospace'; ctx.fillStyle = '#EFEAE6'; ctx.fillText('генетический код: кодон в A-участке', 8, 12);
     const cod = st.curCod || 'AUG';
     ctx.font = '600 30px JetBrains Mono, monospace'; [...cod].forEach((b, k) => { ctx.fillStyle = BASECOL[b] || '#fff'; ctx.fillText(b, 14 + k * 26, 52); });
     ctx.fillStyle = '#EFEAE6'; ctx.font = '500 22px Golos Text, sans-serif'; ctx.fillText('→ ' + (EX_AA[st.curAA] || ''), 100, 50);
     ctx.font = '500 9px JetBrains Mono, monospace'; ctx.fillStyle = 'rgba(255,255,255,.6)';
     ctx.fillText('мРНК: ' + COD.slice(0, 8).join(' '), 8, 80); ctx.fillText('белок: ' + COD.slice(0, 8).map((c) => EX_CODE[c]).join('-'), 8, 96);
-    ctx.fillText('64 кодона: 61 смысловой + 3 стоп (UAA, UAG, UGA)', 8, h - 6);
+    if (h > 110) ctx.fillText('64 кодона: 61 смысловой + 3 стоп (UAA, UAG, UGA)', 8, h - 6);
   }
   const TXT = {
     tx: '<b>Транскрипция</b> — переписывание гена с ДНК на РНК в ядре. <b>РНК-полимераза II</b> (оранжевая) с факторами транскрипции садится на <b>промотор</b> (жёлтая зона, ТАТА-бокс), расплетает около 14 пар оснований и движется по матричной цепи 3′→5′, собирая РНК 5′→3′ по принципу комплементарности (U вместо T). Сверху — реальная структура белка-регулятора <b>GAL4</b> дрожжей на своём участке ДНК (PDB 1D66): так активаторы узнают нужные гены по последовательности в большой бороздке. Транскрипция заканчивается на терминаторе.',
@@ -133,7 +134,7 @@ function makeExpress() {
     { text: 'малая субъединица', pos: V3(80 + 2.4, -1.4, 0.8), color: '#FFB070', show: () => st.labels && st.mode === 'tl' },
     { text: 'E · P · A', pos: V3(80 - 0.7, mY - 0.75, 0.6), color: '#E8D27A', show: () => st.labels && st.mode === 'tl' },
     { text: 'мРНК 5′→3′', pos: V3(80 - 4.2, mY - 0.65, 0.5), color: '#D9D2D8', show: () => st.labels && st.mode === 'tl' },
-    { text: 'растущий белок', pos: V3(80 + 0.6, mY + 3.6, 0.4), color: '#7FE0A0', show: () => st.labels && st.mode === 'tl' },
+    { text: 'растущий белок', pos: V3(80 + 0.6, mY + 3.6, 0.4), color: '#7FE0A0', show: () => st.labels && st.mode === 'tl' && st.cod >= 6 },
   ];
   labels.forEach((l) => { if (typeof l.pos === 'function') { const f = l.pos; Object.defineProperty(l, 'pos', { get: f }); } });
   const refs = {};
