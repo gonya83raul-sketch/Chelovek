@@ -13,7 +13,7 @@ function makeCalcium() {
   __set_rnd(mulberry(8401));
   const scene = bioStage({ rim: 0xf2e6c8 });
   const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: кадр уходит из-под заголовка и описания (телефон — прежний ракурс)
-  const VIEW = { reg: DK ? [V3(-1.0, 0.1, 0), V3(-0.5, 1.3, 21.5)] : [V3(-1.0, 0.0, 0), V3(-0.5, 1.0, 15.0)], vitd: [V3(39.9, -0.9, 0), V3(40.4, 0.6, 17)], bone: [V3(79.9, -1.8, 0), V3(79.9, 4.5, 10.5)] };
+  const VIEW = { reg: DK ? [V3(-1.0, 0.1, 0), V3(-0.5, 1.3, 21.5)] : [V3(-1.0, 0.0, 0), V3(-0.5, 1.0, 12.5)], vitd: DK ? [V3(39.9, -0.9, 0), V3(40.4, 0.6, 17)] : [V3(39.9, -0.6, 0), V3(40.4, 0.9, 11.5)], bone: [V3(79.9, -1.8, 0), V3(79.9, 4.5, 10.5)] };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VIEW.reg[1]);
   const controls = makeControls(camera, VIEW.reg[0]); controls.minDistance = 3; controls.maxDistance = 40;
   const fx = new Sparks(2000, 0.07); scene.add(fx.obj);
@@ -191,7 +191,7 @@ function makeCalcium() {
     { text: 'skin: vitamin D₃', pos: SKIN.clone().add(V3(0.1, -0.25, 0.1)), color: '#FFD98A', show: () => st.labels && st.mode === 'reg' },
     { text: 'in urine', pos: V3(-0.1, -0.35, 0.25), color: CA, show: () => st.labels && st.mode === 'reg' },
     ...VD.map((v) => ({ text: { dhc7: '7-dehydrocholesterol', calciol: 'cholecalciferol (D₃)', calcidiol: 'calcidiol (25-OH-D₃)', calcitriol: 'calcitriol' }[v.id], pos: V3(40 + v.x - 0.6, -1.25, 0.3), color: v.col, show: () => st.labels && st.mode === 'vitd' })),
-    ...VD.map((v) => ({ text: v.organ, pos: V3(40 + v.x - 0.6, 1.3, 0.3), color: '#B8B0C0', show: () => st.labels && st.mode === 'vitd' })),
+    ...VD.map((v) => ({ text: v.organ, pos: V3(40 + v.x - 0.6, 1.3, 0.3), color: '#B8B0C0', show: () => st.labels && st.mode === 'vitd' && DK })),
     ...VD.filter((v) => v.enz).map((v, i) => ({ text: v.enz, pos: V3(40 + v.x + 0.35, i % 2 ? 0.95 : 0.62, 0.3), color: v.col, show: () => st.labels && st.mode === 'vitd' })),
     { text: '24-hydroxylase: breakdown', pos: V3(40 + 4.45 - 2.3, -1.7, 0.3), color: '#8A8A96', show: () => st.labels && st.mode === 'vitd' },
     { text: 'osteoclast', pos: () => ocl.position.clone().add(V3(80.6, 0.85, 0.3)), color: '#B08AE8', show: () => st.labels && st.mode === 'bone' },

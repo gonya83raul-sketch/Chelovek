@@ -13,7 +13,7 @@ function makeDna() {
   __set_rnd(mulberry(1901));
   const scene = bioStage({ rim: 0x7fd6ff });
   const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: кадр уходит из-под заголовка и описания (телефон — прежний ракурс)
-  const VIEW = { struct: DK ? flyTarget(V3(-2.4, -0.7, 0), V3(-1.2, 0.9, 14.5)) : flyTarget(V3(-1.3, -0.7, 0), V3(-0.1, 0.9, 13.5)), rep: flyTarget(V3(40, -1.0, 0), V3(40.6, 0.8, 18.5)), repair: DK ? flyTarget(V3(78.1, -1.4, 0), V3(79.4, 0.3, 14)) : flyTarget(V3(80, -1.4, 0), V3(81.2, 0.2, 13)) };
+  const VIEW = { struct: DK ? flyTarget(V3(-2.4, -0.7, 0), V3(-1.2, 0.9, 14.5)) : flyTarget(V3(-1.3, -0.7, 0), V3(-0.1, 0.9, 13.5)), rep: DK ? flyTarget(V3(36.9, -1.95, 0), V3(37.5, -0.15, 23)) : flyTarget(V3(40.6, -1.0, 0), V3(41.2, 0.8, 20.5)), repair: DK ? flyTarget(V3(78.1, -1.4, 0), V3(79.4, 0.3, 14)) : flyTarget(V3(80, -1.4, 0), V3(81.2, 0.2, 13)) };
   // цель камеры — в центре модели, место под нижнюю панель — сдвигом кадра: вращение и приближение идут вокруг модели
   const VOFF = 0.16; Object.values(VIEW).forEach((v) => { const d = VOFF * 2 * Math.tan(17 * Math.PI / 180) * v.pos.distanceTo(v.target); v.target.y += d; v.pos.y += d; });
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.struct.pos); camera.setViewOffset(1, 1, 0, VOFF, 1, 1);
@@ -84,10 +84,10 @@ function makeDna() {
     if (rungs && colB) { const nR = Math.round(len / PITCH * 10); const im = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.035, 0.035, 1, 6), new THREE.MeshPhysicalMaterial({ roughness: 0.4 }), nR); const dm = new THREE.Object3D(); for (let i = 0; i < nR; i++) { const x = (i + 0.5) / nR * len; const a1 = x / PITCH * Math.PI * 2, a2 = a1 + 2.4; const p1 = V3(x, Math.cos(a1) * RAD, Math.sin(a1) * RAD), p2 = V3(x, Math.cos(a2) * RAD, Math.sin(a2) * RAD); dm.position.copy(p1).lerp(p2, 0.5); const d = p2.clone().sub(p1); dm.scale.set(1, d.length(), 1); dm.quaternion.setFromUnitVectors(V3(0, 1, 0), d.normalize()); dm.updateMatrix(); im.setMatrixAt(i, dm.matrix); im.setColorAt(i, new THREE.Color(Object.values(BASECOL)[Math.floor(rnd() * 4)]).multiplyScalar(0.6)); } g.add(im); }
     return { g, sA, sB };
   }
-  const parent = helixPair(8, '#8FA8C8', '#8FA8C8'); parent.g.position.set(0.5, 0.6, 0); G2.add(parent.g);
+  const parent = helixPair(5.6, '#8FA8C8', '#8FA8C8'); parent.g.position.set(0.5, 0.6, 0); G2.add(parent.g);
   // порядок ZYX: спираль крутится вокруг своей оси (локальная X), а направление ветви (поворот по z) не меняется
-  const lead = helixPair(7, '#8FA8C8', '#5CE0C8'); lead.g.position.set(-0.3, 1.1, 0); lead.g.rotation.order = 'ZYX'; lead.g.rotation.z = Math.PI - 0.32; G2.add(lead.g);
-  const lagT = helixPair(7, '#8FA8C8', null, false); lagT.g.position.set(-0.3, 0.1, 0); lagT.g.rotation.order = 'ZYX'; lagT.g.rotation.z = Math.PI + 0.32; G2.add(lagT.g);
+  const lead = helixPair(4.8, '#8FA8C8', '#5CE0C8'); lead.g.position.set(-0.3, 1.1, 0); lead.g.rotation.order = 'ZYX'; lead.g.rotation.z = Math.PI - 0.32; G2.add(lead.g);
+  const lagT = helixPair(4.8, '#8FA8C8', null, false); lagT.g.position.set(-0.3, 0.1, 0); lagT.g.rotation.order = 'ZYX'; lagT.g.rotation.z = Math.PI + 0.32; G2.add(lagT.g);
   const lagDir = V3(-Math.cos(0.32), -Math.sin(0.32), 0); const lagO = V3(-0.3, 0.1, 0);
   const frags = []; for (let k = 0; k < 5; k++) { const fr = new THREE.Group(); const dna = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.09, 1, 10), organMat('#5CE0C8', 0.55, { emissiveIntensity: 0.08 })); dna.rotation.z = Math.PI / 2; fr.add(dna); const pr = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.3, 10), organMat('#FF5A5A', 0.6, { emissiveIntensity: 0.15 })); pr.rotation.z = Math.PI / 2; fr.add(pr); G2.add(fr); frags.push({ g: fr, dna, pr, s0: 0, len: 0, born: -99 }); }
   const enz = {};
@@ -98,7 +98,7 @@ function makeDna() {
   eb('polG', V3(-1.2, -0.45, 0.2), [0.55, 0.45, 0.5], '#7FD6FF', 5);
   eb('prim', V3(-0.2, -0.2, 0.5), [0.28, 0.24, 0.26], '#FF6A6A', 6);
   eb('pol1', V3(-3.9, -1.0, 0.3), [0.32, 0.28, 0.3], '#7FE0A0', 7);
-  eb('lig', V3(-5.2, -1.5, 0.3), [0.3, 0.26, 0.28], '#FF8AB0', 8);
+  eb('lig', V3(-4.2, -1.45, 0.3), [0.3, 0.26, 0.28], '#FF8AB0', 8);
   const ssb = []; for (let k = 0; k < 4; k++) { const m = new THREE.Mesh(new THREE.SphereGeometry(0.13, 12, 8), protMat('#E0C8A0', 0.45)); m.position.copy(lagO).addScaledVector(lagDir, 0.4 + k * 0.32).add(V3(0, 0.15, 0)); G2.add(m); ssb.push(m); }
   /* ---------- 3. репарация ---------- */
   const G3 = new THREE.Group(); G3.position.set(80, 0.7, 0); scene.add(G3);
@@ -122,16 +122,16 @@ function makeDna() {
       const w = 1.2; parent.g.rotation.x += dt * w; lead.g.rotation.x -= dt * w * 0.8; lagT.g.rotation.x += dt * w * 0.8;
       heli.rotation.x += dt * 4; enz.topo.rotation.y += dt * 0.8;
       // фрагменты Оказаки: каждые 3 с — новый праймер у вилки, растёт прочь от вилки, затем уезжает
-      const v = 0.45;
+      const v = 0.25;
       frags.forEach((f, k) => {
         const age = (st.cyc - k * 3) % 15; if (age < 0) { f.g.visible = false; return; }
         f.g.visible = true; const grow = Math.min(1, age / 2.6); const s0 = 0.5 + age * v; const len = 0.3 + 1.0 * grow;
         const p = lagO.clone().addScaledVector(lagDir, s0 + len / 2); f.g.position.copy(p).add(V3(0, 0.12, 0)); f.g.rotation.z = Math.atan2(lagDir.y, lagDir.x);
         f.dna.scale.y = len; f.dna.position.x = 0; f.pr.position.x = -len / 2 + 0.15; f.pr.visible = age < 6.5; f.pr.material.emissiveIntensity = 0.15;
-        if (s0 > 6.5) f.g.visible = false;
+        if (s0 > 3.5) f.g.visible = false;
       });
       enz.prim.position.y = -0.2 + 0.05 * Math.sin(t * 5); enz.polG.position.copy(lagO).addScaledVector(lagDir, 0.9 + 0.4 * ((st.cyc % 3) / 3)).add(V3(0, -0.35, 0.25));
-      enz.pol1.position.copy(lagO).addScaledVector(lagDir, 0.5 + ((st.cyc % 15) * v + 2.6) % 6).add(V3(0, -0.4, 0.3));
+      enz.pol1.position.copy(lagO).addScaledVector(lagDir, 0.5 + ((st.cyc % 15) * v + 2.6) % 3.4).add(V3(0, -0.4, 0.3));
       if (rnd() < 0.3) fx.spawn(V3(40 - 1.3, 1.7, 0.2).add(randUnit().multiplyScalar(0.5)), randUnit().multiplyScalar(0.2), new THREE.Color(0x5ce0c8), 0.5, 1, 1.0);
     }
     if (st.mode === 'repair') {
@@ -164,14 +164,14 @@ function makeDna() {
     { text: `5′-${seqTxt}-3′`, pos: V3(-3.2, -0.9, 0), color: '#F2E6C8', show: () => st.labels && st.mode === 'struct' },
     { text: 'топоизомераза', pos: V3(44.4, 1.9, 0), color: '#C77DFF', show: () => st.labels && st.mode === 'rep' },
     { text: 'геликаза', pos: V3(40.6, 1.4, 0.3), color: '#F2C14E', show: () => st.labels && st.mode === 'rep' },
-    { text: 'ведущая цепь', pos: V3(40 - 4.6, 2.7, 0), color: '#5CE0C8', show: () => st.labels && st.mode === 'rep' },
-    { text: 'отстающая: фрагменты Оказаки', pos: V3(40 - 6.6, -1.2, 0), color: '#5CE0C8', show: () => st.labels && st.mode === 'rep' },
+    { text: 'ведущая цепь', pos: V3(40 - 3.4, 2.75, 0), color: '#5CE0C8', show: () => st.labels && st.mode === 'rep' },
+    { text: 'отстающая: фрагменты Оказаки', pos: V3(40 - 2.4, -2.1, 0), color: '#5CE0C8', show: () => st.labels && st.mode === 'rep' },
     { text: 'ДНК-полимераза III', pos: V3(40 - 1.6, 2.4, 0.2), color: '#7FD6FF', show: () => st.labels && st.mode === 'rep' },
     { text: 'праймаза · РНК-праймер', pos: V3(40 + 0.3, -0.7, 0.5), color: '#FF6A6A', show: () => st.labels && st.mode === 'rep' },
     { text: 'SSB-белки', pos: V3(40 - 0.6, 0.55, 0.3), color: '#E0C8A0', show: () => st.labels && st.mode === 'rep' },
-    { text: 'ДНК-полимераза I', pos: V3(40 - 4.4, -0.3, 0.3), color: '#7FE0A0', show: () => st.labels && st.mode === 'rep' },
-    { text: 'ДНК-лигаза', pos: V3(40 - 5.6, -2.1, 0.3), color: '#FF8AB0', show: () => st.labels && st.mode === 'rep' },
-    { text: 'материнская ДНК', pos: V3(40 + 6.2, 1.4, 0), color: '#8FA8C8', show: () => st.labels && st.mode === 'rep' },
+    { text: 'ДНК-полимераза I', pos: V3(40 - 3.4, -0.3, 0.3), color: '#7FE0A0', show: () => st.labels && st.mode === 'rep' },
+    { text: 'ДНК-лигаза', pos: V3(40 - 4.4, -1.9, 0.3), color: '#FF8AB0', show: () => st.labels && st.mode === 'rep' },
+    { text: 'материнская ДНК', pos: V3(40 + 3.4, -0.4, 0), color: '#8FA8C8', show: () => st.labels && st.mode === 'rep' },
     { text: 'УФ', pos: V3(80, 4.0, 0), color: '#B08AFF', show: () => st.labels && st.mode === 'repair' && st.cyc % 16 < 2.5 },
     { text: 'тиминовый димер', get pos() { return resPos('A6').lerp(resPos('A7'), 0.5).add(G3.position).add(V3(0.6, -1.2, 0.4)); }, color: '#FFD84A', show: () => st.labels && st.mode === 'repair' && st.cyc % 16 > 1.5 && st.cyc % 16 < 6 },
     { text: 'нуклеаза (эксцинуклеаза)', get pos() { return nuc.getWorldPosition(V3(0, 0, 0)).add(V3(0.5, 0.55, 0)); }, color: '#F2C14E', show: () => st.labels && st.mode === 'repair' && nuc.visible },

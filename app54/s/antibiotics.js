@@ -320,7 +320,7 @@ function makeAntibiotics() {
     const a = ABX.find((x) => x.id === st.abx); return [['Субъединица', a.sub === 's30' ? '30S' : '50S', ''], ['Шаг', { aa: 'вход тРНК', err: 'точность', ptc: 'пептидная связь', exit: 'туннель' }[a.step], '']];
   }
   const self = {
-    mobZoom: 0.55, scene, camera, controls, update: update2, ui, onKey, stats, labels, drawScope, accent: '#7FD6FF',
+    mobZoom: 0.48, scene, camera, controls, update: update2, ui, onKey, stats, labels, drawScope, accent: '#7FD6FF',
     kicker: 'Биохимия · синтез белка', title: 'Антибиотики и синтез белка',
     lede: 'Рибосома бактерий чуть отличается от нашей — и этого хватает, чтобы маленькая молекула остановила микроба, не тронув человека.',
     notes: `

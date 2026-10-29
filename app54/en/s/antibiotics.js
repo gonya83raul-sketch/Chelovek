@@ -320,7 +320,7 @@ function makeAntibiotics() {
     const a = ABX.find((x) => x.id === st.abx); return [['Subunit', a.sub === 's30' ? '30S' : '50S', ''], ['Step', { aa: 'tRNA entry', err: 'accuracy', ptc: 'peptide bond', exit: 'tunnel' }[a.step], '']];
   }
   const self = {
-    mobZoom: 0.55, scene, camera, controls, update: update2, ui, onKey, stats, labels, drawScope, accent: '#7FD6FF',
+    mobZoom: 0.48, scene, camera, controls, update: update2, ui, onKey, stats, labels, drawScope, accent: '#7FD6FF',
     kicker: 'Biochemistry · protein synthesis', title: 'Antibiotics and protein synthesis',
     lede: 'The bacterial ribosome differs slightly from ours — and that is enough for a small molecule to stop a microbe without harming the person.',
     notes: `

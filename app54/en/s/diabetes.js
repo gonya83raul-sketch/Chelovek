@@ -1,6 +1,6 @@
 import { BODY, Sparks, THREE, V3, __set_rnd, bodyShell, clamp, ell3, flyStep, flyTarget, glassMat, glowNucleus, group, h, infoBox, makeControls, mulberry, organMat, rand, rnd, scopeShow, seg, smooth, toggle } from '../core.js';
 import { BIO_MOL, MOL, PDB, bioStage, blobGeo, caPoints, flowArrow, molFit, molMesh, plotAxes, protMat, proteinMesh } from './kit.js';
-Object.assign(BIO_MOL, {"glucose":{"name":"Глюкоза","el":"O C C O C O C O C O C O H H H H H H H H H H H H","xyz":"2f4oAEkABv8gAMP/n/8WALz/2P+SAOP/XQCPAA8AYACYAJ4ArwAWAOP/zQAgAFj/agCR/wAAnwBa/3gA0/+g/w8AlP8o/+T/eP4kAEsA2v7J/5P/5v55AI3/uv8DAFP/kADqAOn/uQC0ALoADwEYABoAjgBcAC7/fwBM/67/uwD//mgAu/+x/3gAQ/8a/xcA","b":"AAABAAEAAgACAAMAAwAEAAQABQAEAAYABgAHAAYACAAIAAkACAAKAAIACgAKAAsAAAAMAAEADQABAA4AAgAPAAQAEAAFABEABgASAAcAEwAIABQACQAVAAoAFgALABcA","o":"111111111111111111111111"},"met":{"name":"Метионин","el":"N C C C S C C O O H H H H H H H H H H H","xyz":"8f9R/+H/OwDE/6//2/8tAHn/rv+RAOL/T/89AGMA0/7V/xIAmgD4/xoAgwDi/5AADgFBAPX/rP80/53/MQAF//T/eACg/1r/CwBiACf/gv/6/1D/AgDGAA4Abf/bALL/9P5u/xQAxf72/6v/dP7e/0gA/gCVAMb/","b":"AAABAAEAAgACAAMAAwAEAAQABQABAAYABgAHAAYACAAAAAkAAAAKAAEACwACAAwAAgANAAMADgADAA8ABQAQAAUAEQAFABIACAATAA==","o":"1111112111111111111"},"glibenclamide":{"name":"Глибенкламид","el":"C O C C C C Cl C C C O N C C C C C C C C S O O N C O N C C C C C C H H H H H H H H H H H H H H H H H H H H H H H H H H H H","xyz":"a/3rAF4A7f3vAJcAWv7tADsAhf5pARsA8/5+Ab7/Lf8TAYf/tP8oARX//v6MAKn/mf52AP//cf7l/xsAFv7E/2cAs/5y/93/hv7q/v7/1/6C/rH/bf+V/sv/u/+//mX/TADS/nz/eAC5/vX/KQCN/mUApf97/lAAOgHT/hQAYAGx/rEAkQFo/rj/dgGJ/+r/LAHt/zEA0QDM/34ARwF8ACIAsAGrAMn/NQKxABYAXAJBATkA5AGSAWsAdgGcAQEAiQE1AZH/Jv0kAZ0ASv2DAFkAbv0WAfr/U/6+AUoAFf/jAaX/M/87AHj///57/5z/Hf7h/uP/kv7a/mkAxP6M/kb/uv4e/tH/kP/S/gP/jAD0/iv/UwB5/sgAZf9Z/qEAwAGI/6v/DwG+AFYAuwFmAHX/KwJ4AHMAgwKEANn/qQI/AYYAhAJxAd//BQL2AYYAuwFhAcQAeQEAAtX/FQGMATAA2AFXAU7/LAErAVn/","b":"AAABAAEAAgACAAMAAwAEAAQABQAFAAYABQAHAAcACAACAAgACAAJAAkACgAJAAsACwAMAAwADQANAA4ADgAPAA8AEAAQABEAEQASABIAEwAOABMAEQAUABQAFQAUABYAFAAXABcAGAAYABkAGAAaABoAGwAbABwAHAAdAB0AHgAeAB8AHwAgABsAIAAAACEAAAAiAAAAIwADACQABAAlAAcAJgALACcADAAoAAwAKQANACoADQArAA8ALAAQAC0AEgAuABMALwAXADAAGgAxABsAMgAcADMAHAA0AB0ANQAdADYAHgA3AB4AOAAfADkAHwA6ACAAOwAgADwA","o":"112121121121111212121122112111111111111111111111111111111111111"},"sorbitol":{"name":"Сорбит","el":"O C C O C O C O C O C O H H H H H H H H H H H H H H","xyz":"of7L/7H/EP9+/9v/b//I/zcALv8ZAJcA0P8UAN//nf+IAKH/RgAxADoASACyAG8AxwAcAO3/0QBRAGz/2QCE/+j/RgFn/zwAgf6r/1v/Rv9b/4L/6v4l/xAApP94/24AOv/0/+8A8v/Q/4//QP+XALb/SADr/48AgQC3AL0AGQFGACkALQFjAFX/7wBl/4L/fwBS/wsAlQGY/yAA","b":"AAABAAEAAgACAAMAAgAEAAQABQAEAAYABgAHAAYACAAIAAkACAAKAAoACwAAAAwAAQANAAEADgACAA8AAwAQAAQAEQAFABIABgATAAcAFAAIABUACQAWAAoAFwAKABgACwAZAA==","o":"1111111111111111111111111"}});
+Object.assign(BIO_MOL, {"cortisol":{"name":"Cortisol","el":"C C C C C O C C C C C C C O C C C C C C C O C O C O H H H H H H H H H H H H H H H H H H H H H H H H H H H H H H","xyz":"AP/D/0n/A//f/+D/vf5u/ywAJv5n/xUA5P3w/yUAbf34/0EAOP5tABAAuv5mAPH/Bf/qAN7/l//lAAgA3v9jAN3/kv/q/xcA3/9p/ycA2f8J/7//dgB4/0wAugDn/wAAwQDL/2r/agBqABgAxQDYAOT/VQGiAPv/RgESADAASwEZAL4AswG1////qAE7/xEAMQLk/7b/gAI1AA0AZv+6/yT/z/4WABb/yv5n/zb/5/4N/xAAzv59/5cA+v0h/1wAE/5C/7D/Cv7QABwA0v43ARgA//4GAXT/zf85Adz/nv/sAHUA4P9eAHH/gP8LAIIAs/82/4EAqf+6/t7/pgAY/zYAeQCI/7gA+QBv/1n/8wAdADX/XQC//0H/YAB2AIUAtgDnAHn/uAA0ARsAhgHfAEUAiQGlAJz/JwFuANsAbAKM/5r/FwIbAFz/RgJgAE4A","b":"AAABAAEAAgACAAMAAwAEAAQABQAEAAYABgAHAAEABwAHAAgACAAJAAkACgAKAAsAAQALAAsADAAMAA0ADAAOAA4ADwAPABAADwARAAoAEQARABIAEgATABMAFAAPABQAFAAVABQAFgAWABcAFgAYABgAGQAAABoAAAAbAAAAHAACAB0AAgAeAAMAHwADACAABgAhAAgAIgAIACMACQAkAAkAJQAKACYACwAnAAwAKAANACkADgAqAA4AKwAQACwAEAAtABAALgARAC8AEgAwABIAMQATADIAEwAzABUANAAYADUAGAA2ABkANwA=","o":"11112121111111111111111111211111111111111111111111111111111"},"met":{"name":"Methionine","el":"N C C C S C C O O H H H H H H H H H H H","xyz":"8f9R/+H/OwDE/6//2/8tAHn/rv+RAOL/T/89AGMA0/7V/xIAmgD4/xoAgwDi/5AADgFBAPX/rP80/53/MQAF//T/eACg/1r/CwBiACf/gv/6/1D/AgDGAA4Abf/bALL/9P5u/xQAxf72/6v/dP7e/0gA/gCVAMb/","b":"AAABAAEAAgACAAMAAwAEAAQABQABAAYABgAHAAYACAAAAAkAAAAKAAEACwACAAwAAgANAAMADgADAA8ABQAQAAUAEQAFABIACAATAA==","o":"1111112111111111111"},"metformin":{"name":"Metformin","el":"C N C C N N C N N H H H H H H H H H H H","xyz":"NAE5AAAAvQDj/wAAzQBT/wAAOAAkAAAAPAClAAAAwf/S/wAANf/5/wAA0v6M/wAABv9wAAAAMQF6AKj/NAF2AFoAjQH7//3/kgAn/7D/NgE6//H/rAAq/2AA7f/hAAAAz/9s/wAA8v4s/wAAcP6i/wAAov6BAAAA","b":"AAABAAEAAgABAAMAAwAEAAMABQAFAAYABgAHAAYACAAAAAkAAAAKAAAACwACAAwAAgANAAIADgAEAA8ABQAQAAcAEQAHABIACAATAA==","o":"1112111211111111111"},"acetone":{"name":"Acetone","el":"C C C O H H H H H H","xyz":"e/9FAAAAAAD4/wAAhQBFAAAAAAB+/wAAj/+wAAkAP/8kAFQARv8xAKP/xgAcALP/cgCuAOz/tQA6AGEA","b":"AAABAAEAAgABAAMAAAAEAAAABQAAAAYAAgAHAAIACAACAAkA","o":"112111111"},"dapagliflozin":{"name":"Dapagliflozin","el":"C C O C C C C C C C C C C C Cl C O C C O C O C O C O C C H H H H H H H H H H H H H H H H H H H H H H H H H","xyz":"JP3+ANn/jP31AEkADv4AARIAUv6HAPn/UP5RAH//l/7S/2X/2f6V/8j/Iv8S/6z/s/8Y/97/+v+J/9X/hQCN/wUAvAAg/zwAbwCk/kYA8P+g/hoAlP8J/icA1QAPAPr/QQH8/6D/lAFsAJD/JgI5AJn/ZQJrACX/hgHfAPP/JwE9AcL/XwG0AIEA1QGeAM0ACAE3AIUAmABOANsA2/7Q/04Am/5DAGYAVv33AHn/3PytAOP/8PxeAeD/e/1FAZEAgv2VAHwAG/6DAC7/lv6n/wH/I////kD/7f7A/t3/zv/i/6n/IwEk/2AAnABL/nIAlABeANT/hQGUACv/JQLN/5n/VAJgAPP/WwLMACD/5wETAfr/UQF0AX7/JwEHAbAAzAHJACMBQwHk/64AkQAFABoBEf+e/58Anf5vAMoA","b":"AAABAAEAAgACAAMAAwAEAAQABQAFAAYABgAHAAcACAAIAAkACQAKAAoACwALAAwADAANAAgADQANAA4ACgAPAA8AEAAQABEAEQASABIAEwARABQAFAAVABQAFgAWABcAFgAYAA8AGAAYABkABgAaABoAGwADABsAAAAcAAAAHQAAAB4AAQAfAAEAIAAEACEABQAiAAcAIwAHACQACQAlAAsAJgAMACcADwAoABEAKQASACoAEgArABMALAAUAC0AFQAuABYALwAXADAAGAAxABkAMgAaADMAGwA0AA==","o":"1112121121212111111111111111211111111111111111111111111"},"glibenclamide":{"name":"Glibenclamide","el":"C O C C C C Cl C C C O N C C C C C C C C S O O N C O N C C C C C C H H H H H H H H H H H H H H H H H H H H H H H H H H H H","xyz":"a/3rAF4A7f3vAJcAWv7tADsAhf5pARsA8/5+Ab7/Lf8TAYf/tP8oARX//v6MAKn/mf52AP//cf7l/xsAFv7E/2cAs/5y/93/hv7q/v7/1/6C/rH/bf+V/sv/u/+//mX/TADS/nz/eAC5/vX/KQCN/mUApf97/lAAOgHT/hQAYAGx/rEAkQFo/rj/dgGJ/+r/LAHt/zEA0QDM/34ARwF8ACIAsAGrAMn/NQKxABYAXAJBATkA5AGSAWsAdgGcAQEAiQE1AZH/Jv0kAZ0ASv2DAFkAbv0WAfr/U/6+AUoAFf/jAaX/M/87AHj///57/5z/Hf7h/uP/kv7a/mkAxP6M/kb/uv4e/tH/kP/S/gP/jAD0/iv/UwB5/sgAZf9Z/qEAwAGI/6v/DwG+AFYAuwFmAHX/KwJ4AHMAgwKEANn/qQI/AYYAhAJxAd//BQL2AYYAuwFhAcQAeQEAAtX/FQGMATAA2AFXAU7/LAErAVn/","b":"AAABAAEAAgACAAMAAwAEAAQABQAFAAYABQAHAAcACAACAAgACAAJAAkACgAJAAsACwAMAAwADQANAA4ADgAPAA8AEAAQABEAEQASABIAEwAOABMAEQAUABQAFQAUABYAFAAXABcAGAAYABkAGAAaABoAGwAbABwAHAAdAB0AHgAeAB8AHwAgABsAIAAAACEAAAAiAAAAIwADACQABAAlAAcAJgALACcADAAoAAwAKQANACoADQArAA8ALAAQAC0AEgAuABMALwAXADAAGgAxABsAMgAcADMAHAA0AB0ANQAdADYAHgA3AB4AOAAfADkAHwA6ACAAOwAgADwA","o":"112121121121111212121122112111111111111111111111111111111111111"},"sorbitol":{"name":"Sorbitol","el":"O C C O C O C O C O C O H H H H H H H H H H H H H H","xyz":"of7L/7H/EP9+/9v/b//I/zcALv8ZAJcA0P8UAN//nf+IAKH/RgAxADoASACyAG8AxwAcAO3/0QBRAGz/2QCE/+j/RgFn/zwAgf6r/1v/Rv9b/4L/6v4l/xAApP94/24AOv/0/+8A8v/Q/4//QP+XALb/SADr/48AgQC3AL0AGQFGACkALQFjAFX/7wBl/4L/fwBS/wsAlQGY/yAA","b":"AAABAAEAAgACAAMAAgAEAAQABQAEAAYABgAHAAYACAAIAAkACAAKAAoACwAAAAwAAQANAAEADgACAA8AAwAQAAQAEQAFABIABgATAAcAFAAIABUACQAWAAoAFwAKABgACwAZAA==","o":"1111111111111111111111111"}});
 
 
 // @scene diabetes makeDiabetes | Инсулин и сахарный диабет | Гормоны
@@ -13,7 +13,7 @@ function makeDiabetes() {
   __set_rnd(mulberry(8601));
   const scene = bioStage({ rim: 0x5b8cff });
   const VIEW = { beta: [V3(-1.9, -1.4, 0), V3(-1.4, -0.2, 21.5)], day: [V3(39.3, -0.1, 0), V3(39.7, 0.7, 10.5)], glyc: [V3(78.9, -1.9, 0), V3(79.4, -0.8, 17)] };
-  const VIEWM = { beta: [V3(0.3, -1.5, 0), V3(0.8, -0.3, 20)], day: [V3(40, 1.0, 0), V3(40.3, 1.6, 8.5)], glyc: [V3(80.6, -0.4, 0), V3(81, 0.4, 14)] }, mqm = window.matchMedia('(max-width:700px)'), VV = (m) => (mqm.matches && VIEWM[m]) || VIEW[m];
+  const VIEWM = { beta: [V3(0.3, -1.5, 0), V3(0.8, -0.3, 20)], day: [V3(40.3, 0.3, 0), V3(40.6, 0.9, 10.8)], glyc: [V3(80.6, -0.4, 0), V3(81, 0.4, 14)] }, mqm = window.matchMedia('(max-width:700px)'), VV = (m) => (mqm.matches && VIEWM[m]) || VIEW[m];
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VIEW.beta[1]);
   const controls = makeControls(camera, VIEW.beta[0]); controls.minDistance = 3; controls.maxDistance = 40;
   const fx = new Sparks(2000, 0.07); scene.add(fx.obj);
@@ -251,94 +251,94 @@ function makeDiabetes() {
   }
   function drawScope(ctx, w, h) {
     if (st.mode === 'beta') {
-      scopeShow(true); const A = plotAxes(ctx, w, h, { title: 'потенциал мембраны β-клетки, мВ', xl: '4 с' });
+      scopeShow(true); const A = plotAxes(ctx, w, h, { title: 'β-cell membrane potential, mV', xl: '4 s' });
       const Y = (v) => A.Y(clamp((v + 80) / 85, 0, 1)), X = (tt) => A.X(clamp((tt - (st.t - 4)) / 4, 0, 1));
       ctx.strokeStyle = 'rgba(255,255,255,.18)'; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(A.X(0), Y(-55)); ctx.lineTo(A.X(1), Y(-55)); ctx.stroke(); ctx.setLineDash([]);
-      ctx.fillStyle = 'rgba(255,255,255,.5)'; ctx.font = '500 9px JetBrains Mono, monospace'; ctx.fillText('порог', A.X(0) + 3, Y(-55) - 3);
+      ctx.fillStyle = 'rgba(255,255,255,.5)'; ctx.font = '500 9px JetBrains Mono, monospace'; ctx.fillText('threshold', A.X(0) + 3, Y(-55) - 3);
       ctx.strokeStyle = '#FF8AB0'; ctx.lineWidth = 1.6; ctx.beginPath(); st.vh.forEach(([tt, v], i) => { i ? ctx.lineTo(X(tt), Y(v)) : ctx.moveTo(X(tt), Y(v)); }); ctx.stroke();
       return;
     }
     if (st.mode === 'day') {
-      scopeShow(true); const A = plotAxes(ctx, w, h, { title: 'глюкоза; зелёное — цель 3,9–10', xl: 'сутки, 0–24 ч' });
+      scopeShow(true); const A = plotAxes(ctx, w, h, { title: 'glucose; green — target 3.9–10', xl: 'day, 0–24 h' });
       const X = (hh) => A.X(hh / 24), Y = (g) => A.Y(clamp(g / 30, 0, 1));
       ctx.fillStyle = 'rgba(127,224,160,.10)'; ctx.fillRect(A.X(0), Y(10), A.X(1) - A.X(0), Y(3.9) - Y(10));
       ctx.fillStyle = 'rgba(242,193,78,.6)'; MEALS.forEach(([tm]) => { ctx.beginPath(); ctx.arc(X(tm), A.Y(0) - 4, 3, 0, 7); ctx.fill(); });
       const line = (arr, col) => { ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.beginPath(); arr.forEach(([hh, g], i) => { i ? ctx.lineTo(X(hh), Y(g)) : ctx.moveTo(X(hh), Y(g)); }); ctx.stroke(); };
       line(st.prev.filter((r) => r[0] > st.hr + 0.3), 'rgba(242,193,78,.25)'); line(st.day, GLU);
-      ctx.fillStyle = 'rgba(255,255,255,.5)'; ctx.font = '500 9px JetBrains Mono, monospace'; [5, 10, 20, 30].forEach((g) => ctx.fillText(String(g), A.X(0) + 3, Y(g) - 2)); [6, 12, 18].forEach((hh) => ctx.fillText(hh + ':00', X(hh) - 10, A.Y(0) - 8));
+      ctx.fillStyle = 'rgba(255,255,255,.5)'; ctx.font = '500 9px JetBrains Mono, monospace'; [5, 10, 20].forEach((g) => ctx.fillText(String(g), A.X(0) + 3, Y(g) - 2)); [6, 12, 18].forEach((hh) => ctx.fillText(hh + ':00', X(hh) - 10, A.Y(0) - 8));
       return;
     }
-    scopeShow(true); const A = plotAxes(ctx, w, h, { title: 'ср. глюкоза (жёлтый), HbA1c (оранжевый)', xl: '26 недель' });
+    scopeShow(true); const A = plotAxes(ctx, w, h, { title: 'mean glucose (yellow), HbA1c (orange)', xl: '26 weeks' });
     const X = (tt) => A.X(clamp((tt - (st.t - 26)) / 26, 0, 1)), Yg = (g) => A.Y(clamp(g / 14, 0, 1)), Ya = (a) => A.Y(clamp((a - 4) / 7, 0, 1));
     const line = (fy, col) => { ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.beginPath(); st.gh.forEach((r, i) => { i ? ctx.lineTo(X(r[0]), fy(r)) : ctx.moveTo(X(r[0]), fy(r)); }); ctx.stroke(); };
     ctx.strokeStyle = 'rgba(255,154,60,.35)'; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(A.X(0), Ya(7)); ctx.lineTo(A.X(1), Ya(7)); ctx.stroke(); ctx.setLineDash([]);
-    ctx.font = '500 9px JetBrains Mono, monospace'; ctx.fillStyle = 'rgba(242,193,78,.75)'; [5, 10].forEach((g) => ctx.fillText(g + ' ммоль/л', A.X(0) + 3, Yg(g) - 2)); ctx.fillStyle = 'rgba(255,154,60,.85)'; [5, 7, 9].forEach((a) => ctx.fillText(a + '%', A.X(1) - 22, Ya(a) - 2));
+    ctx.font = '500 9px JetBrains Mono, monospace'; ctx.fillStyle = 'rgba(242,193,78,.75)'; [5, 10].forEach((g) => ctx.fillText(g + ' mmol/L', A.X(0) + 3, Yg(g) - 2)); ctx.fillStyle = 'rgba(255,154,60,.85)'; [5, 7, 9].forEach((a) => ctx.fillText(a + '%', A.X(1) - 22, Ya(a) - 2));
     line((r) => Yg(r[1]), GLU); line((r) => Ya(r[2]), '#FF9A3C');
   }
 
-  const GSEL = { fast: 'Натощак: 5 ммоль/л', meal: 'После еды: 10', hypo: 'Мало: 3' };
+  const GSEL = { fast: 'Fasting: 5 mmol/L', meal: 'After a meal: 10', hypo: 'Low: 3' };
   const BTXT = {
-    base: '<b>β-клетка</b> островка Лангерганса — датчик сахара. Глюкоза входит через транспортёр <b>GLUT2</b> (у человека — в основном GLUT1), <b>глюкокиназа</b> фосфорилирует её (у неё высокая K<sub>m</sub>, поэтому скорость растёт вместе с глюкозой крови), гликолиз и митохондрии дают <b>АТФ</b>. АТФ закрывает <b>K-АТФ-канал</b> (пора из Kir6.2 и регуляторные SUR1): калий перестаёт выходить, мембрана деполяризуется, открываются <b>Ca²⁺-каналы</b> (ионы кальция — зелёные), и кальций запускает слияние гранул с мембраной — инсулин выходит в кровь вместе с С-пептидом, вырезанным из проинсулина (их поровну — поэтому по С-пептиду судят о собственной секреции). Включите разные уровни глюкозы и следите за потенциалом на графике.',
-    fast: 'Натощак (около 5 ммоль/л) АТФ мало, K-АТФ-каналы в основном открыты, мембрана около −65 мВ — клетка молчит, выходит только небольшой базальный инсулин.',
-    meal: 'После еды глюкозы 10 ммоль/л: АТФ много, K-АТФ-каналы закрыты, мембрана поднимается выше порога, идут пачки потенциалов действия, кальций входит — гранулы массово выпускают инсулин.',
-    hypo: 'Глюкозы 3 ммоль/л — секреция почти выключена, клетка не мешает печени поднимать сахар. Так β-клетка защищает от гипогликемии.',
-    su: '<b>Сульфонилмочевина</b> (глибенкламид, молекула у канала) садится на SUR1 и закрывает K-АТФ-канал <b>независимо от глюкозы</b>. Поэтому она выпускает инсулин даже при низком сахаре — главный риск таких таблеток гипогликемия. Включите «Мало: 3» — секреция продолжается. Эти же каналы мутируют при неонатальном диабете, и таких детей лечат таблетками вместо уколов. С агонистами GLP-1 риск гипогликемии ещё выше: раз канал уже закрыт, усиление через цАМФ срабатывает и при низком сахаре — дозу сульфонилмочевины снижают. Включите оба.',
-    glp: '<b>GLP-1</b> — гормон-инкретин из кишечника. Через свой рецептор (фиолетовый) и цАМФ он <b>усиливает</b> выброс инсулина, но только когда глюкоза высокая: при «Мало: 3» эффекта нет, поэтому агонисты GLP-1 (лираглутид, семаглутид) сами по себе почти не вызывают гипогликемию. Ещё они замедляют опорожнение желудка, уменьшают аппетит и выброс глюкагона.',
+    base: 'The <b>β-cell</b> of the islet of Langerhans is a sugar sensor. Glucose enters through the <b>GLUT2</b> transporter (in humans mostly GLUT1), <b>glucokinase</b> phosphorylates it (its K<sub>m</sub> is high, so its rate rises with blood glucose), and glycolysis and mitochondria produce <b>ATP</b>. ATP closes the <b>K-ATP channel</b> (a pore of Kir6.2 plus regulatory SUR1): potassium stops leaving, the membrane depolarizes, <b>Ca²⁺ channels</b> open (calcium ions are green), and calcium triggers granule fusion with the membrane — insulin enters the blood together with C-peptide cut from proinsulin (in equal amounts — which is why C-peptide is used to judge the body’s own secretion). Try different glucose levels and watch the potential on the chart.',
+    fast: 'Fasting (about 5 mmol/L) there is little ATP, K-ATP channels are mostly open, the membrane sits near −65 mV — the cell is silent and releases only a little basal insulin.',
+    meal: 'After a meal glucose is 10 mmol/L: plenty of ATP, K-ATP channels closed, the membrane rises above threshold, bursts of action potentials run, calcium enters — granules release insulin en masse.',
+    hypo: 'At 3 mmol/L glucose secretion is almost off, so the cell does not stop the liver from raising sugar. This is how the β-cell protects against hypoglycemia.',
+    su: 'A <b>sulfonylurea</b> (glibenclamide, molecule by the channel) binds SUR1 and closes the K-ATP channel <b>regardless of glucose</b>. So it releases insulin even when sugar is low — hypoglycemia is the main risk of these tablets. Choose “Low: 3” — secretion continues. The same channels are mutated in neonatal diabetes, and such children are treated with tablets instead of injections. With GLP-1 agonists the risk of hypoglycemia is even higher: since the channel is already closed, the cAMP boost works even at low sugar — so the sulfonylurea dose is reduced. Turn both on.',
+    glp: '<b>GLP-1</b> is an incretin hormone from the gut. Through its receptor (purple) and cAMP it <b>amplifies</b> insulin release, but only when glucose is high: at “Low: 3” there is no effect, so GLP-1 agonists (liraglutide, semaglutide) on their own hardly ever cause hypoglycemia. They also slow stomach emptying, reduce appetite and glucagon release.',
   };
-  const DIS = { norm: 'Здоров', t1: 'Диабет 1 типа', t2: 'Диабет 2 типа' };
-  const DRUGS = { t1: [['ins', 'Инсулин (базальный + к еде)']], t2: [['met', 'Метформин'], ['sglt', 'Глифлозин'], ['glp', 'Лираглутид'], ['ins', 'Инсулин']] };
-  const DLAB = { met: 'метформин', sglt: 'глифлозин', glp: 'лираглутид', ins: 'инсулин' };
+  const DIS = { norm: 'Healthy', t1: 'Type 1 diabetes', t2: 'Type 2 diabetes' };
+  const DRUGS = { t1: [['ins', 'Insulin (basal + mealtime)']], t2: [['met', 'Metformin'], ['sglt', 'Gliflozin'], ['glp', 'Liraglutide'], ['ins', 'Insulin']] };
+  const DLAB = { met: 'metformin', sglt: 'gliflozin', glp: 'liraglutide', ins: 'insulin' };
   const DTXT = {
-    norm: '<b>Сутки здорового человека</b> (1 секунда — 1 час, точки внизу графика — еда). После завтрака, обеда и ужина глюкоза из кишечника поднимает сахар до 7–8 ммоль/л, поджелудочная выбрасывает инсулин (голубые потоки), печень, мышцы и жир забирают глюкозу, и за 2 часа сахар возвращается к 4–6. Ночью печень (оранжевый поток) понемногу выдаёт глюкозу из гликогена, а базальный инсулин не даёт ей выдать лишнее.',
-    t1: '<b>Диабет 1 типа</b>: иммунная система разрушила β-клетки — <b>С-пептид</b> почти нулевой, инсулина нет. Сахар поднимается до 20–30 ммоль/л (как именно — см. тему «Гликоген и сахар крови»), глюкоза уходит с мочой и тянет воду. Без инсулина жир распадается без тормоза, печень делает кетоновые тела (красное свечение): кетоны выше 3 ммоль/л и pH крови ниже 7,3 — <b>диабетический кетоацидоз</b>: тошнота и рвота, боль в животе, запах ацетона изо рта, глубокое шумное дыхание (Куссмауля), обезвоживание, спутанность. Это неотложное состояние: лечат инсулином в вену, растворами и калием.',
-    t1ins: '<b>Инсулинотерапия</b> заменяет поджелудочную: длинный (базальный) инсулин раз в сутки держит печень в узде, короткий — перед каждой едой (уколы в подкожный жир). Сахар в основном в целевом коридоре; дозу считают по углеводам еды и замерам глюкозы (сегодня — часто с датчиком и помпой). Перебор дозы — гипогликемия, поэтому важно знать её признаки.',
-    t2: '<b>Диабет 2 типа</b> — 90% всех случаев. Ткани плохо отвечают на инсулин (<b>инсулинорезистентность</b> — особенно при избытке висцерального жира), печень выдаёт лишнюю глюкозу, а β-клетки постепенно истощаются и не справляются с повышенной нагрузкой. Сахар стоит высоко весь день. Основа лечения — питание, движение и снижение веса; дальше — таблетки и уколы. Попробуйте лекарства по одному и вместе.',
-    met: '<b>Метформин</b> — первое лекарство при диабете 2 типа. Главное — тормозит выход глюкозы из печени (глюконеогенез; часть эффекта — через фермент AMPK) и немного повышает чувствительность к инсулину. Сам не вызывает гипогликемию и не прибавляет вес.',
-    sglt: '<b>Глифлозины</b> (дапаглифлозин, эмпаглифлозин) блокируют переносчик <b>SGLT2</b> в почечных канальцах — почечный порог глюкозы падает примерно до 5 ммоль/л, и 40–80 г глюкозы в сутки уходит с мочой (жёлтый поток к мочевому пузырю). Сахар снижается независимо от инсулина; доказано защищают сердце и почки.',
-    glp: '<b>Лираглутид / семаглутид</b> — агонисты рецептора GLP-1: усиливают выброс инсулина только при высоком сахаре, тормозят глюкагон, замедляют опорожнение желудка (пики после еды ниже) и снижают аппетит — помогают похудеть.',
-    ins: '<b>Инсулин</b> при диабете 2 типа добавляют, когда таблеток уже не хватает: чаще начинают с одного укола длинного инсулина в сутки — он снижает сахар натощак.',
+    norm: '<b>A day of a healthy person</b> (1 second = 1 hour, dots at the bottom of the chart — meals). After breakfast, lunch and dinner, glucose from the gut raises sugar to 7–8 mmol/L, the pancreas releases insulin (blue streams), the liver, muscles and fat take up glucose, and within 2 hours sugar returns to 4–6. At night the liver (orange stream) releases a little glucose from glycogen, while basal insulin keeps it from releasing too much.',
+    t1: '<b>Type 1 diabetes</b>: the immune system has destroyed the β-cells — <b>C-peptide</b> is almost zero, there is no insulin. Sugar rises to 20–30 mmol/L (how exactly — see the “Glycogen and blood sugar” topic), glucose spills into urine and drags water with it. Without insulin fat breaks down unchecked and the liver makes ketone bodies (red glow): ketones above 3 mmol/L and blood pH below 7.3 mean <b>diabetic ketoacidosis</b> — nausea and vomiting, abdominal pain, acetone breath, deep labored (Kussmaul) breathing, dehydration, confusion. This is an emergency: it is treated with intravenous insulin, fluids and potassium.',
+    t1ins: '<b>Insulin therapy</b> replaces the pancreas: long-acting (basal) insulin once a day keeps the liver in check, short-acting insulin is given before every meal (injections into subcutaneous fat). Sugar stays mostly in the target range; doses are calculated from meal carbohydrates and glucose readings (today often with a sensor and pump). Too much insulin means hypoglycemia, so it is important to know its signs.',
+    t2: '<b>Type 2 diabetes</b> is 90% of all cases. Tissues respond poorly to insulin (<b>insulin resistance</b> — especially with excess visceral fat), the liver releases extra glucose, and the β-cells gradually wear out and cannot cope with the higher load. Sugar stays high all day. Treatment is based on diet, exercise and weight loss; then tablets and injections. Try the drugs one by one and together.',
+    met: '<b>Metformin</b> is the first-line drug for type 2 diabetes. Above all it slows glucose release from the liver (gluconeogenesis; partly via the enzyme AMPK) and slightly improves insulin sensitivity. It does not cause hypoglycemia by itself and does not add weight.',
+    sglt: '<b>Gliflozins</b> (dapagliflozin, empagliflozin) block the <b>SGLT2</b> transporter in the kidney tubules — the renal glucose threshold drops to about 5 mmol/L, and 40–80 g of glucose a day leave with urine (yellow stream to the bladder). Sugar falls independently of insulin; they are proven to protect the heart and kidneys.',
+    glp: '<b>Liraglutide / semaglutide</b> are GLP-1 receptor agonists: they amplify insulin release only when sugar is high, suppress glucagon, slow stomach emptying (lower post-meal peaks) and reduce appetite — helping weight loss.',
+    ins: '<b>Insulin</b> is added in type 2 diabetes when tablets are no longer enough: usually starting with one injection of long-acting insulin a day — it lowers fasting sugar.',
   };
-  const LVL = { norm: 'Норма (≈ 5,5)', ok: 'Диабет, компенсирован (≈ 7,5)', bad: 'Диабет, высокий сахар (≈ 12)' };
+  const LVL = { norm: 'Normal (≈ 5.5)', ok: 'Diabetes, well controlled (≈ 7.5)', bad: 'Diabetes, high sugar (≈ 12)' };
   const GTXT = {
-    norm: '<b>Гликирование</b> — глюкоза сама, без фермента, присоединяется к свободным аминогруппам белков. Альдегидная группа глюкозы образует с NH₂ <b>основание Шиффа</b> (обратимо — глюкоза может уйти), которое перестраивается в устойчивый <b>продукт Амадори</b>. Так получается <b>HbA1c</b> — гемоглобин с глюкозой на N-концевом валине β-цепи (оранжевые точки — гликированные места; лизины гликируются тоже). Эритроцит живёт около 120 дней, поэтому HbA1c показывает средний сахар за 2–3 месяца: норма — меньше 5,7% (в России часто — меньше 6%), 5,7–6,4% — предиабет, цель при диабете — обычно меньше 7%. Внизу — 100 молекул гемоглобина, оранжевые — гликированные.',
-    ok: 'Средний сахар около 7,5 ммоль/л — HbA1c около 6,3%. Это хорошая компенсация: риск осложнений невысокий. Обратите внимание на график: HbA1c меняется медленно, через недели после изменения сахара.',
-    bad: 'Средний сахар около 12 ммоль/л — HbA1c около 9%. Гликируются белки во всём теле — коллаген, белки хрусталика, стенки сосудов, базальные мембраны почечных клубочков. Со временем из продуктов Амадори образуются необратимые <b>конечные продукты гликирования</b> (AGE): белки сшиваются, ткани теряют эластичность, запускается воспаление. В <b>хрусталике</b> (справа) глюкоза по <b>сорбитоловому пути</b> превращается альдозоредуктазой в сорбит; сорбит плохо выходит из клеток, тянет воду, волокна набухают и мутнеют — диабетическая катаракта. Альдозоредуктаза работает только при высоком сахаре (у неё высокая K<sub>m</sub>) и тратит NADPH — клетке не хватает восстановленного глутатиона, растёт окислительный стресс. Тот же путь вредит нервам и сетчатке. Поэтому диабет поражает мелкие сосуды (глаза, почки, нервы) и крупные (инфаркт, инсульт).',
+    norm: '<b>Glycation</b> — glucose attaches to free amino groups of proteins by itself, without an enzyme. The aldehyde group of glucose forms a <b>Schiff base</b> with NH₂ (reversible — glucose can leave), which rearranges into a stable <b>Amadori product</b>. This is how <b>HbA1c</b> forms — hemoglobin with glucose on the N-terminal valine of the β chain (orange dots — glycated sites; lysines are glycated too). A red cell lives about 120 days, so HbA1c reflects average sugar over 2–3 months: normal is below 5.7% (in Russia often below 6%), 5.7–6.4% is prediabetes, the usual target in diabetes is below 7%. Below — 100 hemoglobin molecules, the orange ones are glycated.',
+    ok: 'Average sugar about 7.5 mmol/L — HbA1c about 6.3%. This is good control: the risk of complications is low. Note the chart: HbA1c changes slowly, weeks after sugar changes.',
+    bad: 'Average sugar about 12 mmol/L — HbA1c about 9%. Proteins all over the body are glycated — collagen, lens proteins, vessel walls, the basement membranes of kidney glomeruli. Over time Amadori products give rise to irreversible <b>advanced glycation end products</b> (AGEs): proteins cross-link, tissues lose elasticity, inflammation starts. In the <b>lens</b> (on the right) glucose is converted by aldose reductase into sorbitol via the <b>polyol pathway</b>; sorbitol barely leaves the cells, draws in water, and the fibers swell and cloud — diabetic cataract. Aldose reductase works only at high sugar (its K<sub>m</sub> is high) and uses up NADPH — the cell runs short of reduced glutathione and oxidative stress rises. The same pathway harms nerves and the retina. That is why diabetes damages small vessels (eyes, kidneys, nerves) and large ones (heart attack, stroke).',
   };
   const hemeP = (() => { const l = HB.ligm[1]; const i = l.el.indexOf('Fe'); return V3(l.xyz[i * 3], l.xyz[i * 3 + 1], l.xyz[i * 3 + 2]).multiplyScalar(HSC); })();
   const hbL = (ch, out) => { const p = caPoints('hb', HSC, [ch]); const c = p.reduce((v, q) => v.add(q), V3(0, 0, 0)).multiplyScalar(1 / p.length); const d = c.clone().sub(hbCen).normalize(); c.addScaledVector(d, out); return () => hbG.localToWorld(c.clone()); };
   const L1 = () => st.labels && st.mode === 'beta', L2 = () => st.labels && st.mode === 'day', L3 = () => st.labels && st.mode === 'glyc';
   const labels = [
     { text: 'GLUT2', pos: onMem(180, 1.12).add(V3(-0.15, 0.35, 0.2)), color: '#7FE0A0', left: true, show: L1 },
-    { text: 'глюкокиназа', pos: gk.position.clone().add(V3(-0.9, -0.45, 0.2)), color: GLU, show: L1 },
-    { text: 'митохондрии → АТФ', pos: V3(-2.3, -1.45, 0.4), color: '#FF8A5C', show: L1 },
-    { text: 'K-АТФ-канал (Kir6.2 + SUR1)', pos: onMem(KD, 1.2).add(V3(-0.1, 0.1, 0.2)), color: '#B090FF', show: L1 },
-    { text: 'глибенкламид', pos: onMem(KD, 1.35).add(V3(-1.0, 0.0, 0.2)), color: '#E8E8E8', show: () => L1() && st.su },
-    { text: 'Ca²⁺-канал', pos: onMem(CD, 1.12).add(V3(0.15, 0.2, 0.2)), color: '#5BC8FF', show: L1 },
-    { text: 'рецептор GLP-1', pos: onMem(GD, 1.15).add(V3(-0.5, -0.1, 0.2)), color: '#C77DFF', show: L1 },
-    { text: 'гранулы инсулина', pos: V3(2.0, 1.85, 0.6), color: INS, show: L1 },
-    { text: 'ядро', pos: nuc1.position.clone().add(V3(0.0, -0.9, 0.3)), color: '#9F7BFF', show: L1 },
-    { text: 'капилляр', pos: V3(4.6, 2.3, 0.3), color: '#D84A50', show: L1 },
-    { text: 'глюкоза', pos: V3(-4.3, -1.9, 0.3), color: GLU, show: L1 },
-    { text: 'печень', pos: LIV.clone().add(V3(39.4, 0.25, 0.2)), color: '#E07A5A', show: L2 },
-    { text: 'поджелудочная', pos: PAN.clone().add(V3(40.45, 0.12, 0.2)), color: '#E8B070', show: L2 },
-    { text: 'кишечник', pos: GUT.clone().add(V3(40.5, -0.05, 0.2)), color: '#E0A0A0', show: L2 },
-    { text: 'почки', pos: KID[0].clone().add(V3(40.3, 0.15, 0.2)), color: '#E07070', show: L2 },
-    { text: 'мышцы', pos: MUS[0].clone().add(V3(40.35, -0.2, 0.2)), color: '#C0504A', show: L2 },
-    { text: 'жир', pos: FAT.clone().add(V3(39.25, -0.2, 0.2)), color: '#F2D08A', show: L2 },
-    { text: 'метформин', pos: LIV.clone().add(V3(39.15, -0.15, 0.4)), color: '#5B8CFF', show: () => L2() && st.dis === 't2' && st.drugs.met },
-    { text: 'глифлозин → SGLT2', pos: KID[0].clone().add(V3(40.25, -0.15, 0.4)), color: '#7FE0A0', show: () => L2() && st.dis === 't2' && st.drugs.sglt },
-    { text: 'лираглутид', pos: PAN.clone().add(V3(40.45, -0.2, 0.4)), color: '#C77DFF', show: () => L2() && st.dis === 't2' && st.drugs.glp },
-    { text: 'инсулин (укол)', pos: FAT.clone().add(V3(39.0, -0.3, 0.4)), color: '#5BE0FF', show: () => L2() && st.dis !== 'norm' && st.drugs.ins },
-    { text: 'кетоновые тела', pos: LIV.clone().add(V3(39.3, 0.55, 0.3)), color: '#FF5A5A', show: () => L2() && st.ket > 1 },
-    { text: 'глюкоза с мочой', pos: BLAD.clone().add(V3(40.25, -0.15, 0.2)), color: GLU, show: () => L2() && (st.R || 0) > 0.05 },
-    { text: 'β-цепь', pos: hbL('B', 0.9), color: '#7FD6FF', show: L3 },
-    { text: 'α-цепь', pos: hbL('A', 0.9), color: '#FF8AB0', show: L3 },
-    { text: 'гем', pos: () => hbG.localToWorld(hemeP.clone()), color: '#FF6A5A', show: L3 },
-    { text: 'глюкоза', pos: () => FREE[0].m.getWorldPosition(V3(0, 0, 0)).add(V3(0.25, 0.1, 0)), color: GLU, show: L3 },
-    { text: 'N-конец β-цепи + глюкоза = HbA1c', pos: () => hbG.localToWorld(SITES[0].m.position.clone()).add(V3(-1.6, -0.3, 0.2)), color: '#FF9A3C', show: () => L3() && SITES[0].st === 2 },
-    { text: '100 молекул Hb · оранжевые — HbA1c', pos: V3(80 - 2.6, -1.25, 0.3), color: '#FF9A3C', show: L3 },
-    { text: 'хрусталик', pos: LENS.clone().add(V3(80.3, 1.15, 0.3)), color: '#BFE4FF', show: L3 },
-    { text: 'альдозоредуктаза', pos: () => lensG.localToWorld(ar.position.clone()).add(V3(-0.2, 0.35, 0)), color: '#7FE0A0', show: L3 },
+    { text: 'glucokinase', pos: gk.position.clone().add(V3(-0.9, -0.45, 0.2)), color: GLU, show: L1 },
+    { text: 'mitochondria → ATP', pos: V3(-2.3, -1.45, 0.4), color: '#FF8A5C', show: L1 },
+    { text: 'K-ATP channel (Kir6.2 + SUR1)', pos: onMem(KD, 1.2).add(V3(-0.1, 0.1, 0.2)), color: '#B090FF', show: L1 },
+    { text: 'glibenclamide', pos: onMem(KD, 1.35).add(V3(-1.0, 0.0, 0.2)), color: '#E8E8E8', show: () => L1() && st.su },
+    { text: 'Ca²⁺ channel', pos: onMem(CD, 1.12).add(V3(0.15, 0.2, 0.2)), color: '#5BC8FF', show: L1 },
+    { text: 'GLP-1 receptor', pos: onMem(GD, 1.15).add(V3(-0.5, -0.1, 0.2)), color: '#C77DFF', show: L1 },
+    { text: 'insulin granules', pos: V3(2.0, 1.85, 0.6), color: INS, show: L1 },
+    { text: 'nucleus', pos: nuc1.position.clone().add(V3(0.0, -0.9, 0.3)), color: '#9F7BFF', show: L1 },
+    { text: 'capillary', pos: V3(4.6, 2.3, 0.3), color: '#D84A50', show: L1 },
+    { text: 'glucose', pos: V3(-4.3, -1.9, 0.3), color: GLU, show: L1 },
+    { text: 'liver', pos: LIV.clone().add(V3(39.4, 0.25, 0.2)), color: '#E07A5A', show: L2 },
+    { text: 'pancreas', pos: PAN.clone().add(V3(40.45, 0.12, 0.2)), color: '#E8B070', show: L2 },
+    { text: 'intestines', pos: GUT.clone().add(V3(40.5, -0.05, 0.2)), color: '#E0A0A0', show: L2 },
+    { text: 'kidneys', pos: KID[0].clone().add(V3(40.3, 0.15, 0.2)), color: '#E07070', show: L2 },
+    { text: 'muscles', pos: MUS[0].clone().add(V3(40.35, -0.2, 0.2)), color: '#C0504A', show: L2 },
+    { text: 'fat', pos: FAT.clone().add(V3(39.25, -0.2, 0.2)), color: '#F2D08A', show: L2 },
+    { text: 'metformin', pos: LIV.clone().add(V3(39.15, -0.15, 0.4)), color: '#5B8CFF', show: () => L2() && st.dis === 't2' && st.drugs.met },
+    { text: 'gliflozin → SGLT2', pos: KID[0].clone().add(V3(40.25, -0.15, 0.4)), color: '#7FE0A0', show: () => L2() && st.dis === 't2' && st.drugs.sglt },
+    { text: 'liraglutide', pos: PAN.clone().add(V3(40.45, -0.2, 0.4)), color: '#C77DFF', show: () => L2() && st.dis === 't2' && st.drugs.glp },
+    { text: 'insulin (injection)', pos: FAT.clone().add(V3(39.0, -0.3, 0.4)), color: '#5BE0FF', show: () => L2() && st.dis !== 'norm' && st.drugs.ins },
+    { text: 'ketone bodies', pos: LIV.clone().add(V3(39.3, 0.55, 0.3)), color: '#FF5A5A', show: () => L2() && st.ket > 1 },
+    { text: 'glucose in urine', pos: BLAD.clone().add(V3(40.25, -0.15, 0.2)), color: GLU, show: () => L2() && (st.R || 0) > 0.05 },
+    { text: 'β chain', pos: hbL('B', 0.9), color: '#7FD6FF', show: L3 },
+    { text: 'α chain', pos: hbL('A', 0.9), color: '#FF8AB0', show: L3 },
+    { text: 'heme', pos: () => hbG.localToWorld(hemeP.clone()), color: '#FF6A5A', show: L3 },
+    { text: 'glucose', pos: () => FREE[0].m.getWorldPosition(V3(0, 0, 0)).add(V3(0.25, 0.1, 0)), color: GLU, show: L3 },
+    { text: 'β-chain N-terminus + glucose = HbA1c', pos: () => hbG.localToWorld(SITES[0].m.position.clone()).add(V3(-1.6, -0.3, 0.2)), color: '#FF9A3C', show: () => L3() && SITES[0].st === 2 },
+    { text: '100 Hb molecules · orange — HbA1c', pos: V3(80 - 2.6, -1.25, 0.3), color: '#FF9A3C', show: L3 },
+    { text: 'lens', pos: LENS.clone().add(V3(80.3, 1.15, 0.3)), color: '#BFE4FF', show: L3 },
+    { text: 'aldose reductase', pos: () => lensG.localToWorld(ar.position.clone()).add(V3(-0.2, 0.35, 0)), color: '#7FE0A0', show: L3 },
   ];
   const dyn = labels.filter((l) => typeof l.pos === 'function'); dyn.forEach((l) => { l.fn = l.pos; l.pos = V3(0, 0, 0); });
   const refs = {};
@@ -348,25 +348,25 @@ function makeDiabetes() {
       let s = st.msg;
       if (!s) {
         if (st.mode === 'beta') s = st.su && st.glp ? BTXT.su + ' ' + BTXT.glp : st.su ? BTXT.su : st.glp ? BTXT.glp : BTXT.base + ' ' + BTXT[st.gsel];
-        else if (st.mode === 'day') { const on = Object.keys(st.drugs).filter((k) => st.drugs[k]); s = st.dis === 'norm' ? DTXT.norm : st.dis === 't1' ? (st.drugs.ins ? DTXT.t1ins : DTXT.t1) : on.length ? (on.length > 1 ? '<b>Сейчас:</b> ' + on.map((k) => DLAB[k]).join(' + ') + '. ' : '') + DTXT[on.includes(st.lastDrug) ? st.lastDrug : on[on.length - 1]] : DTXT.t2; }
+        else if (st.mode === 'day') { const on = Object.keys(st.drugs).filter((k) => st.drugs[k]); s = st.dis === 'norm' ? DTXT.norm : st.dis === 't1' ? (st.drugs.ins ? DTXT.t1ins : DTXT.t1) : on.length ? (on.length > 1 ? '<b>Now:</b> ' + on.map((k) => DLAB[k]).join(' + ') + '. ' : '') + DTXT[on.includes(st.lastDrug) ? st.lastDrug : on[on.length - 1]] : DTXT.t2; }
         else s = st.lvl === 'norm' ? GTXT.norm : GTXT[st.lvl];
       }
       ib.info.innerHTML = s;
     };
-    refs.modeSeg = seg([{ id: 'beta', label: 'β-клетка' }, { id: 'day', label: 'Сутки и лечение' }, { id: 'glyc', label: 'Осложнения' }], () => st.mode, (v) => setMode(v));
+    refs.modeSeg = seg([{ id: 'beta', label: 'β-cell' }, { id: 'day', label: 'Day and treatment' }, { id: 'glyc', label: 'Complications' }], () => st.mode, (v) => setMode(v));
     const box = h('div', { class: 'grp', style: 'flex:1 1 440px' });
     refs.rebuild = () => {
       box.innerHTML = '';
-      if (st.mode === 'beta') box.append(h('div', { class: 'glabel' }, 'Глюкоза крови'), h('div', { class: 'gctl' }, seg(Object.entries(GSEL).map(([id, label]) => ({ id, label })), () => st.gsel, (v) => { st.gsel = v; refs.setInfo(); }), toggle('Глибенкламид', () => st.su, (v) => { st.su = v; refs.setInfo(); }), toggle('Агонист GLP-1', () => st.glp, (v) => { st.glp = v; refs.setInfo(); })));
+      if (st.mode === 'beta') box.append(h('div', { class: 'glabel' }, 'Blood glucose'), h('div', { class: 'gctl' }, seg(Object.entries(GSEL).map(([id, label]) => ({ id, label })), () => st.gsel, (v) => { st.gsel = v; refs.setInfo(); }), toggle('Glibenclamide', () => st.su, (v) => { st.su = v; refs.setInfo(); }), toggle('GLP-1 agonist', () => st.glp, (v) => { st.glp = v; refs.setInfo(); })));
       else if (st.mode === 'day') {
         const dr = (DRUGS[st.dis] || []).map(([k, label]) => toggle(label, () => st.drugs[k], (v) => { st.drugs[k] = v; if (v) st.lastDrug = k; refs.setInfo(); }));
-        box.append(h('div', { class: 'glabel' }, 'Человек'), h('div', { class: 'gctl' }, seg(Object.entries(DIS).map(([id, label]) => ({ id, label })), () => st.dis, (v) => { st.dis = v; Object.keys(st.drugs).forEach((k) => { st.drugs[k] = false; }); st.urine = 0; st.urineDay = 0; st.day = st.day.slice(-1); st.prev = []; refs.rebuild(); refs.setInfo(); }), ...dr));
-      } else box.append(h('div', { class: 'glabel' }, 'Средний сахар, ммоль/л'), h('div', { class: 'gctl' }, seg(Object.entries(LVL).map(([id, label]) => ({ id, label })), () => st.lvl, (v) => { st.lvl = v; refs.setInfo(); })));
+        box.append(h('div', { class: 'glabel' }, 'Person'), h('div', { class: 'gctl' }, seg(Object.entries(DIS).map(([id, label]) => ({ id, label })), () => st.dis, (v) => { st.dis = v; Object.keys(st.drugs).forEach((k) => { st.drugs[k] = false; }); st.urine = 0; st.urineDay = 0; st.day = st.day.slice(-1); st.prev = []; refs.rebuild(); refs.setInfo(); }), ...dr));
+      } else box.append(h('div', { class: 'glabel' }, 'Average sugar, mmol/L'), h('div', { class: 'gctl' }, seg(Object.entries(LVL).map(([id, label]) => ({ id, label })), () => st.lvl, (v) => { st.lvl = v; refs.setInfo(); })));
     };
-    refs.rot = toggle('Вращение', () => st.rot, (v) => { st.rot = v; });
-    const lab = toggle('Подписи', () => st.labels, (v) => { st.labels = v; });
+    refs.rot = toggle('Rotate', () => st.rot, (v) => { st.rot = v; });
+    const lab = toggle('Labels', () => st.labels, (v) => { st.labels = v; });
     Object.assign(refs, { lab });
-    el.append(group('Режим', '1–3', refs.modeSeg), box, group('Вид', 'R · N', refs.rot, lab), ib.el);
+    el.append(group('Mode', '1–3', refs.modeSeg), box, group('View', 'R · N', refs.rot, lab), ib.el);
     refs.rebuild(); refs.setInfo();
   }
   function onKey(e) {
@@ -377,22 +377,22 @@ function makeDiabetes() {
   }
   const f1 = (v) => v.toFixed(1).replace('.', ',');
   function stats() {
-    if (st.mode === 'beta') return [['Глюкоза', f1(st.G), 'ммоль/л'], ['Потенциал', Math.round(st.vm), 'мВ'], ['Секреция инсулина', Math.min(100, Math.round(100 * st.sec / 2.6)), '%']];
-    if (st.mode === 'day') { const r = [['Глюкоза', f1(st.Gd), 'ммоль/л'], ['В коридоре', st.day.length + st.prev.length < 100 ? '…' : st.tir, '%'], ['HbA1c, если так 3 мес.', st.day.length + st.prev.length < 100 ? '…' : st.a1cD > 14 ? '> 14' : f1(st.a1cD), '%'], ['Глюкоза с мочой', Math.round(st.urineDay || st.urine), 'г/сут']]; if (st.dis === 't1' && !st.drugs.ins) r.push(['Кетоны', f1(st.ket), 'ммоль/л']); return r; }
-    return [['HbA1c', f1(st.a1c), '%'], ['Средний сахар', f1(A1C[st.lvl]), 'ммоль/л'], ['Сорбит в хрусталике', Math.round(st.sorb * 100), '%']];
+    if (st.mode === 'beta') return [['Glucose', f1(st.G), 'mmol/L'], ['Potential', Math.round(st.vm), 'mV'], ['Insulin secretion', Math.min(100, Math.round(100 * st.sec / 2.6)), '%']];
+    if (st.mode === 'day') { const r = [['Glucose', f1(st.Gd), 'mmol/L'], ['In range', st.day.length + st.prev.length < 100 ? '…' : st.tir, '%'], ['HbA1c if kept 3 months', st.day.length + st.prev.length < 100 ? '…' : st.a1cD > 14 ? '> 14' : f1(st.a1cD), '%'], ['Glucose in urine', Math.round(st.urineDay || st.urine), 'g/day']]; if (st.dis === 't1' && !st.drugs.ins) r.push(['Ketones', f1(st.ket), 'mmol/L']); return r; }
+    return [['HbA1c', f1(st.a1c), '%'], ['Average sugar', f1(A1C[st.lvl]), 'mmol/L'], ['Sorbitol in the lens', Math.round(st.sorb * 100), '%']];
   }
   const self = {
     mobZoom: 0.78, scene, camera, controls, update: (dt) => { update(dt); G3.updateMatrixWorld(true); dyn.forEach((l) => { l.pos.copy(l.fn()); }); }, ui, onKey, stats, labels, drawScope, accent: '#5B8CFF',
-    kicker: 'Биохимия · гормоны', title: 'Инсулин и сахарный диабет',
-    lede: 'Одна клетка поджелудочной меряет сахар крови с точностью до долей миллимоля — и полмиллиарда людей живут с диабетом, когда этот датчик ломается.',
+    kicker: 'Biochemistry · hormones', title: 'Insulin and diabetes mellitus',
+    lede: 'A single pancreatic cell measures blood sugar to a fraction of a millimole — and half a billion people live with diabetes when this sensor breaks.',
     notes: `
-      <div><h2>Инсулин</h2>
-        <p>Белок из двух цепей (A — 21 и B — 30 аминокислот), связанных двумя дисульфидными мостиками. Синтезируется как препроинсулин; в гранулах из проинсулина вырезается <b>С-пептид</b> — его измеряют, чтобы оценить собственную секрецию на фоне уколов. В гранулах инсулин хранится в виде гексамеров с цинком.</p>
-        <h3>Секреция</h3><ul><li>Глюкоза → GLUT2 (у человека в основном GLUT1) → глюкокиназа (датчик) → АТФ/АДФ ↑ → закрытие K-АТФ-каналов → деполяризация → потенциал-зависимые Ca²⁺-каналы → экзоцитоз.</li><li>Усиливают: инкретины GLP-1 и ГИП (цАМФ), аминокислоты, парасимпатические нервы; тормозят: адреналин (α₂), соматостатин.</li><li>Две фазы: быстрая (готовые гранулы у мембраны) и медленная.</li></ul>
-        <h3>Действие</h3><p>Рецептор-тирозинкиназа → IRS → PI3K → Akt: GLUT4 в мембрану мышц и жира, синтез гликогена, жиров и белка; торможение глюконеогенеза, гликогенолиза, липолиза и кетогенеза. Глюкагон, адреналин, кортизол и СТГ — контринсулярные гормоны.</p>
-        <h3>Диабет</h3><ul><li><b>1 тип</b> — аутоиммунное разрушение β-клеток, абсолютный дефицит инсулина; риск кетоацидоза.</li><li><b>2 тип</b> — инсулинорезистентность + прогрессирующая недостаточность β-клеток; гиперосмолярное состояние у пожилых.</li><li>Гестационный, MODY (моногенный, например мутации глюкокиназы), вторичный.</li><li>Диагноз: глюкоза натощак ≥ 7,0 ммоль/л, через 2 часа после нагрузки ≥ 11,1, HbA1c ≥ 6,5%.</li><li>Осложнения: микроангиопатии (ретинопатия, нефропатия, нейропатия), макроангиопатии, диабетическая стопа.</li></ul></div>
-      <div><h2>Условности</h2><ul><li>Клетка, гранулы и каналы — схемы, не в масштабе; молекулы глюкозы, глибенкламида и сорбита — по химическим формулам; гемоглобин — настоящая структура (PDB 4HHB).</li><li>Модель суток — упрощённая, дозы и ответы на лекарства примерные; 1 секунда = 1 час. Пересчёт среднего сахара в HbA1c — по формуле исследования ADAG.</li><li>Число гликированных мест на молекуле показано условно — оно отражает уровень HbA1c, а не реальную долю.</li></ul></div>
-      <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>3</code> режим</li><li><code>R</code> вращение · <code>N</code> подписи</li></ul></div>`,
+      <div><h2>Insulin</h2>
+        <p>A protein of two chains (A — 21 and B — 30 amino acids) joined by two disulfide bridges. It is made as preproinsulin; in the granules <b>C-peptide</b> is cut out of proinsulin — it is measured to assess the body’s own secretion in patients on injections. In the granules insulin is stored as zinc hexamers.</p>
+        <h3>Secretion</h3><ul><li>Glucose → GLUT2 (in humans mostly GLUT1) → glucokinase (sensor) → ATP/ADP ↑ → closure of K-ATP channels → depolarization → voltage-gated Ca²⁺ channels → exocytosis.</li><li>Enhanced by: the incretins GLP-1 and GIP (cAMP), amino acids, parasympathetic nerves; inhibited by: epinephrine (α₂), somatostatin.</li><li>Two phases: rapid (ready granules at the membrane) and slow.</li></ul>
+        <h3>Action</h3><p>Receptor tyrosine kinase → IRS → PI3K → Akt: GLUT4 to the membrane of muscle and fat, synthesis of glycogen, fat and protein; inhibition of gluconeogenesis, glycogenolysis, lipolysis and ketogenesis. Glucagon, epinephrine, cortisol and GH are counter-regulatory hormones.</p>
+        <h3>Diabetes</h3><ul><li><b>Type 1</b> — autoimmune destruction of β-cells, absolute insulin deficiency; risk of ketoacidosis.</li><li><b>Type 2</b> — insulin resistance + progressive β-cell failure; hyperosmolar state in the elderly.</li><li>Gestational, MODY (monogenic, e.g. glucokinase mutations), secondary.</li><li>Diagnosis: fasting glucose ≥ 7.0 mmol/L, 2 hours after a glucose load ≥ 11.1, HbA1c ≥ 6.5%.</li><li>Complications: microangiopathy (retinopathy, nephropathy, neuropathy), macroangiopathy, diabetic foot.</li></ul></div>
+      <div><h2>Simplifications</h2><ul><li>The cell, granules and channels are diagrams, not to scale; glucose, glibenclamide and sorbitol molecules are built from their chemical formulas; hemoglobin is a real structure (PDB 4HHB).</li><li>The day model is simplified, doses and drug responses are approximate; 1 second = 1 hour. Average sugar is converted to HbA1c with the ADAG study formula.</li><li>The number of glycated sites on the molecule is shown schematically — it reflects the HbA1c level, not the actual fraction.</li></ul></div>
+      <div class="keys"><h2>Keys</h2><ul><li><code>1</code>–<code>3</code> mode</li><li><code>R</code> rotate · <code>N</code> labels</li></ul></div>`,
   };
   setMode('beta'); camera.position.copy(st.fly.pos); controls.target.copy(st.fly.target); controls.update(); st.fly = null;
   return self;
