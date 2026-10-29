@@ -7,7 +7,7 @@
 function makeDiabetes() {
   rnd = mulberry(8601);
   const scene = bioStage({ rim: 0x5b8cff });
-  const VIEW = { beta: [V3(-1.9, -1.4, 0), V3(-1.4, -0.2, 21.5)], day: [V3(39.3, 0.6, 0), V3(39.7, 1.4, 10.5)], glyc: [V3(78.9, -1.9, 0), V3(79.4, -0.8, 17)] };
+  const VIEW = { beta: [V3(-1.9, -1.4, 0), V3(-1.4, -0.2, 21.5)], day: [V3(39.3, -0.1, 0), V3(39.7, 0.7, 10.5)], glyc: [V3(78.9, -1.9, 0), V3(79.4, -0.8, 17)] };
   const VIEWM = { beta: [V3(0.3, -1.5, 0), V3(0.8, -0.3, 20)], day: [V3(40, 1.0, 0), V3(40.3, 1.6, 8.5)], glyc: [V3(80.6, -0.4, 0), V3(81, 0.4, 14)] }, mqm = window.matchMedia('(max-width:700px)'), VV = (m) => (mqm.matches && VIEWM[m]) || VIEW[m];
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VIEW.beta[1]);
   const controls = makeControls(camera, VIEW.beta[0]); controls.minDistance = 3; controls.maxDistance = 40;
