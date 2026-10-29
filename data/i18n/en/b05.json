@@ -504,7 +504,7 @@
  "Окислительное фосфорилирование": "Oxidative phosphorylation",
  "<b>Окислительное фосфорилирование</b> — главный путь (≈90% АТФ): энергия окисления НАДН и ФАДН₂ в дыхательной цепи митохондрий создаёт протонный градиент, который крутит АТФ-синтазу.": "<b>Oxidative phosphorylation</b> is the main route (≈90% of ATP): the energy from oxidizing NADH and FADH₂ in the mitochondrial respiratory chain creates a proton gradient that spins ATP synthase.",
  "Субстратное фосфорилирование": "Substrate-level phosphorylation",
- "<b>Субстратное фосфорилирование</b> — фосфат переносится на АДФ прямо с богатой энергией молекулы: 1,3-бисфосфоглицерата и фосфоенолпирувата в гликолизе, сукцинил-КоА в цикле Кребса. Работает и без кислорода.": "<b>Substrate-level phosphorylation</b>: phosphate is transferred to ADP directly from an energy-rich molecule — 1,3-bisphosphoglycerate and phosphoenolpyruvate in glycolysis, succinyl-CoA in the Krebs cycle. It works even without oxygen.",
+ "<b>Субстратное фосфорилирование</b> — фосфат переносится на АДФ прямо с богатой энергией молекулы: 1,3-бисфосфоглицерата и фосфоенолпирувата в гликолизе, сукцинил-КоА в цикле Кребса (сначала ГТФ, затем АТФ). Работает и без кислорода.": "<b>Substrate-level phosphorylation</b>: phosphate is transferred to ADP directly from an energy-rich molecule — 1,3-bisphosphoglycerate and phosphoenolpyruvate in glycolysis, succinyl-CoA in the Krebs cycle (first GTP, then ATP). It works even without oxygen.",
  "ФЕП": "PEP",
  "Карбамоил-Ф": "Carbamoyl-P",
  "1,3-БФГ": "1,3-BPG",
