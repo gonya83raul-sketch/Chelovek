@@ -2754,7 +2754,7 @@ function makeTypes() {
   }
   applyStain();
   return {
-    labelBg: true, mobZoom: 0.6, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#F5C26B',
+    labelBg: true, mobZoom: 0.66, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#F5C26B',
     kicker: 'Мозг · нейроны', title: 'Типы нейронов',
     lede: 'Семь форм нервных клеток и маленькая нейросеть. Можно покрасить их так, как это делали Гольджи и Ниссль, или раскрасить методом Brainbow.',
     notes: `
@@ -3762,7 +3762,7 @@ function makeVision() {
     lp('глаз', [-1.7, 0.15, 4.3], 'path'), lp('зрительный нерв', [-1.55, -0.95, 1.97], 'path'), lp('перекрёст (хиазма)', [0.05, -0.55, 0.94], 'path'),
     lp('зрительный тракт', [-1.25, -0.45, -0.21], 'path'), lp('латеральное коленчатое тело', [-1.45, 0.35, -0.85], 'path'), lp('зрительная лучистость', [-1.95, 1.45, -1.67], 'path'),
     lp('V1 правого полушария', [-1.4, 1.5, -4.3], 'path', VIS_FIELD_COL.L), lp('V1 левого полушария', [1.4, 1.5, -4.3], 'path', VIS_FIELD_COL.R),
-    lp('мышцы глаза', [1.66, 0.25, 3.0], 'path'), lp('мозжечок', [0.1, -2.6, -2.4], 'path'), lp('глазница', [2.9, -0.2, 4.6], 'path'),
+    ...(matchMedia('(max-width:700px)').matches ? [] : [lp('мышцы глаза', [1.66, 0.25, 3.0], 'path'), lp('мозжечок', [0.1, -2.6, -2.4], 'path')]),   /* телефон: меньше подписей — остальные не налезают */ lp('глазница', [2.9, -0.2, 4.6], 'path'),
     lp('роговица', [-1.85, 0.0, 4.36], 'eye'), lp('хрусталик', [-1.85, -0.25, 4.02], 'eye'), lp('стекловидное тело', [-1.85, -0.15, 3.55], 'eye'),
     lp('сетчатка', [-1.85, -0.95, 3.25], 'eye'), lp('зрительный нерв', [-1.85, -0.55, 2.75], 'eye'), lp('предмет', [RAY_X, AXIS_Y + 0.6, 7.0], 'eye'),
   ];
@@ -3825,7 +3825,7 @@ function makeVision() {
   }
   const lesUpd = update;
   const self = {
-    scene, camera, controls, ui, onKey, stats, labels, drawScope, accent: '#7FB8FF',
+    mobZoom: 0.72, scene, camera, controls, ui, onKey, stats, labels, drawScope, accent: '#7FB8FF',
     update(dt) { lesUpd(dt); const L = LES[st.lesion]; if (L.pos) { const o = st.lesion === 'chiasm' ? [0.45, -0.35, 0.2] : [0.3, 0.45, 0]; lesLabel.pos.set(L.pos[0] + o[0], L.pos[1] + o[1], L.pos[2] + o[2]); } lesionSpr.material.opacity = 0.7 + 0.3 * Math.sin(st.t * 5); },
     kicker: 'Органы чувств · зрение', title: 'Зрение',
     lede: 'Путь сигнала от сетчатки до затылочной коры и оптика глаза. Выберите повреждение и посмотрите, какая часть поля зрения пропадёт.',
@@ -5464,7 +5464,7 @@ function makeStem() {
     { text: 'мост', pos: V3(1.3, 0.2, 0.6), show: () => st.labels },
     { text: 'продолговатый мозг', pos: V3(0.8, -1.6, 0.6), show: () => st.labels },
     { text: 'спинной мозг', pos: V3(0.5, -2.85, 0.3), show: () => st.labels },
-    { text: 'таламус', pos: V3(-0.2, 3.05, 0.75), color: '#b9a4ff', show: () => st.labels },
+    { text: 'таламус', pos: V3(-0.2, 3.05, 0.75), color: '#b9a4ff', show: () => st.labels && !matchMedia('(max-width:700px)').matches },   /* телефон: висела в пустоте над стволом */
     { text: 'четверохолмие', pos: V3(-0.9, 1.5, 0.45), color: '#F2C14E', show: () => st.labels && (st.mode === 'floors' || st.mode === 'orient') },
     { text: 'ромбовидная ямка', pos: V3(-0.7, -0.4, 0.2), color: '#6fc3ff', show: () => st.labels && st.mode === 'floors' && !st.cere },
     { text: 'основание', pos: V3(1.05, -1.6, 0.3), color: '#FF7A6A', show: () => st.labels && st.mode === 'floors' },
@@ -5508,7 +5508,7 @@ function makeStem() {
   function stats() { if (st.mode === 'rf') return [['Дыхание', 15, 'в мин'], ['Пульс', 70, 'уд/мин']]; return [['Продолговатый', '≈4', 'см'], ['Мост', '2,5–3', 'см']]; }
   setMode('floors');
   const self = {
-    labelBg: true, mobZoom: 0.7, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#9FE0C0',
+    labelBg: true, mobZoom: 0.6, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#9FE0C0',
     kicker: 'Мозг · стволовые структуры', title: 'Ствол мозга',
     lede: 'Продолговатый и средний мозг — древние отделы, общие для всех позвоночных; мост как отдельный отдел есть только у млекопитающих. Здесь центры дыхания и сердца, сна и бодрствования, и все пути между мозгом и телом.',
     notes: `
@@ -10450,7 +10450,8 @@ function updateLabels() {
     if (!e || !e.offsetWidth) return; const r = e.getBoundingClientRect(); placed.push([r.left - sr.left - 4, r.top - sr.top - 2, r.right - sr.left + 4, r.bottom - sr.top + 2]);
   });
   // заголовок и описание: заняты только сами строки текста и кнопки, а не весь блок — справа от коротких строк подписи могут стоять
-  if (hudTtl && hudTtl.offsetWidth) { ttlRange.selectNodeContents(hudTtl); for (const r of ttlRange.getClientRects()) if (r.width > 1) placed.push([r.left - sr.left - 6, r.top - sr.top - 3, r.right - sr.left + 6, r.bottom - sr.top + 3]);
+  if (hudTtl && hudTtl.offsetWidth) { const tw = document.createTreeWalker(hudTtl, NodeFilter.SHOW_TEXT); let tn;   /* только строки текста: Range по элементу вернул бы и рамки целых блоков h1/p */
+    while ((tn = tw.nextNode())) { if (!tn.nodeValue.trim() || !tn.parentElement.offsetWidth) continue; ttlRange.selectNodeContents(tn); for (const r of ttlRange.getClientRects()) if (r.width > 1) placed.push([r.left - sr.left - 6, r.top - sr.top - 3, r.right - sr.left + 6, r.bottom - sr.top + 3]); }
     hudTtl.querySelectorAll('button, .hbtn').forEach((e) => { const r = e.getBoundingClientRect(); placed.push([r.left - sr.left - 4, r.top - sr.top - 2, r.right - sr.left + 4, r.bottom - sr.top + 2]); }); }
   LBC.base = placed.slice(); LBC.t = nowL; LBC.w = w; LBC.h = hgt;
   }

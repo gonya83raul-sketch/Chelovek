@@ -9,7 +9,7 @@ function makeMutations() {
   rnd = mulberry(7401);
   const scene = bioStage({ rim: 0xff8ab0 });
   const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: кадр уходит из-под заголовка и описания (телефон — прежний ракурс)
-  const VIEW = { mut: DK ? [V3(-2.9, 1.0, 0), V3(-2.5, 2.3, 22)] : [V3(-1.6, 1.0, 0), V3(-1.2, 2.2, 18)], sickle: [V3(38.4, -0.4, 0), V3(38.8, 1.6, 13)], ptm: [V3(78.8, -0.9, 0), V3(79.2, 1.0, 14.5)] };
+  const VIEW = { mut: DK ? [V3(-3.2, 0.1, 0), V3(-2.8, 1.4, 19.5)] : [V3(-0.56, 1.0, 0), V3(-0.16, 2.2, 12.1)], sickle: [V3(38.4, -0.4, 0), V3(38.8, 1.6, 13)], ptm: [V3(78.8, -0.9, 0), V3(79.2, 1.0, 14.5)] };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VIEW.mut[1]);
   const controls = makeControls(camera, VIEW.mut[0]); controls.minDistance = 3; controls.maxDistance = 40;
   const fx = new Sparks(1800, 0.07); scene.add(fx.obj);
@@ -156,7 +156,7 @@ function makeMutations() {
     ubq: '<b>Убиквитин</b> (зелёные шарики) — метка «на уничтожение»: ферменты пришивают к лизину белка цепочку из нескольких убиквитинов, и <b>протеасома</b> (фиолетовая бочка) разрезает его на короткие пептиды. Так клетка убирает повреждённые и ненужные белки, регулирует клеточный цикл. Ингибитор протеасомы бортезомиб лечит миеломную болезнь.',
   };
   const labels = [
-    { text: 'ДНК (кодирующая цепь сверху)', pos: V3(X0 - 0.2, 2.65, 0.2), color: '#C8C8D0', show: () => st.labels && st.mode === 'mut' },
+    { text: 'ДНК (кодирующая цепь сверху)', pos: V3(X0 + 1.2, 2.85, 0.2), color: '#C8C8D0', show: () => st.labels && st.mode === 'mut' },
     { text: 'мРНК 5′ → 3′', pos: V3(X0 - 0.2, 1.2, 0.3), color: '#FF6FA8', show: () => st.labels && st.mode === 'mut' },
     { text: 'белок', pos: V3(X0 - 0.2, -0.85, 0.3), color: '#B8C4D8', show: () => st.labels && st.mode === 'mut' },
     { text: 'рибосома', pos: () => ribo.position.clone().add(V3(0.5, 1.6, 0.2)), color: '#8FB4E6', show: () => st.labels && st.mode === 'mut' && ribo.visible },

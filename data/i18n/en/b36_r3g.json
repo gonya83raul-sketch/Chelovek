@@ -7,5 +7,6 @@
  "срединная": "median",
  "парасагиттальная": "parasagittal",
  "фронтальная": "frontal",
- "поперечная": "transverse"
+ "поперечная": "transverse",
+ "глюкоза · кетоны · инсулин": "glucose · ketones · insulin"
 }
