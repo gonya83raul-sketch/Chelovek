@@ -688,8 +688,9 @@ function makeNeuron() {
   scene.background = new THREE.Color(0x07060a); scene.fog = new THREE.FogExp2(0x07060a, 0.03); scene.environment = envTex;
   addLights(scene);
   const NDX = matchMedia('(max-width:700px)').matches ? 0 : 2.0;   // компьютер: нейрон правее — дендриты не под описанием
-  const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 300); camera.position.set(7.5 - NDX, 6.5, 32.5);
-  const controls = makeControls(camera, V3(7.5 - NDX, 0, 0)); controls.minDistance = 4; controls.maxDistance = 50;
+  const NDY = NDX ? 0.9 : 0;   // компьютер: нейрон ниже — верхний дендрит не задевает описание
+  const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 300); camera.position.set(7.5 - NDX, 6.5 + NDY, 32.5);
+  const controls = makeControls(camera, V3(7.5 - NDX, NDY, 0)); controls.minDistance = 4; controls.maxDistance = 50;
 
   const memMat = new THREE.MeshPhysicalMaterial({ color: 0xcdb0c4, roughness: 0.46, metalness: 0, clearcoat: 0.55, clearcoatRoughness: 0.35, sheen: 1, sheenColor: new THREE.Color(0x8f6dff), sheenRoughness: 0.5, emissive: 0x12081a, envMapIntensity: 0.6 });
   const somaMat = memMat.clone(); somaMat.emissive = new THREE.Color(0xff8a3c); somaMat.emissiveIntensity = 0;
