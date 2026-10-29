@@ -172,7 +172,7 @@ function makeRadicals() {
     scopeShow(true); const A = plotAxes(ctx, w, h, { title: 'повреждение мембраны · H₂O₂ · 30 с', xl: 'время →' });
     const t0 = st.t - 30;
     [[1, '#FF3A5A'], [2, '#F2C14E']].forEach(([k, c]) => { ctx.strokeStyle = c; ctx.lineWidth = 2; ctx.beginPath(); st.hist.forEach((r, i) => { const x = A.X((r[0] - t0) / 30), y = A.Y(r[k]); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.stroke(); });
-    ctx.font = '500 9px JetBrains Mono, monospace'; ctx.fillStyle = '#FF3A5A'; ctx.fillText('повреждение', A.X(0.02), A.Y(0.92)); ctx.fillStyle = '#F2C14E'; ctx.fillText('H₂O₂', A.X(0.3), A.Y(0.92));
+    ctx.font = '500 9px JetBrains Mono, monospace'; ctx.fillStyle = '#FF3A5A'; ctx.fillText('повреждение', A.X(0.02), A.Y(0.92)); ctx.fillStyle = '#F2C14E'; ctx.fillText('H₂O₂', A.X(0.02) + ctx.measureText('повреждение').width + 12, A.Y(0.92));
   }
   const TXT = {
     paths: '<b>Кислород — главный окислитель клетки.</b> Почти весь O₂ превращается в воду в митохондриях, но небольшая часть идёт другими путями: встраивается в молекулы (оксигеназы), превращается в пероксид водорода (оксидазы) или — по одному электрону — в <b>свободные радикалы</b>. Толщина стрелок и столбики показывают доли. Нажмите на путь.',

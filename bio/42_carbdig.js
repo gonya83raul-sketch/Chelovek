@@ -7,7 +7,7 @@ function makeCarbdig() {
   rnd = mulberry(4201);
   const scene = bioStage({ rim: 0xf2c14e });
   const VIEW = { dig: [V3(0.6, 0.85, 0), V3(0.8, 1.25, 15.5)], met: [V3(39.8, 0.5, 0), V3(40.0, 0.9, 15.6)] };
-  const VIEWM = { dig: [V3(1.2, 0.6, 0), V3(1.2, 0.8, 11.5)], met: [V3(41.2, 0.4, 0), V3(41.2, 0.6, 13.5)] };
+  const VIEWM = { dig: [V3(0.6, 0.6, 0), V3(0.6, 0.8, 12.8)], met: [V3(41.2, 0.4, 0), V3(41.2, 0.6, 13.5)] };
   const mqm = window.matchMedia('(max-width:700px)'), VV = (m) => (mqm.matches && VIEWM[m]) || VIEW[m];
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VV('dig')[1]);
   const controls = makeControls(camera, VV('dig')[0]); controls.minDistance = 3; controls.maxDistance = 40;

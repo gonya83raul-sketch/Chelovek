@@ -150,7 +150,7 @@ function makeEtc() {
     const line = (fn, c) => { ctx.strokeStyle = c; ctx.lineWidth = 2; ctx.beginPath(); st.hist.forEach((r, i) => { const y = A.Y(clamp(fn(r, i), 0, 1.1)); i ? ctx.lineTo(X(r[0]), y) : ctx.moveTo(X(r[0]), y); }); ctx.stroke(); };
     const rate = (j, sc) => (r, i) => { const q = st.hist[Math.max(0, i - 40)]; return (r[j] - q[j]) / Math.max(0.5, r[0] - q[0]) / sc; };
     line((r) => r[1], '#FF7A9A'); line(rate(2, 2.2), '#7FD6FF'); line(rate(3, 4.5), '#F2C14E');
-    ctx.font = '500 9px JetBrains Mono, monospace'; ctx.fillStyle = '#FF7A9A'; ctx.fillText('H⁺ снаружи', A.X(0.02), A.Y(1.05)); ctx.fillStyle = '#7FD6FF'; ctx.fillText('O₂', A.X(0.38), A.Y(1.05)); ctx.fillStyle = '#F2C14E'; ctx.fillText('АТФ', A.X(0.5), A.Y(1.05));
+    ctx.font = '500 9px JetBrains Mono, monospace'; ctx.fillStyle = '#FF7A9A'; ctx.fillText('H⁺ снаружи', A.X(0.02), A.Y(0.88)); ctx.fillStyle = '#7FD6FF'; ctx.fillText('O₂', A.X(0.38), A.Y(0.88)); ctx.fillStyle = '#F2C14E'; ctx.fillText('АТФ', A.X(0.5), A.Y(0.88));
   }
   const PART = {
     I: '<b>Комплекс I (НАДН-дегидрогеназа)</b> — огромный L-образный комплекс (45 белков у человека). Принимает 2 электрона от НАДН на ФМН (витамин B2), проводит их по цепочке из 8 железо-серных кластеров (показаны реальные кластеры Fe₄S₄) к убихинону и при этом перекачивает <b>4 протона</b>.',
@@ -167,14 +167,14 @@ function makeEtc() {
     { text: 'II', pos: P(-3.5, -2.0, 0.6), color: '#7FE0A0', show: () => st.labels },
     { text: 'III', pos: P(-0.9, 1.55, 0.5), color: '#F2C14E', show: () => st.labels },
     { text: 'IV', pos: P(2.1, 1.4, 0.6), color: '#FF6A6A', show: () => st.labels },
-    { text: 'цит. c', pos: P(0.4, 1.6, 0.4), color: '#FF5A7A', show: () => st.labels },
-    { text: 'убихинон Q', pos: P(-3.5, 0.55, 1.4), color: '#F2C14E', show: () => st.labels },
+    { text: 'цит. c', pos: P(0.4, 1.6, 0.4), color: '#FF5A7A', show: () => st.labels && !MOB },
+    { text: 'убихинон Q', pos: P(-3.5, 0.55, 1.4), color: '#F2C14E', show: () => st.labels && !MOB },
     { text: 'НАДН', pos: P(-8.1, -3.9, 0.6), color: '#FFD070', show: () => st.labels && st.sub === 'nadh' },
     { text: 'сукцинат', pos: P(-4.4, -2.2, 0.6), color: '#7FE0A0', show: () => st.labels && st.sub === 'succ' },
-    { text: 'O₂ → H₂O', pos: P(2.8, -1.8, 0.6), color: '#9FD8FF', show: () => st.labels },
+    { text: 'O₂ → H₂O', pos: P(2.8, -1.8, 0.6), color: '#9FD8FF', show: () => st.labels && !MOB },
     { text: 'АТФ-синтаза', pos: P(6.9, 0.9, 0.4), color: '#C79BFF', show: () => st.labels },
-    { text: 'F₁: α₃β₃', pos: P(6.4, -2.8, 0.6), color: '#F2C14E', show: () => st.labels },
-    { text: 'Fe-S', pos: P(-7.8, -1.6, 0.7), color: '#E0773A', show: () => st.labels },
+    { text: 'F₁: α₃β₃', pos: P(6.4, -2.8, 0.6), color: '#F2C14E', show: () => st.labels && !MOB },
+    { text: 'Fe-S', pos: P(-7.8, -1.6, 0.7), color: '#E0773A', show: () => st.labels && !MOB },
   ];
   const refs = {};
   function ui(el) {
