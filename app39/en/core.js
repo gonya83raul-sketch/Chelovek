@@ -27,11 +27,13 @@ function parseGLB(buf, onLoad, onErr) {
 const MODEL_SIZE = {"skeleton": 2622908, "muscles": 5411333, "vision": 2407019, "digest": 2677972, "repro": 1548263};
 /* загрузка модели: прогресс по байтам (плашка в окне сцены); если данных нет 60 с или сеть оборвалась — «Повторить»
    (обещание ждёт повтора, сцена так и показывает «Загружаю…»); слишком старый браузер — сразу ошибка сцене */
+const MODEL_AC = {};   // загрузки моделей по сцене-владельцу: при выгрузке сцены — отмена
 function fetchModel(name) {
   const owner = buildingId || curId;
   return new Promise((resolve, reject) => {
     const attempt = () => {
       const ac = typeof AbortController === 'function' ? new AbortController() : null; let tm = 0;
+      if (ac) (MODEL_AC[owner] ||= new Set()).add(ac);
       const arm = () => { clearTimeout(tm); if (ac) tm = setTimeout(() => ac.abort(), 60000); };
       arm(); modelUi(name, owner, { got: 0, total: MODEL_SIZE[name] || 0 });
       fetch('models/' + name + '.' + MODEL_EXT, ac ? { signal: ac.signal } : undefined).then(async (r) => {
@@ -46,8 +48,9 @@ function fetchModel(name) {
         clearTimeout(tm);
         if (typeof DecompressionStream === 'undefined') { const e = new Error('browser too old to unpack the model'); e.fatal = true; throw e; }
         return new Response(blob.stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
-      }).then((buf) => { modelUi(name, owner, null); resolve(buf); }, (e) => {
-        clearTimeout(tm);
+      }).then((buf) => { if (ac) MODEL_AC[owner]?.delete(ac); modelUi(name, owner, null); resolve(buf); }, (e) => {
+        clearTimeout(tm); if (ac) MODEL_AC[owner]?.delete(ac);
+        if (ac && ac.signal.reason === 'evicted') return;   /* сцену выгрузили — модель больше не нужна */
         if (e && e.fatal) { modelUi(name, owner, null); reject(e); return; }
         modelUi(name, owner, { err: e && e.name === 'AbortError' ? 'the network is not responding' : String(e && e.message || e), retry: attempt });
       });
@@ -100,10 +103,45 @@ try {
   renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance' });   /* сцена идёт через композер — MSAA холста ничего не сглаживал */
 } catch (e) { renderer = null; }
 const NOGL = !renderer;
+/* ---------- качество графики: 2 high / 1 mid / 0 low. ?gfx=low|mid|high|auto, ручной выбор — localStorage('gfx'),
+   авто — по признакам устройства и замеру частоты кадров (только вниз, на сессию). Автотесты (webdriver) — high. ---------- */
+const COARSE = matchMedia('(pointer:coarse)').matches;
+const GFX_T = [
+  { name: 'low', dpr: [1, 1], shadow: false, phys: false, point: false, sparks: 0.5, fps: 30, keep: 1 },
+  { name: 'mid', dpr: [1, 1.5], shadow: true, phys: false, point: true, sparks: 0.7, fps: 0, keep: 2 },
+  { name: 'high', dpr: [1.25, 2], shadow: true, phys: true, point: true, sparks: 1, fps: 0, keep: 2 },
+];
+const GFX = { tier: 2, manual: false, why: [] };
+{
+  const ids = { low: 0, mid: 1, high: 2 }; let m = new URLSearchParams(location.search).get('gfx');
+  const ok = (v) => typeof v === 'string' && Object.prototype.hasOwnProperty.call(ids, v);
+  m = m && m.toLowerCase();
+  try { if (ok(m)) localStorage.setItem('gfx', m); else if (m === 'auto') localStorage.removeItem('gfx'); m = localStorage.getItem('gfx'); } catch (e) { /* без памяти браузера */ }
+  if (ok(m)) { GFX.tier = ids[m]; GFX.manual = true; }
+  else if (navigator.webdriver) GFX.tier = 2;
+  else {
+    let t = 2; const why = GFX.why;
+    try { const a = sessionStorage.getItem('gfxAuto'); if (/^[012]$/.test(a || '')) t = +a; } catch (e) { /* нет */ }
+    if (renderer) {
+      const gl = renderer.getContext(); let gpu = '';
+      try { const x = gl.getExtension('WEBGL_debug_renderer_info'); gpu = String(gl.getParameter(x ? x.UNMASKED_RENDERER_WEBGL : gl.RENDERER)); } catch (e) { /* нет */ }
+      if (/SwiftShader|llvmpipe|Software|Basic Render/i.test(gpu)) { t = 0; why.push('soft'); }
+      else if (/Mali-(4\d\d|T[6-8]\d\d|G(31|51|52|57)\b)|Adreno \(TM\) ([2-5]\d\d|6[01]\d)\b|PowerVR|IMG /i.test(gpu)) { t = Math.min(t, COARSE ? 0 : 1); why.push('gpu'); }
+      if (gl.getParameter(gl.MAX_TEXTURE_SIZE) < 4096) { t = 0; why.push('tex'); }
+    }
+    const mem = navigator.deviceMemory, cpu = navigator.hardwareConcurrency || 8, save = navigator.connection && navigator.connection.saveData;
+    if (mem && mem <= 2) { t = 0; why.push('mem'); } else if (mem && mem <= 4 && COARSE) { t = Math.min(t, 1); why.push('mem4'); }
+    if (cpu <= 4 && COARSE) { t = Math.min(t, 1); why.push('cpu'); }
+    if (save) { t = Math.min(t, 1); why.push('saveData'); }
+    GFX.tier = Math.max(0, Math.min(2, t | 0));
+  }
+}
+const gfx = () => GFX_T[GFX.tier];
+const gfxDpr = () => Math.min(window.devicePixelRatio || 1, gfx().dpr[COARSE ? 0 : 1]);
 let envTex = null, composer = null, renderPass = null, bloom = null;
 function makeEnv() { const pm = new THREE.PMREMGenerator(renderer), t = pm.fromScene(new RoomEnvironment(), 0.04).texture; pm.dispose(); return t; }
 if (renderer) {
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, matchMedia('(pointer:coarse)').matches ? 1.25 : 2));   /* телефон: 1,25 — на треть меньше пикселей, чем 1,5 */
+  renderer.setPixelRatio(gfxDpr());   /* по ступени качества; телефон high — 1,25 (на треть меньше пикселей, чем 1,5) */
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.05;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -166,6 +204,7 @@ function makeGlass(color, rim, base, pow, additive) {
 
 class Sparks {
   constructor(n, size) {
+    n = Math.max(8, Math.round(n * gfx().sparks));   /* ступень качества: меньше частиц */
     this.n = n; this.i = 0;
     this.pos = new Float32Array(n * 3); this.col = new Float32Array(n * 3); this.vel = new Float32Array(n * 3);
     this.base = new Float32Array(n * 3); this.life = new Float32Array(n); this.max = new Float32Array(n); this.drag = new Float32Array(n);
@@ -222,7 +261,7 @@ function addLights(scene, rim = 0xff6f9a) {
 /* «Уменьшить движение» в системе и кнопка паузы: камера сама не вращается, время сцены стоит (перелёты камеры идут — их запускает человек) */
 const RMOTION = matchMedia('(prefers-reduced-motion:reduce)');
 const ANIM = { paused: false, dt: 0 };
-const IDLE = { wake: 0, last: 0 };   // рендер на паузе: последнее действие пользователя / последний кадр
+const IDLE = { wake: 0, last: 0, drawn: 0, gfx: 0 };   // рендер на паузе: последнее действие пользователя / последний кадр
 function makeControls(camera, target) {
   const c = new OrbitControls(camera, canvas); c.target.copy(target); c.enableDamping = true; c.dampingFactor = 0.08; c.enabled = false;
   // сцены сами включают автовращение (controls.autoRotate = true / st.rot) — здесь оно гасится, сцены переписывать не нужно
@@ -495,7 +534,7 @@ function accentSet(c) { document.documentElement.style.setProperty('--accent', c
 // разделы, где кадр на компьютере отодвигается от пульта и заголовка (у биохимии ракурсы частично уже учитывают пульт — сдвиг вполсилы; сцена уточняет deskShift)
 const DESK_SHIFT = { body: 1, cell: 1, brain: 1, bio: 0.5 };
 function layout() {
-  IDLE.wake = performance.now(); IDLE.last = 0;   /* setSize очищает холст — на паузе нужен новый кадр */
+  IDLE.wake = performance.now(); IDLE.last = 0; LBC.t = 0;   /* setSize очищает холст — на паузе нужен новый кадр */
   if (!renderer) return;
   const w = stageEl.clientWidth, hgt = stageEl.clientHeight;
   renderer.setSize(w, hgt, false); composer.setSize(w, hgt); bloom.setSize(w, hgt);
@@ -668,7 +707,7 @@ function loadBuilder(id) { const [file, fn] = BUILDERS[id]; return (chunkP[file]
 let building = null;
 { const ael = canvas.addEventListener.bind(canvas); canvas.addEventListener = (t, f, o) => { if (building) building.push([t, f, o]); ael(t, f, o); }; }
 const loadEl = h('div', { class: 'loading', role: 'status', 'aria-live': 'polite' }); loadEl.hidden = true; stageEl.append(loadEl);
-const KEEP = 2, recent = [];
+const recent = [];   // сколько сцен держать в памяти — gfx().keep
 let showSeq = 0;
 function disposeScene(sc) {
   const mats = new Set(), geos = new Set(), texs = new Set();
@@ -681,8 +720,46 @@ function disposeScene(sc) {
   (sc.__listen || []).forEach(([t, f, o]) => canvas.removeEventListener(t, f, o));
   if (sc.controls.dispose) sc.controls.dispose();
 }
+/* ступень качества → сцена: блеск (clearcoat/sheen), точечный свет, тени. При переходе значения через 0 three.js сам пересобирает программу */
+function gfxScene(sc) {
+  if (!sc || sc.__gfx === GFX.tier) return; sc.__gfx = GFX.tier; const T = gfx();
+  let hasPoint = false; sc.scene.traverse((o) => { if (o.isPointLight) hasPoint = true; });
+  sc.scene.traverse((o) => {
+    if (o.isPointLight) o.visible = T.point;
+    if (o.isHemisphereLight) { if (o.userData.i0 === undefined) o.userData.i0 = o.intensity; o.intensity = o.userData.i0 * (T.point || !hasPoint ? 1 : 1.25); }   /* без точечного света — заполняющий ярче */
+    if (o.isLight && o.shadow) {
+      if (o.userData.cs0 === undefined) o.userData.cs0 = o.castShadow;
+      const on = o.userData.cs0 && T.shadow;
+      if (o.castShadow !== on) { o.castShadow = on; if (!on && o.shadow.map) { o.shadow.map.dispose(); o.shadow.map = null; } }
+    }
+    [].concat(o.material || []).forEach((m) => {
+      if (!m.isMeshPhysicalMaterial) return; const u = m.userData;
+      if (u.cc0 === undefined) { u.cc0 = m.clearcoat; u.sh0 = m.sheen; }
+      m.clearcoat = T.phys ? u.cc0 : 0; m.sheen = T.phys ? u.sh0 : 0;
+    });
+  });
+}
+function gfxSet(t, why) {
+  t = Math.max(0, Math.min(2, t)); if (t === GFX.tier) return; GFX.tier = t; GFX.why.push(why);
+  if (!GFX.manual) try { sessionStorage.setItem('gfxAuto', String(t)); } catch (e) { /* нет */ }
+  if (!REC) { const pr = gfxDpr(); renderer.setPixelRatio(pr); composer.setPixelRatio(pr); }
+  layout(); gfxScene(cur);
+  if (why === 'fps') say('Graphics simplified for smoother motion');
+}
+/* замер: через 0,7 с после показа темы 2 с собираем интервалы кадров; медленно — ступень ниже (только вниз) */
+const PROBE = { on: false, t0: 0, ts: [] };
+function gfxProbeStart() { if (GFX.manual || GFX.tier === 0 || REC || navigator.webdriver) return; PROBE.on = true; PROBE.t0 = performance.now() + 700; PROBE.ts = []; }
+function gfxProbe(now) {
+  if (!PROBE.on || now < PROBE.t0) return;
+  if (ANIM.paused || (PROBE.ts.length && now - PROBE.ts[PROBE.ts.length - 1] > 1500)) { PROBE.on = false; return; }   /* пауза или пропуск кадров (вкладка, прокрутка) — замер не годится */
+  PROBE.ts.push(now); if (now - PROBE.t0 < 2000) return; PROBE.on = false;
+  const d = PROBE.ts.slice(1).map((t, i) => t - PROBE.ts[i]).sort((a, b) => a - b); if (d.length < 10) return;
+  const med = d[d.length >> 1], p90 = d[Math.floor(d.length * 0.9)];
+  if (Math.abs(med - 33.3) < 1.5 && p90 - med < 3) return;   /* ровные 30 к/с — системное ограничение (экономия батареи), не перегрузка */
+  if (med > 40) gfxSet(0, 'fps'); else if (med > 16.7 * 1.45) gfxSet(GFX.tier - 1, 'fps');
+}
 function evict() {
-  while (recent.length > KEEP) { const old = recent.shift(); const sc = built[old]; if (!sc || sc === cur) continue; delete built[old]; try { disposeScene(sc); } catch (e) { /* выгрузка не критична */ } }
+  while (recent.length > Math.max(1, gfx().keep)) { const old = recent.shift(); const sc = built[old]; if (!sc || sc === cur) continue; delete built[old]; (MODEL_AC[old] || []).forEach((a) => a.abort('evicted')); delete MODEL_AC[old]; try { disposeScene(sc); } catch (e) { /* выгрузка не критична */ } }
 }
 function show(id) {
   if (NOGL) { noglShow(id); return; }
@@ -696,7 +773,7 @@ function show(id) {
     if (seq !== showSeq) return;
     const L = []; building = L; buildingId = id; let sc;
     try { sc = mk(); } finally { building = null; buildingId = null; }
-    sc.__listen = L; built[id] = sc;
+    sc.__listen = L; built[id] = sc; gfxScene(sc);
     const go = () => { if (seq !== showSeq) { if (!recent.includes(id)) recent.unshift(id); return; } loadEl.hidden = true; activate(id); };   /* устаревшая сцена — в очередь на выгрузку */
     /* шейдеры новой сцены компилируются заранее (в цель композера — те же варианты программ): без подвисания первого кадра; не дольше 3 с */
     if (!renderer.compileAsync || !composer || !renderer.extensions.has('KHR_parallel_shader_compile')) { go(); return; }   /* без расширения выигрыша нет */
@@ -726,12 +803,12 @@ function noglShow(id) {
   window.__ready = id;
 }
 function activate(id) {
-  loadEl.hidden = true; IDLE.wake = performance.now(); IDLE.last = 0;
+  loadEl.hidden = true; IDLE.wake = performance.now(); IDLE.last = 0; LBC.t = 0;
   { const hp = document.getElementById('heartpanel'); if (hp && hp.__close) hp.__close(); }
   const i = recent.indexOf(id); if (i >= 0) recent.splice(i, 1); recent.push(id);
   if (cur) cur.controls.enabled = false;
   cur = built[id]; curId = id; cur.controls.enabled = true;
-  renderPass.scene = cur.scene; renderPass.camera = cur.camera;
+  renderPass.scene = cur.scene; renderPass.camera = cur.camera; gfxScene(cur); gfxProbeStart();
   bloom.strength = 1.1 * LOOK.bloom;
   renderNav(id);
   $('#kicker').textContent = cur.kicker; $('#title').textContent = cur.title; $('#lede').textContent = cur.lede;
@@ -1036,6 +1113,7 @@ refreshSeen();
 
 const tmp = new THREE.Vector3();
 const ttlRange = document.createRange();
+const LBC = { t: 0, w: 0, h: 0, base: [] };
 function updateLabels() {
   const w = stageEl.clientWidth, hgt = stageEl.clientHeight;
   // подписи не налезают друг на друга (на компьютере и на телефоне): налезающая сдвигается вверх/вниз на строку-две,
@@ -1050,6 +1128,10 @@ function updateLabels() {
     items.push({ el, x: (tmp.x * 0.5 + 0.5) * w, y: (-tmp.y * 0.5 + 0.5) * hgt, op: l.fade ? l.fade() : 1, lf: !!l.left });   // left: сцена просит подпись слева от точки   // fade(): сцена может приглушить подпись (точка за телом)
   });
   items.sort((a, b) => b.op - a.op || (b.el._on ? 1 : 0) - (a.el._on ? 1 : 0));
+  /* занятые места (цифры, график, пульт, заголовок) — из кэша: getBoundingClientRect каждый кадр заставлял пересчитывать раскладку; обновление раз в 0,3 с и при смене размера/цифр */
+  const nowL = performance.now();
+  if (nowL - LBC.t < 300 && LBC.w === w && LBC.h === hgt) { placed.push(...LBC.base); }
+  else {
   const sr = stageEl.getBoundingClientRect();
   [statsEl, scopeEl.hidden ? null : scopeEl, consoleEl.parentNode === stageEl ? consoleEl : null].forEach((e) => {
     if (!e || !e.offsetWidth) return; const r = e.getBoundingClientRect(); placed.push([r.left - sr.left - 4, r.top - sr.top - 2, r.right - sr.left + 4, r.bottom - sr.top + 2]);
@@ -1057,6 +1139,8 @@ function updateLabels() {
   // заголовок и описание: заняты только сами строки текста и кнопки, а не весь блок — справа от коротких строк подписи могут стоять
   if (hudTtl && hudTtl.offsetWidth) { ttlRange.selectNodeContents(hudTtl); for (const r of ttlRange.getClientRects()) if (r.width > 1) placed.push([r.left - sr.left - 6, r.top - sr.top - 3, r.right - sr.left + 6, r.bottom - sr.top + 3]);
     hudTtl.querySelectorAll('button, .hbtn').forEach((e) => { const r = e.getBoundingClientRect(); placed.push([r.left - sr.left - 4, r.top - sr.top - 2, r.right - sr.left + 4, r.bottom - sr.top + 2]); }); }
+  LBC.base = placed.slice(); LBC.t = nowL; LBC.w = w; LBC.h = hgt;
+  }
   const free = (r) => !placed.some((q) => r[0] < q[2] && r[2] > q[0] && r[1] < q[3] && r[3] > q[1]);
   items.forEach(({ el, x, y, op, lf }) => {
     const left0 = lf ? x - el._w > 6 : x + el._w > w - 6;   // не помещается справа (или сцена просит) — подпись слева от точки
@@ -1075,7 +1159,7 @@ function updateLabels() {
 let lastStats = 0;
 function updateStats(now) {
   if (now - lastStats < 150) return; lastStats = now;
-  const sv = cur.stats(), key = JSON.stringify(sv); if (key === statsEl.__k) return; statsEl.__k = key;
+  const sv = cur.stats(), key = JSON.stringify(sv); if (key === statsEl.__k) return; statsEl.__k = key; LBC.t = 0;
   statsEl.innerHTML = '';
   sv.forEach(([k, v, u]) => statsEl.append(h('div', { class: 'stat' }, h('i', {}, k), h('b', {}, String(v), u ? h('small', {}, u) : null))));
 }
@@ -1135,6 +1219,8 @@ window.addEventListener('resize', () => { IDLE.wake = performance.now(); });
 function frame(now) {
   requestAnimationFrame(frame);
   if (!visible || !cur || !onScreen || ctxLost || document.querySelector('dialog[open]') || document.getElementById('heartpanel')) return;
+  if (gfx().fps && !REC && now - IDLE.drawn < 1000 / gfx().fps - 2) return;   /* лёгкая графика: 30 к/с */
+  IDLE.drawn = now;
   const dt = Math.min(clock.getDelta(), 0.05);
   ANIM.dt = dt;
   cur.update(ANIM.paused ? 0 : dt);
@@ -1149,7 +1235,8 @@ function frame(now) {
   updateLabels();
   if (REC) recDraw();
   if (cur.drawScope) cur.drawScope(sctx, scopeEl.clientWidth, scopeEl.clientHeight);
-  updateStats(now);
+  updateStats(now); gfxProbe(now);
+  if (GFX.tier < 2 && now - IDLE.gfx > 2000) { IDLE.gfx = now; cur.__gfx = -1; gfxScene(cur); }   /* догруженные модели получают ту же ступень */
 }
 applyLook();
 /* приложение для телефона (PWA): работает только на собственном сайте, где подключён manifest */
