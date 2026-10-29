@@ -104,7 +104,7 @@ function makeRepro(initMode) {
   }
   function boneGlass() { if (!(st.mode === 'female' && st.realLoad === 2) || st.sel) return; PART.r_bone.mats.forEach((m) => { m.transparent = true; m.opacity = 0.45; m.depthWrite = false; m.needsUpdate = true; }); }
   const REAL_W = 1.5, REAL_AT = V3(0, -0.05, -0.05);
-  const LAB_OFF = { r_ut: V3(0.15, 0.22, 0.1), r_tube: V3(0.35, 0.12, 0.05), r_ov: V3(0.42, -0.02, 0.05), r_lig: V3(-0.55, 0.05, 0.1), r_blad: V3(0.0, -0.05, 0.25), r_int: V3(0.05, 0.32, -0.1), r_bone: V3(-0.8, 0.3, 0.0), r_ext: V3(0.1, -0.05, 0.1) };
+  const LAB_OFF = { r_ut: V3(0.15, 0.22, 0.1), r_tube: V3(0.35, 0.12, 0.05), r_ov: V3(0.42, -0.02, 0.05), r_lig: V3(-0.55, 0.05, 0.1), r_blad: V3(0.0, -0.05, 0.25), r_int: V3(-0.3, 0.02, -0.1), r_bone: V3(-0.8, 0.3, 0.0), r_ext: V3(0.1, -0.05, 0.1) };
   /* ---------- состояние ---------- */
   const st = { t: 0, mode: initMode || 'female', pause: false, sel: null, labels: true, rot: false, fly: null, day: 1, devT: -99, msg: null, trace: [] };
   const parts = () => (st.mode === 'male' ? RP_M : st.mode === 'female' && st.realLoad === 2 ? RP_R : RP_F);
@@ -183,7 +183,7 @@ function makeRepro(initMode) {
     { text: 'простата', pos: V3(0.08, -0.16, 0.2), color: '#F2D88A', show: () => st.labels && st.mode === 'male' },
     { text: 'зародыш', pos: V3(0, 0, 0), color: '#ffe8f0', show: () => st.labels && st.mode === 'dev', dyn: true },
   ];
-  RP_R.forEach((p) => { const l = { text: p.name.toLowerCase(), pos: V3(0, -9, 0), color: p.color, show: () => st.labels && st.mode === 'female' && st.realLoad === 2 && (!st.sel || st.sel === p.id) }; PART[p.id].lab = l; labels.unshift(l); });
+  RP_R.forEach((p) => { const l = { text: p.name.toLowerCase(), pos: V3(0, -9, 0), color: p.color, left: p.id === 'r_int', show: () => st.labels && st.mode === 'female' && st.realLoad === 2 && (!st.sel || st.sel === p.id) && (!matchMedia('(max-width:700px)').matches || st.sel || ['r_ut', 'r_ov', 'r_tube', 'r_bone'].includes(p.id)) }; PART[p.id].lab = l; labels.unshift(l); });
   const embLabel = labels[labels.length - 1];
   const refs = {};
   loadReal();
@@ -213,7 +213,7 @@ function makeRepro(initMode) {
   }
   function stats() { return st.mode === 'cycle' ? [['День цикла', Math.floor(st.day), 'из 28']] : st.mode === 'dev' ? [['Сутки', Math.max(0, Math.floor(st.devDay || 0)), ''], ['Клеток', (st.devDay || 0) < 1 ? 1 : (st.devDay || 0) < 4.5 ? Math.min(32, 2 ** Math.floor(1 + (st.devDay - 1) * 1.3)) : '≈100', '']] : [['Хромосом в клетке', 46, ''], ['В половой клетке', 23, '']]; }
   const self = {
-    labelBg: true, mobZoom: initMode === 'cycle' ? 0.72 : 0.52, scene, camera, controls, update: update2, ui, onKey, stats, labels, drawScope, accent: '#F2B0C8',
+    labelBg: true, mobZoom: initMode === 'cycle' ? 0.72 : 0.58, scene, camera, controls, update: update2, ui, onKey, stats, labels, drawScope, accent: '#F2B0C8',
     kicker: 'Тело · размножение', title: 'Размножение и развитие',
     lede: 'Как устроены половые системы, как гормоны гипофиза и яичников задают 28-дневный цикл и что происходит с новой жизнью в первую неделю.',
     notes: `

@@ -5,22 +5,22 @@ import { LOOK, Sparks, THREE, V3, __set_rnd, addLights, bloom, clamp, displaceGe
    ЛЕКЦИЯ 1 · РАЗВИТИЕ МОЗГА (ОНТОГЕНЕЗ)
    ========================================================= */
 const DEV_STAGES = [
-  { short: 'Пластинка', name: 'Нервная пластинка', when: '3 нед', wk: 2.7,
-    text: 'На спинной стороне зародыша часть клеток эктодермы становится <b>нервной пластинкой</b>. Из неё получится вся центральная нервная система: и головной, и спинной мозг.' },
-  { short: 'Желобок', name: 'Нервный желобок', when: '≈20 дней', wk: 3,
-    text: 'Края пластинки поднимаются в <b>нервные валики</b>, между ними остаётся <b>желобок</b>. Около 20-го дня края смыкаются в середине зародыша, и шов расходится вперёд и назад, как молния. Клетки с краёв образуют <b>нервный гребень</b> (оранжевые искры): они уйдут из трубки и дадут ганглии, мягкую и паутинную оболочки, пигментные клетки и мозговое вещество надпочечников.' },
-  { short: 'Трубка', name: 'Нервная трубка', when: 'конец 4 нед', wk: 4,
-    text: 'К концу 4-й недели трубка замкнута целиком, вместе с передним и задним нейропорами. Внутри остаётся канал. Гены уже решили, кем станут клетки: верхняя <b>крыловидная пластинка</b> даст сенсорные и вставочные нейроны, нижняя <b>базальная</b> даст двигательные и вегетативные. Переключите цвет на «Пластинки».' },
-  { short: '3 пузыря', name: 'Три мозговых пузыря', when: '4–5 нед', wk: 4.6,
-    text: 'Передний конец трубки раздувается в три пузыря: <b>передний</b> (prosencephalon), <b>средний</b> (mesencephalon) и <b>задний</b> (rhombencephalon). Остальная трубка станет спинным мозгом. Из стенки переднего мозга выпячиваются глазные пузыри: сетчатка на самом деле часть промежуточного мозга.' },
-  { short: '5 пузырей', name: 'Пять мозговых пузырей', when: '5–6 нед', wk: 6,
-    text: 'Передний пузырь даёт <b>конечный</b> мозг (будущие полушария) и <b>промежуточный</b> (таламус и гипоталамус). Средний почти не меняется. Задний делится на собственно <b>задний</b> (мост и мозжечок) и <b>продолговатый</b>. Трубка сгибается: сначала среднемозговой изгиб, потом шейный, последним мостовой.' },
-  { short: 'Полушария', name: 'Полушария растут', when: 'до 20 нед', wk: 20,
-    text: 'Нейроны рождаются в первые 16 недель: сначала нижние слои коры, шестой и пятый, потом верхние. Клетки ползут к своим местам вдоль отростков радиальной глии, путь им указывают нетрины, эфрины и семафорины. К 20-й неделе миграция закончена, выделяются доли, начинаются борозды. Полушария растут быстрее всех и накрывают промежуточный, средний и задний мозг.' },
-  { short: 'Рождение', name: 'Мозг новорождённого', when: 'рождение', wk: 40,
-    text: 'К 9 месяцам видна привычная архитектура: борозды, извилины, мозжечок. Мозг весит около <b>350 г</b>. Новых нейронов больше не будет: дальше растут дендритные деревья, синапсы и число глиальных клеток.' },
-  { short: 'Взрослый', name: 'Мозг взрослого', when: 'взрослый', wk: 46,
-    text: 'Взрослый мозг весит <b>1300–1400 г</b> при том же числе нейронов. Прибавка идёт за счёт ветвления дендритов, новых синапсов, глии и миелина, а миелинизация длится около 20 лет. Особенно важны первые 2–3 года: от того, насколько ребёнку интересно и сколько с ним общаются, зависит, сколько связей сформируется.' },
+  { short: 'Plate', name: 'Neural plate', when: '3 wk', wk: 2.7,
+    text: 'On the dorsal side of the embryo some ectoderm cells become the <b>neural plate</b>. The entire central nervous system will develop from it: both the brain and the spinal cord.' },
+  { short: 'Groove', name: 'Neural groove', when: '≈20 days', wk: 3,
+    text: 'The edges of the plate rise into <b>neural folds</b>, with a <b>groove</b> left between them. Around day 20 the edges meet in the middle of the embryo, and the seam spreads forward and backward like a zipper. Cells from the edges form the <b>neural crest</b> (orange sparks): they will leave the tube and give rise to ganglia, the pia and arachnoid mater, pigment cells and the adrenal medulla.' },
+  { short: 'Tube', name: 'Neural tube', when: 'end of wk 4', wk: 4,
+    text: 'By the end of week 4 the tube is completely closed, including the anterior and posterior neuropores. A canal remains inside. Genes have already decided what the cells will become: the upper <b>alar plate</b> will give rise to sensory neurons and interneurons, the lower <b>basal</b> plate to motor and autonomic neurons. Switch the coloring to “Plates”.' },
+  { short: '3 vesicles', name: 'Three brain vesicles', when: '4–5 wk', wk: 4.6,
+    text: 'The front end of the tube swells into three vesicles: the <b>forebrain</b> (prosencephalon), <b>midbrain</b> (mesencephalon) and <b>hindbrain</b> (rhombencephalon). The rest of the tube will become the spinal cord. The optic vesicles bulge out of the forebrain wall: the retina is actually part of the diencephalon.' },
+  { short: '5 vesicles', name: 'Five brain vesicles', when: '5–6 wk', wk: 6,
+    text: 'The forebrain vesicle gives rise to the <b>telencephalon</b> (the future hemispheres) and the <b>diencephalon</b> (thalamus and hypothalamus). The midbrain barely changes. The hindbrain divides into the <b>metencephalon</b> proper (pons and cerebellum) and the <b>myelencephalon</b> (medulla oblongata). The tube bends: first the cephalic flexure, then the cervical, and last the pontine.' },
+  { short: 'Hemispheres', name: 'Hemispheres grow', when: 'up to 20 wk', wk: 20,
+    text: 'Neurons are born in the first 16 weeks: first the deep layers of the cortex, the sixth and fifth, then the upper ones. The cells crawl to their places along the processes of radial glia, guided by netrins, ephrins and semaphorins. By week 20 migration is complete, the lobes take shape and sulci begin to form. The hemispheres grow fastest of all and cover the diencephalon, midbrain and hindbrain.' },
+  { short: 'Birth', name: 'Newborn brain', when: 'birth', wk: 40,
+    text: 'By 9 months the familiar architecture is visible: sulci, gyri, cerebellum. The brain weighs about <b>350 g</b>. There will be no more new neurons: from now on the dendritic trees, the synapses and the number of glial cells grow.' },
+  { short: 'Adult', name: 'Adult brain', when: 'adult', wk: 46,
+    text: 'The adult brain weighs <b>1300–1400 g</b> with the same number of neurons. The gain comes from dendritic branching, new synapses, glia and myelin, and myelination lasts about 20 years. The first 2–3 years are especially important: how many connections form depends on how curious the child is and how much people engage with them.' },
 ];
 const DEV_COL = {
   plate: '#E3B5C6', pros: '#FFB070', mes3: '#C77DFF', rhomb: '#4FB0D8',
@@ -33,9 +33,10 @@ function makeDevelop() {
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x07060a); scene.environment = envTex;
   addLights(scene, 0xff8fb0);
   // пока пользователь не вращал камеру: на ранних стадиях смотрим на пластинку сверху, к трубке опускаемся
-  const CAM_HI = V3(3.0, 17.5, 17.5), CAM_LO = V3(5.5, 9, 22);   // пластинка/трубка целиком, правее описания
+  const DVP = matchMedia('(max-width:700px)').matches;
+  const CAM_HI = DVP ? V3(4.9, 17.5, 17.5) : V3(4.4, 19.4, 19.9), CAM_LO = DVP ? V3(7.4, 9, 22) : V3(7.25, 9.7, 25);   // пластинка/трубка целиком, правее описания
   const camera = new THREE.PerspectiveCamera(36, 1, 0.1, 200); camera.position.copy(CAM_HI);
-  const controls = makeControls(camera, V3(-1.5, -1.5, 0)); controls.minDistance = 4; controls.maxDistance = 40;
+  const controls = makeControls(camera, DVP ? V3(0.4, -1.5, 0) : V3(-0.7, -2.2, 0)); controls.minDistance = 4; controls.maxDistance = 40;
   controls.addEventListener('start', () => { st.userCam = true; });
   const C = Object.fromEntries(Object.entries(DEV_COL).map(([k, v]) => [k, new THREE.Color(v)]));
   const cut = new THREE.Plane(V3(0, 0, -1), 0.0);
@@ -285,29 +286,29 @@ function makeDevelop() {
   /* ---------- подписи ---------- */
   const L_ = (text, color, u, off, range) => ({ text, color, u, off, range, pos: V3(0, 0, 0), show: () => st.labels && st.s >= range[0] && st.s < range[1] });
   const labels = [
-    L_('нервная пластинка', DEV_COL.plate, 0.62, 'top', [0, 0.9]),
-    L_('нервные валики', '#FFD08A', 0.3, 'edge', [0.5, 1.7]),
-    L_('нервный желобок', DEV_COL.plate, 0.75, 'top', [0.9, 1.7]),
-    L_('нервный гребень', '#FFA860', 0.5, 'side', [1.2, 2.7]),
-    L_('нервная трубка', DEV_COL.plate, 0.62, 'top', [1.7, 2.6]),
-    L_('передний мозг', DEV_COL.pros, 0.08, 'top', [2.6, 3.6]),
-    L_('средний мозг', DEV_COL.mes, 0.2, 'top', [2.6, 5.4]),
-    L_('задний мозг', DEV_COL.rhomb, 0.33, 'top', [2.6, 3.6]),
-    L_('спинной мозг', DEV_COL.spinal, 0.7, 'top', [2.2, 8]),
-    L_('глазной пузырь → сетчатка', DEV_COL.di, 0.1, 'eye', [2.9, 4.5]),
-    L_('конечный мозг', DEV_COL.tele, 0.03, 'front', [3.6, 4.9]),
-    L_('промежуточный мозг', DEV_COL.di, 0.11, 'top', [3.6, 4.9]),
-    L_('мост и мозжечок', DEV_COL.met, 0.29, 'top', [3.6, 4.7]),
-    L_('продолговатый мозг', DEV_COL.myel, 0.38, 'bottom', [3.6, 8]),
-    L_('среднемозговой изгиб', '#EFEAE6', 0.2, 'bottom', [4.1, 4.95]),
-    L_('шейный изгиб', '#EFEAE6', 0.45, 'bottom', [4.1, 4.95]),
-    L_('мостовой изгиб', '#EFEAE6', 0.33, 'bottomfar', [4.3, 4.95]),
-    L_('большие полушария', DEV_COL.tele, -1, 'hemi', [4.9, 8]),
-    L_('мозжечок', DEV_COL.met, -2, 'cb', [4.9, 8]),
-    L_('спинномозговые ганглии', '#FFD08A', 0.56, 'gang', [2.4, 4.2]),
-    L_('эктодерма', '#9FB8E0', 0.86, 'ecto', [0, 2.5]),
-    L_('хорда', '#8FC9B8', 0.93, 'noto', [0, 2.8]),
-    L_('сомиты', '#C9866A', 0.7, 'somite', [1.1, 2.5]),
+    L_('neural plate', DEV_COL.plate, 0.62, 'top', [0, 0.9]),
+    L_('neural folds', '#FFD08A', 0.3, 'edge', [0.5, 1.7]),
+    L_('neural groove', DEV_COL.plate, 0.75, 'top', [0.9, 1.7]),
+    L_('neural crest', '#FFA860', 0.5, 'side', [1.2, 2.7]),
+    L_('neural tube', DEV_COL.plate, 0.62, 'top', [1.7, 2.6]),
+    L_('forebrain', DEV_COL.pros, 0.08, 'top', [2.6, 3.6]),
+    L_('midbrain', DEV_COL.mes, 0.2, 'top', [2.6, 5.4]),
+    L_('hindbrain', DEV_COL.rhomb, 0.33, 'top', [2.6, 3.6]),
+    L_('spinal cord', DEV_COL.spinal, 0.7, 'top', [2.2, 8]),
+    L_('optic vesicle → retina', DEV_COL.di, 0.1, 'eye', [2.9, 4.5]),
+    L_('telencephalon', DEV_COL.tele, 0.03, 'front', [3.6, 4.9]),
+    L_('diencephalon', DEV_COL.di, 0.11, 'top', [3.6, 4.9]),
+    L_('pons and cerebellum', DEV_COL.met, 0.29, 'top', [3.6, 4.7]),
+    L_('medulla oblongata', DEV_COL.myel, 0.38, 'bottom', [3.6, 8]),
+    L_('cephalic flexure', '#EFEAE6', 0.2, 'bottom', [4.1, 4.95]),
+    L_('cervical flexure', '#EFEAE6', 0.45, 'bottom', [4.1, 4.95]),
+    L_('pontine flexure', '#EFEAE6', 0.33, 'bottomfar', [4.3, 4.95]),
+    L_('cerebral hemispheres', DEV_COL.tele, -1, 'hemi', [4.9, 8]),
+    L_('cerebellum', DEV_COL.met, -2, 'cb', [4.9, 8]),
+    L_('spinal ganglia', '#FFD08A', 0.56, 'gang', [2.4, 4.2]),
+    L_('ectoderm', '#9FB8E0', 0.86, 'ecto', [0, 2.5]),
+    L_('notochord', '#8FC9B8', 0.93, 'noto', [0, 2.8]),
+    L_('somites', '#C9866A', 0.7, 'somite', [1.1, 2.5]),
   ];
   function updLabels() {
     labels.forEach((l) => {
@@ -334,8 +335,8 @@ function makeDevelop() {
 
   /* ---------- шкала времени ---------- */
   const ROWS = [
-    { t: 'нейрогенез', a: 4, b: 16, c: '#FFB070' }, { t: 'миграция', a: 6, b: 20, c: '#F4C542' }, { t: 'глиогенез', a: 16, b: 46, c: '#7FD6C8' },
-    { t: 'миелин', a: 22, b: 46, c: '#F1E7D6' }, { t: 'дендриты, синапсы', a: 16, b: 46, c: '#C77DFF' },
+    { t: 'neurogenesis', a: 4, b: 16, c: '#FFB070' }, { t: 'migration', a: 6, b: 20, c: '#F4C542' }, { t: 'gliogenesis', a: 16, b: 46, c: '#7FD6C8' },
+    { t: 'myelin', a: 22, b: 46, c: '#F1E7D6' }, { t: 'dendrites, synapses', a: 16, b: 46, c: '#C77DFF' },
   ];
   function curWeek() { const s = st.s, i = Math.min(6, Math.floor(s)), f = s - i; return lerp(DEV_STAGES[i].wk, DEV_STAGES[i + 1].wk, f); }
   function drawScope(ctx, w, hgt) {
@@ -350,36 +351,36 @@ function makeDevelop() {
     });
     ctx.strokeStyle = '#3A3540'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(X(40), 6); ctx.lineTo(X(40), hgt - 16); ctx.stroke();
     ctx.fillStyle = '#6F6875'; ctx.textAlign = 'center';
-    [[0, '0'], [20, '20'], [40, 'род.']].forEach(([wk, t]) => ctx.fillText(t, X(wk), hgt - 8));
-    ctx.textAlign = 'left'; ctx.fillText('нед', 6, hgt - 8);
+    [[0, '0'], [20, '20'], [40, 'birth']].forEach(([wk, t]) => ctx.fillText(t, X(wk), hgt - 8));
+    ctx.textAlign = 'left'; ctx.fillText('wk', 6, hgt - 8);
     const cx = X(curWeek()); ctx.strokeStyle = '#FF8F7A'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(cx, 4); ctx.lineTo(cx, hgt - 16); ctx.stroke();
   }
 
   let refs = {};
   function ui(el) {
-    const info = h('div', { class: 'info' });
+    const info = h('div', { class: 'info', style: 'max-width:640px' });
     const near = () => Math.min(7, Math.round(st.s));
     const sSeg = seg(DEV_STAGES.map((d, i) => ({ id: i, label: d.short })), near, (v) => { st.s = v; st.play = false; refs.sync(); });
-    const inp = h('input', { type: 'range', min: 0, max: 7, step: 0.01, value: st.s, 'aria-label': 'Срок развития' });
+    const inp = h('input', { type: 'range', min: 0, max: 7, step: 0.01, value: st.s, 'aria-label': 'Developmental age' });
     const out = h('output', {}, '');
     inp.addEventListener('input', () => { st.s = +inp.value; st.play = false; refs.sync(); });
-    const play = toggle('Развитие', () => st.play, (v) => { if (v && st.s >= 6.99) st.s = 0; st.play = v; });
-    const mSeg = seg([{ id: 'regions', label: 'Отделы', color: DEV_COL.tele }, { id: 'plates', label: 'Пластинки', color: DEV_COL.basal }], () => st.mode, (v) => { st.mode = v; refs.sync(); });
-    const cutB = toggle('Разрез', () => st.cut, (v) => { st.cut = v; });
-    const lab = toggle('Подписи', () => st.labels, (v) => { st.labels = v; });
+    const play = toggle('Development', () => st.play, (v) => { if (v && st.s >= 6.99) st.s = 0; st.play = v; });
+    const mSeg = seg([{ id: 'regions', label: 'Regions', color: DEV_COL.tele }, { id: 'plates', label: 'Plates', color: DEV_COL.basal }], () => st.mode, (v) => { st.mode = v; refs.sync(); });
+    const cutB = toggle('Cutaway', () => st.cut, (v) => { st.cut = v; });
+    const lab = toggle('Labels', () => st.labels, (v) => { st.labels = v; });
     let lastI = -1, lastM = '';
     refs.sync = () => {
       inp.value = st.s; out.textContent = DEV_STAGES[near()].when; sSeg.sync(); play.sync();
       if (near() !== lastI || st.mode !== lastM) {
         lastI = near(); lastM = st.mode; const d = DEV_STAGES[lastI];
         info.innerHTML = `<b>${d.name}.</b> ` + d.text +
-          (st.mode === 'plates' ? '<br><br><b style="color:#FFB070">Крыловидная</b> (сверху) даёт сенсорные и вставочные нейроны, <b style="color:#6F9BFF">базальная</b> (снизу) даёт двигательные и вегетативные. Весь передний мозг вырастает из крыловидной, поэтому в полушариях нет ни двигательных, ни вегетативных нейронов.' : '');
+          (st.mode === 'plates' ? '<br><br>The <b style="color:#FFB070">alar</b> plate (top) gives rise to sensory neurons and interneurons, the <b style="color:#6F9BFF">basal</b> plate (bottom) to motor and autonomic neurons. The entire forebrain grows from the alar plate, which is why the hemispheres contain neither motor nor autonomic neurons.' : '');
       }
     };
     refs.sSeg = sSeg; refs.play = play; refs.cutB = cutB; refs.lab = lab; refs.mSeg = mSeg;
-    el.append(group('Стадия', '← →', sSeg), group('Срок', 'пробел', h('div', { class: 'rng' }, inp, out), play),
-      group('Вид', 'C · X · N', mSeg, cutB, lab),
-      h('div', { class: 'grp', style: 'flex:1 1 320px' }, h('div', { class: 'glabel' }, 'Что видно'), info));
+    el.append(group('Stage', '← →', sSeg), group('Age', 'Space', h('div', { class: 'rng' }, inp, out), play),
+      group('View', 'C · X · N', mSeg, cutB, lab),
+      h('div', { class: 'grp', style: 'flex:1 1 320px' }, h('div', { class: 'glabel' }, 'What you see'), info));
     refs.sync();
   }
   function onKey(e) {
@@ -393,30 +394,30 @@ function makeDevelop() {
   }
   function stats() {
     const s = st.s, d = DEV_STAGES[Math.min(7, Math.round(s))];
-    const out = [['Срок', d.when, '']];
-    out.push(['Нейроны', s < 2.5 ? 'делятся' : s < 5 ? 'мигрируют' : 'на местах', '']);
-    if (s >= 5.8) out.push(['Масса', s < 6.5 ? 350 : '1300–1400', 'г']);
+    const out = [['Age', d.when, '']];
+    out.push(['Neurons', s < 2.5 ? 'dividing' : s < 5 ? 'migrating' : 'in place', '']);
+    if (s >= 5.8) out.push(['Mass', s < 6.5 ? 350 : '1300–1400', 'g']);
     return out;
   }
   build();
   return {
-    scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#FF8F7A',
-    kicker: 'Мозг · онтогенез ЦНС', title: 'Развитие мозга',
-    lede: 'От плоской нервной пластинки к трубке, пузырям и полушариям. Перетащите срок или запустите развитие целиком.',
+    scene, camera, controls, update, ui, onKey, stats, labels, drawScope, mobZoom: 0.74, accent: '#FF8F7A',
+    kicker: 'Brain · CNS development', title: 'Brain development',
+    lede: 'From a flat neural plate to a tube, vesicles and hemispheres. Drag the age slider or play the whole development.',
     notes: `
-      <div><h2>Как развивается мозг</h2>
-        <p>Эмбриогенез — часть <b>онтогенеза</b>, пути организма от зачатия до смерти. За ним стоит каскад включения и выключения генов: они управляют делением клеток, их перемещением, местом и тем, каким нейроном клетка станет и какой медиатор будет выделять.</p>
-        <h3>Нейруляция</h3>
-        <p>Эктодерма на спинной стороне даёт нервную пластинку, та сворачивается в желобок и замыкается в трубку. Стенка трубки — нейроэпителий вокруг канала. Клетки у канала делятся на <b>спонгиобласты</b> и <b>нейробласты</b>. Спонгиобласты тянут радиальные отростки к наружной стороне, по ним мигрируют нейроны. Позже спонгиобласты дают глию: эпендиму, астроциты и олигодендроциты. Сначала идёт нейрогенез, потом глиогенез.</p>
-        <h3>Пузыри</h3>
-        <p>3 пузыря → 5: передний → конечный (полушария и подкорковые ядра) + промежуточный (таламус, гипоталамус); средний → четверохолмие и ножки мозга; задний → собственно задний (мост, мозжечок) + продолговатый.</p>
-        <h3>После рождения</h3>
-        <p>Масса растёт с 350 до 1300–1400 г, а число нейронов нет. Растут дендриты, синапсы, глия и миелин. Самые важные годы — первые 2–3: от среды и общения зависит, сколько связей образуется.</p></div>
-      <div><h2>Что здесь настоящее</h2><ul>
-        <li>Порядок стадий и сроки: смыкание с 20-го дня, трубка к концу 4 недели, 5 пузырей к 5–6 неделе, нейрогенез до 16 недель, миграция до 20.</li>
-        <li>Смыкание от середины к концам, нервный гребень по краям.</li><li>Крыловидная и базальная пластинки, порядок изгибов.</li></ul>
-        <h2 style="margin-top:22px">Условности</h2><ul><li>Все стадии показаны в одном размере, хотя мозг вырастает в сотни раз.</li><li>Форма пузырей и изгибов упрощена.</li><li>Шкала справа показывает процессы, линия — текущий срок.</li></ul></div>
-      <div class="keys"><h2>Клавиши</h2><ul><li><code>пробел</code> развитие</li><li><code>←</code> <code>→</code> стадия</li><li><code>C</code> отделы / пластинки</li><li><code>X</code> разрез</li><li><code>N</code> подписи</li></ul></div>`,
+      <div><h2>How the brain develops</h2>
+        <p>Embryogenesis is part of <b>ontogenesis</b>, the organism’s path from conception to death. Behind it lies a cascade of genes switching on and off: they control cell division, cell movement, where cells end up, what kind of neuron a cell becomes and which neurotransmitter it releases.</p>
+        <h3>Neurulation</h3>
+        <p>The ectoderm on the dorsal side gives rise to the neural plate, which folds into a groove and closes into a tube. The wall of the tube is neuroepithelium around a canal. Cells next to the canal divide into <b>spongioblasts</b> and <b>neuroblasts</b>. Spongioblasts extend radial processes to the outer surface, and neurons migrate along them. Later the spongioblasts give rise to glia: ependyma, astrocytes and oligodendrocytes. Neurogenesis comes first, then gliogenesis.</p>
+        <h3>Vesicles</h3>
+        <p>3 vesicles → 5: forebrain → telencephalon (hemispheres and subcortical nuclei) + diencephalon (thalamus, hypothalamus); midbrain → tectum (corpora quadrigemina) and cerebral peduncles; hindbrain → metencephalon (pons, cerebellum) + myelencephalon (medulla oblongata).</p>
+        <h3>After birth</h3>
+        <p>Mass grows from 350 to 1300–1400 g, but the number of neurons does not. Dendrites, synapses, glia and myelin grow. The most important years are the first 2–3: how many connections form depends on the environment and on interaction with others.</p></div>
+      <div><h2>What is accurate here</h2><ul>
+        <li>The order and timing of stages: closure from day 20, the tube by the end of week 4, 5 vesicles by weeks 5–6, neurogenesis until week 16, migration until week 20.</li>
+        <li>Closure from the middle toward the ends, the neural crest along the edges.</li><li>The alar and basal plates, the order of the flexures.</li></ul>
+        <h2 style="margin-top:22px">Simplifications</h2><ul><li>All stages are shown at the same size, although the brain grows hundreds of times larger.</li><li>The shapes of the vesicles and flexures are simplified.</li><li>The scale on the right shows the processes; the line marks the current age.</li></ul></div>
+      <div class="keys"><h2>Keys</h2><ul><li><code>Space</code> development</li><li><code>←</code> <code>→</code> stage</li><li><code>C</code> regions / plates</li><li><code>X</code> cutaway</li><li><code>N</code> labels</li></ul></div>`,
   };
 }
 export { makeDevelop };
