@@ -606,6 +606,7 @@ function addLights(scene, rim = 0xff6f9a) {
 /* «Уменьшить движение» в системе и кнопка паузы: камера сама не вращается, время сцены стоит (перелёты камеры идут — их запускает человек) */
 const RMOTION = matchMedia('(prefers-reduced-motion:reduce)');
 const ANIM = { paused: false, dt: 0 };
+const IDLE = { wake: 0, last: 0 };   // рендер на паузе: последнее действие пользователя / последний кадр
 function makeControls(camera, target) {
   const c = new OrbitControls(camera, canvas); c.target.copy(target); c.enableDamping = true; c.dampingFactor = 0.08; c.enabled = false;
   // сцены сами включают автовращение (controls.autoRotate = true / st.rot) — здесь оно гасится, сцены переписывать не нужно
@@ -9808,6 +9809,7 @@ function accentSet(c) { document.documentElement.style.setProperty('--accent', c
 // разделы, где кадр на компьютере отодвигается от пульта и заголовка (у биохимии ракурсы частично уже учитывают пульт — сдвиг вполсилы; сцена уточняет deskShift)
 const DESK_SHIFT = { body: 1, cell: 1, brain: 1, bio: 0.5 };
 function layout() {
+  IDLE.wake = performance.now(); IDLE.last = 0;   /* setSize очищает холст — на паузе нужен новый кадр */
   if (!renderer) return;
   const w = stageEl.clientWidth, hgt = stageEl.clientHeight;
   renderer.setSize(w, hgt, false); composer.setSize(w, hgt); bloom.setSize(w, hgt);
@@ -9998,6 +10000,7 @@ function evict() {
 function show(id) {
   if (NOGL) { noglShow(id); return; }
   const seq = ++showSeq;
+  { const hp = document.getElementById('heartpanel'); if (hp && hp.__close) hp.__close(); }
   if (built[id]) { activate(id); return; }
   renderNav(id);
   const item = (secOf(id) || { scenes: [] }).scenes.find(([s]) => s === id);
@@ -10007,13 +10010,13 @@ function show(id) {
     const L = []; building = L; buildingId = id; let sc;
     try { sc = mk(); } finally { building = null; buildingId = null; }
     sc.__listen = L; built[id] = sc;
-    const go = () => { if (seq !== showSeq) return; loadEl.hidden = true; activate(id); };
+    const go = () => { if (seq !== showSeq) { if (!recent.includes(id)) recent.unshift(id); return; } loadEl.hidden = true; activate(id); };   /* устаревшая сцена — в очередь на выгрузку */
     /* шейдеры новой сцены компилируются заранее (в цель композера — те же варианты программ): без подвисания первого кадра; не дольше 3 с */
     if (!renderer.compileAsync || !composer || !renderer.extensions.has('KHR_parallel_shader_compile')) { go(); return; }   /* без расширения выигрыша нет */
     let cp; const rt = renderer.getRenderTarget();
     try { renderer.setRenderTarget(composer.readBuffer); cp = renderer.compileAsync(sc.scene, sc.camera); } catch (e) { cp = null; } finally { renderer.setRenderTarget(rt); }
     if (!cp) { go(); return; }
-    Promise.race([cp.catch(() => {}), new Promise((r) => setTimeout(r, 3000))]).then(go);
+    return Promise.race([cp.catch(() => {}), new Promise((r) => setTimeout(r, 3000))]).then(go);
   }).catch((e) => { if (seq !== showSeq) return; delete chunkP[BUILDERS[id][0]];
     loadEl.textContent = 'Не удалось загрузить раздел: ' + (e && e.message || e) + '. ' + (navigator.onLine === false ? 'Нет сети — эта тема ещё не сохранена для офлайна.' : 'Возможно, сайт обновился — обновите страницу.');
     loadEl.append(h('div', {}, button('Обновить', () => location.reload(), true))); console.error(e); });
@@ -10036,7 +10039,7 @@ function noglShow(id) {
   window.__ready = id;
 }
 function activate(id) {
-  loadEl.hidden = true;
+  loadEl.hidden = true; IDLE.wake = performance.now(); IDLE.last = 0;
   { const hp = document.getElementById('heartpanel'); if (hp && hp.__close) hp.__close(); }
   const i = recent.indexOf(id); if (i >= 0) recent.splice(i, 1); recent.push(id);
   if (cur) cur.controls.enabled = false;
@@ -10440,7 +10443,6 @@ if (renderer) {
   });
 }
 
-const IDLE = { wake: 0, last: 0 };
 ['pointerdown', 'pointermove', 'wheel', 'keydown', 'input', 'click', 'touchstart'].forEach((t) => document.addEventListener(t, () => { IDLE.wake = performance.now(); }, { passive: true, capture: true }));
 window.addEventListener('resize', () => { IDLE.wake = performance.now(); });
 function frame(now) {
@@ -10455,7 +10457,7 @@ function frame(now) {
   /* на паузе без действий пользователя кадр не перерисовываем (раз в секунду — на случай догрузки модели): меньше нагрев и расход батареи */
   if (ANIM.paused && !moved && !camFly && !REC && now - IDLE.wake > 700 && now - IDLE.last < 1000) return;
   IDLE.last = now;
-  for (let i = 0; i < GLASS.length; i++) { const u = GLASS[i].uniforms; GLASS[i].visible = u.uRim.value > 0 || u.uBase.value > 0 || u.uFlash.value > 0; }
+  for (let i = 0; i < GLASS.length; i++) { const u = GLASS[i].uniforms; GLASS[i].visible = u.uRim.value > 0 || u.uBase.value > 0 || (u.uFlash && u.uFlash.value > 0) || (u.uPulse && u.uPulse.value > 0); }   /* uPulse — подсветка кости в «Рентгене» */
   composer.render();
   updateLabels();
   if (REC) recDraw();
