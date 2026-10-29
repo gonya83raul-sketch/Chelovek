@@ -141,7 +141,7 @@ function makeKinetics() {
       const km = KM * (st.inh === 'comp' ? 1 + Ieff() * 3 : 1); if (km < 1) { ctx.strokeStyle = 'rgba(242,193,78,.5)'; ctx.beginPath(); ctx.moveTo(A.X(km), A.Y(0)); ctx.lineTo(A.X(km), A.Y(theory(km) * 0.9)); ctx.stroke(); ctx.fillStyle = '#F2C14E'; ctx.fillText('Km', A.X(km) + 3, A.Y(0) - 4); }
     } else {
       const A = plotAxes(ctx, w, h, { title: 'Лайнуивер — Берк: 1/v от 1/[S]', xl: '1/[S] →', yl: '1/v' });
-      const line = (inh, c) => plotLine(ctx, A, (u) => { const S = 1 / (0.2 + u * 9.8); return clamp((1 / Math.max(0.02, theory(S, inh))) / 5, 0, 1.2); }, c, { lw: inh === st.inh ? 2 : 1.2 });
+      const line = (inh, c) => plotLine(ctx, A, (u) => { const S = 1 / (0.2 + u * 9.8); return clamp((1 / Math.max(0.02, theory(S, inh))) / 10, 0, 1.2); }, c, { lw: inh === st.inh ? 2 : 1.2 });
       line('none', 'rgba(255,255,255,.35)'); if (st.inh !== 'none') line(st.inh, KN_INH[st.inh].color);
     }
   }

@@ -20,6 +20,7 @@ const CAT_ST = [
 ];
 function makeAtp() {
   rnd = mulberry(901);
+  const DK = !matchMedia('(max-width:700px)').matches;   /* компьютер / телефон */
   const scene = bioStage({ rim: 0x7fd6ff });
   const VIEW = { cycle: flyTarget(V3(-0.4, -1.0, 0), V3(0.1, 1.4, 15.5)), funnel: flyTarget(V3(40, -0.6, 0), V3(40.4, 1.4, 16.5)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VIEW.cycle.pos);
@@ -111,7 +112,7 @@ function makeAtp() {
         if (s.d.id === 'syn' && s === use && active) s.g.userData.beads.forEach((bd, k) => { bd.position.y = 0.08 * Math.sin(k * 1.3 + t * 3); });
         if (active && rnd() < 0.3) fx.spawn(s.p.clone().add(randUnit().multiplyScalar(0.6)), randUnit().multiplyScalar(0.2), new THREE.Color(s.d.color), 0.6, 1, 1.0);
       });
-      st.phase = c < 1.6 ? 'АТФ' : c < 3 ? 'гидролиз' : c < 4.8 ? `работа: ${use.d.name.toLowerCase()}` : c < 6.7 ? `ресинтез: ${src.d.name.split(' ')[0].toLowerCase()}` : 'АТФ снова';
+      st.phase = c < 1.6 ? 'АТФ' : c < 3 ? 'гидролиз' : c < 4.8 ? 'работа' : c < 6.7 ? 'ресинтез' : 'АТФ снова';   /* коротко: длинное значение сталкивало цифры под описание; станция видна подсветкой */
       atpG.rotation.y = Math.sin(t * 0.3) * 0.4;
     }
     if (st.mode === 'funnel') {
@@ -124,7 +125,7 @@ function makeAtp() {
   }
   function drawScope(ctx, w, h) {
     if (st.mode !== 'cycle') { scopeShow(false); return; } scopeShow(true);
-    ctx.clearRect(0, 0, w, h); ctx.font = '500 10px JetBrains Mono, monospace'; ctx.fillStyle = '#EFEAE6'; ctx.fillText('энергия гидролиза фосфата, −ΔG°, кДж/моль', 8, 12);
+    ctx.clearRect(0, 0, w, h); const tt = 'энергия гидролиза фосфата, −ΔG°, кДж/моль'; let fs = 10; ctx.font = `500 ${fs}px JetBrains Mono, monospace`; while (fs > 7 && ctx.measureText(tt).width > w - 12) ctx.font = `500 ${--fs}px JetBrains Mono, monospace`; ctx.fillStyle = '#EFEAE6'; ctx.fillText(tt, 8, 12);
     const bh = (h - 22) / MACRO.length;
     MACRO.forEach(([n, v, c], k) => { const y = 18 + k * bh; ctx.fillStyle = c; ctx.globalAlpha = n.startsWith('АТФ') ? 1 : 0.75; ctx.fillRect(84, y + 1, (w - 120) * v / 62, bh - 3); ctx.globalAlpha = 1; ctx.fillStyle = 'rgba(255,255,255,.75)'; ctx.font = '500 9px JetBrains Mono, monospace'; ctx.fillText(n, 6, y + bh - 3); ctx.fillText(v.toFixed(1), 88 + (w - 120) * v / 62, y + bh - 3); });
   }
@@ -133,11 +134,11 @@ function makeAtp() {
     funnel: '<b>Три стадии катаболизма.</b> Сотни разных молекул пищи сходятся в немногие общие пути: белки, углеводы и жиры распадаются до мономеров, мономеры — до <b>ацетил-КоА</b>, а он сгорает в цикле Кребса и дыхательной цепи до CO₂ и воды с образованием АТФ. Азот аминокислот уходит в виде аммиака (затем — мочевины). Нажмите на стадию.',
   };
   const labels = [
-    ...stations.map((s) => ({ text: s.d.name, pos: s.p.clone().add(s.kind === 'use' ? V3(-0.6, -0.5, 0) : V3(-0.7, -0.75, 0)), color: s.d.color, show: () => st.labels && st.mode === 'cycle' })),
+    ...stations.map((s) => ({ text: s.d.name, pos: s.p.clone().add(s.kind === 'use' ? (s.d.id === 'mus' ? V3(-1.15, 0.05, 0) : V3(-0.6, -0.5, 0)) : V3(-0.7, -0.75, 0)), left: s.d.id === 'mus', color: s.d.color, show: () => st.labels && st.mode === 'cycle' && (DK || s.kind === 'src') })),   /* «мышцы» — слева, не на актине; на телефоне потребители только кнопками */
     
-    { text: 'γ-фосфат', pos: gC.clone().add(V3(0, 1.3, 0)), color: '#FF9A30', show: () => st.labels && st.mode === 'cycle' && st.cyc % 8 < 3 },
+    { text: 'γ-фосфат', pos: gC.clone().add(V3(0, DK ? 1.3 : 1.9, 0)), color: '#FF9A30', show: () => st.labels && st.mode === 'cycle' && st.cyc % 8 < 3 },
     { text: 'Фн', pos: gC.clone().add(piDir.clone().multiplyScalar(1.4)).add(V3(0.2, 1.1, 0)), color: '#FF9A30', show: () => st.labels && st.mode === 'cycle' && st.cyc % 8 > 3.6 && st.cyc % 8 < 5.4 },
-    { text: 'H₂O', pos: gC.clone().add(V3(0.5, 1.6, 0.4)), color: '#9FD8FF', show: () => st.labels && st.mode === 'cycle' && st.cyc % 8 > 1.8 && st.cyc % 8 < 3 },
+    { text: 'H₂O', pos: gC.clone().add(V3(0.5, DK ? 1.6 : 2.2, 0.4)), color: '#9FD8FF', show: () => st.labels && st.mode === 'cycle' && st.cyc % 8 > 1.8 && st.cyc % 8 < 3 },
     ...['белки', 'полисахариды', 'жиры'].map((n, k) => ({ text: n, pos: V3(40 + lane(k) - 0.4, FY[0] + 0.85, 0), color: '#F2C14E', show: () => st.labels && st.mode === 'funnel' })),
     ...['аминокислоты', 'глюкоза', 'жирные кислоты + глицерин'].map((n, k) => ({ text: n, pos: V3(40 + lane(k) - 0.5, FY[1] + 0.6, 0), color: '#FF8A5C', show: () => st.labels && st.mode === 'funnel' })),
     { text: 'пируват', pos: V3(40 - 2.1, FY[2] + 0.55, 0), color: '#FF8A5C', show: () => st.labels && st.mode === 'funnel' },

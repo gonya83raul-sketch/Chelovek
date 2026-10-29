@@ -7,7 +7,7 @@ function makeLipogen() {
   rnd = mulberry(5301);
   const scene = bioStage({ rim: 0xe8c060 });
   const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: кадр уходит из-под заголовка и описания (телефон — прежний ракурс)
-  const VIEW = { tag: DK ? [V3(-0.9, -1.3, 0), V3(-0.3, 0.6, 17)] : [V3(0.8, -1.9, 0), V3(1.4, 0.0, 18.5)], pl: [V3(41.2, -1.8, 0), V3(41.8, 0.1, 18.5)], fat: [V3(80.8, -1.7, 0), V3(81.4, 0.6, 17.5)] };
+  const VIEW = { tag: DK ? [V3(-1.4, -0.95, 0), V3(-0.8, 0.95, 17)] : [V3(0.8, -1.9, 0), V3(1.4, 0.0, 18.5)], pl: DK ? [V3(40.2, -1.6, 0), V3(40.8, 0.3, 21)] : [V3(41.2, -1.8, 0), V3(41.8, 0.1, 18.5)], fat: DK ? [V3(79.9, -1.4, 0), V3(80.5, 0.9, 19)] : [V3(80.8, -1.7, 0), V3(81.4, 0.6, 17.5)] };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VIEW.tag[1]);
   const controls = makeControls(camera, VIEW.tag[0]); controls.minDistance = 3; controls.maxDistance = 40;
   const fx = new Sparks(1800, 0.08); scene.add(fx.obj);

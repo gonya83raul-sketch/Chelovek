@@ -13,6 +13,7 @@ const ETC_POIS = [
 function makeEtc() {
   rnd = mulberry(1101);
   const scene = bioStage({ bg: 0x08060a, rim: 0xffb070 });
+  const MOB = matchMedia('(max-width:700px)').matches;
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 200); camera.position.set(-1.6, 5.0, 25);
   const controls = makeControls(camera, V3(-2.0, -1.0, 0)); controls.minDistance = 4; controls.maxDistance = 40;
   const fx = new Sparks(2600, 0.08); scene.add(fx.obj);
@@ -60,7 +61,7 @@ function makeEtc() {
   const EL = []; // электроны
   const ELM = new THREE.InstancedMesh(new THREE.SphereGeometry(0.09, 12, 8), new THREE.MeshBasicMaterial({ color: 0x9fd8ff }), 40); ELM.frustumCulled = false; scene.add(ELM);
   const dm = new THREE.Object3D();
-  const st = { t: 0, graph: false, sub: 'nadh', pois: new Set(), labels: true, rot: false, sel: null, msg: null, spawnT: 0, hist: [], o2: 0, atp: 0, hIn: 0, atpCnt: 0, oCnt: 0, heat: 0, ims: 0 };
+  const st = { t: 0, fly: null, graph: false, sub: 'nadh', pois: new Set(), labels: true, rot: false, sel: null, msg: null, spawnT: 0, hist: [], o2: 0, atp: 0, hIn: 0, atpCnt: 0, oCnt: 0, heat: 0, ims: 0 };
   const has = (p) => st.pois.has(p);
   function hFree() { return HP.find((h) => h.s === 'off'); }
   function pump(x, n) { for (let k = 0; k < n; k++) { const h = hFree(); if (!h) return; h.s = 'pump'; h.t = 0; h.a.set(x + rand(-0.35, 0.35), -1.0, rand(-0.4, 0.6)); h.b.set(h.a.x + rand(-0.2, 0.2), 1.0, h.a.z); h.p.copy(h.a); h.dur = 0.7 + k * 0.08; } }
@@ -81,7 +82,7 @@ function makeEtc() {
   };
   const blockAt = { I: 'rot', III: 'ant', c: 'ant', IV: 'cn' };
   function update(dt) {
-    st.t += dt; const t = st.t; controls.autoRotate = st.rot; controls.autoRotateSpeed = 0.3;
+    st.t += dt; const t = st.t; flyStep(st, camera, controls, dt); controls.autoRotate = st.rot && !st.fly; controls.autoRotateSpeed = 0.3;
     const ims = HP.filter((h) => h.s === 'ims').length; st.ims = ims; const pmf = clamp(ims / 140, 0, 1.2);
     // дыхательный контроль: высокий градиент тормозит поток электронов
     const ctrl = 1 - 0.95 * smooth(0.6, 1.0, pmf);
@@ -160,7 +161,7 @@ function makeEtc() {
   };
   const TXT = '<b>Тканевое дыхание.</b> Водород, снятый с топлива в виде НАДН и ФАДН₂, передаётся по цепи переносчиков, встроенных во внутреннюю мембрану митохондрии, от более «отрицательного» окислительно-восстановительного потенциала к более «положительному» — к кислороду. Энергия электронов (голубые) тратится на перекачку <b>протонов</b> (розовые) из матрикса наружу. Получается «плотина» — протонный градиент (хемиосмотическая теория П. Митчелла, Нобелевская премия 1978). Протоны возвращаются через АТФ-синтазу и крутят её ротор — так синтезируется АТФ. Нажмите на комплекс или включите яд.';
   const labels = [
-    { text: 'межмембранное пространство', pos: P(-8.2, 2.3, -1), color: '#FF9AB0', show: () => st.labels },
+    { text: 'межмембранное пространство', pos: P(-3.0, 2.45, -1), color: '#FF9AB0', show: () => st.labels },
     { text: 'матрикс', pos: P(3.8, -3.6, -1), color: '#9FD8FF', show: () => st.labels },
     { text: 'I', pos: P(-6.0, 0.55, 0.8), color: '#FF8A5C', show: () => st.labels },
     { text: 'II', pos: P(-3.5, -2.0, 0.6), color: '#7FE0A0', show: () => st.labels },
@@ -183,7 +184,7 @@ function makeEtc() {
     const pb = ETC_POIS.map((p) => { const b = toggle(p.name, () => st.pois.has(p.id), (v) => { if (v) st.pois.add(p.id); else st.pois.delete(p.id); st.msg = v ? p.id : null; st.sel = null; refs.setInfo(); }); return b; });
     refs.rot = toggle('Вращение', () => st.rot, (v) => { st.rot = v; });
     const lab = toggle('Подписи', () => st.labels, (v) => { st.labels = v; });
-    const gr = toggle('График', () => st.graph, (v) => { st.graph = v; });
+    const gr = toggle('График', () => st.graph, (v) => { st.graph = v; if (!MOB) st.fly = flyTarget(V3(v ? 2.3 : -2.0, v ? -0.6 : -1.0, 0), V3(v ? 2.7 : -1.6, v ? 5.4 : 5.0, 25)); });   /* компьютер: с графиком цепь левее — врезка не закрывает АТФ-синтазу */
     Object.assign(refs, { lab, pb, gr });
     el.append(group('Топливо', '', subSeg), group('Яды и разобщители', '1–5', ...pb), group('Вид', 'G · R · N', gr, refs.rot, lab), ib.el);
     refs.setInfo();
