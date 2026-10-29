@@ -187,8 +187,8 @@ function makeBloodchem() {
   const labels = [
     ...EQ.map(([, x, n]) => ({ text: n, pos: V3(x + 1.0, eqY - 0.8, 0.3), color: n === 'H⁺' ? '#FFE070' : n === 'HCO₃⁻' ? '#7FD6FF' : '#EFEAE6', show: () => st.labels && st.mode === 'ph' })),
     { text: 'carbonic anhydrase', pos: V3(-1.7 + 1.0, eqY + 0.55, 0.3), color: 'rgba(239,234,230,.6)', show: () => st.labels && st.mode === 'ph' },
-    { text: 'blood: H⁺ · CO₂ · HCO₃⁻', pos: V3(-1.0 + 1.0, -2.35, 0.3), color: 'rgba(239,234,230,.6)', show: () => st.labels && st.mode === 'ph' },
-    { text: 'lungs exhale CO₂', pos: V3(-4.6 + 1.0, -1.95, 0.2), color: '#E8A0A8', show: () => st.labels && st.mode === 'ph' },
+    { text: 'blood: H⁺ · CO₂ · HCO₃⁻', pos: V3(-1.0 + 1.0, -2.75, 0.3), color: 'rgba(239,234,230,.6)', show: () => st.labels && st.mode === 'ph' },
+    { text: 'lungs: CO₂', pos: V3(-4.6 + 1.0, -1.95, 0.2), color: '#E8A0A8', show: () => st.labels && st.mode === 'ph' },
     { text: 'acidosis', pos: V3(3.1 - 1.2 + 1.0, -1.5, 0.2), color: '#FF5A5A', show: () => st.labels && st.mode === 'ph' }, { text: 'alkalosis', pos: V3(3.1 + 1.25 + 1.0, -1.5, 0.2), color: '#6A9AFF', show: () => st.labels && st.mode === 'ph' },
     ...BANDS.map(([n, x, c]) => ({ text: n, pos: V3(40 + x + 1.0, -2.05, 0.2), color: c, show: () => st.labels && st.mode === 'prot' })),
     { text: 'albumin + ligands', pos: V3(40 - 2.6, 2.2, 0), color: '#7FD6FF', show: () => st.labels && st.mode === 'prot' }, { text: 'transferrin · Fe³⁺', pos: V3(40 + 0.25, 1.8, 0), color: '#FF9A5C', show: () => st.labels && st.mode === 'prot' }, { text: 'IgG antibody', pos: V3(40 + 3.0, 2.6, 0), color: '#FF8AB0', show: () => st.labels && st.mode === 'prot' },
@@ -235,7 +235,7 @@ function makeBloodchem() {
     return false;
   }
   function stats() {
-    if (st.mode === 'ph') return [['pH', (st.ph || 7.4).toFixed(2), ''], ['pCO₂', Math.round(st.pc), 'mmHg'], ['HCO₃⁻', Math.round(st.hb), 'mmol/L']];
+    if (st.mode === 'ph') return [['pH', (st.ph || 7.4).toFixed(2).replace('.', ','), ''], ['pCO₂', Math.round(st.pc), 'mmHg'], ['HCO₃⁻', Math.round(st.hb), 'mmol/L']];
     if (st.mode === 'prot') return [['Albumin', PROT[st.prot].f[0], '%'], ['γ-globulins', PROT[st.prot].f[4], '%']];
     return [['Thrombin', Math.round(st.thr * 100), '%'], ['Fibrin', Math.round(st.fib * 100), '%'], ['Time', st.inj.toFixed(0), 's']];
   }

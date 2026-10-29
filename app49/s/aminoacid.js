@@ -21,7 +21,7 @@ function makeAminoacid() {
   __set_rnd(mulberry(1801));
   const scene = bioStage({ rim: 0x7fe0a0 });
   const DK = !matchMedia('(max-width:700px)').matches;   /* компьютер: режимы 2–4 уходят из-под заголовка и описания */
-  const VIEW = { dig: flyTarget(V3(0, 0.9, 0), V3(0.5, 3.3, 18)), trans: DK ? flyTarget(V3(35.85, -1.4, 0), V3(36.35, 1.35, 21)) : flyTarget(V3(40, -1.5, 0), V3(40.5, 0.6, 16)), urea: DK ? flyTarget(V3(76.5, -0.95, 0), V3(77.0, 1.85, 23)) : flyTarget(V3(80, -1.6, 0), V3(80.6, 0.6, 18)), aro: DK ? flyTarget(V3(115.9, -0.9, 0), V3(116.4, 2.0, 23)) : flyTarget(V3(120, -1.6, 0), V3(120.5, 0.6, 17.5)) };
+  const VIEW = { dig: flyTarget(V3(0, 0.9, 0), V3(0.5, 3.3, 18)), trans: DK ? flyTarget(V3(35.85, -1.4, 0), V3(36.35, 1.35, 21)) : flyTarget(V3(40, -1.5, 0), V3(40.5, 0.6, 16)), urea: DK ? flyTarget(V3(76.5, -0.95, 0), V3(77.0, 1.85, 23)) : flyTarget(V3(80, -1.6, 0), V3(80.6, 0.6, 18)), aro: DK ? flyTarget(V3(116.6, -0.9, 0), V3(117.1, 2.0, 23)) : flyTarget(V3(120, -1.6, 0), V3(120.5, 0.6, 17.5)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.dig.pos);
   const controls = makeControls(camera, VIEW.dig.target); controls.minDistance = 2; controls.maxDistance = 40;
   const fx = new Sparks(1400, 0.08); scene.add(fx.obj);
@@ -149,11 +149,13 @@ function makeAminoacid() {
     { text: 'глутаматдегидрогеназа', pos: V3(40 + 0.4, 2.6, 0), color: '#FFB070', show: () => st.labels && st.mode === 'trans' },
     ...['гистамин', 'серотонин', 'ГАМК', 'дофамин'].map((n, k) => ({ text: n, pos: V3(40 - 4.6 + k * 2.6, -3.1, 0), color: '#C77DFF', show: () => st.labels && st.mode === 'trans' })),
     { text: 'митохондрия', pos: V3(80 - 4.6, 1.6, 0), color: '#FFB070', show: () => st.labels && st.mode === 'urea' },
+    { text: MOL('nh3').name, pos: V3(80 - 5.9, 0.3, 0.3), color: '#9FB4FF', show: () => st.labels && st.mode === 'urea' },
+    { text: MOL('co2').name, pos: V3(80 - 5.9, -1.6, 0.3), color: '#C8C8D0', show: () => st.labels && st.mode === 'urea' },
     { text: 'карбамоилфосфат', pos: V3(80 - 4.0, -0.6, 0.4), color: '#F2C14E', show: () => st.labels && st.mode === 'urea' },
     ...UC.map(([id], k) => ({ text: MOL(id).name, pos: V3(80 + UCN.x + Math.cos(uang(k)) * (UR + 0.9) - 0.5, UCN.y + Math.sin(uang(k)) * (UR + 0.7), 0), color: '#7FE0A0', show: () => st.labels && st.mode === 'urea' })),
-    { text: 'мочевина → почки', pos: V3(80 + UCN.x + 4.0, UCN.y + 3.0, 0), color: '#F2E6C8', show: () => st.labels && st.mode === 'urea' },
-    { text: 'аспартат', pos: V3(80 + UCN.x + 3.4, UCN.y - 2.9, 0), color: '#FF6A6A', show: () => st.labels && st.mode === 'urea' },
-    { text: 'фумарат → цикл Кребса', pos: V3(80 + UCN.x + 4.0, UCN.y - 1.1, 0), color: '#7FD6FF', show: () => st.labels && st.mode === 'urea' },
+    { text: 'мочевина → почки', pos: V3(80 + UCN.x + 4.0, UCN.y + 3.0, 0), color: '#F2E6C8', show: () => st.labels && st.mode === 'urea' && urea.visible },
+    { text: 'аспартат', pos: V3(80 + UCN.x + 3.4, UCN.y - 2.9, 0), color: '#FF6A6A', show: () => st.labels && st.mode === 'urea' && extra.asp.visible },
+    { text: 'фумарат → цикл Кребса', pos: V3(80 + UCN.x + 4.0, UCN.y - 1.1, 0), color: '#7FD6FF', show: () => st.labels && st.mode === 'urea' && extra.fum.visible },
     ...AM_ARO.map(([id, [x, y]]) => ({ text: MOL(id).name, pos: V3(120 + x - 0.5, y - 0.85, 0), color: '#EFEAE6', show: () => st.labels && st.mode === 'aro' })),
     { text: 'меланин', pos: V3(120 + 0.3, 3.0, 0), color: '#C8A080', show: () => st.labels && st.mode === 'aro' && st.dis !== 'alb' },
     { text: 'фенилпируват', pos: V3(120 - 5.8, -1.7, 0), color: '#9F7BFF', show: () => st.labels && st.mode === 'aro' && st.dis === 'pku' },
