@@ -23,7 +23,7 @@ function makeHormsig() {
   __set_rnd(mulberry(2201));
   const scene = bioStage({ rim: 0xff8a5c });
   const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: кадр уходит из-под заголовка и описания (телефон — прежний ракурс)
-  const VIEW = { camp: DK ? flyTarget(V3(-3.0, 0.0, 0), V3(-2.0, 2.2, 23)) : flyTarget(V3(-0.6, -1.8, 0), V3(0.4, 0.4, 19.5)), ster: flyTarget(V3(40, -1.4, 0), V3(40.6, 0.8, 18)), ins: flyTarget(V3(80, -1.4, 0), V3(80.6, 0.8, 17)), chem: flyTarget(V3(120, -1.6, 0), V3(120, 0.6, 17.5)) };
+  const VIEW = { camp: DK ? flyTarget(V3(-3.0, 0.0, 0), V3(-2.0, 2.2, 23)) : flyTarget(V3(-0.6, -1.8, 0), V3(0.4, 0.4, 19.5)), ster: DK ? flyTarget(V3(37.3, -0.4, 0), V3(37.9, 1.8, 18)) : flyTarget(V3(40, -1.4, 0), V3(40.6, 0.8, 18)), ins: DK ? flyTarget(V3(75.0, 0.15, 0), V3(75.9, 3.5, 26)) : flyTarget(V3(80, -1.4, 0), V3(80.6, 0.8, 17)), chem: DK ? flyTarget(V3(119.6, 0.15, 0), V3(119.6, 3.05, 23)) : flyTarget(V3(120, -1.6, 0), V3(120, 0.6, 17.5)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.camp.pos);
   const controls = makeControls(camera, VIEW.camp.target); controls.minDistance = 2; controls.maxDistance = 40;
   const fx = new Sparks(1800, 0.08); scene.add(fx.obj);
@@ -51,8 +51,8 @@ function makeHormsig() {
   const pde = new THREE.Mesh(blobGeo(0.35, 0.3, 0.3, 19, 0.1, 3), protMat('#9FA8B8', 0.35)); pde.position.set(1.6, -2.2, 0.3); G1.add(pde);
   /* ---------- 2. стероиды ---------- */
   const G2 = new THREE.Group(); G2.position.set(40, 0, 0); scene.add(G2);
-  const cellM = new THREE.Mesh(new THREE.SphereGeometry(4.2, 64, 48, 0, Math.PI * 2, 0, Math.PI * 0.62), glassMat(0xffb070, { rim: 0.35, base: 0.006 })); cellM.position.set(0, -2.6, 0); G2.add(cellM);
-  const nucl = new THREE.Mesh(new THREE.SphereGeometry(1.5, 48, 32), glassMat(0x9f7bff, { rim: 0.45, base: 0.01 })); nucl.position.set(1.6, -1.4, 0); G2.add(nucl);
+  const cellM = new THREE.Mesh(new THREE.SphereGeometry(4.2, 64, 48, 0, Math.PI * 2, 0, Math.PI * 0.62), glassMat(0xffb070, { rim: 0.35, base: 0.006, keep: true })); cellM.position.set(0, -2.6, 0); G2.add(cellM);
+  const nucl = new THREE.Mesh(new THREE.SphereGeometry(1.5, 48, 32), glassMat(0x9f7bff, { rim: 0.45, base: 0.01, keep: true })); nucl.position.set(1.6, -1.4, 0); G2.add(nucl);
   const cort = molMesh(MOL('cortisol'), { scale: 0.12, hideH: true }); G2.add(cort);
   const nr = new THREE.Mesh(blobGeo(0.42, 0.34, 0.36, 21, 0.1, 3), protMat('#FF8AB0', 0.38)); G2.add(nr);
   const hsp = new THREE.Mesh(blobGeo(0.36, 0.3, 0.32, 22, 0.1, 3), protMat('#9FA8B8', 0.32)); G2.add(hsp);
@@ -65,7 +65,7 @@ function makeHormsig() {
   const irB = [-1, 1].map((s) => { const m = new THREE.Mesh(blobGeo(0.35, 0.8, 0.35, 32 + s, 0.1, 3), protMat('#9F7BFF', 0.35)); m.position.set(-3 + s * 0.4, MEM_Y - 0.9, 0); G3.add(m); return m; });
   const kin = proteinMesh('src', { scale: 0.022, colorBy: () => '#C77DFF' }); kin.position.set(-3, MEM_Y - 2.1, 0); G3.add(kin);
   const insul = new THREE.Mesh(blobGeo(0.3, 0.22, 0.25, 35, 0.12, 3), protMat('#F2C14E', 0.45)); G3.add(insul);
-  const vesG = []; for (let k = 0; k < 4; k++) { const g = new THREE.Group(); const v = new THREE.Mesh(new THREE.SphereGeometry(0.42, 24, 16), glassMat(0x7fe0a0, { rim: 0.5, base: 0.01 })); g.add(v); for (let q = 0; q < 3; q++) { const t = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.3, 8), protMat('#7FE0A0', 0.5)); t.position.copy(randUnit().multiplyScalar(0.38)); g.add(t); } g.userData.home = V3(0.5 + k * 1.4, -1.9 - (k % 2) * 0.5, 0); g.position.copy(g.userData.home); G3.add(g); vesG.push(g); }
+  const vesG = []; for (let k = 0; k < 4; k++) { const g = new THREE.Group(); const v = new THREE.Mesh(new THREE.SphereGeometry(0.42, 24, 16), glassMat(0x7fe0a0, { rim: 0.5, base: 0.01, keep: true })); g.add(v); for (let q = 0; q < 3; q++) { const t = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.3, 8), protMat('#7FE0A0', 0.5)); t.position.copy(randUnit().multiplyScalar(0.38)); g.add(t); } g.userData.home = V3(0.5 + k * 1.4, -1.9 - (k % 2) * 0.5, 0); g.position.copy(g.userData.home); G3.add(g); vesG.push(g); }
   const glcs = []; for (let k = 0; k < 16; k++) { const m = molMesh(MOL('glucose'), { scale: 0.07, hideH: true }); m.visible = false; G3.add(m); glcs.push({ m, age: 9, x: 0 }); }
   /* ---------- 4. химия гормонов ---------- */
   const G4 = new THREE.Group(); G4.position.set(120, 0, 0); scene.add(G4);

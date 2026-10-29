@@ -13,7 +13,7 @@ function makeEicosanoids() {
   __set_rnd(mulberry(5401));
   const scene = bioStage({ rim: 0xff8a5c });
   const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: кадр уходит из-под заголовка и описания (телефон — прежний ракурс)
-  const VIEW = { path: DK ? [V3(-0.8, -1.2, 0), V3(-0.2, 0.8, 21)] : [V3(0.4, -1.6, 0), V3(0.9, 0.2, 17)], platelet: [V3(39.2, -0.6, 0), V3(39.6, 1.4, 12.5)], organs: [V3(79.5, 1.1, 0), V3(80.0, 2.3, 12.5)] };
+  const VIEW = { path: DK ? [V3(-0.8, -1.2, 0), V3(-0.2, 0.8, 21)] : [V3(0.4, -1.6, 0), V3(0.9, 0.2, 17)], platelet: DK ? [V3(39.2, 0.0, 0), V3(39.6, 2.0, 14)] : [V3(39.2, -0.6, 0), V3(39.6, 1.4, 12.5)], organs: DK ? [V3(79.5, 0.9, 0), V3(80.0, 2.1, 15.5)] : [V3(79.5, 1.1, 0), V3(80.0, 2.3, 12.5)] };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VIEW.path[1]);
   const controls = makeControls(camera, VIEW.path[0]); controls.minDistance = 3; controls.maxDistance = 40;
   const fx = new Sparks(2200, 0.07); scene.add(fx.obj);
@@ -166,7 +166,7 @@ function makeEicosanoids() {
     { text: 'pain, fever; stomach', pos: NODE.pge2.p.clone().add(V3(0.6, 0.05, 0.2)), color: '#FF6A5A', show: () => DK && st.labels && st.mode === 'path' },
     { text: 'vessels, anti-clotting', pos: NODE.pgi2.p.clone().add(V3(0.6, 0.05, 0.2)), color: '#7FD6FF', show: () => DK && st.labels && st.mode === 'path' },
     { text: 'makes platelets stick together', pos: NODE.txa2.p.clone().add(V3(0.6, 0.05, 0.2)), color: '#C77DFF', show: () => DK && st.labels && st.mode === 'path' },
-    { text: 'neutrophils, bronchi', pos: NODE.ltb4.p.clone().add(V3(0.6, 0.05, 0.2)), color: '#7FE0A0', show: () => DK && st.labels && st.mode === 'path' },
+    { text: 'attracts neutrophils; bronchospasm (C₄, D₄)', pos: NODE.ltb4.p.clone().add(V3(0.6, 0.05, 0.2)), color: '#7FE0A0', show: () => DK && st.labels && st.mode === 'path' },
     { text: 'injury: collagen', pos: INJ.clone().add(V3(40 - 1.3, -0.55, 0.3)), color: '#F2E6C8', show: () => st.labels && st.mode === 'platelet' },
     { text: 'platelets: TXA₂', pos: INJ.clone().add(V3(40 + 0.35, 0.45, 0.5)), color: '#C77DFF', show: () => st.labels && st.mode === 'platelet' },
     { text: 'endothelium: PGI₂', pos: V3(40 - 3.3, 0.9, -0.95), color: '#7FD6FF', show: () => st.labels && st.mode === 'platelet' },

@@ -17,6 +17,7 @@ function makePurine() {
   // телефон: «Строение» столбиком — аденин сверху, пурины, пиримидины, АМФ внизу
   const MOB = matchMedia('(max-width:700px)').matches;
   if (MOB) VIEW.build = flyTarget(V3(0.2, -0.3, 0), V3(0.5, 0.9, 12.5));
+  else VIEW.synth = flyTarget(V3(78.1, 0.05, 0), V3(78.9, 2.45, 17.9));   /* компьютер: «Синтез» из-под заголовка и описания */
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.build.pos);
   const controls = makeControls(camera, VIEW.build.target); controls.minDistance = 2; controls.maxDistance = 40;
   const fx = new Sparks(1200, 0.08); scene.add(fx.obj);
@@ -43,7 +44,7 @@ function makePurine() {
   const joint = new THREE.Group(); joint.position.set(4.6, 0.35, 0); joint.scale.setScalar(0.62); G2.add(joint);
   const bone1 = new THREE.Mesh(new THREE.CapsuleGeometry(0.55, 1.6, 10, 24), tissue(new THREE.Color('#E8DCC8').multiplyScalar(0.22))); bone1.rotation.z = Math.PI / 2 - 0.15; bone1.position.set(-1.25, -0.1, 0); joint.add(bone1);
   const bone2 = bone1.clone(); bone2.rotation.z = Math.PI / 2 + 0.15; bone2.position.set(1.25, -0.1, 0); joint.add(bone2);
-  const caps = new THREE.Mesh(new THREE.SphereGeometry(1.0, 32, 24), glassMat(0xff8a8a, { rim: 0.35, base: 0.01 })); caps.scale.set(1.0, 0.9, 0.9); joint.add(caps);
+  const caps = new THREE.Mesh(new THREE.SphereGeometry(1.0, 32, 24), glassMat(0xff8a8a, { rim: 0.35, base: 0.01, keep: true })); caps.scale.set(1.0, 0.9, 0.9); joint.add(caps);
   const NCR = 70; const cry = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.012, 0.012, 1, 5), new THREE.MeshPhysicalMaterial({ color: 0xffffff, emissive: 0xe0f0ff, emissiveIntensity: 0.4, roughness: 0.1, transparent: true, opacity: 0.9 }), NCR); joint.add(cry);
   const cryD = Array.from({ length: NCR }, () => ({ p: randUnit().multiplyScalar(rand(0.1, 0.7)), q: new THREE.Quaternion().setFromUnitVectors(V3(0, 1, 0), randUnit()), L: rand(0.2, 0.5), th: rand(0, 1) }));
   /* ---------- 3. синтез и антиметаболиты ---------- */
@@ -79,7 +80,7 @@ function makePurine() {
       const c = st.cyc % 8; const site = ldc.clone().add(V3(0.5, 0.6, 0.4)).applyEuler(dh.rotation).add(dh.position);
       const comp = st.drug === 'mtx';
       fol.visible = true; mtx.visible = comp;
-      const inF = smooth(0, 2, c) * (comp ? 0.35 : 1); fol.position.copy(V3(-6.2, 2.4, 0).lerp(site, inF)); fol.rotation.y += dt;
+      const inF = smooth(0, 2, c) * (comp ? 0.35 : 1); fol.position.copy((MOB ? V3(-6.2, 2.4, 0) : V3(-5.6, -0.6, 0)).lerp(site, inF)); fol.rotation.y += dt;
       mtx.position.copy(V3(2.0, 2.6, 0).lerp(site, smooth(0, 1.5, c))); mtx.rotation.y += dt;
       [thy, fu].forEach((m) => { m.rotation.y += dt * 0.5; });
     }
@@ -102,7 +103,7 @@ function makePurine() {
     { text: 'сустав: кристаллы урата', pos: V3(40 + 4.1, -0.6, 0), color: '#FF8A8A', show: () => st.labels && st.mode === 'catab' },
     { text: 'ДГФР + НАДФН (PDB 1RX1)', pos: V3(80 - 2.6, -1.8, 0), color: '#FF8A5C', show: () => st.labels && st.mode === 'synth' },
     { text: 'метотрексат', pos: V3(80 + 2.0, 3.2, 0), color: '#F2C14E', show: () => st.labels && st.mode === 'synth' && st.drug === 'mtx' },
-    { text: 'фолат', pos: V3(80 - 6.0, 3.0, 0), color: '#EFEAE6', show: () => st.labels && st.mode === 'synth' },
+    { text: 'фолат', pos: MOB ? V3(74, 3, 0) : V3(74.2, 0.1, 0), color: '#EFEAE6', show: () => st.labels && st.mode === 'synth' },
     { text: 'тимин', pos: V3(80 + 3.3, 0.9, 0), color: '#EFEAE6', show: () => st.labels && st.mode === 'synth' },
     { text: '5-фторурацил', pos: V3(80 + 5.0, 0.9, 0), color: '#9BE07A', show: () => st.labels && st.mode === 'synth' },
   ];

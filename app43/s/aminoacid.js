@@ -20,7 +20,8 @@ const AM_ARO = [
 function makeAminoacid() {
   __set_rnd(mulberry(1801));
   const scene = bioStage({ rim: 0x7fe0a0 });
-  const VIEW = { dig: flyTarget(V3(0, 1.3, 0), V3(0.5, 3.7, 18)), trans: flyTarget(V3(40, -1.5, 0), V3(40.5, 0.6, 16)), urea: flyTarget(V3(80, -1.6, 0), V3(80.6, 0.6, 18)), aro: flyTarget(V3(120, -1.6, 0), V3(120.5, 0.6, 17.5)) };
+  const DK = !matchMedia('(max-width:700px)').matches;   /* компьютер: режимы 2–4 уходят из-под заголовка и описания */
+  const VIEW = { dig: flyTarget(V3(0, 0.9, 0), V3(0.5, 3.3, 18)), trans: DK ? flyTarget(V3(35.85, -1.4, 0), V3(36.35, 1.35, 21)) : flyTarget(V3(40, -1.5, 0), V3(40.5, 0.6, 16)), urea: DK ? flyTarget(V3(76.5, -0.95, 0), V3(77.0, 1.85, 23)) : flyTarget(V3(80, -1.6, 0), V3(80.6, 0.6, 18)), aro: DK ? flyTarget(V3(115.9, -0.9, 0), V3(116.4, 2.0, 23)) : flyTarget(V3(120, -1.6, 0), V3(120.5, 0.6, 17.5)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.dig.pos);
   const controls = makeControls(camera, VIEW.dig.target); controls.minDistance = 2; controls.maxDistance = 40;
   const fx = new Sparks(1400, 0.08); scene.add(fx.obj);
@@ -34,20 +35,20 @@ function makeAminoacid() {
   const cut = new Array(NB).fill(0); // разрезы после i (время разреза)
   const cutPlan = [[8, 'pep'], [21, 'pep'], [33, 'pep'], [4, 'try'], [14, 'try'], [27, 'try'], [40, 'try'], [11, 'chy'], [18, 'chy'], [30, 'chy'], [37, 'chy'], [44, 'chy']];
   const enzB = AM_PEP.map((p, k) => { const m = new THREE.Mesh(blobGeo(0.32, 0.26, 0.28, k + 5, 0.12, 3), protMat(p.color, 0.4)); m.visible = false; G1.add(m); return m; });
-  const stomach = new THREE.Mesh(new THREE.SphereGeometry(1.0, 32, 24), glassMat(0xff8a5c, { rim: 0.55, base: 0.03 })); stomach.scale.set(4.5, 1.6, 1.2); stomach.position.set(-3.6, 0.9, 0); G1.add(stomach);
-  const gutT = new THREE.Mesh(new THREE.CylinderGeometry(1.3, 1.3, 7.5, 32, 1, true), glassMat(0x7fd6ff, { rim: 0.55, base: 0.03 })); gutT.rotation.z = Math.PI / 2; gutT.position.set(3.8, 0.9, 0); G1.add(gutT);
+  const stomach = new THREE.Mesh(new THREE.SphereGeometry(1.0, 32, 24), glassMat(0xff8a5c, { rim: 0.55, base: 0.03, keep: true })); stomach.scale.set(4.5, 1.6, 1.2); stomach.position.set(-3.6, 0.9, 0); G1.add(stomach);
+  const gutT = new THREE.Mesh(new THREE.CylinderGeometry(1.3, 1.3, 7.5, 32, 1, true), glassMat(0x7fd6ff, { rim: 0.55, base: 0.03, keep: true })); gutT.rotation.z = Math.PI / 2; gutT.position.set(3.8, 0.9, 0); G1.add(gutT);
   /* ---------- 2. трансаминирование ---------- */
   const G2 = new THREE.Group(); G2.position.set(40, 0, 0); scene.add(G2);
   const TM = { ala: [-4.2, 1.6], akg: [-4.2, -0.6], pyruvate: [-0.6, 1.6], glu: [-0.6, -0.6], akg2: [3.6, 1.6], nh3: [3.6, -0.6] };
   const tmM = {}; Object.entries(TM).forEach(([id, [x, y]]) => { const m = molMesh(MOL(id === 'akg2' ? 'akg' : id), { scale: id === 'nh3' ? 0.3 : 0.17, hideH: id !== 'nh3' }); m.position.set(x, y, 0); G2.add(m); tmM[id] = m; });
   const plp = molMesh(MOL('plp'), { scale: 0.14, hideH: true }); plp.position.set(-2.4, 0.5, 0.6); G2.add(plp);
   const nTok = glowNucleus(G2, V3(0, 0, 0), '#4F74FF', 0.1, 10);
-  const alt = new THREE.Mesh(blobGeo(1.2, 1.7, 0.9, 81, 0.1, 4), glassMat(0x7fe0a0, { rim: 0.25, base: 0.004 })); alt.position.set(-2.4, 0.5, 0); G2.add(alt);
-  const gdh = new THREE.Mesh(blobGeo(1.2, 1.7, 0.9, 82, 0.1, 4), glassMat(0xffb070, { rim: 0.25, base: 0.004 })); gdh.position.set(1.5, 0.5, 0); G2.add(gdh);
+  const alt = new THREE.Mesh(blobGeo(1.2, 1.7, 0.9, 81, 0.1, 4), glassMat(0x7fe0a0, { rim: 0.25, base: 0.004, keep: true })); alt.position.set(-2.4, 0.5, 0); G2.add(alt);
+  const gdh = new THREE.Mesh(blobGeo(1.2, 1.7, 0.9, 82, 0.1, 4), glassMat(0xffb070, { rim: 0.25, base: 0.004, keep: true })); gdh.position.set(1.5, 0.5, 0); G2.add(gdh);
   const amines = ['histamine', 'serotonin', 'gaba', 'dopamine'].map((id, k) => { const m = molMesh(MOL(id), { scale: 0.13, hideH: true }); m.position.set(-4.2 + k * 2.6, -2.4, 0); G2.add(m); return m; });
   /* ---------- 3. цикл мочевины ---------- */
   const G3 = new THREE.Group(); G3.position.set(80, 0, 0); scene.add(G3);
-  const mito = new THREE.Mesh(new THREE.CapsuleGeometry(1.25, 2.4, 10, 36), glassMat(0xffb070, { rim: 0.3, base: 0.004 })); mito.rotation.z = Math.PI / 2; mito.position.set(-3.6, 0.1, -0.3); G3.add(mito);
+  const mito = new THREE.Mesh(new THREE.CapsuleGeometry(1.25, 2.4, 10, 36), glassMat(0xffb070, { rim: 0.3, base: 0.004, keep: true })); mito.rotation.z = Math.PI / 2; mito.position.set(-3.6, 0.1, -0.3); G3.add(mito);
   const UC = [['ornithine', 0], ['citrulline', 1], ['argsucc', 2], ['arg', 3]]; const UR = 2.4, UCN = V3(1.4, 0.3, 0);
   const uang = (k) => Math.PI - 0.3 - k * (Math.PI * 2 / 4);
   const ucM = UC.map(([id], k) => { const m = molMesh(MOL(id), { scale: 0.13, hideH: true }); m.position.set(UCN.x + Math.cos(uang(k)) * UR, UCN.y + Math.sin(uang(k)) * UR, 0); G3.add(m); return m; });
@@ -88,7 +89,7 @@ function makeAminoacid() {
         const fragOff = V3((frag - 4) * 0.35 * ease(c / 6), 0.25 * Math.sin(frag * 2.1) * ease(c / 5), 0);
         const free = exoT > 0 && ((i * 7) % 11) / 11 < exoT;
         const p = home[i].clone().add(fragOff); if (c > 4) p.x += 1.2 * ease((c - 4) / 4);
-        if (free) p.add(V3(Math.sin(i) * 0.6, -1.4 - (i % 3) * 0.4, Math.cos(i * 1.7) * 0.5).multiplyScalar(ease((exoT - ((i * 7) % 11) / 11) * 4)));
+        if (free) p.add(V3(Math.sin(i) * 0.6, -0.7 - (i % 3) * 0.25, Math.cos(i * 1.7) * 0.5).multiplyScalar(ease((exoT - ((i * 7) % 11) / 11) * 4)));
         dm.position.copy(p); dm.scale.setScalar(1); dm.updateMatrix(); beadM.setMatrixAt(i, dm.matrix);
       }
       beadM.instanceMatrix.needsUpdate = true;
@@ -142,7 +143,7 @@ function makeAminoacid() {
     ...AM_PEP.map((p, k) => ({ text: p.name, pos: enzB[k].position, color: p.color, show: () => st.labels && st.mode === 'dig' && enzB[k].visible })),   // фермент подписан там, где он режет цепь
     { text: 'желудок: пепсин + HCl', pos: V3(-6.4, 2.6, 0), color: '#FF8A5C', show: () => st.labels && st.mode === 'dig' && st.cyc % 16 < 4.2 },
     { text: 'тонкая кишка', pos: V3(1.5, 2.4, 0), color: '#7FD6FF', show: () => st.labels && st.mode === 'dig' && st.cyc % 16 >= 3.8 },
-    { text: 'аминокислоты → в кровь', pos: V3(2.4, -1.4, 0), color: '#7FE0A0', show: () => st.labels && st.mode === 'dig' && st.cyc % 16 > 11 },
+    { text: 'аминокислоты → в кровь', pos: V3(2.4, -0.7, 0), color: '#7FE0A0', show: () => st.labels && st.mode === 'dig' && st.cyc % 16 > 11 },
     ...Object.entries(TM).map(([id, [x, y]]) => ({ text: MOL(id === 'akg2' ? 'akg' : id).name, pos: V3(40 + x - 0.5, y - 0.85, 0), color: '#EFEAE6', show: () => st.labels && st.mode === 'trans' })),
     { text: 'АЛТ + пиридоксальфосфат (B6)', pos: V3(40 - 3.6, 2.6, 0), color: '#7FE0A0', show: () => st.labels && st.mode === 'trans' },
     { text: 'глутаматдегидрогеназа', pos: V3(40 + 0.4, 2.6, 0), color: '#FFB070', show: () => st.labels && st.mode === 'trans' },

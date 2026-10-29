@@ -14,7 +14,7 @@ function makeDna() {
   __set_rnd(mulberry(1901));
   const scene = bioStage({ rim: 0x7fd6ff });
   const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: кадр уходит из-под заголовка и описания (телефон — прежний ракурс)
-  const VIEW = { struct: DK ? flyTarget(V3(-2.4, -0.7, 0), V3(-1.2, 0.9, 14.5)) : flyTarget(V3(-1.3, -0.7, 0), V3(-0.1, 0.9, 13.5)), rep: flyTarget(V3(40, -1.0, 0), V3(40.6, 0.8, 18.5)), repair: flyTarget(V3(80, -1.4, 0), V3(81.2, 0.2, 13)) };
+  const VIEW = { struct: DK ? flyTarget(V3(-2.4, -0.7, 0), V3(-1.2, 0.9, 14.5)) : flyTarget(V3(-1.3, -0.7, 0), V3(-0.1, 0.9, 13.5)), rep: flyTarget(V3(40, -1.0, 0), V3(40.6, 0.8, 18.5)), repair: DK ? flyTarget(V3(78.1, -1.4, 0), V3(79.4, 0.3, 14)) : flyTarget(V3(80, -1.4, 0), V3(81.2, 0.2, 13)) };
   // цель камеры — в центре модели, место под нижнюю панель — сдвигом кадра: вращение и приближение идут вокруг модели
   const VOFF = 0.16; Object.values(VIEW).forEach((v) => { const d = VOFF * 2 * Math.tan(17 * Math.PI / 180) * v.pos.distanceTo(v.target); v.target.y += d; v.pos.y += d; });
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.struct.pos); camera.setViewOffset(1, 1, 0, VOFF, 1, 1);

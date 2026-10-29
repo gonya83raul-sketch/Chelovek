@@ -16,7 +16,7 @@ const ATP_USE = [
 ];
 const ATP_SRC = [
   { id: 'ox', name: 'Oxidative phosphorylation', color: '#FFB070', text: '<b>Oxidative phosphorylation</b> is the main route (≈90% of ATP): the energy from oxidizing NADH and FADH₂ in the mitochondrial respiratory chain creates a proton gradient that spins ATP synthase.' },
-  { id: 'sub', name: 'Substrate-level phosphorylation', color: '#C77DFF', text: '<b>Substrate-level phosphorylation</b>: phosphate is transferred to ADP directly from an energy-rich molecule — 1,3-bisphosphoglycerate and phosphoenolpyruvate in glycolysis, succinyl-CoA in the Krebs cycle. It works even without oxygen.' },
+  { id: 'sub', name: 'Substrate-level phosphorylation', color: '#C77DFF', text: '<b>Substrate-level phosphorylation</b>: phosphate is transferred to ADP directly from an energy-rich molecule — 1,3-bisphosphoglycerate and phosphoenolpyruvate in glycolysis, succinyl-CoA in the Krebs cycle (first GTP, then ATP). It works even without oxygen.' },
 ];
 const MACRO = [['PEP', 61.9, '#FF6A6A'], ['Carbamoyl-P', 51.4, '#FF8A5C'], ['1,3-BPG', 49.3, '#FF9A50'], ['Creatine-P', 43.1, '#F2C14E'], ['ATP → ADP', 30.5, '#7FD6FF'], ['Glucose-1-P', 20.9, '#9FB4D8'], ['Glucose-6-P', 13.8, '#8A94A8']];
 const CAT_ST = [
@@ -26,6 +26,7 @@ const CAT_ST = [
 ];
 function makeAtp() {
   __set_rnd(mulberry(901));
+  const DK = !matchMedia('(max-width:700px)').matches;   /* компьютер / телефон */
   const scene = bioStage({ rim: 0x7fd6ff });
   const VIEW = { cycle: flyTarget(V3(-0.4, -1.0, 0), V3(0.1, 1.4, 15.5)), funnel: flyTarget(V3(40, -0.6, 0), V3(40.4, 1.4, 16.5)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VIEW.cycle.pos);
@@ -117,7 +118,7 @@ function makeAtp() {
         if (s.d.id === 'syn' && s === use && active) s.g.userData.beads.forEach((bd, k) => { bd.position.y = 0.08 * Math.sin(k * 1.3 + t * 3); });
         if (active && rnd() < 0.3) fx.spawn(s.p.clone().add(randUnit().multiplyScalar(0.6)), randUnit().multiplyScalar(0.2), new THREE.Color(s.d.color), 0.6, 1, 1.0);
       });
-      st.phase = c < 1.6 ? 'ATP' : c < 3 ? 'hydrolysis' : c < 4.8 ? `work: ${use.d.name.toLowerCase()}` : c < 6.7 ? `resynthesis: ${src.d.name.split(' ')[0].toLowerCase()}` : 'ATP again';
+      st.phase = c < 1.6 ? 'ATP' : c < 3 ? 'hydrolysis' : c < 4.8 ? 'work' : c < 6.7 ? 'resynthesis' : 'ATP again';   /* коротко: длинное значение сталкивало цифры под описание; станция видна подсветкой */
       atpG.rotation.y = Math.sin(t * 0.3) * 0.4;
     }
     if (st.mode === 'funnel') {
@@ -130,7 +131,7 @@ function makeAtp() {
   }
   function drawScope(ctx, w, h) {
     if (st.mode !== 'cycle') { scopeShow(false); return; } scopeShow(true);
-    ctx.clearRect(0, 0, w, h); ctx.font = '500 10px JetBrains Mono, monospace'; ctx.fillStyle = '#EFEAE6'; ctx.fillText('phosphate hydrolysis energy, −ΔG°, kJ/mol', 8, 12);
+    ctx.clearRect(0, 0, w, h); const tt = 'phosphate hydrolysis energy, −ΔG°, kJ/mol'; let fs = 10; ctx.font = `500 ${fs}px JetBrains Mono, monospace`; while (fs > 7 && ctx.measureText(tt).width > w - 12) ctx.font = `500 ${--fs}px JetBrains Mono, monospace`; ctx.fillStyle = '#EFEAE6'; ctx.fillText(tt, 8, 12);
     const bh = (h - 22) / MACRO.length;
     MACRO.forEach(([n, v, c], k) => { const y = 18 + k * bh; ctx.fillStyle = c; ctx.globalAlpha = n.startsWith('ATP') ? 1 : 0.75; ctx.fillRect(84, y + 1, (w - 120) * v / 62, bh - 3); ctx.globalAlpha = 1; ctx.fillStyle = 'rgba(255,255,255,.75)'; ctx.font = '500 9px JetBrains Mono, monospace'; ctx.fillText(n, 6, y + bh - 3); ctx.fillText(v.toFixed(1), 88 + (w - 120) * v / 62, y + bh - 3); });
   }
@@ -139,11 +140,11 @@ function makeAtp() {
     funnel: '<b>Three stages of catabolism.</b> Hundreds of different food molecules converge into a few common pathways: proteins, carbohydrates and fats are broken down to monomers, the monomers to <b>acetyl-CoA</b>, and acetyl-CoA is burned in the Krebs cycle and the respiratory chain to CO₂ and water, producing ATP. The nitrogen of amino acids leaves as ammonia (and then as urea). Click a stage.',
   };
   const labels = [
-    ...stations.map((s) => ({ text: s.d.name, pos: s.p.clone().add(s.kind === 'use' ? V3(-0.6, -0.5, 0) : V3(-0.7, -0.75, 0)), color: s.d.color, show: () => st.labels && st.mode === 'cycle' })),
+    ...stations.map((s) => ({ text: s.d.name, pos: s.p.clone().add(s.kind === 'use' ? (s.d.id === 'mus' ? V3(-1.15, 0.05, 0) : V3(-0.6, -0.5, 0)) : V3(-0.7, -0.75, 0)), left: s.d.id === 'mus', color: s.d.color, show: () => st.labels && st.mode === 'cycle' && (DK || s.kind === 'src') })),   /* «мышцы» — слева, не на актине; на телефоне потребители только кнопками */
     
-    { text: 'γ-phosphate', pos: gC.clone().add(V3(0, 1.3, 0)), color: '#FF9A30', show: () => st.labels && st.mode === 'cycle' && st.cyc % 8 < 3 },
+    { text: 'γ-phosphate', pos: gC.clone().add(V3(0, DK ? 1.3 : 1.9, 0)), color: '#FF9A30', show: () => st.labels && st.mode === 'cycle' && st.cyc % 8 < 3 },
     { text: 'Pi', pos: gC.clone().add(piDir.clone().multiplyScalar(1.4)).add(V3(0.2, 1.1, 0)), color: '#FF9A30', show: () => st.labels && st.mode === 'cycle' && st.cyc % 8 > 3.6 && st.cyc % 8 < 5.4 },
-    { text: 'H₂O', pos: gC.clone().add(V3(0.5, 1.6, 0.4)), color: '#9FD8FF', show: () => st.labels && st.mode === 'cycle' && st.cyc % 8 > 1.8 && st.cyc % 8 < 3 },
+    { text: 'H₂O', pos: gC.clone().add(V3(0.5, DK ? 1.6 : 2.2, 0.4)), color: '#9FD8FF', show: () => st.labels && st.mode === 'cycle' && st.cyc % 8 > 1.8 && st.cyc % 8 < 3 },
     ...['proteins', 'polysaccharides', 'fats'].map((n, k) => ({ text: n, pos: V3(40 + lane(k) - 0.4, FY[0] + 0.85, 0), color: '#F2C14E', show: () => st.labels && st.mode === 'funnel' })),
     ...['amino acids', 'glucose', 'fatty acids + glycerol'].map((n, k) => ({ text: n, pos: V3(40 + lane(k) - 0.5, FY[1] + 0.6, 0), color: '#FF8A5C', show: () => st.labels && st.mode === 'funnel' })),
     { text: 'pyruvate', pos: V3(40 - 2.1, FY[2] + 0.55, 0), color: '#FF8A5C', show: () => st.labels && st.mode === 'funnel' },
