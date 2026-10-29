@@ -1,87 +1,177 @@
 # Кто мы? — от молекулы до мысли (Who are we? From molecule to mind)
 
-> Бесплатный интерактивный 3D-атлас человека: анатомия, клетка, мозг и биохимия — от молекулы до мысли. Вращайте модели, запускайте процессы, изучайте болезни и лекарства.
+> Бесплатный интерактивный 3D-атлас человека: анатомия, клетка, мозг и биохимия — от молекулы до мысли. Вращайте модели, запускайте процессы, изучайте болезни.
 
 Сайт: https://gonya83raul-sketch.github.io/Chelovek/ (английская версия: https://gonya83raul-sketch.github.io/Chelovek/index.en.html). Каждая тема — отдельная страница: https://gonya83raul-sketch.github.io/Chelovek/krebs.html (английская: https://gonya83raul-sketch.github.io/Chelovek/krebs.en.html). Обратная связь: https://t.me/KTOMY_ATLAS, gonya83raul@gmail.com.
 
 ## Биохимия
-- [Как работает фермент](https://gonya83raul-sketch.github.io/Chelovek/enzyme.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/enzyme.en.html)
-- [Скорость реакции и ингибиторы](https://gonya83raul-sketch.github.io/Chelovek/kinetics.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/kinetics.en.html)
-- [Регуляция и ферменты в медицине](https://gonya83raul-sketch.github.io/Chelovek/enzmed.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/enzmed.en.html)
-- [Витамины и коферменты](https://gonya83raul-sketch.github.io/Chelovek/vitamins.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/vitamins.en.html)
-- [АТФ и стадии катаболизма](https://gonya83raul-sketch.github.io/Chelovek/atp.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/atp.en.html)
-- [Пируватдегидрогеназа и цикл Кребса](https://gonya83raul-sketch.github.io/Chelovek/krebs.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/krebs.en.html)
-- [Дыхательная цепь и АТФ-синтаза](https://gonya83raul-sketch.github.io/Chelovek/etc.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/etc.en.html)
-- [Свободные радикалы и антиоксиданты](https://gonya83raul-sketch.github.io/Chelovek/radicals.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/radicals.en.html)
-- [Гликолиз, глюконеогенез, ПФП](https://gonya83raul-sketch.github.io/Chelovek/glycolysis.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/glycolysis.en.html)
-- [Гликоген и сахар крови](https://gonya83raul-sketch.github.io/Chelovek/glycogen.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/glycogen.en.html)
-- [Переваривание сахаров, лактоза, фруктоза](https://gonya83raul-sketch.github.io/Chelovek/carbdig.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/carbdig.en.html)
-- [Липиды и мембраны](https://gonya83raul-sketch.github.io/Chelovek/membrane.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/membrane.en.html)
-- [Окисление жиров и кетоновые тела](https://gonya83raul-sketch.github.io/Chelovek/betaox.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/betaox.en.html)
-- [Холестерин и липопротеины](https://gonya83raul-sketch.github.io/Chelovek/lipoprot.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/lipoprot.en.html)
-- [Синтез жиров, фосфолипиды, ожирение](https://gonya83raul-sketch.github.io/Chelovek/lipogen.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/lipogen.en.html)
-- [Эйкозаноиды и обезболивающие](https://gonya83raul-sketch.github.io/Chelovek/eicosanoids.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/eicosanoids.en.html)
-- [Белки: аминокислоты и укладка](https://gonya83raul-sketch.github.io/Chelovek/protein.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/protein.en.html)
-- [Обмен аминокислот и мочевина](https://gonya83raul-sketch.github.io/Chelovek/aminoacid.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/aminoacid.en.html)
-- [Биогенные амины, глицин и серин](https://gonya83raul-sketch.github.io/Chelovek/amines.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/amines.en.html)
-- [ДНК: строение, репликация, репарация](https://gonya83raul-sketch.github.io/Chelovek/dna.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/dna.en.html)
-- [Транскрипция и трансляция](https://gonya83raul-sketch.github.io/Chelovek/express.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/express.en.html)
-- [Нуклеотиды и подагра](https://gonya83raul-sketch.github.io/Chelovek/purine.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/purine.en.html)
-- [Антибиотики и синтез белка](https://gonya83raul-sketch.github.io/Chelovek/antibiotics.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/antibiotics.en.html)
-- [Мутации и модификация белков](https://gonya83raul-sketch.github.io/Chelovek/mutations.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/mutations.en.html)
-- [Как гормоны действуют на клетку](https://gonya83raul-sketch.github.io/Chelovek/hormsig.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/hormsig.en.html)
-- [Обмен веществ: сытость и голод](https://gonya83raul-sketch.github.io/Chelovek/fedfast.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/fedfast.en.html)
-- [Гормоны щитовидной железы](https://gonya83raul-sketch.github.io/Chelovek/thyroid.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/thyroid.en.html)
-- [Надпочечники: стероиды и стресс](https://gonya83raul-sketch.github.io/Chelovek/adrenal.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/adrenal.en.html)
-- [Кальций: паратгормон и витамин D](https://gonya83raul-sketch.github.io/Chelovek/calcium.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/calcium.en.html)
-- [Гипоталамус и гипофиз](https://gonya83raul-sketch.github.io/Chelovek/pituitary.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/pituitary.en.html)
-- [Инсулин и сахарный диабет](https://gonya83raul-sketch.github.io/Chelovek/diabetes.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/diabetes.en.html)
-- [Половые гормоны и беременность](https://gonya83raul-sketch.github.io/Chelovek/sexhorm.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/sexhorm.en.html)
-- [Гемоглобин и перенос кислорода](https://gonya83raul-sketch.github.io/Chelovek/hemoglobin.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/hemoglobin.en.html)
-- [Обмен гема и желтухи](https://gonya83raul-sketch.github.io/Chelovek/heme.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/heme.en.html)
-- [Кровь: pH, белки плазмы, свёртывание](https://gonya83raul-sketch.github.io/Chelovek/bloodchem.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/bloodchem.en.html)
-- [Печень: обезвреживание, алкоголь, парацетамол](https://gonya83raul-sketch.github.io/Chelovek/liver.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/liver.en.html)
-- [Азот крови, буферы и кислотно-основное состояние](https://gonya83raul-sketch.github.io/Chelovek/nitrogen.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/nitrogen.en.html)
+- [Как работает фермент](https://gonya83raul-sketch.github.io/Chelovek/enzyme.html): Белок-катализатор узнаёт свою молекулу, обнимает её активным центром и ускоряет реакцию в миллионы раз. Модели построены по реальным атомным структурам.
+- [Скорость реакции и ингибиторы](https://gonya83raul-sketch.github.io/Chelovek/kinetics.html): Живая модель раствора: 14 молекул фермента ловят субстрат. Меняйте концентрацию, температуру, pH и добавляйте ингибиторы — график Михаэлиса — Ментен меняется вместе с моделью.
+- [Регуляция и ферменты в медицине](https://gonya83raul-sketch.github.io/Chelovek/enzmed.html): Как клетка включает и выключает ферменты — эффекторами, фосфатом, отрезанием куска цепи — и как врачи используют ферменты для диагностики и лечения.
+- [Витамины и коферменты](https://gonya83raul-sketch.github.io/Chelovek/vitamins.html): Тринадцать веществ, которые организм не умеет делать сам. Большинство из них — детали ферментов: без витамина фермент не работает.
+- [АТФ и стадии катаболизма](https://gonya83raul-sketch.github.io/Chelovek/atp.html): Клетка не может напрямую «сжечь» сахар для работы: энергия пищи сначала переводится в универсальную валюту — АТФ. Человек за сутки синтезирует и тратит её примерно столько, сколько весит сам.
+- [Пируватдегидрогеназа и цикл Кребса](https://gonya83raul-sketch.github.io/Chelovek/krebs.html): Восемь реакций в матриксе митохондрии разбирают «активную уксусную кислоту» на два CO₂ и снимают с неё водород для дыхательной цепи.
+- [Дыхательная цепь и АТФ-синтаза](https://gonya83raul-sketch.github.io/Chelovek/etc.html): Внутренняя мембрана митохондрии: электроны бегут к кислороду, протоны выкачиваются наружу, а потом крутят молекулярную турбину, собирающую АТФ.
+- [Свободные радикалы и антиоксиданты](https://gonya83raul-sketch.github.io/Chelovek/radicals.html): Кислород даёт клетке энергию, но один неспаренный электрон превращает его в радикал, способный разрушать мембраны, белки и ДНК. Против этого у клетки целая система защиты.
+- [Гликолиз, глюконеогенез, ПФП](https://gonya83raul-sketch.github.io/Chelovek/glycolysis.html): Десять реакций цитоплазмы разрезают глюкозу на два пирувата. Дальше — лактат, спирт или митохондрия; а печень умеет пройти этот путь обратно.
+- [Гликоген и сахар крови](https://gonya83raul-sketch.github.io/Chelovek/glycogen.html): Глюкоза — быстрое топливо, но хранить её в свободном виде нельзя: вода хлынула бы в клетку. Поэтому печень и мышцы запасают её в ветвистых гранулах гликогена.
+- [Переваривание сахаров, лактоза, фруктоза](https://gonya83raul-sketch.github.io/Chelovek/carbdig.html): Хлеб, сахар и молоко превращаются в три простых сахара — глюкозу, фруктозу и галактозу. Как они проходят через стенку кишки и что бывает, когда одного фермента не хватает.
+- [Липиды и мембраны](https://gonya83raul-sketch.github.io/Chelovek/membrane.html): Жиры — самый плотный запас энергии и основа всех клеточных мембран. Их объединяет одно: они не дружат с водой.
+- [Окисление жиров и кетоновые тела](https://gonya83raul-sketch.github.io/Chelovek/betaox.html): Как жир из жировой клетки превращается в энергию: липолиз, челнок карнитина, спираль β-окисления — и запасной «бензин» для мозга при голоде.
+- [Холестерин и липопротеины](https://gonya83raul-sketch.github.io/Chelovek/lipoprot.html): Жир и холестерин не растворяются в крови, поэтому путешествуют в белково-липидных частицах. От их баланса зависит здоровье артерий.
+- [Синтез жиров, фосфолипиды, ожирение](https://gonya83raul-sketch.github.io/Chelovek/lipogen.html): Как из глюкозы и жирных кислот собирается жир и фосфолипиды мембран, почему печень может «ожиреть» и что происходит с жировой тканью, когда калорий слишком много.
+- [Эйкозаноиды и обезболивающие](https://gonya83raul-sketch.github.io/Chelovek/eicosanoids.html): Из одной жирной кислоты мембраны клетка за секунды делает сигналы боли, жара, тромба и спазма — а аспирин и ибупрофен выключают один фермент на этом пути.
+- [Белки: аминокислоты и укладка](https://gonya83raul-sketch.github.io/Chelovek/protein.html): Цепочка из двадцати видов «бусин» сама сворачивается в точную трёхмерную машину. Здесь — аминокислоты, четыре уровня структуры гемоглобина и шаперон, который помогает белкам укладываться.
+- [Обмен аминокислот и мочевина](https://gonya83raul-sketch.github.io/Chelovek/aminoacid.html): Белки пищи разбираются на аминокислоты; их азот снимается, превращается в ядовитый аммиак — и печень упаковывает его в безопасную мочевину.
+- [Биогенные амины, глицин и серин](https://gonya83raul-sketch.github.io/Chelovek/amines.html): Отщепив всего одну молекулу CO₂, клетка превращает обычную аминокислоту в мощный сигнал: гистамин, серотонин, дофамин, адреналин, ГАМК.
+- [ДНК: строение, репликация, репарация](https://gonya83raul-sketch.github.io/Chelovek/dna.html): Два метра ДНК в каждой клетке хранят инструкцию для всего организма. Как она устроена, как копируется перед делением и как чинится.
+- [Транскрипция и трансляция](https://gonya83raul-sketch.github.io/Chelovek/express.html): Центральная догма: ДНК → РНК → белок. Ген переписывается в мРНК, мРНК созревает и уходит к рибосоме, где кодоны превращаются в аминокислоты.
+- [Нуклеотиды и подагра](https://gonya83raul-sketch.github.io/Chelovek/purine.html): Из чего строятся буквы генетического кода, во что они превращаются при распаде и почему избыток мочевой кислоты оборачивается болью в суставах.
+- [Антибиотики и синтез белка](https://gonya83raul-sketch.github.io/Chelovek/antibiotics.html): Рибосома бактерий чуть отличается от нашей — и этого хватает, чтобы маленькая молекула остановила микроба, не тронув человека.
+- [Мутации и модификация белков](https://gonya83raul-sketch.github.io/Chelovek/mutations.html): Одна буква в ДНК может ничего не изменить — или превратить эритроцит в серп. А после сборки белок ещё дорабатывают: метят, режут и отправляют на уничтожение.
+- [Как гормоны действуют на клетку](https://gonya83raul-sketch.github.io/Chelovek/hormsig.html): Гормон — это письмо, а не работник: он лишь передаёт команду. Как клетка читает это письмо через рецептор на мембране или в ядре и многократно усиливает его.
+- [Обмен веществ: сытость и голод](https://gonya83raul-sketch.github.io/Chelovek/fedfast.html): Органы делят топливо как слаженная команда: после еды — запасают, натощак — делятся, при голоде — перестраиваются так, чтобы мозг не остался без питания.
+- [Гормоны щитовидной железы](https://gonya83raul-sketch.github.io/Chelovek/thyroid.html): Два гормона из аминокислоты тирозина и йода задают скорость обмена веществ во всех клетках тела — от сердца до растущего мозга.
+- [Надпочечники: стероиды и стресс](https://gonya83raul-sketch.github.io/Chelovek/adrenal.html): Две железы в одной: кора из холестерина делает стероиды — альдостерон, кортизол, андрогены, а мозговое вещество выбрасывает адреналин за секунды.
+- [Кальций: паратгормон и витамин D](https://gonya83raul-sketch.github.io/Chelovek/calcium.html): Килограмм кальция лежит в костях, а в крови — меньше грамма. Паратгормон и витамин D следят, чтобы этот грамм не сдвинулся больше чем на несколько процентов.
+- [Гипоталамус и гипофиз](https://gonya83raul-sketch.github.io/Chelovek/pituitary.html): Участок мозга размером с ноготь и железа с горошину управляют ростом, водой, стрессом, обменом веществ, размножением и молоком.
+- [Инсулин и сахарный диабет](https://gonya83raul-sketch.github.io/Chelovek/diabetes.html): Одна клетка поджелудочной меряет сахар крови с точностью до долей миллимоля — и полмиллиарда людей живут с диабетом, когда этот датчик ломается.
+- [Половые гормоны и беременность](https://gonya83raul-sketch.github.io/Chelovek/sexhorm.html): Тестостерон и эстрадиол отличаются всего одним углеродом и кольцом — но определяют, как растёт тело; а несколько миллиардов молекул ХГЧ в капле мочи дают вторую полоску на тесте.
+- [Гемоглобин и перенос кислорода](https://gonya83raul-sketch.github.io/Chelovek/hemoglobin.html): Около 270 миллионов молекул гемоглобина в каждом эритроците. Как этот белок забирает кислород в лёгких и вовремя отдаёт его тканям.
+- [Обмен гема и желтухи](https://gonya83raul-sketch.github.io/Chelovek/heme.html): Как клетка собирает гем из глицина и сукцинил-КоА — и во что он превращается, когда эритроцит отслужил свои 120 дней.
+- [Кровь: pH, белки плазмы, свёртывание](https://gonya83raul-sketch.github.io/Chelovek/bloodchem.html): Как кровь держит pH с точностью до сотых, что переносят белки плазмы и как за минуты затягивается рана.
+- [Печень: обезвреживание, алкоголь, парацетамол](https://gonya83raul-sketch.github.io/Chelovek/liver.html): Главная химическая фабрика тела: всё, что всосалось в кишечнике, сначала проходит через неё — и лекарства, и алкоголь, и яды.
+- [Азот крови, буферы и кислотно-основное состояние](https://gonya83raul-sketch.github.io/Chelovek/nitrogen.html): По нескольким числам из пробирки — мочевине, креатинину, pH и CO₂ — врач видит, как работают почки, печень и лёгкие.
 
 ## Клетка
-- [Живая клетка](https://gonya83raul-sketch.github.io/Chelovek/cell.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/cell.en.html)
+- [Живая клетка](https://gonya83raul-sketch.github.io/Chelovek/cell.html): Ядро, ЭПС, Гольджи, митохондрии и цитоскелет в разрезе. Пузырьки везут белки к мембране, по микротрубочкам едут грузы, митохондрии выдают АТФ.
 
 ## Тело
-- [Плоскости, направления и полости](https://gonya83raul-sketch.github.io/Chelovek/planes.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/planes.en.html)
-- [Отражённая боль](https://gonya83raul-sketch.github.io/Chelovek/referred.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/referred.en.html)
-- [Скелет, мышцы и сосуды](https://gonya83raul-sketch.github.io/Chelovek/skeleton.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/skeleton.en.html)
-- [Кости и суставы](https://gonya83raul-sketch.github.io/Chelovek/joints.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/joints.en.html)
-- [Сердце и кровообращение](https://gonya83raul-sketch.github.io/Chelovek/heart.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/heart.en.html)
-- [Дыхание](https://gonya83raul-sketch.github.io/Chelovek/lungs.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/lungs.en.html)
-- [Пищеварение](https://gonya83raul-sketch.github.io/Chelovek/digest.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/digest.en.html)
-- [Почки](https://gonya83raul-sketch.github.io/Chelovek/kidney.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/kidney.en.html)
-- [Кровь](https://gonya83raul-sketch.github.io/Chelovek/blood.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/blood.en.html)
-- [Эндокринная система](https://gonya83raul-sketch.github.io/Chelovek/endo.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/endo.en.html)
-- [Лимфа и иммунитет](https://gonya83raul-sketch.github.io/Chelovek/immune.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/immune.en.html)
-- [Размножение и развитие](https://gonya83raul-sketch.github.io/Chelovek/repro.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/repro.en.html)
-- [Менструальный цикл](https://gonya83raul-sketch.github.io/Chelovek/menses.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/menses.en.html)
-- [Влечение и сексуальное здоровье](https://gonya83raul-sketch.github.io/Chelovek/shealth.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/shealth.en.html)
-- [Цикл полового ответа](https://gonya83raul-sketch.github.io/Chelovek/sresp.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/sresp.en.html)
-- [Грудная клетка и молочная железа](https://gonya83raul-sketch.github.io/Chelovek/chest.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/chest.en.html)
+- [Плоскости, направления и полости](https://gonya83raul-sketch.github.io/Chelovek/planes.html): Прежде чем изучать органы, анатомы договорились, как описывать их положение: из какой позы смотреть, как резать и куда показывать.
+- [Отражённая боль](https://gonya83raul-sketch.github.io/Chelovek/referred.html): Почему при инфаркте болит левая рука, а при аппендиците сначала живот вокруг пупка: органы «жалуются» на коже своих сегментов спинного мозга.
+- [Скелет, мышцы и сосуды](https://gonya83raul-sketch.github.io/Chelovek/): Трёхмерный скан настоящего скелета с кровеносной системой поверх него. Вращайте его, приближайте и нажимайте на кости; в рентгене видно, как они соединяются в суставах.
+- [Кости и суставы](https://gonya83raul-sketch.github.io/Chelovek/joints.html): Кость — живая ткань прочнее бетона на сжатие и легче стали, а сустав скользит с трением меньше, чем лёд по льду.
+- [Сердце и кровообращение](https://gonya83raul-sketch.github.io/Chelovek/heart.html): Четыре камеры, четыре клапана и собственный водитель ритма. За жизнь сердце сокращается около 3 миллиардов раз и перекачивает 5 литров крови каждую минуту.
+- [Дыхание](https://gonya83raul-sketch.github.io/Chelovek/lungs.html): Около 20 000 вдохов в сутки. Воздух проходит по ветвящемуся дереву бронхов к сотням миллионов альвеол, где кислород за доли секунды переходит в кровь.
+- [Пищеварение](https://gonya83raul-sketch.github.io/Chelovek/digest.html): От бутерброда до глюкозы в крови — около суток пути по трубке длиной 8–10 метров, с кислотой, ферментами, желчью и триллионами бактерий.
+- [Почки](https://gonya83raul-sketch.github.io/Chelovek/kidney.html): Каждые сутки почки пропускают через себя всю кровь около 300 раз, отфильтровывают 180 литров жидкости и возвращают обратно в кровь 99% её.
+- [Кровь](https://gonya83raul-sketch.github.io/Chelovek/blood.html): Пять литров жидкой ткани: 25 триллионов эритроцитов, армия лейкоцитов и тромбоциты, которые за минуты закрывают любую ранку.
+- [Эндокринная система](https://gonya83raul-sketch.github.io/Chelovek/endo.html): Крошечные железы управляют ростом, обменом веществ, сном, стрессом и сахаром крови, рассылая по кровотоку химические письма — гормоны.
+- [Лимфа и иммунитет](https://gonya83raul-sketch.github.io/Chelovek/immune.html): Сеть сосудов и узлов, где триллион лимфоцитов патрулирует тело, узнаёт чужое и запоминает его на годы вперёд.
+- [Размножение и развитие](https://gonya83raul-sketch.github.io/Chelovek/repro.html): Как устроены половые системы, как гормоны гипофиза и яичников задают 28-дневный цикл и что происходит с новой жизнью в первую неделю.
+- [Менструальный цикл](https://gonya83raul-sketch.github.io/Chelovek/menses.html): Около 28 дней, за которые гипофиз и яичники готовят яйцеклетку и слизистую матки к возможной беременности, — по дням, с гормонами, фолликулом и эндометрием.
+- [Влечение и сексуальное здоровье](https://gonya83raul-sketch.github.io/Chelovek/shealth.html): Откуда берётся половое влечение, какие системы мозга и гормоны им управляют, и как сделать сексуальные контакты безопасными: инфекции, контрацепция и согласие.
+- [Цикл полового ответа](https://gonya83raul-sketch.github.io/Chelovek/sresp.html): Как мозг, вегетативная нервная система, сосуды и гормоны согласованно проводят тело через четыре фазы полового ответа — от возбуждения до разрешения.
+- [Грудная клетка и молочная железа](https://gonya83raul-sketch.github.io/Chelovek/chest.html): Костный каркас, который защищает сердце и лёгкие и помогает дышать, и устройство молочной железы — от долек до протоков и гормонов кормления.
 
 ## Мозг
-- [Строение нейрона](https://gonya83raul-sketch.github.io/Chelovek/soma.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/soma.en.html)
-- [Типы нейронов](https://gonya83raul-sketch.github.io/Chelovek/types.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/types.en.html)
-- [Нейрон и импульс](https://gonya83raul-sketch.github.io/Chelovek/neuron.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/neuron.en.html)
-- [Синапс и медиаторы](https://gonya83raul-sketch.github.io/Chelovek/synapse.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/synapse.en.html)
-- [Нейроглия](https://gonya83raul-sketch.github.io/Chelovek/glia.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/glia.en.html)
-- [Развитие мозга](https://gonya83raul-sketch.github.io/Chelovek/develop.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/develop.en.html)
-- [Желудочки и оболочки](https://gonya83raul-sketch.github.io/Chelovek/ventricles.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/ventricles.en.html)
-- [Спинной мозг](https://gonya83raul-sketch.github.io/Chelovek/spinal.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/spinal.en.html)
-- [Черепные нервы](https://gonya83raul-sketch.github.io/Chelovek/cranial.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/cranial.en.html)
-- [Ствол мозга](https://gonya83raul-sketch.github.io/Chelovek/stem.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/stem.en.html)
-- [Таламус и гипоталамус](https://gonya83raul-sketch.github.io/Chelovek/dien.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/dien.en.html)
-- [Полушария и базальные ганглии](https://gonya83raul-sketch.github.io/Chelovek/hemis.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/hemis.en.html)
-- [Кора больших полушарий](https://gonya83raul-sketch.github.io/Chelovek/cortex.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/cortex.en.html)
-- [Гиппокамп и память](https://gonya83raul-sketch.github.io/Chelovek/hippo.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/hippo.en.html)
-- [Мозжечок и двигательные навыки](https://gonya83raul-sketch.github.io/Chelovek/cereb.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/cereb.en.html)
-- [Системы медиаторов](https://gonya83raul-sketch.github.io/Chelovek/brain.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/brain.en.html)
-- [Зрение](https://gonya83raul-sketch.github.io/Chelovek/vision.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/vision.en.html)
-- [Слух и равновесие](https://gonya83raul-sketch.github.io/Chelovek/ear.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/ear.en.html)
-- [Кожа и осязание](https://gonya83raul-sketch.github.io/Chelovek/skin.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/skin.en.html)
-- [Обоняние и вкус](https://gonya83raul-sketch.github.io/Chelovek/chemo.html) · [EN](https://gonya83raul-sketch.github.io/Chelovek/chemo.en.html)
+- [Строение нейрона](https://gonya83raul-sketch.github.io/Chelovek/soma.html): Тело нейрона в разрезе: ядро, субстанция Ниссля, аппарат Гольджи, митохондрии и нити цитоскелета. Сигналы с синапсов сходятся к аксонному холмику, где решается, будет ли импульс.
+- [Типы нейронов](https://gonya83raul-sketch.github.io/Chelovek/types.html): Семь форм нервных клеток и маленькая нейросеть. Можно покрасить их так, как это делали Гольджи и Ниссль, или раскрасить методом Brainbow.
+- [Нейрон и импульс](https://gonya83raul-sketch.github.io/Chelovek/neuron.html): Дендриты собирают сигналы, у аксонного холмика рождается потенциал действия, и импульс скачками бежит по миелину к окончаниям.
+- [Синапс и медиаторы](https://gonya83raul-sketch.github.io/Chelovek/synapse.html): Импульс открывает кальциевые каналы, пузырьки выплёскивают медиатор, молекулы находят рецепторы, и сигнал выключают ферменты или переносчики.
+- [Нейроглия](https://gonya83raul-sketch.github.io/Chelovek/glia.html): Glia по-гречески «клей». Глия упаковывает нейроны, изолирует их, охраняет вход из крови и убирает мусор.
+- [Развитие мозга](https://gonya83raul-sketch.github.io/Chelovek/develop.html): От плоской нервной пластинки к трубке, пузырям и полушариям. Перетащите срок или запустите развитие целиком.
+- [Желудочки и оболочки](https://gonya83raul-sketch.github.io/Chelovek/ventricles.html): Внутри мозга — система полостей с ликвором, снаружи — три оболочки. Они питают, защищают и служат удобными ориентирами в анатомии.
+- [Спинной мозг](https://gonya83raul-sketch.github.io/Chelovek/spinal.html): Трубка из нервной ткани в позвоночном канале: 31 сегмент, рефлекторные дуги и проводящие пути между телом и головным мозгом.
+- [Черепные нервы](https://gonya83raul-sketch.github.io/Chelovek/cranial.html): Двенадцать пар нервов головного мозга. Каждый уникален: одни только чувствуют, другие только управляют мышцами, третьи делают и то и другое.
+- [Ствол мозга](https://gonya83raul-sketch.github.io/Chelovek/stem.html): Продолговатый и средний мозг — древние отделы, общие для всех позвоночных; мост как отдельный отдел есть только у млекопитающих.
+- [Таламус и гипоталамус](https://gonya83raul-sketch.github.io/Chelovek/dien.html): Таламус решает, какая информация попадёт в кору. Гипоталамус следит за потребностями тела и через гипофиз управляет гормонами.
+- [Полушария и базальные ганглии](https://gonya83raul-sketch.github.io/Chelovek/hemis.html): Под корой — белое вещество и ядра базальных ганглиев. Они собирают отдельные движения в программы и вместе с лимбической системой решают, что нам нужно.
+- [Кора больших полушарий](https://gonya83raul-sketch.github.io/Chelovek/cortex.html): Пять долей, 52 поля Бродмана, шесть слоёв и колонки-процессоры. Посмотрите, где говорит, видит и двигается кора и как сигнал проходит через её слои.
+- [Гиппокамп и память](https://gonya83raul-sketch.github.io/Chelovek/hippo.html): Гиппокамп держит память текущего дня: сигнал бегает по кругу Пейпеза и по трисинаптической петле, а частая стимуляция усиливает синапсы — так рождается память.
+- [Мозжечок и двигательные навыки](https://gonya83raul-sketch.github.io/Chelovek/cereb.html): Больше половины нейронов мозга — в мозжечке. На дендритах клеток Пуркинье записывается двигательная память: как быстро и точно сделать каждое движение.
+- [Системы медиаторов](https://gonya83raul-sketch.github.io/Chelovek/brain.html): Маленькие ядра в стволе и основании мозга раскидывают отростки по огромной территории. Поэтому одно вещество меняет состояние всего мозга сразу.
+- [Зрение](https://gonya83raul-sketch.github.io/Chelovek/vision.html): Путь сигнала от сетчатки до затылочной коры и оптика глаза. Выберите повреждение и посмотрите, какая часть поля зрения пропадёт.
+- [Слух и равновесие](https://gonya83raul-sketch.github.io/Chelovek/ear.html): Три крошечные косточки, улитка с жидкостью и 15 000 волосковых клеток превращают колебания воздуха в звуки, а соседние каналы следят за каждым поворотом головы.
+- [Кожа и осязание](https://gonya83raul-sketch.github.io/Chelovek/skin.html): Кусочек кожи в разрезе: три слоя, волос, железы, сосуды и пять видов рецепторов, каждый из которых отвечает на своё — касание, давление, вибрацию, растяжение или боль.
+- [Обоняние и вкус](https://gonya83raul-sketch.github.io/Chelovek/chemo.html): Два химических чувства: нос различает тысячи запахов по узору сотен рецепторов, язык — пять базовых вкусов. Вместе они дают то, что мы называем вкусом еды.
+
+## English
+
+> Free interactive 3D human atlas: anatomy, the cell, the brain and biochemistry, from molecule to mind. Rotate models, run processes, explore diseases and drugs.
+
+### Biochemistry
+- [How an enzyme works](https://gonya83raul-sketch.github.io/Chelovek/enzyme.en.html): A protein catalyst recognizes its molecule, embraces it with its active site and speeds up the reaction millions of times. The models are built from real atomic structures.
+- [Reaction rate and inhibitors](https://gonya83raul-sketch.github.io/Chelovek/kinetics.en.html): A live model of a solution: 14 enzyme molecules catch substrate. Change the concentration, temperature and pH, and add inhibitors — the Michaelis–Menten graph changes along with the model.
+- [Enzyme regulation and enzymes in medicine](https://gonya83raul-sketch.github.io/Chelovek/enzmed.en.html): How a cell switches enzymes on and off — with effectors, with phosphate, by cutting off part of the chain — and how doctors use enzymes for diagnosis and treatment.
+- [Vitamins and coenzymes](https://gonya83raul-sketch.github.io/Chelovek/vitamins.en.html): Thirteen substances the body cannot make on its own. Most of them are parts of enzymes: without the vitamin, the enzyme does not work.
+- [ATP and the stages of catabolism](https://gonya83raul-sketch.github.io/Chelovek/atp.en.html): A cell cannot “burn” sugar directly to do work: the energy of food is first converted into a universal currency — ATP. In a day, a person makes and spends roughly their own body weight of it.
+- [Pyruvate dehydrogenase and the Krebs cycle](https://gonya83raul-sketch.github.io/Chelovek/krebs.en.html): Eight reactions in the mitochondrial matrix break down “active acetate” into two CO₂ and strip off its hydrogen for the respiratory chain.
+- [Respiratory chain and ATP synthase](https://gonya83raul-sketch.github.io/Chelovek/etc.en.html): The inner mitochondrial membrane: electrons race toward oxygen, protons are pumped out, and then they spin a molecular turbine that assembles ATP.
+- [Free radicals and antioxidants](https://gonya83raul-sketch.github.io/Chelovek/radicals.en.html): Oxygen gives the cell energy, but a single unpaired electron turns it into a radical that can destroy membranes, proteins and DNA. The cell has a whole defense system against this.
+- [Glycolysis, gluconeogenesis, PPP](https://gonya83raul-sketch.github.io/Chelovek/glycolysis.en.html): Ten reactions in the cytoplasm split glucose into two pyruvates. Next comes lactate, alcohol or the mitochondrion — and the liver can run this pathway in reverse.
+- [Glycogen and blood sugar](https://gonya83raul-sketch.github.io/Chelovek/glycogen.en.html): Glucose is a fast fuel, but it cannot be stored in free form: water would rush into the cell. So the liver and muscles store it in branched glycogen granules.
+- [Sugar digestion, lactose, fructose](https://gonya83raul-sketch.github.io/Chelovek/carbdig.en.html): Bread, sugar and milk are turned into three simple sugars — glucose, fructose and galactose. How they cross the intestinal wall, and what happens when a single enzyme is missing.
+- [Lipids and membranes](https://gonya83raul-sketch.github.io/Chelovek/membrane.en.html): Fats are the densest energy store and the basis of all cell membranes. They share one trait: they don’t get along with water.
+- [Fat oxidation and ketone bodies](https://gonya83raul-sketch.github.io/Chelovek/betaox.en.html): How fat from a fat cell becomes energy: lipolysis, the carnitine shuttle, the β-oxidation spiral — and the brain’s reserve “fuel” during fasting.
+- [Cholesterol and lipoproteins](https://gonya83raul-sketch.github.io/Chelovek/lipoprot.en.html): Fat and cholesterol do not dissolve in blood, so they travel in protein–lipid particles. The health of our arteries depends on their balance.
+- [Fat synthesis, phospholipids, obesity](https://gonya83raul-sketch.github.io/Chelovek/lipogen.en.html): How fat and membrane phospholipids are assembled from glucose and fatty acids, why the liver can become “fatty”, and what happens to adipose tissue when there are too many calories.
+- [Eicosanoids and painkillers](https://gonya83raul-sketch.github.io/Chelovek/eicosanoids.en.html): From a single fatty acid of the membrane, a cell makes signals for pain, fever, clotting and spasm within seconds — and aspirin and ibuprofen switch off one enzyme on this pathway.
+- [Proteins: amino acids and folding](https://gonya83raul-sketch.github.io/Chelovek/protein.en.html): A chain of twenty kinds of “beads” folds by itself into a precise three-dimensional machine.
+- [Amino acid metabolism and urea](https://gonya83raul-sketch.github.io/Chelovek/aminoacid.en.html): Dietary proteins are broken down into amino acids; their nitrogen is removed and turned into toxic ammonia — and the liver packages it into harmless urea.
+- [Biogenic amines, glycine and serine](https://gonya83raul-sketch.github.io/Chelovek/amines.en.html): By removing just one molecule of CO₂, a cell turns an ordinary amino acid into a powerful signal: histamine, serotonin, dopamine, epinephrine, GABA.
+- [DNA: structure, replication, repair](https://gonya83raul-sketch.github.io/Chelovek/dna.en.html): Two meters of DNA in every cell hold the instructions for the whole organism. How it is built, how it is copied before division and how it is repaired.
+- [Transcription and translation](https://gonya83raul-sketch.github.io/Chelovek/express.en.html): The central dogma: DNA → RNA → protein. A gene is copied into mRNA, the mRNA matures and travels to the ribosome, where codons are turned into amino acids.
+- [Nucleotides and gout](https://gonya83raul-sketch.github.io/Chelovek/purine.en.html): What the letters of the genetic code are built from, what they turn into when broken down, and why excess uric acid ends up as joint pain.
+- [Antibiotics and protein synthesis](https://gonya83raul-sketch.github.io/Chelovek/antibiotics.en.html): The bacterial ribosome differs slightly from ours — and that is enough for a small molecule to stop a microbe without harming the person.
+- [Mutations and protein modification](https://gonya83raul-sketch.github.io/Chelovek/mutations.en.html): A single letter in DNA may change nothing — or turn a red blood cell into a sickle. And once a protein is assembled, it is still being finished: tagged, cut and sent for destruction.
+- [How hormones act on the cell](https://gonya83raul-sketch.github.io/Chelovek/hormsig.en.html): A hormone is a letter, not a worker: it only delivers a command. How the cell reads that letter through a receptor in the membrane or in the nucleus, and amplifies it many times over.
+- [Metabolism: fed and fasting](https://gonya83raul-sketch.github.io/Chelovek/fedfast.en.html): Organs share fuel like a well-coordinated team: after a meal they store it, when fasting they share it, and in starvation they adapt so that the brain is never left without food.
+- [Thyroid hormones](https://gonya83raul-sketch.github.io/Chelovek/thyroid.en.html): Two hormones made from the amino acid tyrosine and iodine set the metabolic rate of every cell in the body — from the heart to the growing brain.
+- [Adrenal glands: steroids and stress](https://gonya83raul-sketch.github.io/Chelovek/adrenal.en.html): Two glands in one: the cortex makes steroids from cholesterol — aldosterone, cortisol, androgens — while the medulla releases epinephrine within seconds.
+- [Calcium: parathyroid hormone and vitamin D](https://gonya83raul-sketch.github.io/Chelovek/calcium.en.html): There is a kilogram of calcium in the bones, but less than a gram in the blood. Parathyroid hormone and vitamin D make sure that gram does not shift by more than a few percent.
+- [Hypothalamus and pituitary](https://gonya83raul-sketch.github.io/Chelovek/pituitary.en.html): A patch of brain the size of a fingernail and a pea-sized gland control growth, water, stress, metabolism, reproduction and milk.
+- [Insulin and diabetes mellitus](https://gonya83raul-sketch.github.io/Chelovek/diabetes.en.html): A single pancreatic cell measures blood sugar to a fraction of a millimole — and half a billion people live with diabetes when this sensor breaks.
+- [Sex hormones and pregnancy](https://gonya83raul-sketch.github.io/Chelovek/sexhorm.en.html): Testosterone and estradiol differ by just one carbon and a ring — yet they shape how the body grows; and a few billion hCG molecules in a drop of urine make the second line on a test.
+- [Hemoglobin and oxygen transport](https://gonya83raul-sketch.github.io/Chelovek/hemoglobin.en.html): About 270 million hemoglobin molecules in every red blood cell. How this protein picks up oxygen in the lungs and releases it to the tissues right when they need it.
+- [Heme metabolism and jaundice](https://gonya83raul-sketch.github.io/Chelovek/heme.en.html): How the cell assembles heme from glycine and succinyl-CoA — and what it turns into once a red blood cell has served its 120 days.
+- [Blood: pH, plasma proteins, clotting](https://gonya83raul-sketch.github.io/Chelovek/bloodchem.en.html): How blood holds its pH to within hundredths, what plasma proteins carry, and how a wound seals within minutes.
+- [Liver: detoxification, alcohol, acetaminophen](https://gonya83raul-sketch.github.io/Chelovek/liver.en.html): The body’s main chemical factory: everything absorbed in the intestine passes through it first — drugs, alcohol and poisons alike.
+- [Blood nitrogen, buffers and acid–base balance](https://gonya83raul-sketch.github.io/Chelovek/nitrogen.en.html): From a few numbers from a test tube — urea, creatinine, pH and CO₂ — a doctor can see how the kidneys, liver and lungs are working.
+
+### Cell
+- [Living cell](https://gonya83raul-sketch.github.io/Chelovek/cell.en.html): Nucleus, ER, Golgi, mitochondria and cytoskeleton in cutaway. Vesicles carry proteins to the membrane, cargo travels along microtubules, mitochondria produce ATP.
+
+### Body
+- [Planes, directions and cavities](https://gonya83raul-sketch.github.io/Chelovek/planes.en.html): Before studying the organs, anatomists agreed on how to describe their position: from which pose to look, how to cut and where to point.
+- [Referred pain](https://gonya83raul-sketch.github.io/Chelovek/referred.en.html): Why a heart attack hurts in the left arm and appendicitis first around the navel: organs “complain” on the skin of their spinal cord segments.
+- [Skeleton, muscles and vessels](https://gonya83raul-sketch.github.io/Chelovek/index.en.html): A 3D scan of a real skeleton with the circulatory system on top. Rotate it, zoom in and click the bones; in X-ray mode you can see how they meet at the joints.
+- [Bones and joints](https://gonya83raul-sketch.github.io/Chelovek/joints.en.html): Bone is living tissue stronger than concrete in compression and lighter than steel, and a joint glides with less friction than ice on ice.
+- [Heart and circulation](https://gonya83raul-sketch.github.io/Chelovek/heart.en.html): Four chambers, four valves and a pacemaker of its own. Over a lifetime the heart beats about 3 billion times, pumping 5 liters of blood every minute.
+- [Breathing](https://gonya83raul-sketch.github.io/Chelovek/lungs.en.html): About 20,000 breaths a day. Air travels down the branching bronchial tree to hundreds of millions of alveoli, where oxygen passes into the blood in a fraction of a second.
+- [Digestion](https://gonya83raul-sketch.github.io/Chelovek/digest.en.html): From a sandwich to glucose in the blood takes about a day — a journey through a tube 8–10 meters long, with acid, enzymes, bile and trillions of bacteria.
+- [Kidneys](https://gonya83raul-sketch.github.io/Chelovek/kidney.en.html): Every day the kidneys pass all of the blood through themselves about 300 times, filter out 180 liters of fluid and return 99% of it to the blood.
+- [Blood](https://gonya83raul-sketch.github.io/Chelovek/blood.en.html): Five liters of liquid tissue: 25 trillion red blood cells, an army of white blood cells, and platelets that seal any small wound within minutes.
+- [Endocrine system](https://gonya83raul-sketch.github.io/Chelovek/endo.en.html): Tiny glands control growth, metabolism, sleep, stress and blood sugar by sending chemical letters — hormones — through the bloodstream.
+- [Lymph and immunity](https://gonya83raul-sketch.github.io/Chelovek/immune.en.html): A network of vessels and nodes where a trillion lymphocytes patrol the body, recognize what is foreign and remember it for years to come.
+- [Reproduction and development](https://gonya83raul-sketch.github.io/Chelovek/repro.en.html): How the reproductive systems are built, how pituitary and ovarian hormones set the 28-day cycle, and what happens to a new life in its first week.
+- [Menstrual cycle](https://gonya83raul-sketch.github.io/Chelovek/menses.en.html): The roughly 28 days during which the pituitary and ovaries prepare an egg and the uterine lining for a possible pregnancy — day by day, with hormones, the follicle and the endometrium.
+- [Desire and sexual health](https://gonya83raul-sketch.github.io/Chelovek/shealth.en.html): Where sexual desire comes from, which brain systems and hormones control it, and how to make sexual contact safe: infections, contraception and consent.
+- [Sexual response cycle](https://gonya83raul-sketch.github.io/Chelovek/sresp.en.html): How the brain, the autonomic nervous system, blood vessels and hormones work together to carry the body through the four phases of the sexual response — from excitement to resolution.
+- [Chest and breast](https://gonya83raul-sketch.github.io/Chelovek/chest.en.html): The bony frame that protects the heart and lungs and helps us breathe, and how the breast is built — from lobules to ducts and the hormones of breastfeeding.
+
+### Brain
+- [Neuron structure](https://gonya83raul-sketch.github.io/Chelovek/soma.en.html): The neuron cell body in section: nucleus, Nissl substance, Golgi apparatus, mitochondria and cytoskeletal filaments.
+- [Neuron types](https://gonya83raul-sketch.github.io/Chelovek/types.en.html): Seven shapes of nerve cells and a small neural network. You can stain them the way Golgi and Nissl did, or color them with the Brainbow method.
+- [Neuron and impulse](https://gonya83raul-sketch.github.io/Chelovek/neuron.en.html): Dendrites collect signals, an action potential is born at the axon hillock, and the impulse leaps along the myelin to the terminals.
+- [Synapse and neurotransmitters](https://gonya83raul-sketch.github.io/Chelovek/synapse.en.html): An impulse opens calcium channels, vesicles release the neurotransmitter, molecules find their receptors, and the signal is switched off by enzymes or transporters.
+- [Neuroglia](https://gonya83raul-sketch.github.io/Chelovek/glia.en.html): Glia is Greek for “glue”. Glia wrap and support neurons, insulate them, guard the entry from the blood and clear away debris.
+- [Brain development](https://gonya83raul-sketch.github.io/Chelovek/develop.en.html): From a flat neural plate to a tube, vesicles and hemispheres. Drag the age slider or play the whole development.
+- [Ventricles and meninges](https://gonya83raul-sketch.github.io/Chelovek/ventricles.en.html): Inside the brain is a system of cavities filled with CSF; outside are three membranes. They nourish and protect the brain and serve as convenient landmarks in anatomy.
+- [Spinal cord](https://gonya83raul-sketch.github.io/Chelovek/spinal.en.html): A tube of nervous tissue in the vertebral canal: 31 segments, reflex arcs and the tracts that link the body with the brain.
+- [Cranial nerves](https://gonya83raul-sketch.github.io/Chelovek/cranial.en.html): Twelve pairs of nerves of the brain. Each is unique: some only sense, others only control muscles, still others do both.
+- [Brainstem](https://gonya83raul-sketch.github.io/Chelovek/stem.en.html): The medulla oblongata and midbrain are ancient parts of the brain shared by all vertebrates; the pons stands out as a separate part only in mammals.
+- [Thalamus and hypothalamus](https://gonya83raul-sketch.github.io/Chelovek/dien.en.html): The thalamus decides which information reaches the cortex. The hypothalamus monitors the body’s needs and controls hormones through the pituitary gland.
+- [Hemispheres and basal ganglia](https://gonya83raul-sketch.github.io/Chelovek/hemis.en.html): Beneath the cortex lie the white matter and the nuclei of the basal ganglia. They assemble individual movements into programs and, together with the limbic system, decide what we need.
+- [Cerebral cortex](https://gonya83raul-sketch.github.io/Chelovek/cortex.en.html): Five lobes, 52 Brodmann areas, six layers and processor columns. See where the cortex speaks, sees and moves, and how a signal passes through its layers.
+- [Hippocampus and memory](https://gonya83raul-sketch.github.io/Chelovek/hippo.en.html): The hippocampus holds the memory of the current day: the signal runs around the Papez circuit and the trisynaptic loop, and high-frequency stimulation strengthens synapses — this is how memory is…
+- [Cerebellum and motor skills](https://gonya83raul-sketch.github.io/Chelovek/cereb.en.html): More than half of the brain’s neurons are in the cerebellum. Motor memory is written onto the dendrites of Purkinje cells: how to make each movement quickly and accurately.
+- [Neurotransmitter systems](https://gonya83raul-sketch.github.io/Chelovek/brain.en.html): Small nuclei in the brainstem and at the base of the brain send projections across a vast territory. That is why a single substance changes the state of the whole brain at once.
+- [Vision](https://gonya83raul-sketch.github.io/Chelovek/vision.en.html): The signal pathway from the retina to the occipital cortex, and the optics of the eye. Choose a lesion and see which part of the visual field disappears.
+- [Hearing and balance](https://gonya83raul-sketch.github.io/Chelovek/ear.en.html): Three tiny bones, a fluid-filled cochlea and 15,000 hair cells turn vibrations of the air into sounds, while the neighboring canals track every turn of the head.
+- [Skin and touch](https://gonya83raul-sketch.github.io/Chelovek/skin.en.html): A cross-section of skin: three layers, a hair, glands, blood vessels and five kinds of receptors, each responding to its own stimulus — touch, pressure, vibration, stretch or pain.
+- [Smell and taste](https://gonya83raul-sketch.github.io/Chelovek/chemo.en.html): Two chemical senses: the nose tells thousands of smells apart by the pattern of hundreds of receptors, and the tongue senses five basic tastes. Together they give what we call the flavor of food.
+
+## Optional
+
+- [Sitemap](https://gonya83raul-sketch.github.io/Chelovek/sitemap.xml): все страницы тем на русском и английском
