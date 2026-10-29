@@ -92,13 +92,14 @@ function makeKrebs() {
     fx.update(dt);
   }
   function drawScope(ctx, w, h) {
+    const fit = (s, x, y) => { let fs = 9; ctx.font = '500 9px JetBrains Mono, monospace'; while (fs > 6.5 && ctx.measureText(s).width > w - 14) ctx.font = `500 ${(fs -= 0.5)}px JetBrains Mono, monospace`; ctx.fillText(s, x, y); ctx.font = '500 9px JetBrains Mono, monospace'; };   /* длинная строка врезки на телефоне — мельче */
     ctx.clearRect(0, 0, w, h); ctx.font = '500 10px JetBrains Mono, monospace'; ctx.fillStyle = '#EFEAE6'; ctx.fillText('yield per turn (per acetyl-CoA)', 8, 12);
     const rows = [['3 NADH', 9, 7.5, '#FFD070'], ['1 FADH₂', 2, 1.5, '#FFE45A'], ['1 GTP', 1, 1, '#7FE0A0']];
     let x0 = 8, y = 22; const W = w - 16;
     rows.forEach(([n, a, b, c]) => { ctx.fillStyle = c; ctx.globalAlpha = 0.85; ctx.fillRect(x0, y, W * a / 12, 18); ctx.globalAlpha = 1; ctx.fillStyle = '#120F0B'; ctx.font = '600 9px JetBrains Mono, monospace'; if (W * a / 12 > 40) ctx.fillText(n, x0 + 4, y + 12); x0 += W * a / 12; });
-    ctx.fillStyle = 'rgba(255,255,255,.7)'; ctx.font = '500 9px JetBrains Mono, monospace'; ctx.fillText('textbook values (P/O = 3 and 2): 9 + 2 + 1 = 12 ATP', 8, y + 32);
+    ctx.fillStyle = 'rgba(255,255,255,.7)'; ctx.font = '500 9px JetBrains Mono, monospace'; fit('textbook values (P/O = 3 and 2): 9 + 2 + 1 = 12 ATP', 8, y + 32);
     x0 = 8; y += 42; rows.forEach(([, a, b, c]) => { ctx.fillStyle = c; ctx.globalAlpha = 0.55; ctx.fillRect(x0, y, W * b / 12, 12); ctx.globalAlpha = 1; x0 += W * b / 12; });
-    ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.fillText('current estimates (2.5 and 1.5): ≈ 10 ATP', 8, y + 24);
+    ctx.fillStyle = 'rgba(255,255,255,.55)'; fit('current estimates (2.5 and 1.5): ≈ 10 ATP', 8, y + 24);
     ctx.fillStyle = 'rgba(255,255,255,.45)'; ctx.fillText(`since start: ${st.turns} turns · ${st.co2} CO₂`, 8, h - 6);
   }
   const TXT = '<b>The tricarboxylic acid cycle</b> (Krebs cycle, citric acid cycle) in the mitochondrial matrix is the “furnace” where the remnants of every kind of fuel are burned. Acetyl-CoA (C2) combines with oxaloacetate (C4) to form citrate (C6); each turn releases <b>2 CO₂</b> and produces <b>3 NADH, 1 FADH₂ and 1 GTP</b>, while oxaloacetate is regenerated. The reduced coenzymes (gold beads) fly off to the respiratory chain (right). On the left is the <b>pyruvate dehydrogenase complex</b>, which converts pyruvate into acetyl-CoA. Click a molecule or the complex.';

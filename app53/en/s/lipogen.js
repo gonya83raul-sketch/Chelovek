@@ -150,7 +150,7 @@ function makeLipogen() {
   };
   const labels = [
     ...ST.map((s) => ({ text: s.name, pos: V3(s.x + 0.6 - Math.min(1.0, s.name.length * 0.05), Y1 + s.R + 0.2, 0), color: COL[s.id], show: () => st.labels && st.mode === 'tag' })),
-    ...ENZ1.map((n, i) => ({ text: n, pos: V3((ST[i].x + ST[i + 1].x) / 2 - n.length * 0.034, Y1 - 1.05, 0.3),   /* под стрелкой, ниже хвостов молекул */ color: '#C8C8D0', show: () => st.labels && st.mode === 'tag' })),
+    ...ENZ1.map((n, i) => ({ text: n, pos: V3((ST[i].x + ST[i + 1].x) / 2 - n.length * 0.034, Y1 - 1.05, 0.3),   /* под стрелкой, ниже хвостов молекул */ color: '#C8C8D0', show: () => st.labels && st.mode === 'tag' && DK })),
     { text: 'acyl-CoA', pos: V3(-0.9 + 0.6, Y1 + 2.0, 0.4), color: COL.acyl, show: () => st.labels && st.mode === 'tag' && st.cyc > 0.8 && st.cyc < 2.4 },
     { text: 'glucose → DHAP', pos: V3(-4.4 + 0.6, -1.85, 0.2), color: COL.g3p, show: () => st.labels && st.mode === 'tag' },
     { text: 'glycerol (liver)', pos: V3(-2.3 + 0.6, -1.85, 0.2), color: COL.g3p, show: () => st.labels && st.mode === 'tag' && st.tissue === 'liver' },

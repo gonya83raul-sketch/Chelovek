@@ -171,7 +171,7 @@ function makeEicosanoids() {
     { text: 'platelets: TXA₂', pos: INJ.clone().add(V3(40 + 0.35, 0.45, 0.5)), color: '#C77DFF', show: () => st.labels && st.mode === 'platelet' },
     { text: 'endothelium: PGI₂', pos: V3(40 - 3.3, 0.9, -0.95), color: '#7FD6FF', show: () => st.labels && st.mode === 'platelet' },
     { text: 'red blood cells', pos: V3(40 + 2.9, 1.55, 0.3), color: '#FF8A8A', show: () => st.labels && st.mode === 'platelet' },
-    ...Object.entries(SITES).map(([k, s]) => ({ text: s.name, pos: s.p.clone().add(V3(80 + (k === 'kidney' ? -1.15 : k === 'joint' ? 0.15 : 0.25), 0.12, 0.15)), color: s.col, show: () => st.labels && st.mode === 'organs' })),
+    ...Object.entries(SITES).map(([k, s]) => ({ text: s.name, pos: s.p.clone().add(V3(80 + (k === 'kidney' ? -1.15 : k === 'joint' ? 0.15 : 0.25), k === 'joint' && !DK ? -0.3 : 0.12, 0.15)), color: s.col, show: () => st.labels && st.mode === 'organs' })),
   ];
   const refs = {};
   function ui(el) {

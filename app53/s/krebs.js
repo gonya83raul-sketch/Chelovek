@@ -92,13 +92,14 @@ function makeKrebs() {
     fx.update(dt);
   }
   function drawScope(ctx, w, h) {
+    const fit = (s, x, y) => { let fs = 9; ctx.font = '500 9px JetBrains Mono, monospace'; while (fs > 6.5 && ctx.measureText(s).width > w - 14) ctx.font = `500 ${(fs -= 0.5)}px JetBrains Mono, monospace`; ctx.fillText(s, x, y); ctx.font = '500 9px JetBrains Mono, monospace'; };   /* длинная строка врезки на телефоне — мельче */
     ctx.clearRect(0, 0, w, h); ctx.font = '500 10px JetBrains Mono, monospace'; ctx.fillStyle = '#EFEAE6'; ctx.fillText('выход за 1 оборот (на ацетил-КоА)', 8, 12);
     const rows = [['3 НАДН', 9, 7.5, '#FFD070'], ['1 ФАДН₂', 2, 1.5, '#FFE45A'], ['1 ГТФ', 1, 1, '#7FE0A0']];
     let x0 = 8, y = 22; const W = w - 16;
     rows.forEach(([n, a, b, c]) => { ctx.fillStyle = c; ctx.globalAlpha = 0.85; ctx.fillRect(x0, y, W * a / 12, 18); ctx.globalAlpha = 1; ctx.fillStyle = '#120F0B'; ctx.font = '600 9px JetBrains Mono, monospace'; if (W * a / 12 > 40) ctx.fillText(n, x0 + 4, y + 12); x0 += W * a / 12; });
-    ctx.fillStyle = 'rgba(255,255,255,.7)'; ctx.font = '500 9px JetBrains Mono, monospace'; ctx.fillText('по учебнику (P/O = 3 и 2): 9 + 2 + 1 = 12 АТФ', 8, y + 32);
+    ctx.fillStyle = 'rgba(255,255,255,.7)'; ctx.font = '500 9px JetBrains Mono, monospace'; fit('по учебнику (P/O = 3 и 2): 9 + 2 + 1 = 12 АТФ', 8, y + 32);
     x0 = 8; y += 42; rows.forEach(([, a, b, c]) => { ctx.fillStyle = c; ctx.globalAlpha = 0.55; ctx.fillRect(x0, y, W * b / 12, 12); ctx.globalAlpha = 1; x0 += W * b / 12; });
-    ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.fillText('по современным данным (2,5 и 1,5): ≈ 10 АТФ', 8, y + 24);
+    ctx.fillStyle = 'rgba(255,255,255,.55)'; fit('по современным данным (2,5 и 1,5): ≈ 10 АТФ', 8, y + 24);
     ctx.fillStyle = 'rgba(255,255,255,.45)'; ctx.fillText(`с начала: ${st.turns} оборотов · ${st.co2} CO₂`, 8, h - 6);
   }
   const TXT = '<b>Цикл трикарбоновых кислот</b> (цикл Кребса, цитратный цикл) в матриксе митохондрий — «котёл», где сгорают остатки всех видов топлива. Ацетил-КоА (C2) соединяется с оксалоацетатом (C4) в цитрат (C6); за оборот уходят <b>2 CO₂</b>, образуются <b>3 НАДН, 1 ФАДН₂ и 1 ГТФ</b>, а оксалоацетат возвращается. Восстановленные коферменты (золотые шарики) летят в дыхательную цепь (справа). Слева — <b>пируватдегидрогеназный комплекс</b>, превращающий пируват в ацетил-КоА. Нажмите на молекулу или комплекс.';
