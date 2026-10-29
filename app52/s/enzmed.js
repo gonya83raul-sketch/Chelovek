@@ -20,7 +20,8 @@ function makeEnzmed() {
   __set_rnd(mulberry(733));
   const scene = bioStage({ rim: 0xc77dff });
   const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: кадр уходит из-под заголовка и описания (телефон — прежний ракурс)
-  const VIEW = { allo: DK ? flyTarget(V3(-0.4, -1.0, 0), V3(1.1, 0.7, 15)) : flyTarget(V3(0, -1.5, 0), V3(1.08, -0.28, 10.4)), phos: flyTarget(V3(40, -1, 0), V3(41, 1.0, 14)), prot: flyTarget(V3(80, -1.2, 0), V3(81.4, 1.6, 17)), ldh: flyTarget(V3(120, -0.6, 0), V3(120, 2.4, 13.5)), drug: flyTarget(V3(160, -1.2, 0), V3(160, 3.2, 18)) };
+  const LSP = 1.95, DSP = DK ? 2.75 : 3.0;   /* шаг рядов ЛДГ и лекарств */
+  const VIEW = { allo: DK ? flyTarget(V3(-0.4, -1.0, 0), V3(1.1, 0.7, 15)) : flyTarget(V3(0, -1.5, 0), V3(1.08, -0.28, 10.4)), phos: DK ? flyTarget(V3(39.4, -0.9, 0), V3(40.4, 1.2, 17.6)) : flyTarget(V3(40, -1, 0), V3(41, 1.0, 14)), prot: flyTarget(V3(80, -1.2, 0), V3(81.4, 1.6, 17)), ldh: DK ? flyTarget(V3(117.2, -1.7, 0), V3(117.2, 1.3, 18)) : flyTarget(V3(119.4, -0.6, 0), V3(119.4, 3.1, 16.7)), drug: DK ? flyTarget(V3(156.9, -1.2, 0), V3(156.9, 3.9, 21.8)) : flyTarget(V3(159.5, -1.2, 0), V3(159.5, 3.64, 19.8)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 500); camera.position.copy(VIEW.allo.pos);
   const controls = makeControls(camera, VIEW.allo.target); controls.minDistance = 2; controls.maxDistance = 40;
   const fx = new Sparks(1500, 0.08); scene.add(fx.obj);
@@ -80,7 +81,7 @@ function makeEnzmed() {
   /* ---------- 4. изоферменты ЛДГ ---------- */
   const G4 = new THREE.Group(); G4.position.set(120, 0, 0); scene.add(G4);
   const LDH = [0, 1, 2, 3, 4].map((k) => {
-    const g = new THREE.Group(); g.position.set((k - 2) * 2.3, 0.2, 0); G4.add(g);
+    const g = new THREE.Group(); g.position.set((k - 2) * LSP, 0.2, 0); G4.add(g);
     const nH = 4 - k; const subs = [];
     for (let j = 0; j < 4; j++) { const isH = j < nH; const m = new THREE.Mesh(blobGeo(0.42, 0.5, 0.42, k * 4 + j + 3, 0.1, 4), protMat(isH ? '#5B8CFF' : '#FF6A6A', 0.26)); const a = j * Math.PI / 2 + 0.6; m.position.set(Math.cos(a) * 0.42, (j % 2 ? 0.22 : -0.22), Math.sin(a) * 0.42); g.add(m); subs.push(m); }
     return { g, subs };
@@ -88,7 +89,7 @@ function makeEnzmed() {
   /* ---------- 5. лекарства ---------- */
   const G5 = new THREE.Group(); G5.position.set(160, 0, 0); scene.add(G5);
   const DR = EM_DRUGS.map((d, k) => {
-    const g = new THREE.Group(); g.position.set((k - 1.5) * 3.8, 0, 0); G5.add(g);
+    const g = new THREE.Group(); g.position.set((k - 1.5) * DSP, 0, 0); G5.add(g);
     // белок по центру своей станции и к одному размеру; лиганды — Ван-дер-Ваальс, ленты полупрозрачные
     const S = PDB(d.pdb); const pts = caPoints(d.pdb, 1); const c0 = pts.reduce((q, v) => q.add(v), V3(0, 0, 0)).multiplyScalar(1 / pts.length);
     const sc = 1.5 / Math.max(...pts.map((v) => v.distanceTo(c0)));
@@ -201,8 +202,8 @@ function makeEnzmed() {
     { text: 'His57', pos: rotF(caF(iH)).add(V3(80.15, 0.15, 0)), color: '#7FD6FF', show: () => st.labels && st.mode === 'prot' && st.act },
     { text: 'Asp102', pos: rotF(caF(iD)).add(V3(80.15, -0.15, 0)), color: '#FF6A6A', show: () => st.labels && st.mode === 'prot' && st.act },
     { text: 'Ser195', pos: rotF(caF(iS)).add(V3(80.15, 0.15, 0)), color: '#F2C14E', show: () => st.labels && st.mode === 'prot' && st.act },
-    ...[0, 1, 2, 3, 4].map((k) => ({ text: `ЛДГ${k + 1} · ${'H'.repeat(4 - k)}${'M'.repeat(k)}`, pos: V3(120 + (k - 2) * 2.3 - 0.5, -1.15, 0), color: k < 2 ? '#7FA8FF' : k > 2 ? '#FF8A8A' : '#C8A8D8', show: () => st.labels && st.mode === 'ldh' })),
-    ...EM_DRUGS.map((d, k) => ({ text: d.name, pos: V3(160 + (k - 1.5) * 3.8 - 1.2, (k % 2 ? -2.5 : -2.05), 0), color: d.color, show: () => st.labels && st.mode === 'drug' && (!st.drug || st.drug === d.id) })),
+    ...[0, 1, 2, 3, 4].map((k) => ({ text: `ЛДГ${k + 1} · ${'H'.repeat(4 - k)}${'M'.repeat(k)}`, pos: V3(120 + (k - 2) * LSP - 0.5, DK ? 1.55 : -1.15, 0), color: k < 2 ? '#7FA8FF' : k > 2 ? '#FF8A8A' : '#C8A8D8', show: () => st.labels && st.mode === 'ldh' })),
+    ...EM_DRUGS.map((d, k) => ({ text: d.name, pos: V3(160 + (k - 1.5) * DSP - 1.2, (k % 2 ? -2.5 : -2.05), 0), color: d.color, show: () => st.labels && st.mode === 'drug' && (!st.drug || st.drug === d.id) })),
   ];
   const refs = {};
   function ui(el) {
