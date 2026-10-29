@@ -1492,7 +1492,7 @@ function makeCell() {
   rnd = mulberry(31);
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x06070a); scene.environment = envTex; scene.fog = new THREE.FogExp2(0x06070a, 0.016);
   addLights(scene, 0x7aa8ff);
-  const camera = new THREE.PerspectiveCamera(38, 1, 0.05, 200); camera.position.set(12.4, 7.3, 15.2);
+  const camera = new THREE.PerspectiveCamera(38, 1, 0.05, 200); camera.position.set(13.1, 7.7, 16.1);
   const controls = makeControls(camera, V3(0, 0, 0)); controls.minDistance = 1.5; controls.maxDistance = 40; controls.autoRotate = true; controls.autoRotateSpeed = 0.3;
 
   const CELL_R = 6, YS = 0.82, NUC = V3(0.3, 0, 0.2), NUC_R = 2.0;
@@ -1705,7 +1705,7 @@ function makeCell() {
   function select(id) {
     if (st.sel) ORG[st.sel].mats.forEach((m) => { m.emissive.copy(m.userData.e0.c); m.emissiveIntensity = m.userData.e0.i; });
     st.sel = id === 'all' ? null : id; st.focusT = 1.8;
-    st.focus = st.sel ? { target: (LBL[st.sel] && LVIS[st.sel] ? LBL[st.sel] : ORG[st.sel].anchor).clone(), dist: ORG[st.sel].dist } : { target: V3(0, 0, 0), dist: 21 };
+    st.focus = st.sel ? { target: (LBL[st.sel] && LVIS[st.sel] ? LBL[st.sel] : ORG[st.sel].anchor).clone(), dist: ORG[st.sel].dist } : { target: V3(0, 0, 0), dist: 22.2 };
     accentSet(st.sel ? ORG[st.sel].color : '#9CC8FF');
     refs.setInfo && refs.setInfo(); refs.seg && refs.seg.sync();
   }
@@ -1798,7 +1798,7 @@ function makeCell() {
   }
   function stats() { return st.sel ? [['Размер', ORG[st.sel].size, '']] : [['Клетка', '≈ 20', 'мкм'], ['Органоидов', ORGANELLES.length, '']]; }
   const self = {
-    labelBg: true, mobZoom: 0.66, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, get accent() { return st.sel ? ORG[st.sel].color : '#9CC8FF'; },
+    labelBg: true, mobZoom: 0.62, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, get accent() { return st.sel ? ORG[st.sel].color : '#9CC8FF'; },
     kicker: 'Клетка · строение', title: 'Живая клетка',
     lede: 'Ядро, ЭПС, Гольджи, митохондрии и цитоскелет в разрезе. Пузырьки везут белки к мембране, по микротрубочкам едут грузы, митохондрии выдают АТФ.',
     notes: `
