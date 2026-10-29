@@ -4156,7 +4156,7 @@ function makeSoma() {
       scene.add(tag(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 40, 0.028, 5), chrom), 'nuc', c === 0)); } }
   const NO = NUC.clone().add(V3(0.25, 0.15, 0.1));
   scene.add(tag(new THREE.Mesh(displaceGeo(new THREE.IcosahedronGeometry(0.4, 4), (v) => { const n = v.clone().normalize(); v.multiplyScalar(1 + 0.12 * noise3(n.x * 4, n.y * 4, n.z * 4)); v.add(NO); }), clip(tissue(0x4a1a48, { roughness: 0.75, emissive: 0x1a0616 }))), 'nucl'));
-  PART.nuc.anchor = NUC.clone().add(V3(-0.9, 1.1, 0.6)); PART.nuc.dist = 7;
+  PART.nuc.anchor = NUC.clone().add(V3(-0.9, 1.9, 0.6)); PART.nuc.dist = 7;
   PART.nucl.anchor = NO.clone(); PART.nucl.dist = 3.5;
 
   const inSoma = (p, m = 0) => { const q = V3(p.x, p.y / YS, p.z); const n = q.clone().normalize(); return q.length() < SR * (1 + bump(n) * 0.6) - m; };
@@ -4166,10 +4166,10 @@ function makeSoma() {
   /* ---------- субстанция Ниссля: стопки шероховатой ЭПС ---------- */
   const nisMat = clip(tissue(0x4fa9dc, { transparent: true, opacity: 0.85, side: THREE.DoubleSide, roughness: 0.3, emissive: 0x06263a }));
   const riboPts = [], nisSpots = [];
-  for (let i = 0; i < 17; i++) {
-    const p = sample((q) => inSoma(q, 0.55) && q.distanceTo(NUC) > NR + 0.45 && !nearHill(q) && nisSpots.every((s) => s.distanceTo(q) > 0.95)); nisSpots.push(p);
+  for (let i = 0; i < 11; i++) {
+    const p = sample((q) => inSoma(q, 0.55) && q.distanceTo(NUC) > NR + 0.45 && !nearHill(q) && nisSpots.every((s) => s.distanceTo(q) > 1.2)); nisSpots.push(p);
     const g = new THREE.Group(); g.position.copy(p); g.quaternion.setFromUnitVectors(Y, p.clone().sub(NUC).normalize()); scene.add(g);
-    const w = rand(0.45, 0.7);
+    const w = rand(0.6, 0.85);
     for (let k = 0; k < 5; k++) {
       const sh = displaceGeo(new THREE.SphereGeometry(1, 30, 12), (v) => { v.set(v.x * w, v.y * 0.035 + (k - 2) * 0.1, v.z * w * 0.6); v.y += 0.18 * (v.x * v.x); });
       const m = new THREE.Mesh(sh, nisMat); g.add(tag(m, 'nissl', i === 0 && k === 0));
@@ -4202,7 +4202,7 @@ function makeSoma() {
   const moMat = clip(tissue(0xd9663a, { transparent: true, opacity: 0.6, depthWrite: false, roughness: 0.3, clearcoat: 1 }));
   const crMat = clip(tissue(0xffb07a, { roughness: 0.45, emissive: 0x2a0e00 }));
   const mitos = [];
-  for (let i = 0; i < 11; i++) {
+  for (let i = 0; i < 8; i++) {
     const p = sample((q) => inSoma(q, 0.5) && q.distanceTo(NUC) > NR + 0.35 && free(q, 0.75)); spots.push(p);
     const g = new THREE.Group(); g.position.copy(p); g.quaternion.setFromUnitVectors(Y, randUnit()); const len = rand(0.35, 0.7);
     g.add(tag(new THREE.Mesh(new THREE.CapsuleGeometry(0.17, len, 8, 16), moMat), 'mito', i === 0));
