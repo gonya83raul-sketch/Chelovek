@@ -23,7 +23,7 @@ function makeHormsig() {
   __set_rnd(mulberry(2201));
   const scene = bioStage({ rim: 0xff8a5c });
   const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: кадр уходит из-под заголовка и описания (телефон — прежний ракурс)
-  const VIEW = { camp: DK ? flyTarget(V3(-3.0, 0.0, 0), V3(-2.0, 2.2, 23)) : flyTarget(V3(-0.6, -1.8, 0), V3(0.4, 0.4, 19.5)), ster: DK ? flyTarget(V3(37.3, -0.4, 0), V3(37.9, 1.8, 18)) : flyTarget(V3(40, -1.4, 0), V3(40.6, 0.8, 18)), ins: DK ? flyTarget(V3(75.0, 0.15, 0), V3(75.9, 3.5, 26)) : flyTarget(V3(80, -1.4, 0), V3(80.6, 0.8, 17)), chem: DK ? flyTarget(V3(119.6, 0.15, 0), V3(119.6, 3.05, 23)) : flyTarget(V3(120, -1.6, 0), V3(120, 0.6, 17.5)) };
+  const VIEW = { camp: DK ? flyTarget(V3(-3.0, 0.0, 0), V3(-2.0, 2.2, 23)) : flyTarget(V3(-0.6, -1.8, 0), V3(0.4, 0.4, 19.5)), ster: DK ? flyTarget(V3(37.3, -0.8, 0), V3(37.9, 1.4, 18)) : flyTarget(V3(40, -1.4, 0), V3(40.6, 0.8, 18)), ins: DK ? flyTarget(V3(75.0, 0.15, 0), V3(75.9, 3.5, 26)) : flyTarget(V3(80, -1.4, 0), V3(80.6, 0.8, 17)), chem: DK ? flyTarget(V3(119.6, 0.15, 0), V3(119.6, 3.05, 23)) : flyTarget(V3(119.7, -1.6, 0), V3(119.7, 0.6, 23)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.camp.pos);
   const controls = makeControls(camera, VIEW.camp.target); controls.minDistance = 2; controls.maxDistance = 40;
   const fx = new Sparks(1800, 0.08); scene.add(fx.obj);
