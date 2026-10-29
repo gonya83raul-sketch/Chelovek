@@ -12,7 +12,7 @@ Object.assign(BIO_MOL, {"b12":{"name":"Кобаламин (B12), ядро","el":
 function makeAmines() {
   __set_rnd(mulberry(6201));
   const scene = bioStage({ rim: 0x9fe870 });
-  const VIEW = { decarb: [V3(1.4, -0.35, 0), V3(2.0, 1.6, 19.5)], fate: [V3(41.2, -0.2, 0), V3(41.8, 1.6, 17.5)], onec: [V3(81.0, -1.6, 0), V3(81.6, 0.3, 18.5)] };
+  const VIEW = { decarb: [V3(1.0, -0.35, 0), V3(1.6, 1.6, 19.5)], fate: [V3(41.2, 0.5, 0), V3(41.8, 2.3, 17.5)], onec: [V3(81.0, -1.6, 0), V3(81.6, 0.3, 18.5)] };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VIEW.decarb[1]);
   const controls = makeControls(camera, VIEW.decarb[0]); controls.minDistance = 3; controls.maxDistance = 40;
   const fx = new Sparks(1800, 0.08); scene.add(fx.obj);
@@ -20,7 +20,7 @@ function makeAmines() {
 
   /* ---------- 1. декарбоксилирование ---------- */
   const G1 = new THREE.Group(); scene.add(G1);
-  const XS = [-1.0, 1.45, 3.9, 6.35, 8.8];
+  const XS = [-1.0, 1.35, 3.7, 6.05, 8.4];
   // телефон: выбранный путь столбиком сверху вниз (ряд из пяти молекул по ширине не помещается); остальные пути скрыты
   const MOB = matchMedia('(max-width:700px)').matches;
   const NP = (r, i) => (MOB ? V3(0, 2.8 - i * 1.6, 0) : V3(XS[i], r.y, 0)), MP = (r, i) => NP(r, i).lerp(NP(r, i + 1), 0.5);
@@ -127,7 +127,7 @@ function makeAmines() {
   const SITTXT = { calm: TXT.fate, mood: '<b>Настроение и мотивация.</b> Дофамин — сигнал «награды» и желания действовать, серотонин — спокойствия и удовлетворения, норадреналин — бодрости и внимания. При депрессии эти системы работают слабее; антидепрессанты увеличивают концентрацию аминов в синапсах.', night: '<b>Ночь.</b> Когда свет перестаёт попадать на сетчатку, эпифиз из серотонина синтезирует <b>мелатонин</b> — его уровень растёт в 10 раз. Мелатонин сообщает организму «сейчас ночь»: снижается температура, хочется спать. Яркий свет экранов вечером тормозит его выработку.', stress: '<b>Стресс.</b> Симпатическая система за секунды выбрасывает <b>норадреналин</b>, мозговое вещество надпочечников — <b>адреналин</b>: учащается пульс, растёт давление, расширяются бронхи и зрачки, печень отдаёт глюкозу — реакция «бей или беги».', allergy: '<b>Аллергия.</b> Антиген связывается с IgE на тучных клетках — они высвобождают <b>гистамин</b>: зуд, крапивница, насморк, спазм бронхов; в тяжёлом случае — анафилактический шок. Помогают антигистаминные препараты, при анафилаксии — адреналин.', sleep: '<b>Снотворные и успокаивающие</b> (бензодиазепины) усиливают действие <b>ГАМК</b> на её рецепторы — хлорный канал открывается чаще, нейроны тормозятся. Алкоголь действует похоже, поэтому их сочетание опасно.' };
   const labels = [
     ...ROWS.flatMap((r) => r.chain.map(([id, n], i) => ({ text: n, pos: MOB ? NP(r, i).add(V3(0.6, 0.05, 0.3)) : V3(XS[i] - 0.25, r.y - 0.62, 0.3), color: r.col, show: () => st.labels && st.mode === 'decarb' && (st.row === r.id || !MOB && i === 0) }))),
-    ...ROWS.flatMap((r) => STEPN[r.id].map((n, i) => ({ text: n, pos: MOB ? MP(r, i).add(V3(0.35, 0, 0.3)) : V3((XS[i] + XS[i + 1]) / 2 - 0.55, r.y - 0.3, 0.3), color: '#C8C8D0', show: () => st.labels && st.mode === 'decarb' && st.row === r.id }))),
+    ...ROWS.flatMap((r) => STEPN[r.id].map((n, i) => ({ text: n, pos: MOB ? MP(r, i).add(V3(0.35, 0, 0.3)) : V3((XS[i] + XS[i + 1]) / 2 - 0.55, r.y - 0.3, 0.3), color: r.col, show: () => st.labels && st.mode === 'decarb' && st.row === r.id }))),
     { text: 'мозг', pos: V3(40.45, 4.55, 0.1), color: '#9F7BFF', show: () => st.labels && st.mode === 'fate' }, { text: 'эпифиз', pos: V3(40 - 0.95, 4.15, 0), color: '#7FD6FF', show: () => st.labels && st.mode === 'fate' },
     { text: 'надпочечник', pos: V3(40 + 0.6, 1.25, 0), color: '#F2C14E', show: () => st.labels && st.mode === 'fate' }, { text: 'бронхи', pos: V3(40 - 1.3, 2.4, 0), color: '#FF8AB0', show: () => st.labels && st.mode === 'fate' },
     { text: 'кожа', pos: V3(40 + 1.45, 1.75, 0.2), color: '#FF8AB0', show: () => st.labels && st.mode === 'fate' }, { text: 'кишечник', pos: V3(40 + 0.25, 0.25, 0.3), color: '#7FD6FF', show: () => st.labels && st.mode === 'fate' },

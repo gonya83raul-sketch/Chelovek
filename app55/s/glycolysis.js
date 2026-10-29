@@ -36,12 +36,12 @@ function makeGlycolysis() {
   __set_rnd(mulberry(1201));
   const scene = bioStage({ rim: 0xff8ab0 });
   const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: кадр уходит из-под заголовка и описания (телефон — прежний ракурс)
-  const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 200); camera.position.set(-1.1, DK ? 1.5 : 0.8, DK ? 25 : 22);
+  const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 200); camera.position.set(-1.1, DK ? 1.5 : 0.8, DK ? 25 : 24.5);
   const controls = makeControls(camera, V3(-1.1, DK ? -1.4 : -2.0, 0)); controls.minDistance = 4; controls.maxDistance = 40;
   controls.minAzimuthAngle = -0.6; controls.maxAzimuthAngle = 0.6; controls.minPolarAngle = 1.1; controls.maxPolarAngle = 2.0; // плоская схема: подписи не уходят к соседям
   const fx = new Sparks(1600, 0.09); scene.add(fx.obj);
   const NP = (id) => V3(GL_N[id][0], GL_N[id][1], 0);
-  const NODE = {}; Object.keys(GL_N).forEach((id) => { const m = molMesh(MOL(id), { scale: id === 'acetyl' ? 0.22 : 0.18, hideH: true }); m.position.copy(NP(id)); scene.add(m); NODE[id] = m; });
+  const NODE = {}; Object.keys(GL_N).forEach((id) => { const m = molMesh(MOL(id), { scale: DK ? (id === 'acetyl' ? 0.22 : 0.18) : (id === 'acetyl' ? 0.3 : 0.26), hideH: true }); m.position.copy(NP(id)); scene.add(m); NODE[id] = m; });
   const EDGE = {};
   GL_E.forEach(([id, a, b, name, n, tk]) => {
     const pa = NP(a), pb = NP(b), d = pb.clone().sub(pa); const L = d.length(); d.normalize();
@@ -93,7 +93,7 @@ function makeGlycolysis() {
     rows.forEach(([n, v, c], k) => { const y = 22 + k * 22; ctx.fillStyle = 'rgba(255,255,255,.7)'; ctx.font = '500 9px JetBrains Mono, monospace'; ctx.fillText(n, 8, y + 11); ctx.fillStyle = c; ctx.globalAlpha = 0.85; ctx.fillRect(120, y, (w - 160) * Math.abs(v) / mx, 14); ctx.globalAlpha = 1; ctx.fillStyle = '#EFEAE6'; ctx.fillText((v > 0 ? '+' : '') + v, 124 + (w - 160) * Math.abs(v) / mx, y + 11); });
   }
   const labels = [
-    ...Object.keys(GL_N).map((id) => ({ text: MOL(id).name, pos: NP(id).add(id === 'glucose' ? V3(-0.2, 0.75, 0) : id === 'dhap' ? V3(-3.3, 0.2, 0) : id === 'gap' ? V3(-3.4, -0.1, 0) : V3(-MOL(id).name.length * 0.058, ['f6p', 'pg3', 'pep'].includes(id) ? -1.06 : -0.74, 0)), color: '#EFEAE6', show: () => st.labels && (GL_MODES[st.mode].route.map(edgeOf).some((e) => e.a === id || e.b === id) || (id === 'dhap' && st.mode !== 'gng' && st.mode !== 'ppp')) })),
+    ...Object.keys(GL_N).map((id) => ({ text: MOL(id).name, pos: NP(id).add(id === 'glucose' ? V3(-0.2, 0.75, 0) : id === 'dhap' ? V3(-3.3, 0.2, 0) : id === 'gap' ? V3(-3.4, -0.1, 0) : V3(-MOL(id).name.length * 0.058, ['f6p', 'pg3', 'pep'].includes(id) ? -1.06 : -0.74, 0)), color: '#EFEAE6', show: () => st.labels && (DK || (st.cur && (st.cur.a === id || st.cur.b === id))) && (GL_MODES[st.mode].route.map(edgeOf).some((e) => e.a === id || e.b === id) || (id === 'dhap' && st.mode !== 'gng' && st.mode !== 'ppp')) })),
     ...GL_E.map(([id, a, b, name, n]) => ({ text: `${n <= 11 ? n + '. ' : n > 20 ? ['I', 'II', 'III', 'IV'][n - 21] + '. ' : ''}${name}`, pos: NP(a).lerp(NP(b), 0.5).add(id === 'e15' ? V3(-4.25, -0.5, 0.3) : id === 'e4b' ? V3(-1.0, 0.25, 0.3) : V3(-0.5, 0.95, 0.3)), color: id.startsWith('b') ? '#FF8A8A' : '#9FD0FF', show: () => st.labels && st.cur && (st.cur.id === id) })),
     { text: 'енолаза (PDB 3ENL)', pos: V3(1.4, -3.4, 0.4), color: '#7FE0A0', show: () => st.labels && st.mode !== 'ppp' },
     { text: 'фторид блокирует', pos: NP('pg2').lerp(NP('pep'), 0.5).add(V3(-0.4, -0.5, 0.5)), color: '#FF6A6A', show: () => st.labels && st.fluor },

@@ -12,7 +12,7 @@ Object.assign(BIO_MOL, {"b12":{"name":"Cobalamin (B12), core","el":"C C N C C C 
 function makeAmines() {
   __set_rnd(mulberry(6201));
   const scene = bioStage({ rim: 0x9fe870 });
-  const VIEW = { decarb: [V3(1.4, -0.35, 0), V3(2.0, 1.6, 19.5)], fate: [V3(41.2, -0.2, 0), V3(41.8, 1.6, 17.5)], onec: [V3(81.0, -1.6, 0), V3(81.6, 0.3, 18.5)] };
+  const VIEW = { decarb: [V3(1.0, -0.35, 0), V3(1.6, 1.6, 19.5)], fate: [V3(41.2, 0.5, 0), V3(41.8, 2.3, 17.5)], onec: [V3(81.0, -1.6, 0), V3(81.6, 0.3, 18.5)] };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VIEW.decarb[1]);
   const controls = makeControls(camera, VIEW.decarb[0]); controls.minDistance = 3; controls.maxDistance = 40;
   const fx = new Sparks(1800, 0.08); scene.add(fx.obj);
@@ -20,7 +20,7 @@ function makeAmines() {
 
   /* ---------- 1. декарбоксилирование ---------- */
   const G1 = new THREE.Group(); scene.add(G1);
-  const XS = [-1.0, 1.45, 3.9, 6.35, 8.8];
+  const XS = [-1.0, 1.35, 3.7, 6.05, 8.4];
   // телефон: выбранный путь столбиком сверху вниз (ряд из пяти молекул по ширине не помещается); остальные пути скрыты
   const MOB = matchMedia('(max-width:700px)').matches;
   const NP = (r, i) => (MOB ? V3(0, 2.8 - i * 1.6, 0) : V3(XS[i], r.y, 0)), MP = (r, i) => NP(r, i).lerp(NP(r, i + 1), 0.5);
@@ -127,7 +127,7 @@ function makeAmines() {
   const SITTXT = { calm: TXT.fate, mood: '<b>Mood and motivation.</b> Dopamine is the signal of “reward” and the urge to act, serotonin the signal of calm and satisfaction, norepinephrine of alertness and attention. In depression these systems are less active; antidepressants raise the concentration of amines in the synapses.', night: '<b>Night.</b> When light stops reaching the retina, the pineal gland makes <b>melatonin</b> from serotonin, and its level rises tenfold. Melatonin tells the body “it is night now”: body temperature drops and you feel sleepy. Bright screen light in the evening suppresses its production.', stress: '<b>Stress.</b> Within seconds the sympathetic system releases <b>norepinephrine</b> and the adrenal medulla releases <b>epinephrine</b>: the pulse quickens, blood pressure rises, the bronchi and pupils dilate, the liver releases glucose — the “fight or flight” response.', allergy: '<b>Allergy.</b> An antigen binds to IgE on mast cells, and they release <b>histamine</b>: itching, hives, a runny nose, bronchospasm; in severe cases, anaphylactic shock. Antihistamines help; in anaphylaxis, epinephrine is needed.', sleep: '<b>Sleeping pills and sedatives</b> (benzodiazepines) enhance the action of <b>GABA</b> on its receptors — the chloride channel opens more often and neurons are inhibited. Alcohol acts in a similar way, which is why combining them is dangerous.' };
   const labels = [
     ...ROWS.flatMap((r) => r.chain.map(([id, n], i) => ({ text: n, pos: MOB ? NP(r, i).add(V3(0.6, 0.05, 0.3)) : V3(XS[i] - 0.25, r.y - 0.62, 0.3), color: r.col, show: () => st.labels && st.mode === 'decarb' && (st.row === r.id || !MOB && i === 0) }))),
-    ...ROWS.flatMap((r) => STEPN[r.id].map((n, i) => ({ text: n, pos: MOB ? MP(r, i).add(V3(0.35, 0, 0.3)) : V3((XS[i] + XS[i + 1]) / 2 - 0.55, r.y - 0.3, 0.3), color: '#C8C8D0', show: () => st.labels && st.mode === 'decarb' && st.row === r.id }))),
+    ...ROWS.flatMap((r) => STEPN[r.id].map((n, i) => ({ text: n, pos: MOB ? MP(r, i).add(V3(0.35, 0, 0.3)) : V3((XS[i] + XS[i + 1]) / 2 - 0.55, r.y - 0.3, 0.3), color: r.col, show: () => st.labels && st.mode === 'decarb' && st.row === r.id }))),
     { text: 'brain', pos: V3(40.45, 4.55, 0.1), color: '#9F7BFF', show: () => st.labels && st.mode === 'fate' }, { text: 'pineal gland', pos: V3(40 - 0.95, 4.15, 0), color: '#7FD6FF', show: () => st.labels && st.mode === 'fate' },
     { text: 'adrenal gland', pos: V3(40 + 0.6, 1.25, 0), color: '#F2C14E', show: () => st.labels && st.mode === 'fate' }, { text: 'bronchi', pos: V3(40 - 1.3, 2.4, 0), color: '#FF8AB0', show: () => st.labels && st.mode === 'fate' },
     { text: 'skin', pos: V3(40 + 1.45, 1.75, 0.2), color: '#FF8AB0', show: () => st.labels && st.mode === 'fate' }, { text: 'intestines', pos: V3(40 + 0.25, 0.25, 0.3), color: '#7FD6FF', show: () => st.labels && st.mode === 'fate' },
