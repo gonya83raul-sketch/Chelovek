@@ -8,7 +8,7 @@ function makeLiver() {
   rnd = mulberry(2701);
   const scene = bioStage({ bg: 0x0a0807, rim: 0xc87a4a });
   const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: кадр уходит из-под заголовка и описания (телефон — прежний ракурс)
-  const VIEW = { lob: DK ? flyTarget(V3(-1.6, -1.2, 0), V3(-1.2, 3.6, 18.7)) : flyTarget(V3(0.6, -2.0, 0), V3(1.0, 2.2, 15.0)), detox: flyTarget(V3(40.4, -2.3, 0), V3(40.9, -0.4, 17)), alc: flyTarget(V3(79.0, -2.4, 0), V3(79.5, -0.7, 17)), para: flyTarget(V3(119.1, -2.4, 0), V3(119.6, -0.7, 17)) };
+  const VIEW = { lob: DK ? flyTarget(V3(-1.6, -1.2, 0), V3(-1.2, 3.6, 18.7)) : flyTarget(V3(0.6, -2.0, 0), V3(1.0, 2.2, 15.0)), detox: DK ? flyTarget(V3(39.2, -1.5, 0), V3(39.7, 0.4, 18.5)) : flyTarget(V3(40.4, -2.3, 0), V3(40.9, -0.4, 17)), alc: DK ? flyTarget(V3(77.3, -1.8, 0), V3(77.8, -0.1, 19.5)) : flyTarget(V3(79.0, -2.4, 0), V3(79.5, -0.7, 17)), para: DK ? flyTarget(V3(118.0, -1.6, 0), V3(118.5, 0.1, 19.0)) : flyTarget(V3(119.1, -2.4, 0), V3(119.6, -0.7, 17)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.lob.pos);
   const controls = makeControls(camera, VIEW.lob.target); controls.minDistance = 3; controls.maxDistance = 40;
   const fx = new Sparks(1600, 0.08); scene.add(fx.obj);
@@ -38,9 +38,9 @@ function makeLiver() {
   const FP = blob('#F2C14E', 0.55, 0.45, 0.45, V3(-2.9, -0.35, 0), 2), B5 = blob('#FF9A5C', 0.32, 0.5, 0.3, V3(-1.35, -0.35, 0), 3), P450 = blob('#E05A6A', 0.85, 0.7, 0.6, V3(0.6, -0.15, 0), 4), UGT = blob('#7FE0A0', 0.7, 0.6, 0.55, V3(3.3, -0.2, 0), 6);
   const hem = PDB('hbo').ligm.find((l) => l.name === 'HEM'); const hS = 0.07; const hemM = molMesh(hem, { scale: hS }); { const c = V3(0, 0, 0); for (let i = 0; i < hem.n; i++) c.add(V3(hem.xyz[i * 3], hem.xyz[i * 3 + 1], hem.xyz[i * 3 + 2])); c.multiplyScalar(-hS / hem.n); hemM.position.copy(c); }
   const hemW = new THREE.Group(); hemW.add(hemM); hemW.position.set(0.6, 0.3, 0.6); hemW.rotation.x = 1.2; G2.add(hemW); P450.material.transparent = true; P450.material.opacity = 0.75;
-  const nadph = molAt(G2, MOL('nad'), V3(-3.9, 1.0, 0.2), 0.75, { tint: '#9FB4FF' });
+  const nadph = molAt(G2, MOL('nad'), V3(-1.9, 1.35, 0.2), 0.75, { tint: '#9FB4FF' });
   const eTok = Array.from({ length: 6 }, () => glowNucleus(G2, V3(0, 0, 0), '#7FD6FF', 0.04, 5));
-  const ePath = new THREE.CatmullRomCurve3([V3(-4.0, 0.5, 0.3), V3(-2.9, 0.25, 0.5), V3(-1.35, 0.3, 0.45), V3(0.2, 0.35, 0.6)]);
+  const ePath = new THREE.CatmullRomCurve3([V3(-2.4, 0.85, 0.4), V3(-2.9, 0.25, 0.5), V3(-1.35, 0.3, 0.45), V3(0.2, 0.35, 0.6)]);
   const sub = { benz: molAt(G2, MOL('benzene'), V3(0, 0, 0), 0.5), phen: molAt(G2, MOL('phenol'), V3(0, 0, 0), 0.55), gluc: molAt(G2, MOL('glucuronic'), V3(0, 0, 0), 0.55, { tint: '#7FE0A0' }) };
   const o2 = molAt(G2, MOL('o2'), V3(0, 0, 0), 0.3), h2o = molAt(G2, MOL('h2o'), V3(0, 0, 0), 0.3, { hideH: false });
   const PATH = new THREE.CatmullRomCurve3([V3(-3.4, 2.9, 0.3), V3(-1.6, 2.0, 0.6), V3(0.6, 1.05, 0.7), V3(1.9, 1.5, 0.7), V3(3.3, 0.95, 0.7), V3(4.8, 2.0, 0.5), V3(6.0, 2.8, 0.3)]);
@@ -55,21 +55,21 @@ function makeLiver() {
   const nadT = [0, 1].map((i) => { const g = new THREE.Group(); g.position.copy(AX[i].clone().lerp(AX[i + 1], 0.5)).add(V3(0, 1.25, 0)); G3.add(g); const ring = new THREE.Mesh(new THREE.TorusGeometry(0.32, 0.02, 8, 40), new THREE.MeshBasicMaterial({ color: 0x9fb4ff, transparent: true, opacity: 0.6 })); g.add(ring); const tok = glowNucleus(g, V3(0.32, 0, 0), '#9FB4FF', 0.05, 5); return { g, tok }; });
   const blk = [0, 1].map((i) => { const g = new THREE.Group(); const m = new THREE.MeshBasicMaterial({ color: 0xff3a4a }); [0.8, -0.8].forEach((r) => { const b = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.07, 0.07), m); b.rotation.z = r; g.add(b); }); g.position.copy(AX[i].clone().lerp(AX[i + 1], 0.5)).add(V3(0, 0.05, 0.3)); g.visible = false; G3.add(g); return g; });
   const BARS = [['НАДН / НАД⁺', '#9FB4FF'], ['лактат', '#FF6A6A'], ['синтез жира', '#F2D06A'], ['глюконеогенез', '#7FE0A0']];
-  const barM = BARS.map(([, c], i) => { const m = new THREE.Mesh(new THREE.BoxGeometry(0.55, 1, 0.4), new THREE.MeshPhysicalMaterial({ color: new THREE.Color(c).multiplyScalar(0.45), emissive: new THREE.Color(c), emissiveIntensity: 0.05, roughness: 0.35, clearcoat: 0.6 })); m.position.set(-2.4 + i * 1.6, -2.3, 0); G3.add(m); return m; });
-  const barBase = new THREE.Mesh(new THREE.BoxGeometry(6.8, 0.04, 0.8), new THREE.MeshBasicMaterial({ color: 0x3a3a46 })); barBase.position.set(0, -2.3, 0); G3.add(barBase);
+  const barM = BARS.map(([, c], i) => { const m = new THREE.Mesh(new THREE.BoxGeometry(0.55, 1, 0.4), new THREE.MeshPhysicalMaterial({ color: new THREE.Color(c).multiplyScalar(0.45), emissive: new THREE.Color(c), emissiveIntensity: 0.05, roughness: 0.35, clearcoat: 0.6 })); m.position.set(-4.4 + i * 1.6, -2.3, 0); G3.add(m); return m; });
+  const barBase = new THREE.Mesh(new THREE.BoxGeometry(6.8, 0.04, 0.8), new THREE.MeshBasicMaterial({ color: 0x3a3a46 })); barBase.position.set(-2.0, -2.3, 0); G3.add(barBase);
 
   /* ---------- 4. парацетамол ---------- */
   const G4 = new THREE.Group(); G4.position.set(120, 0, 0); scene.add(G4);
-  const PX = { apap: V3(-1.4, 0.15, 0), glu: V3(-4.2, 1.15, 0), sul: V3(-4.2, -1.1, 0), napqi: V3(1.6, 0.15, 0), safe: V3(4.6, 1.2, 0), tox: V3(4.6, -1.1, 0) };
+  const PX = { apap: V3(-1.4, 0.15, 0), glu: V3(-4.2, 1.15, 0), sul: V3(-4.2, -1.1, 0), napqi: V3(1.6, 0.15, 0), safe: V3(4.6, 1.2, 0), tox: V3(4.3, -0.6, 0) };
   const pm = { apap: molAt(G4, MOL('paracetamol'), PX.apap, 0.75), napqi: molAt(G4, MOL('napqi'), PX.napqi, 0.72) };
   { const g = new THREE.Group(); g.position.copy(PX.glu); G4.add(g); molAt(g, MOL('paracetamol'), V3(-0.4, 0, 0), 0.6); molAt(g, MOL('glucuronic'), V3(0.55, -0.15, 0.2), 0.5, { tint: '#7FE0A0' }); pm.glu = g; }
   { const g = new THREE.Group(); g.position.copy(PX.sul); G4.add(g); molAt(g, MOL('paracetamol'), V3(-0.3, 0, 0), 0.6); molAt(g, MOL('sulfate'), V3(0.55, -0.1, 0.2), 0.35); pm.sul = g; }
   { const g = new THREE.Group(); g.position.copy(PX.safe); G4.add(g); molAt(g, MOL('napqi'), V3(-0.45, 0, 0), 0.55); molAt(g, MOL('gsh'), V3(0.5, -0.1, 0.2), 0.75, { tint: '#7FD6FF' }); pm.safe = g; }
   const toxP = new THREE.Mesh(blobGeo(0.7, 0.55, 0.5, 11, 0.14, 4), protMat('#B07A6A', 0.4)); toxP.position.copy(PX.tox); G4.add(toxP); const toxN = molAt(G4, MOL('napqi'), PX.tox.clone().add(V3(-0.5, 0.45, 0.45)), 0.4);
   const pArr = [['apap', 'glu', '#7FE0A0'], ['apap', 'sul', '#F2CC3A'], ['apap', 'napqi', '#FF6A6A'], ['napqi', 'safe', '#7FD6FF'], ['napqi', 'tox', '#FF3A4A']].map(([a, b, c]) => { const pa = PX[a], pb = PX[b]; const d = pb.clone().sub(pa).normalize(); return { a, b, A: flowArrow(G4, pa.clone().addScaledVector(d, 0.85), pb.clone().addScaledVector(d, -0.9), c, { bend: 0.1, r: 0.024 }) }; });
-  const gshTube = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.42, 1.8, 32, 1, true), glassMat(0x7fd6ff, { rim: 0.6, base: 0.04, keep: true })); gshTube.position.set(1.6, -1.55, 0); G4.add(gshTube);
+  const gshTube = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.42, 1.8, 32, 1, true), glassMat(0x7fd6ff, { rim: 0.6, base: 0.04, keep: true })); gshTube.position.set(0.1, -1.7, 0); G4.add(gshTube);
   const gshFill = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.38, 1, 32), new THREE.MeshPhysicalMaterial({ color: 0x2a6a8a, emissive: 0x7fd6ff, emissiveIntensity: 0.25, transparent: true, opacity: 0.85, roughness: 0.2 })); G4.add(gshFill);
-  const nacM = molAt(G4, MOL('nac'), V3(0.2, -1.7, 0.3), 0.5); const nacArr = flowArrow(G4, V3(0.65, -1.7, 0.3), V3(1.15, -1.6, 0.3), '#7FD6FF', { bend: 0.0, r: 0.02 });
+  const nacM = molAt(G4, MOL('nac'), V3(-1.5, -1.8, 0.3), 0.5); const nacArr = flowArrow(G4, V3(-1.05, -1.8, 0.3), V3(-0.55, -1.75, 0.3), '#7FD6FF', { bend: 0.0, r: 0.02 });
   const hep = new THREE.Mesh(blobGeo(6.8, 3.0, 0.6, 13, 0.05, 4), new THREE.MeshPhysicalMaterial({ color: 0x3a2018, roughness: 0.7, transparent: true, opacity: 0.16, depthWrite: false })); hep.position.set(0.1, 0.1, -1.4); G4.add(hep);
 
   /* ---------- состояние ---------- */
@@ -141,7 +141,7 @@ function makeLiver() {
       if (h > 48) resetPara();
       const on = [conj > 0.01 ? 0.55 : 0.08, conj > 0.01 ? 0.4 : 0.06, clamp(cypFrac * 4 * Math.min(1, load), 0.06, 0.8), st.gsh > 0.3 ? clamp(load, 0.06, 0.6) : 0.08, st.gsh < 0.3 ? 0.7 : 0.03];
       pArr.forEach((A, i) => { A.A.mat.uniforms.uTime.value = t; A.A.mat.uniforms.uOn.value = on[i]; });
-      gshFill.scale.y = Math.max(0.01, st.gsh * 1.7); gshFill.position.set(1.6, -1.55 - 0.9 + gshFill.scale.y / 2 + 0.02, 0); gshFill.material.emissiveIntensity = 0.1 + 0.25 * st.gsh;
+      gshFill.scale.y = Math.max(0.01, st.gsh * 1.7); gshFill.position.set(0.1, -1.7 - 0.9 + gshFill.scale.y / 2 + 0.02, 0); gshFill.material.emissiveIntensity = 0.1 + 0.25 * st.gsh;
       molGlow(pm.napqi, clamp(cypFrac * 2, 0, 0.5)); toxN.visible = st.gsh < 0.3 || st.dmg > 0.05; molGlow(toxN, 0.4);
       hep.material.color.set(new THREE.Color('#3a2018').lerp(new THREE.Color('#141010'), st.dmg)); toxP.material.emissiveIntensity = 0.02 + 0.3 * st.dmg;
       nacM.visible = st.nac; nacArr.mesh.visible = st.nac; if (nacArr.cone) nacArr.cone.visible = st.nac; nacArr.mat.uniforms.uTime.value = t;
@@ -178,7 +178,7 @@ function makeLiver() {
     { text: 'гепатоциты', get pos() { return G1.localToWorld(V3(1.5, -1.6, 0.5)); }, color: '#E09070', show: () => st.labels && st.mode === 'lob' },
     { text: 'зона 1 · перипортальная', get pos() { return G1.localToWorld(V3(-2.0, -1.55, 0.6)); }, color: '#E0805A', show: () => st.labels && st.mode === 'lob' && st.zones },
     { text: 'зона 3 · у центральной вены', get pos() { return G1.localToWorld(V3(-0.35, -0.8, 0.6)); }, color: '#C08AD0', show: () => st.labels && st.mode === 'lob' && st.zones },
-    ...[['НАДФН', V3(-3.9, 1.9, 0.3), '#9FB4FF'], ['флавопротеин (ФАД)', V3(-2.9, -1.15, 0.6), '#F2C14E'], ['цит. b5', V3(-1.35, -1.15, 0.6), '#FF9A5C'], ['цитохром P450 · гем', V3(0.6, -1.2, 0.7), '#FF6A7A'], ['УДФ-глюкуронилтрансфераза', V3(3.3, -1.15, 0.7), '#7FE0A0'], ['мембрана ЭПР', V3(-4.6, -2.15, 0.5), '#C8A0E0'], ['бензол (гидрофобный)', V3(-3.4, 3.5, 0.3), '#EFEAE6'], ['в кровь → почки, в желчь', V3(5.6, 3.35, 0.3), '#7FE0A0']].map(([n, p, c]) => ({ text: n, pos: p.clone().add(V3(40, 0, 0)), color: c, show: () => st.labels && st.mode === 'detox' })),
+    ...[['НАДФН', V3(-1.9, 2.15, 0.3), '#9FB4FF'], ['флавопротеин (ФАД)', V3(-2.9, -1.15, 0.6), '#F2C14E'], ['цит. b5', V3(-1.35, -1.15, 0.6), '#FF9A5C'], ['цитохром P450 · гем', V3(0.6, -1.2, 0.7), '#FF6A7A'], ['УДФ-глюкуронилтрансфераза', V3(3.3, -1.15, 0.7), '#7FE0A0'], ['мембрана ЭПР', V3(-4.6, -2.15, 0.5), '#C8A0E0'], ['бензол (гидрофобный)', V3(-3.4, 3.2, 0.3), '#EFEAE6'], ['в кровь → почки, в желчь', V3(4.6, 1.9, 0.3), '#7FE0A0']].map(([n, p, c]) => ({ text: n, pos: p.clone().add(V3(40, 0, 0)), color: c, show: () => st.labels && st.mode === 'detox' })),
     { text: 'O₂', get pos() { return G2.localToWorld(o2.position.clone().add(V3(0.35, 0.1, 0))); }, color: '#F04848', show: () => st.labels && st.mode === 'detox' && o2.visible },
     { text: 'фенол + глюкуроновая кислота', get pos() { return G2.localToWorld(sub.phen.position.clone().add(V3(0, 0.7, 0))); }, color: '#7FE0A0', show: () => st.labels && st.mode === 'detox' && st.dc > 0.68 && st.dc < 0.95 },
     { text: 'индукция: больше P450', pos: V3(40 + 0.6, -2.35, -1.0), color: '#FF6A7A', show: () => st.labels && st.mode === 'detox' && st.ind },
@@ -186,10 +186,10 @@ function makeLiver() {
     { text: 'алкогольдегидрогеназа', pos: AX[0].clone().lerp(AX[1], 0.5).add(V3(80, 0.42, 0.3)), color: '#F2C14E', show: () => st.labels && st.mode === 'alc' }, { text: 'альдегиддегидрогеназа', pos: AX[1].clone().lerp(AX[2], 0.5).add(V3(80, 0.42, 0.3)), color: '#F2C14E', show: () => st.labels && st.mode === 'alc' },
     { text: 'НАД⁺ → НАДН', pos: AX[0].clone().lerp(AX[1], 0.5).add(V3(80, 1.75, 0)), color: '#9FB4FF', show: () => st.labels && st.mode === 'alc' }, { text: 'НАД⁺ → НАДН', pos: AX[1].clone().lerp(AX[2], 0.5).add(V3(80, 1.75, 0)), color: '#9FB4FF', show: () => st.labels && st.mode === 'alc' },
     { text: 'МЭОС (P450 2E1)', pos: AX[0].clone().lerp(AX[1], 0.5).add(V3(80, -1.55, 0.3)), color: '#C77DFF', show: () => st.labels && st.mode === 'alc' },
-    ...BARS.map(([n, c], i) => ({ text: n, pos: V3(80 - 2.4 + i * 1.6, -2.65, 0.4), color: c, show: () => st.labels && st.mode === 'alc' })),
+    ...BARS.map(([n, c], i) => ({ text: n, pos: V3(80 - 4.4 + i * 1.6, -2.65, 0.4), color: c, show: () => st.labels && st.mode === 'alc' })),
     ...[['парацетамол', 'apap', -0.95, '#EFEAE6'], ['глюкуронид ~55%', 'glu', -0.9, '#7FE0A0'], ['сульфат ~35%', 'sul', -0.85, '#F2CC3A'], ['NAPQI', 'napqi', 0.95, '#FF6A6A'], ['конъюгат с глутатионом', 'safe', -0.95, '#7FD6FF'], ['NAPQI + белки клетки → некроз', 'tox', -0.95, '#FF5A5A']].map(([n, k, dy, c]) => ({ text: n, pos: PX[k].clone().add(V3(120, dy, 0.3)), color: c, show: () => st.labels && st.mode === 'para' })),
     { text: 'P450 2E1 · 5–10%', pos: PX.apap.clone().lerp(PX.napqi, 0.5).add(V3(120, 0.4, 0.3)), color: '#FF8A8A', show: () => st.labels && st.mode === 'para' },
-    { text: 'запас глутатиона', pos: V3(120 + 2.6, -2.55, 0.3), color: '#7FD6FF', show: () => st.labels && st.mode === 'para' }, { text: 'ацетилцистеин', pos: V3(120 + 0.0, -2.3, 0.4), color: '#7FD6FF', show: () => st.labels && st.mode === 'para' && st.nac },
+    { text: 'запас глутатиона', pos: V3(120 + 1.0, -2.6, 0.3), color: '#7FD6FF', show: () => st.labels && st.mode === 'para' }, { text: 'ацетилцистеин', pos: V3(120 - 1.5, -2.4, 0.4), color: '#7FD6FF', show: () => st.labels && st.mode === 'para' && st.nac },
   ];
   const refs = {};
   function ui(el) {
