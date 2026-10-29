@@ -13,7 +13,7 @@ function makeThyroid() {
   __set_rnd(mulberry(8201));
   const scene = bioStage({ rim: 0xc77dff });
   const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: кадр уходит из-под заголовка и описания (телефон — прежний ракурс)
-  const VIEW = { synth: DK ? [V3(-1.7, -1.5, 0), V3(-1.3, 0.5, 15.5)] : [V3(-1.2, -1.6, 0), V3(-0.8, 0.4, 14.5)], axis: [V3(39.6, 2.1, 0), V3(40.1, 3.2, 13.5)], cell: [V3(78.3, -1.9, 0), V3(78.7, 0.2, 17.5)] };
+  const VIEW = { synth: DK ? [V3(-1.7, -1.5, 0), V3(-1.3, 0.5, 15.5)] : [V3(1.0, -1.6, 0), V3(1.4, 0.4, 14.5)], axis: [V3(39.6, 2.1, 0), V3(40.1, 3.2, 13.5)], cell: [V3(78.3, -1.9, 0), V3(78.7, 0.2, 17.5)] };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VIEW.synth[1]);
   const controls = makeControls(camera, VIEW.synth[0]); controls.minDistance = 3; controls.maxDistance = 40;
   const fx = new Sparks(2000, 0.07); scene.add(fx.obj);

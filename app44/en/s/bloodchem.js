@@ -14,7 +14,7 @@ function makeBloodchem() {
   __set_rnd(mulberry(2601));
   const scene = bioStage({ bg: 0x0a0709, rim: 0xff6a6a });
   const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: кадр уходит из-под заголовка и описания (телефон — прежний ракурс)
-  const VIEW = { ph: DK ? flyTarget(V3(-1.3, -1.5, 0), V3(-0.8, 0.2, 18)) : flyTarget(V3(0.3, -2.3, 0), V3(0.8, -0.6, 17)), prot: flyTarget(V3(40.4, -2.6, 0), V3(40.9, -0.8, 19)), coag: flyTarget(V3(79.6, -2.3, 0), V3(80.2, -0.5, 18.5)) };
+  const VIEW = { ph: DK ? flyTarget(V3(-1.3, -1.5, 0), V3(-0.8, 0.2, 18)) : flyTarget(V3(0.3, -2.3, 0), V3(0.8, -0.6, 17)), prot: DK ? flyTarget(V3(39.0, -2.5, 0), V3(39.5, -0.7, 20.5)) : flyTarget(V3(40.4, -2.6, 0), V3(40.9, -0.8, 19)), coag: DK ? flyTarget(V3(79.4, -1.0, 0), V3(80.0, 0.8, 20.5)) : flyTarget(V3(81.3, -2.1, 0), V3(81.9, -0.3, 20.5)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.ph.pos);
   const controls = makeControls(camera, VIEW.ph.target); controls.minDistance = 3; controls.maxDistance = 40;
   const fx = new Sparks(1600, 0.08); scene.add(fx.obj);
@@ -31,7 +31,7 @@ function makeBloodchem() {
   });
   const eqArrows = [[-2.15, -1.25], [0.15, 1.15]].map(([a, b]) => [flowArrow(G1, V3(a, eqY + 0.12, 0), V3(b, eqY + 0.12, 0), '#9FB4FF', { bend: 0, r: 0.02 }), flowArrow(G1, V3(b, eqY - 0.12, 0), V3(a, eqY - 0.12, 0), '#9FB4FF', { bend: 0, r: 0.02 })]);
   // «пробирка крови» с частицами: CO₂ (серые), H⁺ (жёлтые), HCO₃⁻ (голубые)
-  const tubeM = new THREE.Mesh(new THREE.CylinderGeometry(1.25, 1.25, 2.3, 48, 1, true), glassMat(0xff8a8a, { rim: 0.25, base: 0.01 })); tubeM.rotation.z = Math.PI / 2; tubeM.position.set(-1.0, -1.15, 0); tubeM.scale.set(1, 1.7, 0.75); G1.add(tubeM);
+  const tubeM = new THREE.Mesh(new THREE.CylinderGeometry(1.25, 1.25, 2.3, 48, 1, true), glassMat(0xff8a8a, { rim: 0.55, base: 0.03, keep: true })); tubeM.rotation.z = Math.PI / 2; tubeM.position.set(-1.0, -1.15, 0); tubeM.scale.set(1, 1.7, 0.75); G1.add(tubeM);
   const NPa = 240; const pts = new THREE.InstancedMesh(new THREE.SphereGeometry(1, 8, 6), new THREE.MeshBasicMaterial({ color: 0xffffff }), NPa); G1.add(pts);
   const pp = Array.from({ length: NPa }, () => ({ p: V3(rand(-2.8, 0.8), rand(-1.9, -0.4), rand(-0.6, 0.6)), v: randUnit().multiplyScalar(0.3), k: 0 }));
   // шкала pH
@@ -49,7 +49,7 @@ function makeBloodchem() {
     { id: 'ma', name: 'Metab. acidosis', c: 40, b: 12, cc: 26, cb: 12 },
     { id: 'ml', name: 'Metab. alkalosis', c: 41, b: 36, cc: 50, cb: 36 },
   ];
-  const pH = (c, b) => 6.1 + Math.log10(b / (0.0307 * c));
+  const pH = (c, b) => 6.1 + Math.log10(b / (0.03 * c));
 
   /* ---------- 2. белки плазмы ---------- */
   const G2 = new THREE.Group(); G2.position.set(40, 0, 0); scene.add(G2);

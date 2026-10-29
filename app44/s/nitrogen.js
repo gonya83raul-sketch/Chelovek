@@ -1,6 +1,6 @@
 import { Sparks, THREE, V3, __set_rnd, bodyShell, button, clamp, ell3, flyStep, flyTarget, glassMat, glowNucleus, group, h, infoBox, makeControls, mulberry, organMat, rand, rnd, scopeShow, seg, toggle } from '../core.js';
 import { BIO_MOL, MOL, bioStage, flowArrow, molFit, molMesh, plotAxes } from './kit.js';
-Object.assign(BIO_MOL, {"bilirubin":{"name":"Bilirubin","el":"C C C C C C C C N C C C N C C C N C O C C C C C C C C C C C O O C C C C O O C C N C O H H H H H H H H H H H H H H H H H H H H H H H H H H H H H H H H H H H H","xyz":"CgM7ALv+jgIxABD/UwLB/z//kQI8/xz/cgK+/jn/2wHr/4//jwGQ/8j/FgGt/xkA1wAiAD4AZwAEAIwACQBqAMcAof+SAGAAOP8/ADcA6/5+ANn/cP5cAIn/Lv7q/47/Uf57/+L/7v0U/8f/6v2o/vr/jf1K/1//Gv30/i7/vvwV/9T+sv3E/z7/b/0gANv+Iv/4AMj/8v5lAWv/lv8EAR4A8P99ASgAof/0AWEAd//WAfAAyv/OAUkB7f7DAQ8BYACB/5kA9/8z/+UAJQAe/3YBmwC8/ncBDAHl/ooBhAAy/mIB0ABI/08A7wC1/kMA0QF6AI3/QQKrAD7/WgIdASb/VgP2/9/+8gIhAFP+MgOgAL7+7QJA/93+tgJx/g7/IQKW/nP/qwEn/7v/7wCAACgA1/9AAB8BQQDCAOcAMf/k/18ASf6pAEP/mv5t/yMAEf2P/lr/uvx0/6H+cPzL/rz+ef34/3b+BP0nAPL+mf2EAN3+Qf+uAVr/nP6ZAZb/1f47AQr/RQBpAWkAFQCYAcX/Sf8GAiMA4f9NAl8Asf7DAcMA5v/S/rYAmP9q/+YAQwB9/6EB0v/0/rABXgAZ/gwBDwGd/t3/lgB5/loAPwGZ/ogAjwG3ALf/","b":"AAABAAEAAgACAAMAAwAEAAIABQAFAAYABgAHAAcACAAIAAkACQAKAAoACwALAAwADAANAA0ADgAOAA8ADwAQABAAEQARABIAEQATABMAFAAUABUAEwAWAA8AFgAWABcADQAYABgAGQAYABoACwAaABoAGwAbABwAHAAdAB0AHgAdAB8ACQAgACAAIQAhACIAIgAjACMAJAAjACUAIAAmAAcAJgAmACcABQAoACgAKQABACkAKQAqAAAAKwAAACwAAAAtAAMALgAEAC8ABAAwAAYAMQAIADIACgAzAAoANAAMADUADgA2ABAANwAUADgAFQA5ABUAOgAXADsAFwA8ABcAPQAZAD4AGQA/ABkAQAAbAEEAGwBCABwAQwAcAEQAHwBFACEARgAhAEcAIgBIACIASQAlAEoAJwBLACcATAAnAE0AKABOAA==","o":"1212121111111121121122112112111212111211211112111111111111111111111111111111111111"},"urate":{"name":"Uric acid","el":"O C N C O C N C O N C N H H H H","xyz":"wP6AAAAALP9GAAAAMP+6/wAArP94/wAAsf/+/gAAJADK/wAAqACk/wAA9QAZAAAAbAEfAAAAnACEAAAAHABPAAAAo/+RAAAA2v6E/wAAzQBI/wAAtQDkAAAAnf/2AAAA","b":"AAABAAEAAgACAAMAAwAEAAMABQAFAAYABgAHAAcACAAHAAkACQAKAAUACgAKAAsAAQALAAIADAAGAA0ACQAOAAsADwA=","o":"21121112112111111"},"aspirin":{"name":"Aspirin","el":"C C O O C C C C C C C O O H H H H H H H H","xyz":"tgCl/2L/4QC9//P/VwHO/w0AgADA/1oA+P/B/zAAwP9G/y8ANf8z/wcA7f6e/+L/K/8kAOP/q/84AAgA4v/GAAUAmv8lAeL/ZQDvACkAegD6/z//egBK/1z/DgGb/yP//f/x/k4ACP/Q/gcAhf6T/8T/6f51AMT/dgBPAScA","b":"AAABAAEAAgABAAMAAwAEAAQABQAFAAYABgAHAAcACAAIAAkABAAJAAkACgAKAAsACgAMAAAADQAAAA4AAAAPAAUAEAAGABEABwASAAgAEwAMABQA","o":"121121212112111111111"},"creatine":{"name":"Creatine","el":"C N C C O O C N N H H H H H H H H H","xyz":"rP82/wYAyv/C/yMARgDk/2cArgASAAAAwACJAO3/+ACy/7b/a/8qAP3/7v4HALn/hP+mABcA8//2/jwAR/8e/yUAt/8k/5v/bACM/5sANQA0AK8AHwFq/+r/2f6n/6T/rf5QAJ//Qv/tAPz/","b":"AAABAAEAAgACAAMAAwAEAAMABQABAAYABgAHAAYACAAAAAkAAAAKAAAACwACAAwAAgANAAUADgAHAA8ABwAQAAgAEQA=","o":"11121112111111111"},"lactate":{"name":"Lactate","el":"C C O C O O H H H H H H","xyz":"kwBsAND/SwAHACkAgACG/xIAtv8IAAgAdP9tABcAd/+S/9f/nQDLAAUAWgB8AHT/9gBHALf/WQAiAJEAlwB8/7T/m/9v/4P/","b":"AAABAAEAAgABAAMAAwAEAAMABQAAAAYAAAAHAAAACAABAAkAAgAKAAUACwA=","o":"11121111111"},"creatinine":{"name":"Creatinine","el":"C N C C O N C N H H H H H H H","xyz":"M/+QAAAArf9DAAAAMwB8AAAAkwAFAAAACgELAAAAQwCM/wAAt/+z/wAAVf9i/wAAM//WAFQA3f5NAAkAKv/IAKP/QwC4AKf/QwC4AFkAZQAv/wAAY//+/gAA","b":"AAABAAEAAgACAAMAAwAEAAMABQAFAAYAAQAGAAYABwAAAAgAAAAJAAAACgACAAsAAgAMAAUADQAHAA4A","o":"111211121111111"},"gly":{"name":"Glycine","el":"N C C O O H H H H H","xyz":"vQDw/wsAUABOAPL/yv8FAP7/Y/9FAAkAxv93//v/DQEiAC8A1gDC/7X/WwB4AI7/VACfADwA8/9K/0QA","b":"AAABAAEAAgACAAMAAgAEAAAABQAAAAYAAQAHAAEACAAEAAkA","o":"112111111"},"urea":{"name":"Urea","el":"N C N O H H H H","xyz":"gv9DAAAAAAD6/wAAfgBDAAAAAACA/wAAgv+oAAAAKv8RAAAAfgCoAAAA1gARAAAA","b":"AAABAAEAAgABAAMAAAAEAAAABQACAAYAAgAHAA==","o":"1121111"},"co2":{"name":"CO₂","el":"O C O","xyz":"hv8AAAAAAAAAAAAAegAAAAAA","b":"AAABAAEAAgA=","o":"22"},"nh3":{"name":"Ammonia","el":"N H H H","xyz":"GQAEAAMA8/9JAMP/6f8LAFwACwCo/93/","b":"AAABAAAAAgAAAAMA","o":"111"},"h2co3":{"name":"Carbonic acid","el":"O C O O H H","xyz":"hf9CAAAAAAD7/wAAAACB/wAAewBCAAAANf8MAAgAdwCfAB0A","b":"AAABAAEAAgABAAMAAAAEAAMABQA=","o":"12111"},"methanol":{"name":"Methanol","el":"C O H H H H","xyz":"5//5/xwAGwD0/5j/k/8/AB8ANQAbAGAAxf+W/zkAcAAjAJT/","b":"AAABAAAAAgAAAAMAAAAEAAEABQA=","o":"11111"},"hco3":{"name":"Bicarbonate","el":"O C O O H","xyz":"hf9CAAAAAAD7/wAAAACB/wAAewBCAAAAi/+iAPT/","b":"AAABAAEAAgABAAMAAAAEAA==","o":"1211"}});
+Object.assign(BIO_MOL, {"urate":{"name":"Мочевая кислота","el":"O C N C O C N C O N C N H H H H","xyz":"wP6AAAAALP9GAAAAMP+6/wAArP94/wAAsf/+/gAAJADK/wAAqACk/wAA9QAZAAAAbAEfAAAAnACEAAAAHABPAAAAo/+RAAAA2v6E/wAAzQBI/wAAtQDkAAAAnf/2AAAA","b":"AAABAAEAAgACAAMAAwAEAAMABQAFAAYABgAHAAcACAAHAAkACQAKAAUACgAKAAsAAQALAAIADAAGAA0ACQAOAAsADwA=","o":"21121112112111111"},"creatinine":{"name":"Креатинин","el":"C N C C O N C N H H H H H H H","xyz":"M/+QAAAArf9DAAAAMwB8AAAAkwAFAAAACgELAAAAQwCM/wAAt/+z/wAAVf9i/wAAM//WAFQA3f5NAAkAKv/IAKP/QwC4AKf/QwC4AFkAZQAv/wAAY//+/gAA","b":"AAABAAEAAgACAAMAAwAEAAMABQAFAAYAAQAGAAYABwAAAAgAAAAJAAAACgACAAsAAgAMAAUADQAHAA4A","o":"111211121111111"},"gly":{"name":"Глицин","el":"N C C O O H H H H H","xyz":"vQDw/wsAUABOAPL/yv8FAP7/Y/9FAAkAxv93//v/DQEiAC8A1gDC/7X/WwB4AI7/VACfADwA8/9K/0QA","b":"AAABAAEAAgACAAMAAgAEAAAABQAAAAYAAQAHAAEACAAEAAkA","o":"112111111"},"urea":{"name":"Мочевина","el":"N C N O H H H H","xyz":"gv9DAAAAAAD6/wAAfgBDAAAAAACA/wAAgv+oAAAAKv8RAAAAfgCoAAAA1gARAAAA","b":"AAABAAEAAgABAAMAAAAEAAAABQACAAYAAgAHAA==","o":"1121111"},"co2":{"name":"CO₂","el":"O C O","xyz":"hv8AAAAAAAAAAAAAegAAAAAA","b":"AAABAAEAAgA=","o":"22"},"nh3":{"name":"Аммиак","el":"N H H H","xyz":"GQAEAAMA8/9JAMP/6f8LAFwACwCo/93/","b":"AAABAAAAAgAAAAMA","o":"111"},"h2co3":{"name":"Угольная кислота","el":"O C O O H H","xyz":"hf9CAAAAAAD7/wAAAACB/wAAewBCAAAANf8MAAgAdwCfAB0A","b":"AAABAAEAAgABAAMAAAAEAAMABQA=","o":"12111"},"hco3":{"name":"Гидрокарбонат","el":"O C O O H","xyz":"hf9CAAAAAAD7/wAAAACB/wAAewBCAAAAi/+iAPT/","b":"AAABAAEAAgABAAMAAAAEAA==","o":"1211"}});
 
 
 // @scene nitrogen makeNitrogen | Азот крови, буферы и кислотно-основное состояние | Кровь и печень
@@ -13,7 +13,7 @@ function makeNitrogen() {
   __set_rnd(mulberry(9401));
   const scene = bioStage({ rim: 0x9fe0ff });
   const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: свой ракурс (телефон — прежний)
-  const VIEW = { npn: DK ? [V3(-1.0, -1.1, 0), V3(-0.6, 0.8, 17.4)] : [V3(-0.6, -1.2, 0), V3(-0.2, 0.7, 16.5)], buffer: [V3(39.0, -1.0, 0), V3(39.4, 1.0, 15.5)], abg: [V3(79.5, 1.2, 0), V3(80.0, 2.4, 12.5)] };
+  const VIEW = { npn: DK ? [V3(1.7, -1.1, 0), V3(2.1, 0.8, 17.4)] : [V3(-0.6, -1.2, 0), V3(-0.2, 0.7, 16.5)], buffer: DK ? [V3(39.0, -1.0, 0), V3(39.4, 1.0, 15.5)] : [V3(39.0, -0.7, 0), V3(39.4, 1.3, 11.5)], abg: DK ? [V3(79.5, 1.2, 0), V3(80.0, 2.4, 12.5)] : [V3(79.5, 1.4, 0), V3(80.0, 2.6, 9.5)] };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VIEW.npn[1]);
   const controls = makeControls(camera, VIEW.npn[0]); controls.minDistance = 3; controls.maxDistance = 40;
   const fx = new Sparks(2000, 0.07); scene.add(fx.obj);
@@ -28,11 +28,11 @@ function makeNitrogen() {
   const tub = new THREE.CatmullRomCurve3([V3(3.6, -0.6, -0.6), V3(4.0, -1.6, -0.4), V3(3.6, -2.6, 0), V3(4.6, -3.2, 0.2)]);
   G1.add(new THREE.Mesh(new THREE.TubeGeometry(tub, 60, 0.28, 14, false), glassMat('#F2D27A', { rim: 0.7, base: 0.05, keep: true })));
   const NP = [
-    { id: 'urea', m: 'urea', col: '#7FD6FF', n0: 9, filt: 1, name: 'urea' },
-    { id: 'aa', m: 'gly', col: '#7FE0A0', n0: 4, filt: 0.1, name: 'amino acids' },
-    { id: 'urate', m: 'urate', col: '#F2C14E', n0: 3, filt: 0.6, name: 'uric acid' },
-    { id: 'crea', m: 'creatinine', col: '#C77DFF', n0: 2, filt: 1, name: 'creatinine' },
-    { id: 'nh3', m: 'nh3', col: '#FF6A5A', n0: 1, filt: 0.4, name: 'ammonia' },
+    { id: 'urea', m: 'urea', col: '#7FD6FF', n0: 9, filt: 1, name: 'мочевина' },
+    { id: 'aa', m: 'gly', col: '#7FE0A0', n0: 4, filt: 0.1, name: 'аминокислоты' },
+    { id: 'urate', m: 'urate', col: '#F2C14E', n0: 3, filt: 0.6, name: 'мочевая кислота' },
+    { id: 'crea', m: 'creatinine', col: '#C77DFF', n0: 2, filt: 1, name: 'креатинин' },
+    { id: 'nh3', m: 'nh3', col: '#FF6A5A', n0: 1, filt: 0.4, name: 'аммиак' },
   ];
   const MOLS = [];
   NP.forEach((k) => { for (let i = 0; i < 26; i++) { const g = fit(k.m, k.id === 'urea' || k.id === 'nh3' ? 0.22 : 0.3); g.visible = false; G1.add(g); MOLS.push({ k, g, t: rnd(), r: rnd() * 0.32, a: rnd() * 6.28, v: 0.04 + rnd() * 0.03, out: false, ot: 0 }); } });
@@ -63,7 +63,7 @@ function makeNitrogen() {
   const st = { t: 0, mode: 'npn', labels: true, rot: false, fly: null, msg: null, npn: 'norm', open: true, pH: 7.4, HCO3: 24, H2CO3: 1.2, freeH: 0, freeOH: 0, histB: [], histA: [], dis: 'norm', comp: false, pCO2: 40, bic: 24, vent: 1, hist: [] };
   function setMode(m) { st.mode = m; refs.modeSeg && refs.modeSeg.sync(); [G1, G2, G3].forEach((g, k) => { g.visible = ['npn', 'buffer', 'abg'][k] === m; }); st.fly = flyTarget(VIEW[m][0], VIEW[m][1]); st.msg = null; refs.rebuild && refs.rebuild(); refs.setInfo && refs.setInfo(); }
   const NPNS = { norm: { urea: 1, aa: 1, urate: 1, crea: 1, nh3: 1, gfr: 1 }, renal: { urea: 3.2, aa: 1.1, urate: 1.8, crea: 4.5, nh3: 1.2, gfr: 0.2 }, liver: { urea: 0.4, aa: 1.8, urate: 1, crea: 1, nh3: 4, gfr: 1 }, catab: { urea: 1.8, aa: 1.3, urate: 1.2, crea: 1.1, nh3: 1.3, gfr: 1 }, gout: { urea: 1, aa: 1, urate: 2.3, crea: 1, nh3: 1, gfr: 1 } };
-  const NORM = { urea: '2.5–8.3 mmol/L', crea: '60–110 µmol/L', urate: '150–420 µmol/L', nh3: '11–35 µmol/L', aa: '2–5 mmol/L' };
+  const NORM = { urea: '2,5–8,3 ммоль/л', crea: '60–110 мкмоль/л', urate: '150–420 мкмоль/л', nh3: '11–35 мкмоль/л', aa: '2–5 ммоль/л' };
 
   function npnUpdate(dt, t) {
     const S = NPNS[st.npn];
@@ -104,11 +104,11 @@ function makeNitrogen() {
     if (!st.histB.length || st.t - st.histB[st.histB.length - 1][0] > 0.1) { st.histB.push([st.t, st.pH]); while (st.histB.length && st.t - st.histB[0][0] > 30) st.histB.shift(); }
   }
   const DIS = {
-    norm: { name: 'Normal', u: [40, 24], c: [40, 24] },
-    macid: { name: 'Metabolic acidosis', u: [40, 12], c: [26, 12] },
-    malk: { name: 'Metabolic alkalosis', u: [40, 36], c: [48, 36] },
-    racid: { name: 'Respiratory acidosis', u: [70, 27], c: [70, 34.5] },
-    ralk: { name: 'Respiratory alkalosis', u: [25, 21.5], c: [25, 16.5] },
+    norm: { name: 'Норма', u: [40, 24], c: [40, 24] },
+    macid: { name: 'Метаболический ацидоз', u: [40, 12], c: [26, 12] },
+    malk: { name: 'Метаболический алкалоз', u: [40, 36], c: [48, 36] },
+    racid: { name: 'Дыхательный ацидоз', u: [70, 27], c: [70, 34.5] },
+    ralk: { name: 'Дыхательный алкалоз', u: [25, 21.5], c: [25, 16.5] },
   };
   function abgUpdate(dt, t) {
     const D = DIS[st.dis], tg = st.comp ? D.c : D.u;
@@ -134,14 +134,14 @@ function makeNitrogen() {
   }
   function drawScope(ctx, w, h) {
     if (st.mode === 'buffer') {
-      scopeShow(true); const A = plotAxes(ctx, w, h, { title: 'pH · 30 s (normal 7.35–7.45)', xl: 'time →' });
+      scopeShow(true); const A = plotAxes(ctx, w, h, { title: 'pH · 30 с (норма 7,35–7,45)', xl: 'время →' });
       const Y = (v) => A.Y(clamp((v - 6.6) / 1.4, 0, 1)); ctx.fillStyle = 'rgba(127,224,160,.12)'; ctx.fillRect(A.X(0), Y(7.45), A.X(1) - A.X(0), Y(7.35) - Y(7.45));
       ctx.strokeStyle = '#FF8A5C'; ctx.lineWidth = 2; ctx.beginPath(); const t1 = st.t; st.histB.forEach((r, i) => { const x = A.X(clamp((r[0] - (t1 - 30)) / 30, 0, 1)), y = Y(r[1]); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.stroke();
       return;
     }
     if (st.mode === 'abg') {
       // диаграмма Дэвенпорта: pH по горизонтали, HCO₃⁻ по вертикали, изобары pCO₂
-      scopeShow(true); const A = plotAxes(ctx, w, h, { title: 'pH — HCO₃⁻, pCO₂ lines 20…80', x0: 24 });
+      scopeShow(true); const A = plotAxes(ctx, w, h, { title: 'pH — HCO₃⁻, линии pCO₂ 20…80', x0: 24 });
       const X = (ph) => A.X(clamp((ph - 7.0) / 0.8, 0, 1)), Y = (b) => A.Y(clamp((b - 8) / 34, 0, 1));
       [20, 40, 60, 80].forEach((p) => { ctx.strokeStyle = p === 40 ? 'rgba(255,255,255,.35)' : 'rgba(255,255,255,.14)'; ctx.lineWidth = 1; ctx.beginPath(); for (let i = 0; i <= 40; i++) { const ph = 7.0 + i / 40 * 0.8, b = 0.03 * p * 10 ** (ph - 6.1); i ? ctx.lineTo(X(ph), Y(b)) : ctx.moveTo(X(ph), Y(b)); } ctx.stroke(); });
       ctx.fillStyle = 'rgba(127,224,160,.2)'; ctx.fillRect(X(7.35), Y(26), X(7.45) - X(7.35), Y(22) - Y(26));
@@ -153,59 +153,59 @@ function makeNitrogen() {
       ctx.fillStyle = '#FFD98A'; ctx.beginPath(); ctx.arc(X(st.pH), Y(st.bic), 4, 0, Math.PI * 2); ctx.fill();
       return;
     }
-    scopeShow(true); const A = plotAxes(ctx, w, h, { title: 'fraction of normal (tick = normal)', x0: 10 });
+    scopeShow(true); const A = plotAxes(ctx, w, h, { title: 'доля от нормы (черта — норма)', x0: 10 });
     const S = NPNS[st.npn]; NP.forEach((k, i) => { const y = 24 + i * (h - 34) / NP.length, v = S[k.id]; ctx.fillStyle = 'rgba(255,255,255,.08)'; ctx.fillRect(A.X(0.32), y, A.X(1) - A.X(0.32), 6); ctx.fillStyle = k.col; ctx.fillRect(A.X(0.32), y, (A.X(1) - A.X(0.32)) * clamp(v / 5, 0, 1), 6); ctx.fillStyle = 'rgba(255,255,255,.5)'; ctx.fillRect(A.X(0.32 + 0.68 * 0.2), y - 2, 1, 10); ctx.fillStyle = k.col; ctx.font = '500 9px JetBrains Mono, monospace'; ctx.fillText(k.name, A.X(0), y + 6); });
   }
 
   const NPNTXT = {
-    norm: '<b>Non-protein (residual) nitrogen</b> is the nitrogen of everything left in the blood after the proteins are precipitated: about 14–28 mmol/L. Half of it is <b>urea</b> (made by the liver from ammonia); the rest is amino acids, <b>uric acid</b> (from purine breakdown), <b>creatinine</b> (from muscle creatine phosphate, produced at an almost constant rate) and a little ammonia. All of it is filtered in the renal glomerulus; urea and creatinine leave in the urine, while amino acids are almost completely and uric acid largely reabsorbed in the tubules. Creatinine and urea are the main markers of kidney function.',
-    renal: '<b>Renal failure</b> causes retention azotemia: the glomeruli filter too little, and urea and creatinine build up in the blood (creatinine especially; it is used to estimate the glomerular filtration rate, GFR). Uric acid rises too, and potassium, phosphate and acids are retained, causing acidosis. In severe cases this is uremia, and dialysis is needed.',
-    liver: '<b>Liver failure</b>: the liver cannot convert ammonia into urea, so urea <b>falls</b> while ammonia and amino acids rise. Ammonia is toxic to the brain, causing hepatic encephalopathy (confusion, “flapping” tremor — asterixis, coma).',
-    catab: '<b>Protein breakdown</b> (starvation, severe burns, fever, bleeding into the gut, glucocorticoid therapy) causes production azotemia: more urea is made; the kidneys cope, but its level still rises.',
-    gout: '<b>Gout</b>: there is more uric acid than can stay dissolved. Above ~420 µmol/L (≈7 mg/dL, the solubility limit of urate), monosodium urate crystals deposit in the joints (an attack of pain in the big toe) and form stones in the kidneys. The treatment target is urate below 360 µmol/L.',
+    norm: '<b>Остаточный (небелковый) азот</b> — азот всего, что остаётся в крови после осаждения белков: около 14–28 ммоль/л. Половина — <b>мочевина</b> (её делает печень из аммиака), остальное — аминокислоты, <b>мочевая кислота</b> (распад пуринов), <b>креатинин</b> (из креатинфосфата мышц, его образуется почти постоянное количество), немного аммиака. Всё это фильтруется в почечном клубочке; мочевина и креатинин уходят с мочой, а аминокислоты почти целиком и мочевая кислота большей частью всасываются обратно в канальцах. Креатинин и мочевина — главные показатели работы почек.',
+    renal: '<b>Почечная недостаточность</b> — ретенционная азотемия: клубочки фильтруют мало, и мочевина с креатинином копятся в крови (креатинин — особенно, по нему считают скорость фильтрации, СКФ). Растёт и мочевая кислота, задерживаются калий, фосфат, кислоты — ацидоз. При тяжёлой форме — уремия, нужен диализ.',
+    liver: '<b>Печёночная недостаточность</b> — печень не превращает аммиак в мочевину: мочевина <b>падает</b>, а аммиак и аминокислоты растут. Аммиак токсичен для мозга — печёночная энцефалопатия (спутанность, «хлопающий» тремор, кома).',
+    catab: '<b>Распад белков</b> (голодание, тяжёлые ожоги, лихорадка, кровотечение в кишечник, приём глюкокортикоидов) — продукционная азотемия: мочевины образуется больше, почки справляются, но её уровень растёт.',
+    gout: '<b>Подагра</b> — мочевой кислоты больше, чем может раствориться: при уровне выше ~420 мкмоль/л (≈7 мг/дл, предел растворимости урата) кристаллы урата натрия откладываются в суставах (приступ боли в большом пальце стопы), в почках — камни. Цель лечения — урат ниже 360 мкмоль/л.',
   };
   const BTXT = {
-    open: '<b>The bicarbonate buffer</b> is the main buffer of the extracellular fluid: H⁺ + HCO₃⁻ ⇄ H₂CO₃ ⇄ CO₂ + H₂O. Add acid: the red H⁺ ions are captured by bicarbonate, forming carbonic acid, which breaks down, and <b>CO₂ is exhaled by the lungs</b> (the bubbles). The system is open — the product leaves, so the pH barely changes. The kidneys then regenerate HCO₃⁻ and excrete H⁺ in the urine. pH = 6.1 + log([HCO₃⁻] / 0.03·pCO₂).',
-    closed: '<b>Closed system</b> (lid on): CO₂ cannot escape, carbonic acid accumulates, and the same buffer holds the pH much less well. This is what happens with poor breathing: when ventilation stops, the bicarbonate buffer is almost useless. Its strength lies in its partnership with the lungs.',
+    open: '<b>Гидрокарбонатный буфер</b> — главный во внеклеточной жидкости: H⁺ + HCO₃⁻ ⇄ H₂CO₃ ⇄ CO₂ + H₂O. Добавьте кислоту: красные H⁺ захватываются гидрокарбонатом, получается угольная кислота, она распадается, и <b>CO₂ выдыхается лёгкими</b> (пузырьки). Система открытая — продукт уходит, и pH почти не меняется. Почки затем восстанавливают HCO₃⁻ и выводят H⁺ с мочой. pH = 6,1 + lg([HCO₃⁻] / 0,03·pCO₂).',
+    closed: '<b>Закрытая система</b> (крышка): CO₂ не может уйти — угольная кислота копится, и тот же буфер держит pH гораздо хуже. Так бывает при плохом дыхании: при остановке вентиляции гидрокарбонатный буфер почти бесполезен. Поэтому его сила — в связке с лёгкими.',
   };
   const ABGTXT = {
-    norm: '<b>Acid–base balance</b> of the blood: pH 7.35–7.45, pCO₂ 35–45 mmHg (set by breathing), HCO₃⁻ 22–26 mmol/L (set by the kidneys and metabolism). A shift in one component is partly offset by the other — <b>compensation</b>: the lungs change pCO₂ within minutes, the kidneys change HCO₃⁻ over 3–5 days. The diagram on the right shows the path of the (pH, HCO₃⁻) point.',
-    macid: '<b>Metabolic acidosis</b>: acids accumulate or HCO₃⁻ is lost — diabetic ketoacidosis, lactate in shock, renal failure, diarrhea, methanol poisoning. HCO₃⁻ falls. Compensation is rapid, deep (Kussmaul) breathing: pCO₂ falls and the pH rises toward normal.',
-    malk: '<b>Metabolic alkalosis</b>: loss of acid (vomiting, gastric suction) or excess base (diuretics, too much bicarbonate). HCO₃⁻ rises. Compensation: breathing slows and pCO₂ rises (only to a limited extent, because of the resulting lack of oxygen).',
-    racid: '<b>Respiratory acidosis</b>: CO₂ is not removed — COPD, a severe asthma attack, respiratory depression (opioids, anesthesia), respiratory muscle weakness. pCO₂ rises. Compensation: over several days the kidneys retain HCO₃⁻ and excrete more H⁺.',
-    ralk: '<b>Respiratory alkalosis</b>: too much CO₂ is exhaled — panic and hyperventilation, high altitude, fever, early aspirin poisoning. pCO₂ falls; tingling and cramps may occur (ionized calcium falls). Compensation: the kidneys excrete HCO₃⁻.',
+    norm: '<b>Кислотно-основное состояние</b> крови: pH 7,35–7,45, pCO₂ 35–45 мм рт. ст. (зависит от дыхания), HCO₃⁻ 22–26 ммоль/л (зависит от почек и обмена). Сдвиг одного компонента частично выравнивает другой — <b>компенсация</b>: лёгкие меняют pCO₂ за минуты, почки меняют HCO₃⁻ за 3–5 дней. На диаграмме справа — путь точки (pH, HCO₃⁻).',
+    macid: '<b>Метаболический ацидоз</b>: кислоты накапливаются или теряется HCO₃⁻ — диабетический кетоацидоз, лактат при шоке, почечная недостаточность, понос, отравление метанолом. HCO₃⁻ падает. Компенсация — частое глубокое дыхание (Куссмауля): pCO₂ снижается, pH поднимается к норме.',
+    malk: '<b>Метаболический алкалоз</b>: потеря кислоты (рвота, аспирация желудочного сока) или избыток оснований (мочегонные, избыток гидрокарбоната). HCO₃⁻ растёт. Компенсация — дыхание урежается, pCO₂ растёт (ограниченно: мешает нехватка кислорода).',
+    racid: '<b>Дыхательный ацидоз</b>: CO₂ не выводится — ХОБЛ, тяжёлый приступ астмы, угнетение дыхания (опиоиды, наркоз), слабость дыхательных мышц. pCO₂ растёт. Компенсация — почки за несколько дней задерживают HCO₃⁻ и выводят больше H⁺.',
+    ralk: '<b>Дыхательный алкалоз</b>: CO₂ выдыхается слишком много — паника и гипервентиляция, высокогорье, лихорадка, ранняя стадия отравления аспирином. pCO₂ падает; возможны покалывания и судороги (падает ионизированный кальций). Компенсация — почки выводят HCO₃⁻.',
   };
   const labels = [
     ...NP.map((k, i) => ({ text: k.name, pos: V3(-4.9 + i * 1.05, -0.65 - (i % 2) * 0.35, 0.4), color: k.col, show: () => st.labels && st.mode === 'npn' })),
-    { text: 'blood', pos: V3(-3.4, 1.25, 0.4), color: '#FF8A8A', show: () => st.labels && st.mode === 'npn' },
-    { text: 'glomerulus', pos: V3(2.6, 2.15, 0.3), color: '#F2E6C8', show: () => st.labels && st.mode === 'npn' },
-    { text: 'filtrate', pos: V3(3.0, -2.3, 0.3), color: '#F2D27A', show: () => st.labels && st.mode === 'npn' },
+    { text: 'кровь', pos: V3(-3.4, 1.25, 0.4), color: '#FF8A8A', show: () => st.labels && st.mode === 'npn' },
+    { text: 'клубочек', pos: V3(2.6, 2.15, 0.3), color: '#F2E6C8', show: () => st.labels && st.mode === 'npn' },
+    { text: 'фильтрат', pos: V3(3.0, -2.3, 0.3), color: '#F2D27A', show: () => st.labels && st.mode === 'npn' },
     { text: 'HCO₃⁻', pos: V3(40 + 3.35, -0.75, 0.3), color: '#9FE0FF', show: () => st.labels && st.mode === 'buffer' },
     { text: 'H₂CO₃', pos: V3(40 + 3.35, 0.65, 0.3), color: '#C8C8D0', show: () => st.labels && st.mode === 'buffer' },
-    { text: 'CO₂ → lungs', pos: V3(40 + 0.4, 2.0, 0.3), color: '#C8C8D0', show: () => st.labels && st.mode === 'buffer' && st.open },
+    { text: 'CO₂ → лёгкие', pos: V3(40 + 0.4, 2.0, 0.3), color: '#C8C8D0', show: () => st.labels && st.mode === 'buffer' && st.open },
     { text: 'H⁺', pos: V3(40 - 1.0, 2.0, 0.3), color: '#FF5A4A', show: () => st.labels && st.mode === 'buffer' },
-    { text: 'lungs: CO₂', pos: V3(80 + 0.9, 2.75, 0.2), color: '#E890A0', show: () => st.labels && st.mode === 'abg' },
-    { text: 'kidneys: H⁺ and HCO₃⁻', pos: KID[1].clone().add(V3(80 - 1.15, -0.1, 0.2)), color: '#7FD6FF', show: () => st.labels && st.mode === 'abg' },
+    { text: 'лёгкие: CO₂', pos: V3(80 + 0.9, 2.75, 0.2), color: '#E890A0', show: () => st.labels && st.mode === 'abg' },
+    { text: 'почки: H⁺ и HCO₃⁻', pos: KID[1].clone().add(V3(80 - 1.15, -0.1, 0.2)), color: '#7FD6FF', show: () => st.labels && st.mode === 'abg' },
   ];
   const refs = {};
   function ui(el) {
     const ib = infoBox('1 1 460px');
     refs.setInfo = () => { ib.info.innerHTML = st.msg || (st.mode === 'npn' ? NPNTXT[st.npn] : st.mode === 'buffer' ? BTXT[st.open ? 'open' : 'closed'] : ABGTXT[st.dis]); };
-    refs.modeSeg = seg([{ id: 'npn', label: 'Non-protein nitrogen' }, { id: 'buffer', label: 'Buffers' }, { id: 'abg', label: 'Acid–base disorders' }], () => st.mode, (v) => setMode(v));
+    refs.modeSeg = seg([{ id: 'npn', label: 'Остаточный азот' }, { id: 'buffer', label: 'Буферы' }, { id: 'abg', label: 'Нарушения КОС' }], () => st.mode, (v) => setMode(v));
     const box = h('div', { class: 'grp', style: 'flex:1 1 440px' });
     const addAcid = () => { for (let i = 0; i < 4; i++) { const h0 = HP.find((x) => !x.on); if (!h0) break; h0.on = true; h0.t = 0; h0.s.visible = true; h0.p.set(rand(-1.2, 1.2), 1.9, rand(-0.8, 0.8)); h0.v.set(rand(-0.3, 0.3), -0.8, rand(-0.3, 0.3)); } };
     const addBase = () => { for (let i = 0; i < 4; i++) { const o = OH.find((x) => !x.on); if (!o) break; o.on = true; o.t = 0; o.s.visible = true; o.p.set(rand(-1.2, 1.2), 1.9, rand(-0.8, 0.8)); o.v.set(rand(-0.3, 0.3), -0.8, rand(-0.3, 0.3)); } };
     const reset = () => { st.HCO3 = 24; st.H2CO3 = 1.2; st.freeH = 0; st.freeOH = 0; HCO.forEach((b) => { b.kind = 'b'; }); HP.forEach((h0) => { h0.on = false; h0.s.visible = false; }); OH.forEach((o) => { o.on = false; o.s.visible = false; }); BUB.forEach((x) => { x.on = false; x.g.visible = false; }); };
     refs.rebuild = () => {
       box.innerHTML = '';
-      if (st.mode === 'npn') box.append(h('div', { class: 'glabel' }, 'State'), h('div', { class: 'gctl' }, seg([{ id: 'norm', label: 'Normal' }, { id: 'renal', label: 'Renal failure' }, { id: 'liver', label: 'Liver failure' }, { id: 'catab', label: 'Protein breakdown' }, { id: 'gout', label: 'Gout' }], () => st.npn, (v) => { st.npn = v; refs.setInfo(); })));
-      else if (st.mode === 'buffer') box.append(h('div', { class: 'glabel' }, 'Experiment'), h('div', { class: 'gctl' }, button('Add acid', addAcid, true), button('Add base', addBase), toggle('Lid (closed system)', () => !st.open, (v) => { st.open = !v; refs.setInfo(); }), button('Reset', reset)));
-      else box.append(h('div', { class: 'glabel' }, 'Disorder'), h('div', { class: 'gctl' }, seg(Object.entries(DIS).map(([id, d]) => ({ id, label: d.name })), () => st.dis, (v) => { st.dis = v; st.comp = false; refs.rebuild(); refs.setInfo(); }), st.dis !== 'norm' ? toggle('Compensation', () => st.comp, (v) => { st.comp = v; }) : null));
+      if (st.mode === 'npn') box.append(h('div', { class: 'glabel' }, 'Состояние'), h('div', { class: 'gctl' }, seg([{ id: 'norm', label: 'Норма' }, { id: 'renal', label: 'Почечная недостаточность' }, { id: 'liver', label: 'Печёночная недостаточность' }, { id: 'catab', label: 'Распад белков' }, { id: 'gout', label: 'Подагра' }], () => st.npn, (v) => { st.npn = v; refs.setInfo(); })));
+      else if (st.mode === 'buffer') box.append(h('div', { class: 'glabel' }, 'Опыт'), h('div', { class: 'gctl' }, button('Добавить кислоту', addAcid, true), button('Добавить щёлочь', addBase), toggle('Крышка (закрытая система)', () => !st.open, (v) => { st.open = !v; refs.setInfo(); }), button('Сброс', reset)));
+      else box.append(h('div', { class: 'glabel' }, 'Нарушение'), h('div', { class: 'gctl' }, seg(Object.entries(DIS).map(([id, d]) => ({ id, label: d.name })), () => st.dis, (v) => { st.dis = v; st.comp = false; refs.rebuild(); refs.setInfo(); }), st.dis !== 'norm' ? toggle('Компенсация', () => st.comp, (v) => { st.comp = v; }) : null));
     };
-    refs.rot = toggle('Rotate', () => st.rot, (v) => { st.rot = v; });
-    const lab = toggle('Labels', () => st.labels, (v) => { st.labels = v; });
+    refs.rot = toggle('Вращение', () => st.rot, (v) => { st.rot = v; });
+    const lab = toggle('Подписи', () => st.labels, (v) => { st.labels = v; });
     Object.assign(refs, { lab });
-    el.append(group('Mode', '1–3', refs.modeSeg), box, group('View', 'R · N', refs.rot, lab), ib.el);
+    el.append(group('Режим', '1–3', refs.modeSeg), box, group('Вид', 'R · N', refs.rot, lab), ib.el);
     refs.rebuild(); refs.setInfo();
   }
   function onKey(e) {
@@ -216,21 +216,21 @@ function makeNitrogen() {
   }
   const f2 = (v) => v.toFixed(2).replace('.', ','), f0 = (v) => Math.round(v);
   function stats() {
-    if (st.mode === 'buffer') return [['pH', f2(st.pH), ''], ['HCO₃⁻', f0(st.HCO3), 'a.u.'], ['H₂CO₃', f2(st.H2CO3).replace(',00', ''), 'a.u.']];
-    if (st.mode === 'abg') return [['pH', f2(st.pH), ''], ['pCO₂', f0(st.pCO2), 'mmHg'], ['HCO₃⁻', f0(st.bic), 'mmol/L']];
-    const S = NPNS[st.npn]; return [['Urea', (5.5 * S.urea).toFixed(1).replace('.', ','), 'mmol/L'], ['Creatinine', f0(85 * S.crea), 'µmol/L'], ['Uric acid', f0(300 * S.urate), 'µmol/L'], ['Ammonia', f0(25 * S.nh3), 'µmol/L']];
+    if (st.mode === 'buffer') return [['pH', f2(st.pH), ''], ['HCO₃⁻', f0(st.HCO3), 'усл.'], ['H₂CO₃', f2(st.H2CO3).replace(',00', ''), 'усл.']];
+    if (st.mode === 'abg') return [['pH', f2(st.pH), ''], ['pCO₂', f0(st.pCO2), 'мм рт. ст.'], ['HCO₃⁻', f0(st.bic), 'ммоль/л']];
+    const S = NPNS[st.npn]; return [['Мочевина', (5.5 * S.urea).toFixed(1).replace('.', ','), 'ммоль/л'], ['Креатинин', f0(85 * S.crea), 'мкмоль/л'], ['Мочевая к-та', f0(300 * S.urate), 'мкмоль/л'], ['Аммиак', f0(25 * S.nh3), 'мкмоль/л']];
   }
   const self = {
     mobZoom: 1.0, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#9FE0FF',
-    kicker: 'Biochemistry · blood', title: 'Blood nitrogen and acid–base',
-    lede: 'From a few numbers from a test tube — urea, creatinine, pH and CO₂ — a doctor can see how the kidneys, liver and lungs are working.',
+    kicker: 'Биохимия · кровь', title: 'Азот крови и КОС',
+    lede: 'По нескольким числам из пробирки — мочевине, креатинину, pH и CO₂ — врач видит, как работают почки, печень и лёгкие.',
     notes: `
-      <div><h2>Non-protein nitrogen and acid–base balance</h2>
-        <p>Blood <b>non-protein (residual) nitrogen</b> is 14–28 mmol/L: urea (~50%), amino acids (~25%), uric acid, creatine and creatinine, ammonia, bilirubin, indican. Azotemia can be <b>retention</b> azotemia (the kidneys fail to excrete) or <b>production</b> azotemia (too much is formed).</p>
-        <h3>Blood buffer systems</h3><ul><li><b>Bicarbonate</b> (HCO₃⁻/H₂CO₃, pKₐ 6.1): ~55% of the blood’s buffer capacity; works together with the lungs and kidneys.</li><li><b>Hemoglobin</b> (~35%): deoxyhemoglobin binds H⁺ (the Haldane effect; its flip side is the Bohr effect).</li><li><b>Protein</b> (plasma proteins); <b>phosphate</b> (HPO₄²⁻/H₂PO₄⁻, pKₐ 6.8) matters inside cells and in urine.</li></ul>
-        <h3>Kidneys</h3><p>They reabsorb all the filtered HCO₃⁻ and generate new HCO₃⁻ by excreting H⁺ as titratable acids (phosphates) and as ammonium ions NH₄⁺ (from glutamine).</p></div>
-      <div><h2>Simplifications</h2><ul><li>Molecules follow their chemical formulas; the number of molecules on screen is arbitrary (proportional to concentration).</li><li>The buffer beaker is a qualitative model; acid–base values in the disorders are typical examples, and compensation is shown in accelerated time.</li></ul></div>
-      <div class="keys"><h2>Keys</h2><ul><li><code>1</code>–<code>3</code> mode</li><li><code>R</code> rotate · <code>N</code> labels</li></ul></div>`,
+      <div><h2>Небелковый азот и кислотно-основное состояние</h2>
+        <p><b>Остаточный азот</b> крови — 14–28 ммоль/л: мочевина (~50%), аминокислоты (~25%), мочевая кислота, креатин и креатинин, аммиак, билирубин, индикан. Азотемия бывает <b>ретенционной</b> (почки не выводят) и <b>продукционной</b> (образуется слишком много).</p>
+        <h3>Буферные системы крови</h3><ul><li><b>Гидрокарбонатная</b> (HCO₃⁻/H₂CO₃, pKₐ 6,1) — ~55% буферной ёмкости крови, работает в связке с лёгкими и почками.</li><li><b>Гемоглобиновая</b> (~35%): дезоксигемоглобин связывает H⁺ (эффект Холдейна; обратная сторона — эффект Бора).</li><li><b>Белковая</b> (белки плазмы); <b>фосфатная</b> (HPO₄²⁻/H₂PO₄⁻, pKₐ 6,8) важна внутри клеток и в моче.</li></ul>
+        <h3>Почки</h3><p>Реабсорбируют весь профильтрованный HCO₃⁻ и делают новый, выводя H⁺ в виде титруемых кислот (фосфаты) и ионов аммония NH₄⁺ (из глутамина).</p></div>
+      <div><h2>Условности</h2><ul><li>Молекулы — по химическим формулам, число молекул на экране — условное (пропорционально концентрации).</li><li>Стакан с буфером — качественная модель; значения КОС при нарушениях — типичные примеры, компенсация показана в ускоренном времени.</li></ul></div>
+      <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>3</code> режим</li><li><code>R</code> вращение · <code>N</code> подписи</li></ul></div>`,
   };
   setMode('npn'); st.fly = null;
   return self;

@@ -13,7 +13,7 @@ Object.assign(BIO_MOL, {"met":{"name":"Methionine","el":"N C C C S C C O O H H H
 function makeHemoglobin() {
   __set_rnd(mulberry(2401));
   const scene = bioStage({ bg: 0x0a0608, rim: 0xff5a5a });
-  const VIEW = { o2: flyTarget(V3(-0.6, -1.6, 0), V3(0.8, 0.3, 21.2)), heme: flyTarget(V3(39.0, -1.6, 0), V3(40, 5.2, 12.2)), sick: flyTarget(V3(79.8, -1.7, 0), V3(80.4, 0.0, 18.5)) };
+  const VIEW = { o2: matchMedia('(max-width:700px)').matches ? flyTarget(V3(0.1, -3.0, 0), V3(1.5, -1.1, 21.2)) : flyTarget(V3(0.1, -1.6, 0), V3(1.5, 0.3, 21.2)), heme: flyTarget(V3(39.0, -1.6, 0), V3(40, 5.2, 12.2)), sick: flyTarget(V3(79.8, -1.7, 0), V3(80.4, 0.0, 18.5)) };
   // цель камеры — в центре модели, место под нижнюю панель — сдвигом кадра: вращение и приближение идут вокруг модели
   const VOFF = 0.16; Object.values(VIEW).forEach((v) => { const d = VOFF * 2 * Math.tan(17 * Math.PI / 180) * v.pos.distanceTo(v.target); v.target.y += d; v.pos.y += d; });
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.o2.pos); camera.setViewOffset(1, 1, 0, VOFF, 1, 1);

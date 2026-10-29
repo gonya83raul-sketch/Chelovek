@@ -13,7 +13,7 @@ Object.assign(BIO_MOL, {"cortisol":{"name":"Cortisol","el":"C C C C C O C C C C 
 function makePituitary() {
   __set_rnd(mulberry(8501));
   const scene = bioStage({ rim: 0x9f7bff });
-  const VIEW = { map: [V3(-0.3, -0.7, 0), V3(0.2, 0.3, 17)], water: [V3(39.4, -0.9, 0), V3(39.9, -0.1, 21)], growth: [V3(79.0, 0.4, 0), V3(79.6, 1.6, 27)] };
+  const VIEW = { map: [V3(-0.3, -0.7, 0), V3(0.2, 0.3, 17)], water: [V3(38.9, -0.8, 0), V3(39.4, 0.0, 23)], growth: [V3(79.0, 0.4, 0), V3(79.6, 1.6, 27)] };
   const VIEWM = { map: [V3(0.7, -0.4, 0), V3(1.1, 0.4, 17)], water: [V3(40, -0.5, 0), V3(40.4, 0.3, 25)], growth: [V3(80, 0.4, 0), V3(80.6, 1.6, 27)] }, mqm = window.matchMedia('(max-width:700px)'), VV = (m) => (mqm.matches && VIEWM[m]) || VIEW[m];
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VIEW.map[1]);
   const controls = makeControls(camera, VIEW.map[0]); controls.minDistance = 3; controls.maxDistance = 40;

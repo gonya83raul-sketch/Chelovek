@@ -14,7 +14,7 @@ function makeLiver() {
   __set_rnd(mulberry(2701));
   const scene = bioStage({ bg: 0x0a0807, rim: 0xc87a4a });
   const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: кадр уходит из-под заголовка и описания (телефон — прежний ракурс)
-  const VIEW = { lob: DK ? flyTarget(V3(-1.6, -1.2, 0), V3(-1.2, 3.6, 18.7)) : flyTarget(V3(0.6, -2.0, 0), V3(1.0, 2.6, 18.5)), detox: flyTarget(V3(40.4, -2.3, 0), V3(40.9, -0.4, 17)), alc: flyTarget(V3(79.0, -2.4, 0), V3(79.5, -0.7, 17)), para: flyTarget(V3(119.1, -2.4, 0), V3(119.6, -0.7, 17)) };
+  const VIEW = { lob: DK ? flyTarget(V3(-1.6, -1.2, 0), V3(-1.2, 3.6, 18.7)) : flyTarget(V3(0.6, -2.0, 0), V3(1.0, 2.2, 15.0)), detox: flyTarget(V3(40.4, -2.3, 0), V3(40.9, -0.4, 17)), alc: flyTarget(V3(79.0, -2.4, 0), V3(79.5, -0.7, 17)), para: flyTarget(V3(119.1, -2.4, 0), V3(119.6, -0.7, 17)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.lob.pos);
   const controls = makeControls(camera, VIEW.lob.target); controls.minDistance = 3; controls.maxDistance = 40;
   const fx = new Sparks(1600, 0.08); scene.add(fx.obj);
@@ -73,7 +73,7 @@ function makeLiver() {
   { const g = new THREE.Group(); g.position.copy(PX.safe); G4.add(g); molAt(g, MOL('napqi'), V3(-0.45, 0, 0), 0.55); molAt(g, MOL('gsh'), V3(0.5, -0.1, 0.2), 0.75, { tint: '#7FD6FF' }); pm.safe = g; }
   const toxP = new THREE.Mesh(blobGeo(0.7, 0.55, 0.5, 11, 0.14, 4), protMat('#B07A6A', 0.4)); toxP.position.copy(PX.tox); G4.add(toxP); const toxN = molAt(G4, MOL('napqi'), PX.tox.clone().add(V3(-0.5, 0.45, 0.45)), 0.4);
   const pArr = [['apap', 'glu', '#7FE0A0'], ['apap', 'sul', '#F2CC3A'], ['apap', 'napqi', '#FF6A6A'], ['napqi', 'safe', '#7FD6FF'], ['napqi', 'tox', '#FF3A4A']].map(([a, b, c]) => { const pa = PX[a], pb = PX[b]; const d = pb.clone().sub(pa).normalize(); return { a, b, A: flowArrow(G4, pa.clone().addScaledVector(d, 0.85), pb.clone().addScaledVector(d, -0.9), c, { bend: 0.1, r: 0.024 }) }; });
-  const gshTube = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.42, 1.8, 32, 1, true), glassMat(0x7fd6ff, { rim: 0.35, base: 0.01 })); gshTube.position.set(1.6, -1.55, 0); G4.add(gshTube);
+  const gshTube = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.42, 1.8, 32, 1, true), glassMat(0x7fd6ff, { rim: 0.6, base: 0.04, keep: true })); gshTube.position.set(1.6, -1.55, 0); G4.add(gshTube);
   const gshFill = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.38, 1, 32), new THREE.MeshPhysicalMaterial({ color: 0x2a6a8a, emissive: 0x7fd6ff, emissiveIntensity: 0.25, transparent: true, opacity: 0.85, roughness: 0.2 })); G4.add(gshFill);
   const nacM = molAt(G4, MOL('nac'), V3(0.2, -1.7, 0.3), 0.5); const nacArr = flowArrow(G4, V3(0.65, -1.7, 0.3), V3(1.15, -1.6, 0.3), '#7FD6FF', { bend: 0.0, r: 0.02 });
   const hep = new THREE.Mesh(blobGeo(6.8, 3.0, 0.6, 13, 0.05, 4), new THREE.MeshPhysicalMaterial({ color: 0x3a2018, roughness: 0.7, transparent: true, opacity: 0.16, depthWrite: false })); hep.position.set(0.1, 0.1, -1.4); G4.add(hep);

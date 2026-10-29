@@ -2,8 +2,8 @@
    Оболочка версии — кэш chv-<версия>, меняется с каждой публикацией. 3D-модели и декодер Draco — отдельный долгоживущий кэш
    chv-models-<хеш моделей>: при обновлении сайта он остаётся, новое имя появляется, только когда меняются сами модели.
    Новая версия не включается сама: страница показывает «Доступно обновление» и по нажатию присылает 'skipWaiting'. */
-const V = 'chv-app43', M = 'chv-models-2a94c6e898', META = 'chv-meta';
-const SHELL = ["./", "./index.html", "./index.en.html", "./app43/core.js", "./app43/en/core.js", "./app43/offline.json", "./manifest.webmanifest", "./manifest.en.webmanifest", "./icons/icon-192.png", "./icons/icon-512.png", "./app43/vendor/three.module.min.js", "./app43/vendor/jsm/controls/OrbitControls.js", "./app43/vendor/jsm/environments/RoomEnvironment.js", "./app43/vendor/jsm/loaders/DRACOLoader.js", "./app43/vendor/jsm/loaders/GLTFLoader.js", "./app43/vendor/jsm/objects/MarchingCubes.js", "./app43/vendor/jsm/postprocessing/EffectComposer.js", "./app43/vendor/jsm/postprocessing/MaskPass.js", "./app43/vendor/jsm/postprocessing/OutputPass.js", "./app43/vendor/jsm/postprocessing/Pass.js", "./app43/vendor/jsm/postprocessing/RenderPass.js", "./app43/vendor/jsm/postprocessing/ShaderPass.js", "./app43/vendor/jsm/postprocessing/UnrealBloomPass.js", "./app43/vendor/jsm/shaders/CopyShader.js", "./app43/vendor/jsm/shaders/LuminosityHighPassShader.js", "./app43/vendor/jsm/shaders/OutputShader.js", "./app43/vendor/jsm/utils/BufferGeometryUtils.js"];
+const V = 'chv-app44', M = 'chv-models-2a94c6e898', META = 'chv-meta';
+const SHELL = ["./", "./index.html", "./index.en.html", "./app44/core.js", "./app44/en/core.js", "./app44/offline.json", "./manifest.webmanifest", "./manifest.en.webmanifest", "./icons/icon-192.png", "./icons/icon-512.png", "./app44/vendor/three.module.min.js", "./app44/vendor/jsm/controls/OrbitControls.js", "./app44/vendor/jsm/environments/RoomEnvironment.js", "./app44/vendor/jsm/loaders/DRACOLoader.js", "./app44/vendor/jsm/loaders/GLTFLoader.js", "./app44/vendor/jsm/objects/MarchingCubes.js", "./app44/vendor/jsm/postprocessing/EffectComposer.js", "./app44/vendor/jsm/postprocessing/MaskPass.js", "./app44/vendor/jsm/postprocessing/OutputPass.js", "./app44/vendor/jsm/postprocessing/Pass.js", "./app44/vendor/jsm/postprocessing/RenderPass.js", "./app44/vendor/jsm/postprocessing/ShaderPass.js", "./app44/vendor/jsm/postprocessing/UnrealBloomPass.js", "./app44/vendor/jsm/shaders/CopyShader.js", "./app44/vendor/jsm/shaders/LuminosityHighPassShader.js", "./app44/vendor/jsm/shaders/OutputShader.js", "./app44/vendor/jsm/utils/BufferGeometryUtils.js"];
 const SCOPE = self.registration.scope, FLAG = new URL('offline-flag', SCOPE).href;
 const isModel = (u) => u.pathname.includes('/models/');
 self.addEventListener('install', (e) => {
@@ -13,7 +13,7 @@ self.addEventListener('install', (e) => {
     // атлас был сохранён для офлайна — новая версия докачивает всё сама (список сборки), иначе после обновления офлайн пропал бы
     try {
       if (!(await (await caches.open(META)).match(FLAG))) return;
-      const p = await (await fetch('./app43/offline.json')).json(), cm = await caches.open(M);
+      const p = await (await fetch('./app44/offline.json')).json(), cm = await caches.open(M);
       let bad = 0;
       for (const [path] of p.files) {
         const u = new URL(path, SCOPE).href, cc = path.startsWith('models/') ? cm : c;
@@ -45,7 +45,7 @@ self.addEventListener('fetch', (e) => {
     e.respondWith(Promise.race([net, new Promise((res) => setTimeout(res, 4000)).then(() => caches.match(key).then((hit) => hit || net))]).catch(cached)); return;
   }
   const same = url.origin === self.location.origin;
-  const immutable = (same && (p.includes('/app43/') || isModel(url) || p.includes('/icons/'))) || url.hostname === 'cdn.jsdelivr.net';
+  const immutable = (same && (p.includes('/app44/') || isModel(url) || p.includes('/icons/'))) || url.hostname === 'cdn.jsdelivr.net';
   if (immutable) { e.respondWith(caches.match(req).then((hit) => hit || fetch(req).then((r) => put(req, r)))); return; }
   if (same || url.hostname.endsWith('fonts.googleapis.com') || url.hostname.endsWith('fonts.gstatic.com')) {
     e.respondWith(caches.match(req).then((hit) => { const net = fetch(req).then((r) => put(req, r)).catch(() => hit); return hit || net; }));

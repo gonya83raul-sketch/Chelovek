@@ -204,6 +204,6 @@ const AA_NOTE = {
   glu: 'Acidic side chain (−). The main excitatory neurotransmitter of the brain; the central hub of amino-nitrogen metabolism.',
   lys: 'Basic side chain (+). Essential; cereals contain little of it.',
   arg: 'Basic guanidino side chain. The source of nitric oxide, NO (which dilates blood vessels), and of urea.',
-  his: 'An imidazole ring with a pKa of about 7 — an ideal proton donor and acceptor in enzyme active sites and a buffer in hemoglobin. Histamine is made from it.',
+  his: 'An imidazole ring with a pKa of about 6 — an ideal proton donor and acceptor in enzyme active sites and a buffer in hemoglobin. Histamine is made from it.',
 };
 export { makeProtein };
