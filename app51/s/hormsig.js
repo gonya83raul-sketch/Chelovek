@@ -140,7 +140,7 @@ function makeHormsig() {
     { text: 'ядро', pos: V3(40 + 2.8, -0.2, 0), color: '#9F7BFF', show: () => st.labels && st.mode === 'ster' },
     { text: 'рецептор + HSP90', pos: V3(40 - 2.6, -1.3, 0.4), color: '#FF8AB0', show: () => st.labels && st.mode === 'ster' },
     { text: 'мембрана клетки', pos: V3(40 - 4.0, 1.4, 0), color: '#FFB070', show: () => st.labels && st.mode === 'ster' },
-    { text: 'инсулин', pos: V3(80 - 6.0, MEM_Y + 3.7, 0), color: '#F2C14E', show: () => st.labels && st.mode === 'ins' },
+    { text: 'инсулин', get pos() { return insul.position.clone().add(V3(80.5, 0.4, 0.3)); }, color: '#F2C14E', show: () => st.labels && st.mode === 'ins' },
     { text: 'рецептор α₂β₂', pos: V3(80 - 4.6, MEM_Y + 1.6, 0), color: '#7FD6FF', show: () => st.labels && st.mode === 'ins' },
     { text: 'тирозинкиназа', pos: V3(80 - 4.6, MEM_Y - 2.6, 0), color: '#C77DFF', show: () => st.labels && st.mode === 'ins' },
     { text: 'пузырьки с GLUT4', pos: V3(80 + 2.2, -2.9, 0), color: '#7FE0A0', show: () => st.labels && st.mode === 'ins' },

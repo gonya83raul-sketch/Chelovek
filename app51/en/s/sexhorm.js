@@ -278,7 +278,7 @@ function makeSexhorm() {
     { text: 'muscles', pos: MUSA.clone().add(V3(40.25, 0.1, 0.1)), color: ANDR, show: L2 },
     { text: 'bone', pos: BONE.clone().add(V3(40.3, 0, 0.1)), color: '#E8E0C8', show: L2 },
     { text: 'breasts', pos: BREAST[1].clone().add(V3(39.1, 0.2, 0.1)), color: ESTR, show: () => L2() && (st.asex === 'f' || st.astate === 'ster') },
-    { text: 'feedback', pos: () => G2.localToWorld(AXM.fb.curve.getPoint(0.5).clone()).add(V3(0.15, 0, 0.1)), color: '#FF6A5A', show: () => L2() && !st.posFb },
+    { text: 'feedback', pos: () => G2.localToWorld((st.asex === 'f' ? AXF : AXM).fb.curve.getPoint(0.5).clone()).add(V3(0.15, 0, 0.1)), color: '#FF6A5A', show: () => L2() && !st.posFb },
     { text: 'positive feedback → LH surge', pos: () => G2.localToWorld(AXF.fbPos.curve.getPoint(0.5).clone()).add(V3(0.15, 0, 0.1)), color: '#7FE0A0', show: () => L2() && !!st.posFb },
     { text: 'injections', pos: V3(40 - 1.9, 1.95, 0.2), color: '#5BE0FF', show: () => L2() && st.asex === 'm' && st.astate === 'ster' },
     { text: 'pill', pos: V3(40 + 0.35, 1.75, 0.4), color: '#F2C14E', show: () => L2() && st.asex === 'f' && st.astate === 'pill' },
