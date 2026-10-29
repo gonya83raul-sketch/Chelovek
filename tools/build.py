@@ -75,7 +75,7 @@ ledes = [f'{t}: {mm["lede"]}' for t, mm in META.items() if 'lede' in mm]
 L0 = 'const TOPIC_LEDE = {}; // заполняет tools/build.py'
 assert page.count(L0) == 1
 page = page.replace(L0, 'const TOPIC_LEDE = { ' + ', '.join(ledes) + ' };', 1)
-APP = 'app38'   # меняется при каждой публикации со старой структурой кэша
+APP = 'app39'   # меняется при каждой публикации со старой структурой кэша
 # модели: сайт грузит models/<имя>.bin; если есть только старые .txt — перепаковать, без .bin сборку не выпускать
 MODELS = ['skeleton', 'muscles', 'vision', 'digest', 'repro']
 MDIR = os.path.join(ROOT, 'out', 'models')
@@ -183,7 +183,9 @@ def preload_tags(i, lang):
     if c:
         cf = os.path.join(OUT, base, 's', c + '.js'); urls.append(base + 's/' + c + '.js')
         if os.path.exists(cf) and "from './kit.js'" in open(cf, encoding='utf8').read(): urls.append(base + 's/kit.js')
-    return ''.join(f'<link rel="modulepreload" href="{u}">\n' for u in urls)
+    pre = ("<script>if (!location.hash || location.hash === '#skeleton') { const l = document.createElement('link'); l.rel = 'preload'; l.as = 'fetch'; l.crossOrigin = ''; l.href = 'models/skeleton.bin'; document.head.appendChild(l); }</script>\n"
+           if (i or 'skeleton') == 'skeleton' else '')   # только если откроется сам скелет (главная по ссылке #тема — нет)   # скелет — стартовая тема: модель грузится сразу, не дожидаясь скриптов
+    return pre + ''.join(f'<link rel="modulepreload" href="{u}">\n' for u in urls)
 page_ru = page[:i0] + f'<script type="module" src="{APP}/core.js"></script>' + page[i1 + len('</script>'):]
 open(os.path.join(OUT, 'page.html'), 'w', encoding='utf8').write(page_ru)
 # сайт: главная «/» — русская, английская — index.en.html; у каждой темы свои страницы (window.__PAGE задаёт тему и язык).

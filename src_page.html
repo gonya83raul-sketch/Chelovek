@@ -411,11 +411,13 @@ function parseGLB(buf, onLoad, onErr) {
 const MODEL_SIZE = {}; // размеры models/*.bin в байтах — заполняет tools/build.py
 /* загрузка модели: прогресс по байтам (плашка в окне сцены); если данных нет 60 с или сеть оборвалась — «Повторить»
    (обещание ждёт повтора, сцена так и показывает «Загружаю…»); слишком старый браузер — сразу ошибка сцене */
+const MODEL_AC = {};   // загрузки моделей по сцене-владельцу: при выгрузке сцены — отмена
 function fetchModel(name) {
   const owner = buildingId || curId;
   return new Promise((resolve, reject) => {
     const attempt = () => {
       const ac = typeof AbortController === 'function' ? new AbortController() : null; let tm = 0;
+      if (ac) (MODEL_AC[owner] ||= new Set()).add(ac);
       const arm = () => { clearTimeout(tm); if (ac) tm = setTimeout(() => ac.abort(), 60000); };
       arm(); modelUi(name, owner, { got: 0, total: MODEL_SIZE[name] || 0 });
       fetch('models/' + name + '.' + MODEL_EXT, ac ? { signal: ac.signal } : undefined).then(async (r) => {
@@ -430,8 +432,9 @@ function fetchModel(name) {
         clearTimeout(tm);
         if (typeof DecompressionStream === 'undefined') { const e = new Error('браузер слишком старый для распаковки модели'); e.fatal = true; throw e; }
         return new Response(blob.stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
-      }).then((buf) => { modelUi(name, owner, null); resolve(buf); }, (e) => {
-        clearTimeout(tm);
+      }).then((buf) => { if (ac) MODEL_AC[owner]?.delete(ac); modelUi(name, owner, null); resolve(buf); }, (e) => {
+        clearTimeout(tm); if (ac) MODEL_AC[owner]?.delete(ac);
+        if (ac && ac.signal.reason === 'evicted') return;   /* сцену выгрузили — модель больше не нужна */
         if (e && e.fatal) { modelUi(name, owner, null); reject(e); return; }
         modelUi(name, owner, { err: e && e.name === 'AbortError' ? 'сеть не отвечает' : String(e && e.message || e), retry: attempt });
       });
@@ -9845,7 +9848,7 @@ function accentSet(c) { document.documentElement.style.setProperty('--accent', c
 // разделы, где кадр на компьютере отодвигается от пульта и заголовка (у биохимии ракурсы частично уже учитывают пульт — сдвиг вполсилы; сцена уточняет deskShift)
 const DESK_SHIFT = { body: 1, cell: 1, brain: 1, bio: 0.5 };
 function layout() {
-  IDLE.wake = performance.now(); IDLE.last = 0;   /* setSize очищает холст — на паузе нужен новый кадр */
+  IDLE.wake = performance.now(); IDLE.last = 0; LBC.t = 0;   /* setSize очищает холст — на паузе нужен новый кадр */
   if (!renderer) return;
   const w = stageEl.clientWidth, hgt = stageEl.clientHeight;
   renderer.setSize(w, hgt, false); composer.setSize(w, hgt); bloom.setSize(w, hgt);
@@ -10069,7 +10072,7 @@ function gfxProbe(now) {
   if (med > 40) gfxSet(0, 'fps'); else if (med > 16.7 * 1.45) gfxSet(GFX.tier - 1, 'fps');
 }
 function evict() {
-  while (recent.length > Math.max(1, gfx().keep)) { const old = recent.shift(); const sc = built[old]; if (!sc || sc === cur) continue; delete built[old]; try { disposeScene(sc); } catch (e) { /* выгрузка не критична */ } }
+  while (recent.length > Math.max(1, gfx().keep)) { const old = recent.shift(); const sc = built[old]; if (!sc || sc === cur) continue; delete built[old]; (MODEL_AC[old] || []).forEach((a) => a.abort('evicted')); delete MODEL_AC[old]; try { disposeScene(sc); } catch (e) { /* выгрузка не критична */ } }
 }
 function show(id) {
   if (NOGL) { noglShow(id); return; }
@@ -10113,7 +10116,7 @@ function noglShow(id) {
   window.__ready = id;
 }
 function activate(id) {
-  loadEl.hidden = true; IDLE.wake = performance.now(); IDLE.last = 0;
+  loadEl.hidden = true; IDLE.wake = performance.now(); IDLE.last = 0; LBC.t = 0;
   { const hp = document.getElementById('heartpanel'); if (hp && hp.__close) hp.__close(); }
   const i = recent.indexOf(id); if (i >= 0) recent.splice(i, 1); recent.push(id);
   if (cur) cur.controls.enabled = false;
@@ -10423,6 +10426,7 @@ refreshSeen();
 
 const tmp = new THREE.Vector3();
 const ttlRange = document.createRange();
+const LBC = { t: 0, w: 0, h: 0, base: [] };
 function updateLabels() {
   const w = stageEl.clientWidth, hgt = stageEl.clientHeight;
   // подписи не налезают друг на друга (на компьютере и на телефоне): налезающая сдвигается вверх/вниз на строку-две,
@@ -10437,6 +10441,10 @@ function updateLabels() {
     items.push({ el, x: (tmp.x * 0.5 + 0.5) * w, y: (-tmp.y * 0.5 + 0.5) * hgt, op: l.fade ? l.fade() : 1, lf: !!l.left });   // left: сцена просит подпись слева от точки   // fade(): сцена может приглушить подпись (точка за телом)
   });
   items.sort((a, b) => b.op - a.op || (b.el._on ? 1 : 0) - (a.el._on ? 1 : 0));
+  /* занятые места (цифры, график, пульт, заголовок) — из кэша: getBoundingClientRect каждый кадр заставлял пересчитывать раскладку; обновление раз в 0,3 с и при смене размера/цифр */
+  const nowL = performance.now();
+  if (nowL - LBC.t < 300 && LBC.w === w && LBC.h === hgt) { placed.push(...LBC.base); }
+  else {
   const sr = stageEl.getBoundingClientRect();
   [statsEl, scopeEl.hidden ? null : scopeEl, consoleEl.parentNode === stageEl ? consoleEl : null].forEach((e) => {
     if (!e || !e.offsetWidth) return; const r = e.getBoundingClientRect(); placed.push([r.left - sr.left - 4, r.top - sr.top - 2, r.right - sr.left + 4, r.bottom - sr.top + 2]);
@@ -10444,6 +10452,8 @@ function updateLabels() {
   // заголовок и описание: заняты только сами строки текста и кнопки, а не весь блок — справа от коротких строк подписи могут стоять
   if (hudTtl && hudTtl.offsetWidth) { ttlRange.selectNodeContents(hudTtl); for (const r of ttlRange.getClientRects()) if (r.width > 1) placed.push([r.left - sr.left - 6, r.top - sr.top - 3, r.right - sr.left + 6, r.bottom - sr.top + 3]);
     hudTtl.querySelectorAll('button, .hbtn').forEach((e) => { const r = e.getBoundingClientRect(); placed.push([r.left - sr.left - 4, r.top - sr.top - 2, r.right - sr.left + 4, r.bottom - sr.top + 2]); }); }
+  LBC.base = placed.slice(); LBC.t = nowL; LBC.w = w; LBC.h = hgt;
+  }
   const free = (r) => !placed.some((q) => r[0] < q[2] && r[2] > q[0] && r[1] < q[3] && r[3] > q[1]);
   items.forEach(({ el, x, y, op, lf }) => {
     const left0 = lf ? x - el._w > 6 : x + el._w > w - 6;   // не помещается справа (или сцена просит) — подпись слева от точки
@@ -10462,7 +10472,7 @@ function updateLabels() {
 let lastStats = 0;
 function updateStats(now) {
   if (now - lastStats < 150) return; lastStats = now;
-  const sv = cur.stats(), key = JSON.stringify(sv); if (key === statsEl.__k) return; statsEl.__k = key;
+  const sv = cur.stats(), key = JSON.stringify(sv); if (key === statsEl.__k) return; statsEl.__k = key; LBC.t = 0;
   statsEl.innerHTML = '';
   sv.forEach(([k, v, u]) => statsEl.append(h('div', { class: 'stat' }, h('i', {}, k), h('b', {}, String(v), u ? h('small', {}, u) : null))));
 }
