@@ -7,7 +7,7 @@ function makeThyroid() {
   rnd = mulberry(8201);
   const scene = bioStage({ rim: 0xc77dff });
   const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: кадр уходит из-под заголовка и описания (телефон — прежний ракурс)
-  const VIEW = { synth: DK ? [V3(-1.7, -1.5, 0), V3(-1.3, 0.5, 15.5)] : [V3(1.0, -1.6, 0), V3(1.4, 0.4, 14.5)], axis: [V3(39.6, 2.1, 0), V3(40.1, 3.2, 13.5)], cell: [V3(78.3, -1.9, 0), V3(78.7, 0.2, 17.5)] };
+  const VIEW = { synth: DK ? [V3(-1.7, -1.5, 0), V3(-1.3, 0.5, 15.5)] : [V3(1.0, -1.6, 0), V3(1.4, 0.4, 14.5)], axis: DK ? [V3(39.6, 2.1, 0), V3(40.1, 3.2, 13.5)] : [V3(39.9, 1.9, 0), V3(40.4, 3.0, 11.5)], cell: DK ? [V3(78.3, -1.9, 0), V3(78.7, 0.2, 17.5)] : [V3(79.4, -1.9, 0), V3(79.8, 0.2, 13.5)] };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VIEW.synth[1]);
   const controls = makeControls(camera, VIEW.synth[0]); controls.minDistance = 3; controls.maxDistance = 40;
   const fx = new Sparks(2000, 0.07); scene.add(fx.obj);
@@ -194,12 +194,12 @@ function makeThyroid() {
     { text: 'коллоид', pos: V3(-0.6, 1.05, 0.9), color: '#E8B85A', show: () => st.labels && st.mode === 'synth' },
     { text: 'тиреоглобулин', pos: TGP[20].clone().add(V3(-0.3, -0.25, 0.3)), color: '#F2D27A', show: () => st.labels && st.mode === 'synth' },
     { text: 'тироциты', pos: V3(-1.85, -1.35, 0.1), color: '#E890B0', show: () => st.labels && st.mode === 'synth' },
-    { text: 'капилляр', pos: BAS.clone().add(V3(0.35, -1.0, 0.45)), color: '#D84A50', show: () => st.labels && st.mode === 'synth' },
+    { text: 'капилляр', pos: BAS.clone().add(V3(0.35, -1.0, 0.45)), color: '#D84A50', show: () => st.labels && st.mode === 'synth' && DK },
     { text: 'NIS (Na⁺/I⁻)', pos: nis.position.clone().add(V3(0.35, 0.05, 0.2)), color: '#5B8CFF', show: () => st.labels && st.mode === 'synth' },
     { text: 'пендрин', pos: pend.position.clone().add(V3(-0.15, 0.35, 0.25)), color: '#7FE0A0', show: () => st.labels && st.mode === 'synth' },
     { text: 'ТПО', pos: tpo.position.clone().add(V3(-0.1, -0.38, 0.25)), color: '#FF9A5C', show: () => st.labels && st.mode === 'synth' },
     { text: 'тироксин T₄', pos: V3(4.1 - 0.55, 0.25, 0.3), color: '#F2C14E', show: () => st.labels && st.mode === 'synth' },
-    { text: 'трийодтиронин T₃', pos: V3(4.1 - 0.75, -1.35, 0.3), color: '#FFD98A', show: () => st.labels && st.mode === 'synth' },
+    { text: 'трийодтиронин T₃', pos: V3(4.1 - 0.35, -1.25, 0.3), color: '#FFD98A', show: () => st.labels && st.mode === 'synth' },
     { text: 'гипоталамус (ТРГ)', pos: HYP.clone().add(V3(40.25, 0.22, 0.1)), color: '#9F7BFF', show: () => st.labels && st.mode === 'axis' },
     { text: 'гипофиз (ТТГ)', pos: PIT.clone().add(V3(40.3, -0.08, 0.1)), color: '#7FD6FF', show: () => st.labels && st.mode === 'axis' },
     { text: 'щитовидная железа', pos: THY.clone().add(V3(40.28, -0.1, 0.1)), color: '#F2C14E', show: () => st.labels && st.mode === 'axis' },

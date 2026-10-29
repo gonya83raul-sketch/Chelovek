@@ -19,7 +19,7 @@ function makeProtein() {
   rnd = mulberry(1701);
   const scene = bioStage({ rim: 0x7fd6ff });
   const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: кадр уходит из-под заголовка и описания (телефон — прежний ракурс)
-  const VIEW = { aa: DK ? flyTarget(V3(0, -0.15, 0), V3(0, 2.55, 24)) : flyTarget(V3(0, -1.1, 0), V3(0, -0.3, 13.8)), lv1: DK ? flyTarget(V3(39.1, 0.0, 0), V3(39.9, 2.4, 17.5)) : null, lv: DK ? flyTarget(V3(38.9, -0.85, 0), V3(39.7, 1.15, 14.5)) : flyTarget(V3(40, -1.2, 0), V3(40.8, 0.8, 14.5)), fold: flyTarget(V3(80.6, -2.1, 0), V3(81.6, 0.6, 22)) };
+  const VIEW = { aa: DK ? flyTarget(V3(0, -0.15, 0), V3(0, 2.55, 24)) : flyTarget(V3(0, -1.1, 0), V3(0, -0.3, 13.8)), lv1: DK ? flyTarget(V3(39.1, 0.0, 0), V3(39.9, 2.4, 17.5)) : null, lv: DK ? flyTarget(V3(38.9, -0.85, 0), V3(39.7, 1.15, 14.5)) : flyTarget(V3(40, -1.2, 0), V3(40.8, 0.8, 14.5)), fold: DK ? flyTarget(V3(79.5, -1.45, 0), V3(80.5, 1.25, 22)) : flyTarget(V3(80.6, -0.9, 0), V3(81.4, 1.5, 12.5)), lv23: DK ? flyTarget(V3(39.56, -0.62, 0), V3(40.36, 1.38, 10)) : null };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.aa.pos);
   const controls = makeControls(camera, VIEW.aa.target); controls.minDistance = 2; controls.maxDistance = 45;
   const fx = new Sparks(1200, 0.08); scene.add(fx.obj);
@@ -79,8 +79,8 @@ function makeProtein() {
   const heat = new THREE.PointLight(0xff6a3a, 0, 8, 1.6); heat.position.set(-3, 1, 2); G3.add(heat);
   /* ---------- состояние ---------- */
   const st = { t: 0, mode: 'aa', labels: true, rot: true, fly: null, sel: null, lv: 4, msg: null, cyc: 0, fmode: 'chap', u: 0 };
-  function setMode(m) { st.mode = m; refs.modeSeg && refs.modeSeg.sync(); [G1, G2, G3].forEach((g, k) => { g.visible = ['aa', 'lv', 'fold'][k] === m; }); st.fly = (m === 'lv' && DK && st.lv === 1) ? VIEW.lv1 : VIEW[m]; st.sel = null; st.msg = null; st.cyc = 0; refs.rebuild && refs.rebuild(); refs.setInfo && refs.setInfo(); }
-  function setLv(v) { st.lv = v; refs.lvSeg && refs.lvSeg.sync(); st.cyc = 0; refs.setInfo(); if (st.mode === 'lv' && DK) st.fly = v === 1 ? VIEW.lv1 : VIEW.lv; }
+  function setMode(m) { st.mode = m; refs.modeSeg && refs.modeSeg.sync(); [G1, G2, G3].forEach((g, k) => { g.visible = ['aa', 'lv', 'fold'][k] === m; }); st.fly = (m === 'lv' && DK && st.lv === 1) ? VIEW.lv1 : (m === 'lv' && DK && st.lv < 4) ? VIEW.lv23 : VIEW[m]; st.sel = null; st.msg = null; st.cyc = 0; refs.rebuild && refs.rebuild(); refs.setInfo && refs.setInfo(); }
+  function setLv(v) { st.lv = v; refs.lvSeg && refs.lvSeg.sync(); st.cyc = 0; refs.setInfo(); if (st.mode === 'lv' && DK) st.fly = v === 1 ? VIEW.lv1 : v < 4 ? VIEW.lv23 : VIEW.lv; }
   pickOn(() => self, camera, () => AAM.map((a) => a.g.children[a.g.children.length - 1]), (id) => { st.sel = id; refs.setInfo(); });
   const ease = (x) => { const u = clamp(x, 0, 1); return u * u * (3 - 2 * u); };
   function update(dt) {
@@ -126,7 +126,7 @@ function makeProtein() {
     { text: 'N-конец', pos: V3(40 - 6.2, -1.2, 0), color: '#5B8CFF', show: () => st.labels && st.mode === 'lv' && st.lv === 1 },
     { text: 'C-конец', pos: V3(40 + 6.2, -1.2, 0), color: '#FF6A6A', show: () => st.labels && st.mode === 'lv' && st.lv === 1 },
     { text: 'пептидная связь + H₂O', pos: V3(DK ? 41.6 : 36.2, 3.0, 0), color: '#F2E6C8', show: () => st.labels && st.mode === 'lv' && st.lv === 1 },
-    { text: 'водородные связи α-спирали', pos: V3(41.3, 2.6, 0), color: '#FF8AB0', show: () => st.labels && st.mode === 'lv' && st.lv === 2 },
+    { text: 'водородные связи α-спирали', pos: V3(DK ? 41.6 : 41.3, DK ? 1.55 : 2.6, 0), color: '#FF8AB0', show: () => st.labels && st.mode === 'lv' && st.lv === 2 },
     { text: 'гем', get pos() { return scrOut(st.lv === 4 ? feC : feB, 1.0); }, color: '#E0773A', show: () => st.labels && st.mode === 'lv' && st.lv >= 3 },
     { text: 'α-цепи', get pos() { return scrOut(cA, 1.8); }, color: '#7FD6FF', show: () => st.labels && st.mode === 'lv' && st.lv === 4 },
     { text: 'β-цепи', get pos() { return scrOut(cB2, 1.8); }, color: '#FF8AB0', show: () => st.labels && st.mode === 'lv' && st.lv === 4 },
