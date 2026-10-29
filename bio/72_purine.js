@@ -7,11 +7,11 @@
 function makePurine() {
   rnd = mulberry(2101);
   const scene = bioStage({ rim: 0xc77dff });
-  const VIEW = { build: flyTarget(V3(0, -1.5, 0), V3(0.4, 0.6, 16)), catab: flyTarget(V3(39.4, 1.55, 0), V3(39.9, 3.75, 17.5)), synth: flyTarget(V3(80, -1.4, 0), V3(80.8, 0.6, 15)) };
+  const VIEW = { build: flyTarget(V3(0, -1.5, 0), V3(0.4, 0.6, 16)), catab: flyTarget(V3(40.3, 1.2, 0), V3(40.73, 3.09, 15)), synth: flyTarget(V3(80, -1.4, 0), V3(80.8, 0.6, 15)) };
   // телефон: «Строение» столбиком — аденин сверху, пурины, пиримидины, АМФ внизу
   const MOB = matchMedia('(max-width:700px)').matches;
   if (MOB) VIEW.build = flyTarget(V3(0.2, -0.3, 0), V3(0.5, 0.9, 12.5));
-  else VIEW.synth = flyTarget(V3(78.1, 0.05, 0), V3(78.9, 2.45, 17.9));
+  else VIEW.synth = flyTarget(V3(78.5, 0.05, 0), V3(79.3, 2.45, 17.9));
   if (MOB) { VIEW.catab = flyTarget(V3(39.65, 1.5, 0), V3(40.15, 3.0, 25)); VIEW.synth = flyTarget(V3(79.7, 0.0, 0), V3(80.2, 1.8, 24)); }   /* телефон: режимы 2–3 в ширину экрана */   /* компьютер: «Синтез» из-под заголовка и описания */
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.build.pos);
   const controls = makeControls(camera, VIEW.build.target); controls.minDistance = 2; controls.maxDistance = 40;
