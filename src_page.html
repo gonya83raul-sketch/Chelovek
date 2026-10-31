@@ -9805,7 +9805,7 @@ function makeShealth() {
     { text: 'Прилежащее ядро', pos: QW(NAC.clone().add(V3(0.06, 0.08, 0.1))), color: '#F2C14E', show: () => st.labels && st.mode === 'drive' && !MOB },
     { text: 'Гипофиз', pos: QW(PITQ.clone().add(V3(0.08, -0.06, 0.05))), color: '#C77DFF', show: () => st.labels && st.mode === 'drive' },
     ...SH_STI.map((p, i) => ({ text: p.name, pos: V3(0, 0, 0), color: p.color, show: () => st.labels && st.mode === 'sti', _i: i })),
-    ...SH_CONTRA.map((c, i) => ({ text: c.name + ' · ' + c.typ + '%', pos: V3(60 - 3.2 + i * 0.8, -1.05 + Math.max(0.05, c.typ / 85 * 3.2), 0.1), color: c.color, show: () => st.labels && st.mode === 'protect' })),
+    ...SH_CONTRA.map((c, i) => ({ text: c.name + ' · ' + (LANG === 'ru' ? String(c.typ).replace('.', ',') : c.typ) + '%', pos: V3(60 - 3.2 + i * 0.8, -1.05 + Math.max(0.05, c.typ / 85 * 3.2), 0.1), color: c.color, show: () => st.labels && st.mode === 'protect' && !(MOB && (i === 2 || i === 5)) })),   /* телефон: без «Календарный» и «Инъекция» — подписи не слипаются */
   ];
   labels.forEach((l) => { if (l._i !== undefined) l.pos.copy(STM[l._i].home).add(V3(30, -0.55, 0.3)); });
   const refs = {};
