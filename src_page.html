@@ -9659,7 +9659,7 @@ function makeSresp() {
   }
   function stats() { return st.model === 'basson' ? [] : [['Пульс', Math.round(st.hr || 70), 'уд/мин'], ['Дыхание', Math.round(st.rr || 14), '/мин'], ['Фаза', SR_PH[st.ph].name, '']]; }
   const self = {
-    scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#FF8AB0',
+    mobZoom: 0.72, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#FF8AB0',
     kicker: 'Тело · физиология', title: 'Цикл полового ответа',
     lede: 'Как мозг, вегетативная нервная система, сосуды и гормоны согласованно проводят тело через четыре фазы полового ответа — от возбуждения до разрешения.',
     notes: `
