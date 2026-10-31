@@ -239,7 +239,7 @@ function makeJoints() {
   const labels = [
     { text: 'суставной хрящ', pos: V3(0.55, 4.18, 0.3), color: CART, show: L1 },
     { text: 'губчатое вещество', pos: V3(0.35, 3.25, 0.3), color: IVORY, show: L1 },
-    { text: 'красный костный мозг', pos: V3(-0.3, 3.55, 0.3), color: '#E07080', show: L1 },
+    { text: 'красный костный мозг', pos: V3(-0.85, 3.55, 0.3), left: true, color: '#E07080', show: L1 },
     { text: 'эпифизарная линия', pos: V3(0.62, 2.75, 0.3), color: '#FFF4D8', show: L1 },
     { text: 'компактное вещество', pos: V3(0.38, 1.6, 0.3), color: IVORY, show: L1 },
     { text: 'жёлтый костный мозг', pos: V3(0.0, -0.6, 0.3), color: YEL, show: L1 },

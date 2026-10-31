@@ -3631,7 +3631,7 @@ function makeVision() {
   const glassCb = glassMat(0xffc9b8, { rim: 0.7, base: 0.012, pow: 2.0 });
   const solidCb = new THREE.MeshPhysicalMaterial({ color: 0xffc9b8, roughness: 0.55, transparent: true, opacity: 0.1, depthWrite: false, envMapIntensity: 0.5 });   // мозжечок отличим от полушарий
   const glassStem = glassMat(0xb9a4ff, { rim: 0.4, base: 0.01, pow: 1.8 });
-  const boneMat = new THREE.MeshPhysicalMaterial({ color: 0xd9c7a6, roughness: 0.62, clearcoat: 0.15, sheen: 0.3, sheenColor: new THREE.Color(0xfff0d8), envMapIntensity: 0.6, side: THREE.DoubleSide });
+  const boneMat = new THREE.MeshPhysicalMaterial({ color: 0x9a8c74, roughness: 0.7, clearcoat: 0.08, sheen: 0.15, sheenColor: new THREE.Color(0xfff0d8), envMapIntensity: 0.4, side: THREE.DoubleSide });
   const v1Mat = { L: null, R: null };
   ['L', 'R'].forEach((f) => { v1Mat[f] = new THREE.MeshPhysicalMaterial({ color: new THREE.Color(VIS_FIELD_COL[f]).multiplyScalar(0.35), roughness: 0.5, clearcoat: 0.3, emissive: new THREE.Color(VIS_FIELD_COL[f]), emissiveIntensity: 0.08, transparent: true, opacity: 0.55, depthWrite: false }); });   // не закрывают концы лучистости
   const parts = {};
@@ -3674,7 +3674,7 @@ function makeVision() {
   const LES = Object.fromEntries(VIS_LESIONS.map((l) => [l.id, l]));
   function applyLesion() {
     const L = LES[st.lesion];
-    Object.entries(fibMats).forEach(([n, m]) => { m.uniforms.uBlock.value = L.block && L.block[n] != null ? L.block[n] : 2; });
+    Object.entries(fibMats).forEach(([n, m]) => { m.uniforms.uBlock.value = st.mode === 'eye' ? 0.14 : L.block && L.block[n] != null ? L.block[n] : 2; });   /* в разрезе глаза: пучки дальше зрительного нерва приглушены (не лежат ярко на заголовке) */
     lesionSpr.visible = !!L.pos && st.mode === 'path'; if (L.pos) lesionSpr.position.set(...L.pos);
   }
   // какая половина поля какого глаза каким пучком несётся
@@ -3734,7 +3734,7 @@ function makeVision() {
       });
       ['L', 'R'].forEach((f) => { v1Mat[f].emissiveIntensity = 0.08 + 2.2 * Math.exp(-(st.t - st.cortexT[f]) / 0.35); });
     } else {
-      Object.values(fibMats).forEach((m) => { m.uniforms.uFront.value = -1; m.uniforms.uOn.value = 0.35; });
+      Object.values(fibMats).forEach((m) => { m.uniforms.uFront.value = -1; m.uniforms.uOn.value = 0.2; });
       updateOptics();
     }
   }
@@ -3772,7 +3772,7 @@ function makeVision() {
     lp('зрительный тракт', [-1.25, -0.45, -0.21], 'path'), lp('латеральное коленчатое тело', [-1.45, 0.35, -0.85], 'path'), lp('зрительная лучистость', [-1.95, 1.45, -1.67], 'path'),
     lp('V1 правого полушария', [-1.4, 1.5, -4.3], 'path', VIS_FIELD_COL.L), lp('V1 левого полушария', [1.4, 1.5, -4.3], 'path', VIS_FIELD_COL.R),
     ...(matchMedia('(max-width:700px)').matches ? [] : [lp('мышцы глаза', [1.66, 0.25, 3.0], 'path'), lp('мозжечок', [0.1, -2.6, -2.4], 'path')]),   /* телефон: меньше подписей — остальные не налезают */ lp('глазница', [2.9, -0.2, 4.6], 'path'),
-    lp('роговица', [-1.85, 0.0, 4.36], 'eye'), lp('хрусталик', [-1.85, -0.25, 4.02], 'eye'), lp('стекловидное тело', [-1.85, -0.15, 3.55], 'eye'),
+    lp('роговица', [-1.85, -0.75, 4.4], 'eye'), lp('хрусталик', [-1.85, -0.25, 4.02], 'eye'), lp('стекловидное тело', [-1.85, -0.15, 3.55], 'eye'),
     lp('сетчатка', [-1.85, -0.95, 3.25], 'eye'), lp('зрительный нерв', [-1.85, -0.55, 2.75], 'eye'), lp('предмет', [RAY_X, AXIS_Y + 0.6, 7.0], 'eye'),
   ];
   const lesLabel = { text: 'повреждение', pos: V3(0, 0, 0), color: '#ff6a5a', show: () => st.labels && st.mode === 'path' && st.lesion !== 'none' };
@@ -3830,7 +3830,7 @@ function makeVision() {
       return [['Пучков', 4, ''], ['Поле зрения', lost ? `−${lost * 25}%` : 'целое', '']];
     }
     const e = optics.err, where = Math.abs(e) < 0.25 ? 'на сетчатке' : e > 0 ? 'перед сетчаткой' : 'за сетчаткой';
-    return [['Хрусталик', `+${(19 + optics.A).toFixed(1)}`, 'дптр'], ['Фокус', where, '']];
+    return [['Хрусталик', `+${LANG === 'ru' ? (19 + optics.A).toFixed(1).replace('.', ',') : (19 + optics.A).toFixed(1)}`, 'дптр'], ['Фокус', where, '']];
   }
   const lesUpd = update;
   const self = {
@@ -3840,7 +3840,7 @@ function makeVision() {
     lede: 'Путь сигнала от сетчатки до затылочной коры и оптика глаза. Выберите повреждение и посмотрите, какая часть поля зрения пропадёт.',
     notes: `
       <div><h2>Как устроено зрение</h2>
-        <p><b>Оптика.</b> Свет преломляют роговица (около 43 диоптрий) и хрусталик (около 19 в покое). На сетчатке получается уменьшенное перевёрнутое изображение. Чтобы смотреть вблизи, ресничная мышца расслабляет связки, и хрусталик становится выпуклее: это <b>аккомодация</b>.</p>
+        <p><b>Оптика.</b> Свет преломляют роговица (около 43 диоптрий) и хрусталик (около 19 в покое). На сетчатке получается уменьшенное перевёрнутое изображение. Чтобы смотреть вблизи, ресничная мышца сокращается, связки ослабевают, и хрусталик становится выпуклее: это <b>аккомодация</b>.</p>
         <p><b>Сетчатка.</b> Около 120 млн палочек (сумеречное зрение) и около 6 млн колбочек (цвет и детали). Их сигналы сжимают нейроны сетчатки, и в мозг уходит примерно 1 млн волокон зрительного нерва.</p>
         <h3>Перекрёст</h3>
         <p>В хиазме волокна от носовых половин сетчаток переходят на другую сторону, от височных идут прямо. Поэтому правое полушарие получает <b>левую половину поля</b> от обоих глаз, а левое — правую. Это видно по цветам: бирюзовые волокна несут левое поле, сиреневые — правое.</p>
@@ -4059,8 +4059,8 @@ function makeSoma() {
   rnd = mulberry(77);
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x07060a); scene.environment = envTex; scene.fog = new THREE.FogExp2(0x07060a, 0.012);
   labLights(scene, 0xc9a6ff);
-  const camera = new THREE.PerspectiveCamera(36, 1, 0.05, 300); camera.position.set(5.2, 7.5, 34);
-  const controls = makeControls(camera, V3(-0.3, -0.6, 0)); controls.minDistance = 2.5; controls.maxDistance = 60;
+  const camera = new THREE.PerspectiveCamera(36, 1, 0.05, 300); camera.position.set(4.1, 7.5, 34);
+  const controls = makeControls(camera, V3(-1.4, -0.6, 0)); controls.minDistance = 2.5; controls.maxDistance = 60;
 
   const PART = Object.fromEntries(SOMA_PARTS.map((p) => [p.id, { ...p, mats: [], anchor: V3(0, 0, 0), dist: 9 }]));
   const pickables = [];
@@ -4290,7 +4290,7 @@ function makeSoma() {
     if (st.sel) PART[st.sel].mats.forEach((m) => { if (m.userData.e0s) { m.emissive.copy(m.userData.e0s.c); m.emissiveIntensity = m.userData.e0s.i; } });
     st.sel = id === 'all' ? null : id; st.msg = null;
     if (st.sel) { st.fly = flyTarget(PART[st.sel].anchor, PART[st.sel].anchor.clone().add(camera.position.clone().sub(controls.target).normalize().multiplyScalar(PART[st.sel].dist))); }
-    else st.fly = flyTarget(V3(-0.3, -0.6, 0), V3(5.2, 7.5, 34));
+    else st.fly = flyTarget(V3(-1.4, -0.6, 0), V3(4.1, 7.5, 34));
     refs.setInfo && refs.setInfo(); refs.seg && refs.seg.sync();
   }
   SOMA_PARTS.forEach((p) => PART[p.id].mats.forEach((m) => { if (!m.userData.e0s) m.userData.e0s = { c: m.emissive.clone(), i: m.emissiveIntensity }; }));
@@ -5238,7 +5238,7 @@ function makeCranial() {
   function stats() { if (st.sel !== null) { const nv = nerves[st.sel]; return [['Пара', nv.n, ''], ['Тип', CN_TYPES[nv.type].name.split(' ')[0], '']]; } return [['Пар', 12, ''], ['Чувствительных', 3, ''], ['Смешанных', 4, '']]; }
   apply();
   const self = {
-    labelBg: true, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, get accent() { return st.sel !== null ? CN_TYPES[nerves[st.sel].type].color : '#C77DFF'; },
+    labelBg: true, mobZoom: 0.7, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, get accent() { return st.sel !== null ? CN_TYPES[nerves[st.sel].type].color : '#C77DFF'; },
     kicker: 'Мозг · черепные нервы', title: 'Черепные нервы',
     lede: 'Двенадцать пар нервов головного мозга. Каждый уникален: одни только чувствуют, другие только управляют мышцами, третьи делают и то и другое.',
     notes: `
@@ -5701,7 +5701,7 @@ function makeDien() {
   };
   const TXT = {
     thal: '<b>Таламус</b> — информационный фильтр на входе в кору. Через него идут зрение (латеральное коленчатое тело), слух (медиальное), кожная и мышечная чувствительность (вентробазальный комплекс), двигательные программы от мозжечка и базальных ганглиев, сигналы памяти и эмоций. Обоняние — единственное исключение. Выберите, на что обратить внимание: таламус откроет «зелёный коридор» одному потоку и приглушит остальные. Тормозная «скорлупа» — ретикулярное ядро.',
-    hypo: '<b>Гипоталамус</b> — нижняя часть промежуточного мозга, более 30 пар ядер. Здесь центры голода и жажды, полового и родительского поведения, страха и агрессии, сна и биологических часов. Вместе с <b>гипофизом</b> он управляет всеми эндокринными железами: задняя доля выпускает гормоны, сделанные в нейронах гипоталамуса, передняя слушается его либеринов и статинов. Попробуйте опыты.',
+    hypo: '<b>Гипоталамус</b> — нижняя часть промежуточного мозга, более 30 пар ядер. Здесь центры голода и жажды, полового и родительского поведения, страха и агрессии, сна и биологических часов. Вместе с <b>гипофизом</b> он управляет многими эндокринными железами: задняя доля выпускает гормоны, сделанные в нейронах гипоталамуса, передняя слушается его либеринов и статинов. Попробуйте опыты.',
   };
   const labels = [
     ...THAL_CH.map((c) => ({ text: c.nuc, left: c.id === 'vision' || c.id === 'hearing', pos: TN[c.id][0].clone().add({ vision: V3(-0.1, -0.22, 0.25), hearing: V3(-0.2, 0.06, 0.3) }[c.id] || V3(0.05, 0.16, 0.2)), color: c.color, show: () => st.labels && st.mode === 'thal' && (st.att === 'none' || st.att === c.id) })),
