@@ -33,14 +33,18 @@ function makeHormsig() {
     const rc = cen(['R']), gc = cen(['A', 'B', 'G']); const ax = rc.clone().sub(gc).normalize();
     GP.quaternion.setFromUnitVectors(ax, V3(0, 1, 0)); const recC = rc.clone().applyQuaternion(GP.quaternion); GP.position.set(-2.6 - recC.x, MEM_Y - recC.y + 0.1, -recC.z); }
   const gaHome = gaM.position.clone(); const centerA = (() => { const pts = caPoints('gpcr', gs, ['A']); return pts.reduce((a, p) => a.add(p), V3(0, 0, 0)).multiplyScalar(1 / pts.length); })();
-  const ac = new THREE.Mesh(blobGeo(0.6, 0.9, 0.55, 3, 0.1, 4), protMat('#7FE0A0', 0.32)); ac.position.set(0.6, MEM_Y - 0.25, 0); G1.add(ac);
+  /* аденилатциклаза 9 — крио-ЭМ 6R3Q (повёрнута: мембранная часть вверх, место Gαs слева); sites — центры мембранной части, катализа и Gαs */
+  const acS = 0.035, AC = PDB('ac9').sites;
+  const ac = new THREE.Group(); ac.add(proteinMesh('ac9', { scale: acS, chains: ['A'], colorBy: () => '#7FE0A0' })); ac.position.set(0.6 - AC.tm[0] * acS, MEM_Y - AC.tm[1] * acS, -AC.tm[2] * acS); G1.add(ac);
+  const acMats = []; ac.traverse((o) => { if (o.isMesh) { o.material.emissive = new THREE.Color('#7FE0A0'); o.material.emissiveIntensity = 0.02; acMats.push(o.material); } });
+  const acAt = (k) => ac.position.clone().add(V3(...AC[k]).multiplyScalar(acS));
   const pka = new THREE.Group(); pka.position.set(3.3, -1.4, 0); G1.add(pka);
   const pkR = [0, 1].map((k) => { const m = new THREE.Mesh(blobGeo(0.35, 0.3, 0.3, 10 + k, 0.1, 3), protMat('#C77DFF', 0.35)); m.position.set(k ? 0.32 : -0.32, 0.25, 0); pka.add(m); return m; });
   const pkC = [0, 1].map((k) => { const m = new THREE.Mesh(blobGeo(0.32, 0.28, 0.3, 12 + k, 0.1, 3), protMat('#FF8AB0', 0.38)); m.position.set(k ? 0.32 : -0.32, -0.25, 0); pka.add(m); return m; });
   const phos = new THREE.Mesh(blobGeo(0.55, 0.45, 0.45, 15, 0.1, 3), protMat('#F2C14E', 0.3)); phos.position.set(5.9, -1.2, 0); G1.add(phos);
   const glyc = new THREE.Mesh(new THREE.IcosahedronGeometry(0.55, 2), new THREE.MeshPhysicalMaterial({ color: 0x8a6a20, roughness: 0.4, emissive: 0x5a3a08, emissiveIntensity: 0.2 })); glyc.position.set(7.5, -1.9, 0); G1.add(glyc);
-  const adr = molMesh(MOL('adrenaline'), { scale: 0.14, hideH: true }); G1.add(adr);
-  const camps = []; for (let k = 0; k < 24; k++) { const m = molMesh(MOL('camp'), { scale: 0.07, hideH: true }); m.visible = false; G1.add(m); camps.push({ m, age: 9, v: V3(0, 0, 0) }); }
+  const adr = molMesh(MOL('adrenaline'), { scale: 0.2, hideH: true }); G1.add(adr);
+  const camps = []; for (let k = 0; k < 24; k++) { const m = molMesh(MOL('camp'), { scale: 0.1, hideH: true }); m.visible = false; G1.add(m); camps.push({ m, age: 9, v: V3(0, 0, 0) }); }
   const g1ps = []; for (let k = 0; k < 14; k++) { const m = molMesh(MOL('g1p'), { scale: 0.06, hideH: true }); m.visible = false; G1.add(m); g1ps.push({ m, age: 9, v: V3(0, 0, 0) }); }
   const pde = new THREE.Mesh(blobGeo(0.35, 0.3, 0.3, 19, 0.1, 3), protMat('#9FA8B8', 0.35)); pde.position.set(1.6, -2.2, 0.3); G1.add(pde);
   /* ---------- 2. стероиды ---------- */
@@ -77,13 +81,13 @@ function makeHormsig() {
       const on = st.chol || (c > 2 && c < 11);
       // Gα отъезжает к аденилатциклазе
       const go = st.chol ? 1 : c < 2.5 ? 0 : c < 4 ? ease((c - 2.5) / 1.5) : c < 10 ? 1 : 1 - ease((c - 10) / 2);
-      const target = ac.position.clone().add(V3(-0.9, -0.35, 0)); const gaW0 = gaHome.clone();
+      const target = acAt('gs'); const gaW0 = gaHome.clone();
       gaM.position.copy(gaW0); // в локальных координатах GP
       GP.updateMatrixWorld(); const inv = GP.matrixWorld.clone().invert(); const tgtL = target.clone().applyMatrix4(inv);
       gaM.position.copy(tgtL.clone().sub(centerA).multiplyScalar(go));
-      ac.material.emissiveIntensity = on && go > 0.9 ? 0.25 + 0.1 * Math.sin(t * 8) : 0.02;
+      acMats.forEach((m) => { m.emissiveIntensity = on && go > 0.9 ? 0.25 + 0.1 * Math.sin(t * 8) : 0.02; });
       const cOn = on && go > 0.9; st.lev = cOn ? 1 : 0;
-      if (cOn && rnd() < 0.35) { const q = camps.find((x) => x.age > 2.6); if (q) { q.age = 0; q.m.visible = true; q.m.position.copy(ac.position).add(V3(0.2, -0.7, 0.3)); q.v.copy(pka.position.clone().sub(q.m.position).normalize().multiplyScalar(1.2).add(randUnit().multiplyScalar(0.3))); } }
+      if (cOn && rnd() < 0.35) { const q = camps.find((x) => x.age > 2.6); if (q) { q.age = 0; q.m.visible = true; q.m.position.copy(acAt('cat')).add(V3(0.3, -0.2, 0.4)); q.v.copy(pka.position.clone().sub(q.m.position).normalize().multiplyScalar(1.2).add(randUnit().multiplyScalar(0.3))); } }
       camps.forEach((q) => { if (q.age < 2.6) { q.age += dt * (st.caff ? 0.6 : 1); q.m.position.addScaledVector(q.v, dt); q.m.rotation.y += dt * 2; } else q.m.visible = false; });
       const pkaOn = cOn && c > 5 || st.chol; pkC.forEach((m, k) => { m.position.lerp(V3((k ? 0.32 : -0.32) + (pkaOn ? (k ? 1.2 : 0.6) : 0), pkaOn ? -0.8 : -0.25, 0), 1 - Math.exp(-dt * 3)); m.material.emissiveIntensity = pkaOn ? 0.2 : 0.02; });
       phos.material.emissiveIntensity = pkaOn && c > 6.5 || st.chol ? 0.25 + 0.1 * Math.sin(t * 6) : 0.02;
@@ -116,7 +120,7 @@ function makeHormsig() {
     fx.update(dt);
   }
   const TXT = {
-    camp: '<b>Мембранный рецептор и цАМФ.</b> Адреналин не входит в клетку. Он садится на <b>β2-адренорецептор</b> (оранжевый, семь спиралей в мембране) — это реальная структура комплекса рецептора с <b>G-белком</b> (PDB 3SN6, Нобелевская премия 2012). Рецептор меняет форму, α-субъединица G-белка (Gαs, голубая) обменивает ГДФ на ГТФ, отделяется от βγ и включает <b>аденилатциклазу</b> (зелёная): из АТФ получаются молекулы <b>цАМФ</b> — вторичный посредник. цАМФ отрывает регуляторные субъединицы <b>протеинкиназы A</b>, освобождённые каталитические (розовые) фосфорилируют киназу фосфорилазы → <b>гликогенфосфорилазу</b> → из гликогена сыплется глюкозо-1-фосфат. Каждая ступень <b>усиливает</b> сигнал: одна молекула гормона — миллионы молекул глюкозы. <b>Фосфодиэстераза</b> (серая) разрушает цАМФ и гасит сигнал.',
+    camp: '<b>Мембранный рецептор и цАМФ.</b> Адреналин не входит в клетку. Он садится на <b>β2-адренорецептор</b> (оранжевый, семь спиралей в мембране) — это реальная структура комплекса рецептора с <b>G-белком</b> (PDB 3SN6, Нобелевская премия 2012). Рецептор меняет форму, α-субъединица G-белка (Gαs, голубая) обменивает ГДФ на ГТФ, отделяется от βγ и включает <b>аденилатциклазу</b> (зелёная, крио-ЭМ структура 6R3Q): из АТФ получаются молекулы <b>цАМФ</b> — вторичный посредник. цАМФ отрывает регуляторные субъединицы <b>протеинкиназы A</b>, освобождённые каталитические (розовые) фосфорилируют киназу фосфорилазы → <b>гликогенфосфорилазу</b> → из гликогена сыплется глюкозо-1-фосфат. Каждая ступень <b>усиливает</b> сигнал: одна молекула гормона — миллионы молекул глюкозы. <b>Фосфодиэстераза</b> (серая) разрушает цАМФ и гасит сигнал.',
     ster: '<b>Липофильные гормоны</b> — стероиды, тиреоидные гормоны, кальцитриол — проходят через мембрану сами. В цитоплазме кортизол связывается с <b>рецептором</b> (розовый), от него отходит белок-шаперон HSP90 (серый), комплекс «гормон — рецептор» идёт в <b>ядро</b> и садится на регуляторные участки ДНК (HRE), включая или выключая гены. Получается новая мРНК и новые белки-ферменты. Действие медленное (часы), но долгое. ДНК-связывающий домен показан на примере похожего белка-регулятора GAL4 (PDB 1D66) — у ядерных рецепторов он тоже держится на ионах цинка (у них — «цинковые пальцы», у GAL4 — цинковый кластер).',
     ins: '<b>Инсулин</b> действует через <b>рецептор-тирозинкиназу</b>: две α-субъединицы снаружи (голубые) связывают гормон, две β-субъединицы внутри (фиолетовые) фосфорилируют друг друга по тирозинам (пример тирозинкиназного домена — Src, PDB 2SRC). Сигнал через IRS-белки, PI3-киназу и Akt доходит до пузырьков с переносчиком глюкозы <b>GLUT4</b> (зелёные): они встраиваются в мембрану мышечных и жировых клеток — и глюкоза входит внутрь. Ещё инсулин включает синтез гликогена, жиров и белков. При диабете 2 типа эта цепочка работает плохо (инсулинорезистентность).',
     chem: '<b>Гормоны по химическому строению.</b> <b>Белково-пептидные</b> (инсулин, глюкагон, гормоны гипофиза и гипоталамуса) и <b>производные аминокислот</b> (адреналин, тироксин) — в основном гидрофильные, действуют через мембранные рецепторы (кроме тиреоидных). <b>Стероиды</b> (кортикостероиды, половые, кальцитриол) — из холестерина, липофильные, действуют через ядро. <b>Эйкозаноиды</b> — из арахидоновой кислоты, местного действия. Нажмите на молекулу.',
@@ -179,7 +183,7 @@ function makeHormsig() {
         <p><b>Гидрофильные</b> гормоны (белки, пептиды, катехоламины) действуют через <b>мембранные рецепторы</b>: ионотропные (каналы), метаботропные (через G-белки: Gs включает аденилатциклазу, Gi тормозит её, Gq включает фосфолипазу C → ИФ₃ и Ca²⁺ + ДАГ), рецепторы-ферменты (тирозинкиназы, гуанилатциклаза). Вторичные посредники: цАМФ, цГМФ, Ca²⁺, ИФ₃, ДАГ, NO. Ответ — секунды-минуты, изменение <b>активности</b> ферментов.</p>
         <p><b>Липофильные</b> (стероиды, иодтиронины, кальцитриол) проникают в клетку и действуют через <b>внутриклеточные рецепторы</b> на гены: ответ — часы, изменение <b>количества</b> ферментов.</p>
         <h3>Иерархия</h3><p>Гипоталамус (либерины и статины) → гипофиз (тропные гормоны: АКТГ, ТТГ, ФСГ, ЛГ, СТГ, пролактин) → периферические железы. Отрицательная обратная связь: гормоны желёз тормозят гипоталамус и гипофиз.</p></div>
-      <div><h2>Условности и модели</h2><ul><li>Рецептор с G-белком — реальная структура 3SN6 (из неё убраны вспомогательные белки кристаллизации); в кармане рецептора — агонист.</li><li>Аденилатциклаза, протеинкиназа A, фосфорилаза, ядерный рецептор, рецептор инсулина — схематично.</li><li>Молекулы гормонов — по химическим формулам.</li></ul></div>
+      <div><h2>Условности и модели</h2><ul><li>Рецептор с G-белком — реальная структура 3SN6 (из неё убраны вспомогательные белки кристаллизации); в кармане рецептора — агонист.</li><li>Аденилатциклаза — крио-ЭМ структура 6R3Q (AC9 с Gαs; часть мембранных спиралей в ней не разрешена). Протеинкиназа A, фосфорилаза, ядерный рецептор, рецептор инсулина — схематично.</li><li>Молекулы гормонов — по химическим формулам.</li></ul></div>
       <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>4</code> режим</li><li>клик по молекуле в «Химии»</li><li><code>R</code> вращение · <code>N</code> подписи</li></ul></div>`,
   };
   setMode('camp'); st.fly = null;
