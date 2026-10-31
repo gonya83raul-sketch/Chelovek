@@ -5926,7 +5926,7 @@ function makeHemis() {
   };
   const labels = [
     ...BG_PARTS.map((p) => ({ text: p.name, pos: PART[p.id].anchor, color: p.color, left: ['thal', 'gp', 'amy'].includes(p.id), show: () => st.labels && st.mode === 'bg' && (!st.sel || st.sel === p.id) })),
-    { text: 'чёрная субстанция', pos: SN[0].clone().add(V3(0, -0.04, 0.06)), color: '#F4C542', show: () => st.labels && st.mode === 'bg' && !st.sel },
+    { text: 'чёрная субстанция', pos: SN[0].clone().add(V3(0, -0.04, 0.06)), color: '#F4C542', show: () => st.labels && st.mode === 'bg' && !st.sel }, { text: 'субталамическое ядро', pos: STN[0].clone().add(V3(0, 0.02, 0.06)), color: '#7FD6C8', left: true, show: () => st.labels && st.mode === 'bg' && !st.sel },
     { text: 'проекционные', pos: V3(-0.3, 0.55, 0.62), color: '#FF6A5A', show: () => st.labels && st.mode === 'tracts' },
     { text: 'мозолистое тело', pos: V3(0.0, 0.48, 0.05), color: '#4FA3FF', show: () => st.labels && st.mode === 'tracts' },
     { text: 'передняя комиссура', pos: V3(0.45, -0.1, 0.02), color: '#9FD0FF', show: () => st.labels && st.mode === 'tracts' },
@@ -6047,10 +6047,10 @@ function makeCortex() {
   labLights(scene, 0xe58fc4);
   { const k2 = new THREE.DirectionalLight(0xfff1e6, 1.15); k2.position.set(5, 8, -7); scene.add(k2); }   // ключевой свет и для левого полушария (z<0)
   const VIEWS = {
-    lat: flyTarget(V3(0.55, -0.3, -0.55), V3(0.27, 0.75, -8.2)),   // левое полушарие (z<0) снаружи
+    lat: flyTarget(V3(0.8, -0.3, -0.55), V3(0.52, 0.75, -8.2)),   // левое полушарие (z<0) снаружи
     med: flyTarget(V3(-0.22, -0.3, -0.3), V3(-0.5, 0.55, 8.4)),      // его медиальная стенка, правое скрыто
     top: flyTarget(V3(-0.3, -0.1, 0), V3(-3.4, 7.4, 0.01)),
-    col: flyTarget(V3(0.2, -0.75, 0), V3(4.4, 0.9, 8.0)),
+    col: flyTarget(V3(0.2, -0.95, 0), V3(4.82, 0.87, 8.8)),
   };
   const VIEWSM = {   // телефон: кадр выше и ниже — модель крупнее (mobZoom)
     lat: flyTarget(V3(-0.22, -0.25, -0.55), V3(-0.45, 0.6, -8.4)),   /* телефон: мозг крупнее */ med: flyTarget(V3(-0.22, -0.25, -0.3), V3(-0.5, 0.6, 9.2)),
@@ -6246,7 +6246,7 @@ function makeCortex() {
     ...LOBE_LBL.map((l) => latLbl(LOBES[l.li].name + ' доля', l.x, l.y, LOBES[l.li].color, () => st.mode === 'lobes' && st.view !== 'med')),
     latLbl('центральная борозда', bkCs(0.95) + 0.02, 0.95, '#ffffff', () => st.mode === 'lobes' && st.view !== 'med'),
     latLbl('боковая борозда', -0.1, bkLs(-0.1), '#ffffff', () => st.mode === 'lobes' && st.view !== 'med'),
-    latLbl('теменно-затылочная', bkPo(0.75) - 0.02, 0.75, '#ffffff', () => st.mode === 'lobes' && st.view !== 'med'),
+    latLbl('теменно-затылочная', bkPo(0.75) - 0.02, 0.75, '#ffffff', () => st.mode === 'lobes' && st.view !== 'med'), { text: 'мозжечок', pos: V3(-1.2, -0.95, -0.95), color: '#c8b0c0', show: () => st.labels && st.mode === 'lobes' && st.view === 'lat' && camera.position.z < -1 && !mqm.matches },
     { text: 'Лимбическая доля', pos: V3(0, 0, 0), color: LOBES[4].color, show: () => st.labels && st.mode === 'lobes' && st.view === 'med', _med: [-0.2, 0.42] },
     { text: 'мозолистое тело', pos: V3(0.0, 0.32, 0.15), color: '#efe8dc', show: () => st.labels && st.mode === 'lobes' && st.view === 'med' },
     { text: 'шпорная борозда', pos: V3(0, 0, 0), color: '#F2D14E', show: () => st.labels && st.mode === 'lobes' && st.view === 'med', _med: [-1.35, 0.1] },
@@ -6298,7 +6298,7 @@ function makeCortex() {
   }
   function stats() { return st.mode === 'zones' ? [['Полей Бродмана', 52, ''], ['Год карты', 1909, '']] : st.mode === 'layers' ? [['Слоёв', 6, ''], ['Пирамид', '≈75', '%']] : [['Доли', 5, ''], ['Главные борозды', 3, '']]; }
   const self = {
-    labelBg: true, mobZoom: 0.62, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#E9785F', mobZoom: 0.68,
+    labelBg: true, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#E9785F', mobZoom: 0.58,
     kicker: 'Мозг · новая кора', title: 'Кора больших полушарий',
     lede: 'Пять долей, 52 поля Бродмана, шесть слоёв и колонки-процессоры. Посмотрите, где говорит, видит и двигается кора и как сигнал проходит через её слои.',
     notes: `
@@ -6335,7 +6335,7 @@ function makeHippo() {
   rnd = mulberry(909);
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x060509); scene.environment = envTex;
   labLights(scene, 0xff8a5c);
-  const VIEW = { papez: flyTarget(V3(-0.1, -0.35, 0.2), V3(1.25, 1.2, 6.15)), sec: flyTarget(V3(0.45, -0.6, 0), V3(0.5, 0.1, 7.6)) };
+  const VIEW = { papez: flyTarget(V3(-0.1, -0.35, 0.2), V3(1.25, 1.2, 6.15)), sec: matchMedia('(max-width:700px)').matches ? flyTarget(V3(0.65, -0.45, 0), V3(0.7, 0.25, 9.5)) : flyTarget(V3(0.95, -0.62, 0), V3(1.0, 0.08, 10.4)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(VIEW.papez.pos);
   const controls = makeControls(camera, VIEW.papez.target); controls.minDistance = 1.5; controls.maxDistance = 14;
   const brain = new THREE.Group(); scene.add(brain);
@@ -6488,7 +6488,7 @@ function makeHippo() {
     after: '<b>После ДВП</b> тот же одиночный стимул вызывает в CA1 заметно больший ответ: синапс «запомнил» тренировку. Так в гиппокампе прописываются карты знакомых мест и события дня.',
   };
   const labels = [
-    ...PZ_PARTS.map((p) => ({ text: p.name, pos: { hip: V3(-0.32, -0.2, 0.62), fx: V3(-0.2, 0.36, 0.12), mam: V3(0.12, -0.7, 0.12), ant: V3(0.32, 0.18, 0.22), cing: V3(0.1, 0.78, 0.12), ent: V3(-0.1, -0.74, 0.5), amy: V3(0.55, -0.28, 0.6), olf: V3(1.24, -0.62, 0.2) }[p.id], color: p.color, show: () => st.labels && st.mode === 'papez' && (!st.sel || st.sel === p.id) })),
+    ...PZ_PARTS.map((p) => ({ text: p.name, pos: { hip: V3(-0.32, -0.2, 0.62), fx: V3(-0.2, 0.36, 0.12), mam: V3(0.12, -0.7, 0.12), ant: V3(0.32, 0.18, 0.22), cing: V3(0.1, 0.78, 0.12), ent: V3(-0.1, -0.74, 0.5), amy: V3(0.55, -0.28, 0.6), olf: V3(1.2, -0.56, 0.2) }[p.id], color: p.color, show: () => st.labels && st.mode === 'papez' && (!st.sel || st.sel === p.id) })),
     { text: 'мозолистое тело', pos: V3(-0.2, 0.5, 0.0), color: '#efe8dc', show: () => st.labels && st.mode === 'papez' && !st.sel },
     { text: 'таламус', pos: V3(-0.1, -0.05, 0.4), color: '#B9A4FF', show: () => st.labels && st.mode === 'papez' && !st.sel },
     { text: 'CA1', pos: CA.getPointAt(0.2).add(V3(0.2, 0, 0.1)), color: '#86B6FF', show: () => st.labels && st.mode === 'sec' },
@@ -6496,7 +6496,7 @@ function makeHippo() {
     { text: 'CA3', pos: CA.getPointAt(0.76).add(V3(-0.2, 0.05, 0.1)), color: '#86B6FF', show: () => st.labels && st.mode === 'sec' },
     { text: 'зубчатая извилина', pos: DG.getPointAt(0.5).add(V3(-0.1, -0.12, 0.1)), color: '#FF8A7A', show: () => st.labels && st.mode === 'sec' },
     { text: 'субикулум', pos: V3(1.95, -0.6, 0.1), color: '#C77DFF', show: () => st.labels && st.mode === 'sec' },
-    { text: 'энторинальная кора', pos: V3(2.5, -1.0, 0.15), color: '#5CC48A', show: () => st.labels && st.mode === 'sec' },
+    { text: 'энторинальная кора', pos: V3(2.5, -1.0, 0.15), color: '#5CC48A', left: true, show: () => st.labels && st.mode === 'sec' },
     { text: 'перфорантный путь', pos: V3(1.0, -0.55, 0.12), color: '#5CC48A', show: () => st.labels && st.mode === 'sec' },
     { text: 'мшистые волокна', pos: DGc.clone().add(V3(-0.35, 0.22, 0.1)), color: '#FF8A5C', show: () => st.labels && st.mode === 'sec' },
     { text: 'коллатерали Шаффера', pos: V3(0.25, 0.48, 0.12), color: '#F4C542', show: () => st.labels && st.mode === 'sec' },
