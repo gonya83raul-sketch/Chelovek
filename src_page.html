@@ -8942,7 +8942,7 @@ function makeRepro(initMode) {
   rnd = mulberry(2121);
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x08060a); scene.environment = envTex;
   labLights(scene, 0xf2b0c8);
-  const VIEW = { female: flyTarget(V3(-0.25, -0.3, 0), V3(1.0, 0.5, 3.75)), male: flyTarget(V3(0, -0.4, 0.1), V3(2.2, 0.3, 2.6)), cycle: flyTarget(V3(-0.08, -0.04, 0), V3(0.25, 0.2, 2.7)), dev: flyTarget(V3(-0.3, 0.05, 0), V3(-1.1, 0.45, 2.6)) };
+  const VIEW = { female: matchMedia('(max-width:700px)').matches ? flyTarget(V3(0, -0.3, 0), V3(1.25, 0.5, 3.75)) : flyTarget(V3(-0.25, -0.3, 0), V3(1.0, 0.5, 3.75)), male: flyTarget(V3(0, -0.3, 0.1), V3(2.2, 0.4, 2.6)), cycle: matchMedia('(max-width:700px)').matches ? flyTarget(V3(-0.08, -0.14, 0), initMode === 'cycle' ? V3(0.25, 0.1, 2.7) : V3(0.33, 0.16, 3.35)) : flyTarget(V3(-0.08, -0.04, 0), V3(0.25, 0.2, 2.7)), dev: matchMedia('(max-width:700px)').matches ? flyTarget(V3(0, 0.05, 0), V3(-0.8, 0.45, 2.6)) : flyTarget(V3(-0.2, 0.1, 0), V3(-0.84, 0.42, 2.08)) };
   const V0 = VIEW[initMode || 'female']; const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(V0.pos);
   const controls = makeControls(camera, V0.target); controls.minDistance = 0.8; controls.maxDistance = 14;
   bodyShell(scene, { rim: 0.18, arms: false });
@@ -9120,7 +9120,7 @@ function makeRepro(initMode) {
     refs.rot = toggle('Вращение', () => st.rot, (v) => { st.rot = v; });
     const lab = toggle('Подписи', () => st.labels, (v) => { st.labels = v; });
     Object.assign(refs, { lab });
-    el.append(group('Режим', '1–4', refs.modeSeg), h('div', { class: 'grp', style: 'flex:1 1 440px' }, h('div', { class: 'glabel' }, 'Органы', h('kbd', {}, 'клик')), segBox), refs.phG = group('Фазы цикла', '', ...[['Менструация', 1.5], ['Фолликулярная', 8], ['Овуляция', 13.7], ['Лютеиновая', 21]].map(([n, d], i) => button(n, () => { if (st.mode !== 'cycle') setMode('cycle'); st.day = d; st.msg = null; refs.setInfo(); }, i === 0)), toggle('Пауза', () => st.pause, (v) => { st.pause = v; })), refs.spG = group('Скорость цикла', '', sp), group('Вид', 'R · N', refs.rot, lab), ib.el);
+    el.append(group('Режим', '1–4', refs.modeSeg), h('div', { class: 'grp', style: 'flex:1 1 440px' }, h('div', { class: 'glabel' }, 'Органы', h('kbd', {}, 'клик')), segBox), refs.phG = group('Фазы цикла', '', ...[['Менструация', 1.5], ['Фолликулярная', 8], ['Овуляция', 13.7], ['Лютеиновая', 21]].map(([n, d], i) => button(n, () => { if (st.mode !== 'cycle') setMode('cycle'); st.day = d; st.msg = null; refs.setInfo(); }, false)), toggle('Пауза', () => st.pause, (v) => { st.pause = v; })), refs.spG = group('Скорость цикла', '', sp), group('Вид', 'R · N', refs.rot, lab), ib.el);
     // фазы и скорость цикла нужны только в режиме «Цикл»: в остальных режимах пульт ниже — сцене больше места
     refs.cycUI = () => { const on = st.mode === 'cycle'; refs.phG.style.display = refs.spG.style.display = on ? '' : 'none'; }; refs.cycUI();
     refs.setInfo();
@@ -9345,7 +9345,7 @@ function makeChest() {
   rnd = mulberry(2323);
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x07060a); scene.environment = envTex;
   labLights(scene, 0xf2b0c8);
-  const VIEW = { chest: flyTarget(V3(0, 1.75, 0), V3(2.25, 2.7, 6.95)), breast: flyTarget(V3(30.0, 0.0, 0), V3(33.4, 1.0, 5.6)), lact: flyTarget(V3(30.0, -0.3, 0), V3(30.8, 0.9, 6.6)) };
+  const VIEW = { chest: flyTarget(V3(0, 1.75, 0), V3(2.25, 2.7, 6.95)), breast: matchMedia('(max-width:700px)').matches ? flyTarget(V3(30.0, 0.0, 0), V3(33.4, 1.0, 5.6)) : flyTarget(V3(30.0, -0.15, 0), V3(33.4, 0.85, 5.6)), lact: matchMedia('(max-width:700px)').matches ? flyTarget(V3(30.0, 0.0, 0), V3(30.8, 1.2, 6.6)) : flyTarget(V3(30.0, -0.3, 0), V3(30.8, 0.9, 6.6)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(VIEW.chest.pos);
   const controls = makeControls(camera, VIEW.chest.target); controls.minDistance = 1; controls.maxDistance = 18;
   const body = new THREE.Group(); scene.add(body);
@@ -9465,13 +9465,13 @@ function makeChest() {
     suck: '<b>Рефлекс выделения молока.</b> Сосание раздражает рецепторы соска → сигнал по нервам в гипоталамус → задняя доля гипофиза выделяет <b>окситоцин</b> → мышечные клетки вокруг альвеол сокращаются, и молоко идёт по протокам к соску. Сосание же поддерживает выработку пролактина. Первое молоко — молозиво — особенно богато антителами.',
   };
   const labels = [
-    { text: 'грудина', pos: V3(0.12, 2.5, 0.68), color: '#F2E6C8', show: () => st.labels && st.mode === 'chest' },
-    { text: 'ключица', pos: V3(0.65, 3.12, 0.35), color: '#F2E6C8', show: () => st.labels && st.mode === 'chest' },
-    { text: 'рёбра', pos: V3(0.85, 2.25, 0.3), color: '#E8D8BB', show: () => st.labels && st.mode === 'chest' },
-    { text: 'рёберные хрящи', pos: V3(0.42, 1.85, 0.62), color: '#c8d8e0', show: () => st.labels && st.mode === 'chest' },
-    { text: 'позвоночник', pos: V3(0.0, 1.55, -0.6), color: '#D8C8A8', show: () => st.labels && st.mode === 'chest' && camera.position.z < 1.5 },   // спереди позвоночник закрыт грудиной — подпись только при взгляде сбоку или сзади
-    { text: 'диафрагма', pos: V3(0.7, 1.45, 0.45), color: '#E89090', show: () => st.labels && st.mode === 'chest' },
-    { text: 'сердце', pos: BODY.heart.clone().add(V3(0.15, -0.05, 0.3)), color: '#FF8A7A', show: () => st.labels && st.mode === 'chest' },
+    { text: 'грудина', pos: V3(0.12, 2.5, 0.68), color: '#F2E6C8', show: () => st.labels && st.mode === 'chest' && (!st.sel || st.sel === 'stern') },
+    { text: 'ключица', pos: V3(0.65, 3.12, 0.35), color: '#F2E6C8', show: () => st.labels && st.mode === 'chest' && (!st.sel || st.sel === 'stern') },
+    { text: 'рёбра', pos: V3(0.85, 2.25, 0.3), color: '#E8D8BB', show: () => st.labels && st.mode === 'chest' && (!st.sel || st.sel === 'rib') },
+    { text: 'рёберные хрящи', pos: V3(0.42, 1.85, 0.62), color: '#c8d8e0', show: () => st.labels && st.mode === 'chest' && (!st.sel || st.sel === 'stern') },
+    { text: 'позвоночник', pos: V3(0.0, 1.55, -0.6), color: '#D8C8A8', show: () => st.labels && st.mode === 'chest' && (st.sel === 'spine' || (!st.sel && camera.position.z < 1.5)) },   // спереди позвоночник закрыт грудиной — подпись только при взгляде сбоку или сзади
+    { text: 'диафрагма', pos: V3(0.7, 1.45, 0.45), color: '#E89090', show: () => st.labels && st.mode === 'chest' && (!st.sel || st.sel === 'mus') },
+    { text: 'сердце', pos: BODY.heart.clone().add(V3(0.15, -0.05, 0.3)), color: '#FF8A7A', show: () => st.labels && st.mode === 'chest' && (!st.sel || st.sel === 'med') },
     { text: 'большая грудная мышца', pos: V3(29.25, 0.95, 0.2), color: '#D07070', show: () => st.labels && st.mode !== 'chest' },
     { text: 'рёбра', pos: V3(28.9, 1.05, 0.4), color: '#E8D8BB', show: () => st.labels && st.mode !== 'chest' },
     { text: 'доли и дольки', pos: V3(30.1, 0.35, 0.1), color: '#F2B0C8', show: () => st.labels && st.mode !== 'chest' },
@@ -9650,7 +9650,7 @@ function makeSresp() {
     if (k === 'r' || k === 'к') { refs.rot.click(); return true; } if (k === 'n' || k === 'т') { refs.lab.click(); return true; }
     return false;
   }
-  function stats() { return [['Пульс', Math.round(st.hr || 70), 'уд/мин'], ['Дыхание', Math.round(st.rr || 14), '/мин'], ['Фаза', SR_PH[st.ph].name, '']]; }
+  function stats() { return st.model === 'basson' ? [] : [['Пульс', Math.round(st.hr || 70), 'уд/мин'], ['Дыхание', Math.round(st.rr || 14), '/мин'], ['Фаза', SR_PH[st.ph].name, '']]; }
   const self = {
     scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#FF8AB0',
     kicker: 'Тело · физиология', title: 'Цикл полового ответа',
