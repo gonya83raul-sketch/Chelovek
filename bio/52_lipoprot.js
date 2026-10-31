@@ -13,7 +13,7 @@ function makeLipoprot() {
   rnd = mulberry(1601);
   const scene = bioStage({ rim: 0xff8ab0 });
   const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: кадр уходит из-под заголовка и описания (телефон — прежний ракурс)
-  const VIEW = { part: DK ? flyTarget(V3(-3.2, -1.5, 0), V3(-3.2, 1.4, 25)) : flyTarget(V3(0.0, -1.5, 0), V3(0.0, 1.0, 23.5)), trans: flyTarget(V3(40, -0.9, 0), V3(40.6, 1.2, 18.5)), athero: flyTarget(V3(80, -1.2, 0), V3(81.5, 1.6, 15)) };
+  const VIEW = { part: DK ? flyTarget(V3(-3.2, -1.5, 0), V3(-3.2, 1.4, 25)) : flyTarget(V3(-0.6, 0.4, 0), V3(-0.6, 1.7, 14.5)), trans: DK ? flyTarget(V3(40, -0.4, 0), V3(40.6, 1.7, 18.5)) : flyTarget(V3(40, 0.9, 0), V3(40.34, 2.1, 10.5)), athero: DK ? flyTarget(V3(79, -0.6, 0), V3(80.75, 2.7, 17.5)) : flyTarget(V3(80, -1.2, 0), V3(81.5, 1.6, 15)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.part.pos);
   const controls = makeControls(camera, VIEW.part.target); controls.minDistance = 2; controls.maxDistance = 40;
   const fx = new Sparks(1600, 0.08); scene.add(fx.obj);
@@ -32,10 +32,10 @@ function makeLipoprot() {
   }
   /* ---------- 1. частицы ---------- */
   const G1 = new THREE.Group(); scene.add(G1);
-  const XS = [-4.6, -1.5, 0.75, 1.95];
-  const PP = LP.map((d, k) => { const g = particle(d); g.position.set(XS[k], 0.6, 0); G1.add(g); const pk = new THREE.Mesh(new THREE.SphereGeometry(Math.max(0.5, d.R), 10, 8), new THREE.MeshBasicMaterial({ visible: false })); pk.userData.pick = d.id; g.add(pk); return { d, g }; });
+  const XS = DK ? [-4.6, -1.5, 0.75, 1.95] : [-2.4, 1.5, -3.2, -1.7], YS = DK ? [0.6, 0.6, 0.6, 0.6] : [2.2, 2.2, -1.5, -1.5];
+  const PP = LP.map((d, k) => { const g = particle(d); g.position.set(XS[k], YS[k], 0); G1.add(g); const pk = new THREE.Mesh(new THREE.SphereGeometry(Math.max(0.5, d.R), 10, 8), new THREE.MeshBasicMaterial({ visible: false })); pk.userData.pick = d.id; g.add(pk); return { d, g }; });
   // реальный диск ЛПВП
-  const disc = new THREE.Group(); disc.position.set(5.2, 0.7, 0); G1.add(disc);
+  const disc = new THREE.Group(); disc.position.set(DK ? 5.2 : 1.5, DK ? 0.7 : -1.4, 0); G1.add(disc);
   const AP = PDB('apoa'); const dsc = 0.032;
   AP.chains.forEach((c, k) => disc.add(cartoon(c, { scale: dsc, color: k ? '#7FD6FF' : '#9FE0FF', k: 0.6 })));
   { const d = BIO_PDB.apol; const el = d.el.split(' '); const L = el.length; const xyz = dI16(d.xyz, 20); const byE = {}; const iP = el.indexOf('P'); for (let l = 0; l < d.n; l++) { if (iP >= 0 && Math.hypot(xyz[(l * L + iP) * 3], xyz[(l * L + iP) * 3 + 1]) > 36) continue; for (let i = 0; i < L; i++) { const k = (l * L + i) * 3; (byE[el[i]] = byE[el[i]] || []).push([xyz[k] + d.center[0] - 0, xyz[k + 1] + d.center[1], xyz[k + 2] + d.center[2]]); } } // углы квадратного фрагмента за поясом апоA-I отброшены
@@ -111,10 +111,10 @@ function makeLipoprot() {
     athero: '<b>Атеросклероз.</b> При избытке ЛПНП (оранжевые) частицы проникают под эндотелий артерии и окисляются. Макрофаги поглощают их и превращаются в <b>пенистые клетки</b>, набитые каплями холестерина → жировая полоска → <b>бляшка</b> с фиброзной покрышкой, сужающая просвет. Разрыв покрышки вызывает тромб — инфаркт или инсульт. ЛПВП (голубые) уносят холестерин обратно. Двигайте уровень ЛПНП и включите <b>статин</b>: он блокирует ГМГ-КоА-редуктазу — ключевой фермент синтеза холестерина (вверху), клетки печени выставляют больше ЛПНП-рецепторов и забирают ЛПНП из крови.',
   };
   const labels = [
-    ...LP.map((d, k) => ({ text: `${d.name} · ${d.size}`, pos: k === 3 ? V3(XS[3] - 0.15, 1.3, 0) : V3(XS[k] - 0.5, 0.6 - Math.max(d.R, 0.3) - 0.45, 0),   /* ЛПВП — над шаром, чтобы не читалась как подпись ЛПНП */ color: d.apo, show: () => st.labels && st.mode === 'part' })),
-    { text: 'ЛПВП крупным планом (реальная модель)', pos: V3(4.9, -0.7, 0), color: '#7FD6FF', show: () => st.labels && st.mode === 'part' },
-    { text: 'апоA-I', pos: V3(6.6, 1.4, 0.5), color: '#9FE0FF', show: () => st.labels && st.mode === 'part' },
-    { text: 'ядро: ТАГ и эфиры холестерина', pos: V3(-4.6, 2.4, 1.5), color: '#E8C060', show: () => st.labels && st.mode === 'part' },
+    ...LP.map((d, k) => ({ text: `${d.name} · ${d.size}`, pos: k === 3 ? V3(XS[3] - (DK ? 0.15 : 1.0), YS[3] + (DK ? 0.7 : 0.9), 0) : V3(XS[k] - 0.5, YS[k] - Math.max(d.R, 0.3) - 0.45, 0),   /* ЛПВП — над шаром, чтобы не читалась как подпись ЛПНП */ color: d.apo, show: () => st.labels && st.mode === 'part' })),
+    { text: 'ЛПВП крупным планом (реальная модель)', pos: DK ? V3(4.9, -1.6, 0) : V3(1.5, -3.2, 0), color: '#7FD6FF', show: () => st.labels && st.mode === 'part' },
+    { text: 'апоA-I', pos: DK ? V3(6.6, 1.4, 0.5) : V3(3.0, -0.4, 0.5), color: '#9FE0FF', show: () => st.labels && st.mode === 'part' },
+    { text: 'ядро: ТАГ и эфиры холестерина', pos: DK ? V3(-4.6, 2.4, 1.5) : V3(-4.4, 3.9, 1.5), color: '#E8C060', show: () => st.labels && st.mode === 'part' },
     ...PATHS.map((p) => ({ text: { cm: 'хиломикрон', vldl: 'ЛПОНП', ldl: 'ЛПНП', hdl: 'ЛПВП' }[p.id], pos: p.lab, color: p.c, show: () => st.labels && st.mode === 'trans' })),
     { text: 'кишка', pos: V3(40.6, 0.75, 0.4), color: '#E8A0A0', show: () => st.labels && st.mode === 'trans' },
     { text: 'печень', pos: V3(40 - 1.3, 1.6, 0.3), color: '#E07A5A', show: () => st.labels && st.mode === 'trans' },

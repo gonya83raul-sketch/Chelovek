@@ -7,10 +7,10 @@
 function makeAdrenal() {
   rnd = mulberry(8301);
   const scene = bioStage({ rim: 0xf2c14e });
-  const VIEW = { steroid: [V3(0.5, -0.9, 0), V3(1.0, 0.8, 17.5)], stress: [V3(39.6, 1.2, 0), V3(40.1, 2.4, 12.5)], receptor: [V3(79.2, -1.7, 0), V3(79.6, 0.1, 15)] };
+  const VIEW = { steroid: [V3(0.5, -0.9, 0), V3(1.0, 0.8, 17.5)], stress: [V3(39.6, 1.6, 0), V3(40.1, 2.8, 12.5)], receptor: [V3(79.2, -1.7, 0), V3(79.6, 0.1, 15)] };
   // телефон: путь стероидов сверху вниз (холестерин наверху, три ветви зон — колонками), железа скрыта
   const MOB = matchMedia('(max-width:700px)').matches;
-  if (MOB) VIEW.steroid = [V3(0.15, -0.9, 0), V3(0.45, 0.2, 10.6)];
+  if (MOB) { VIEW.steroid = [V3(0.15, -0.9, 0), V3(0.45, 0.2, 10.6)]; VIEW.stress = [V3(39.6, 1.7, 0), V3(39.9, 2.45, 7.8)]; VIEW.receptor = [V3(79.9, -0.3, 0), V3(80.15, 0.7, 8.5)]; }
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VIEW.steroid[1]);
   const controls = makeControls(camera, VIEW.steroid[0]); controls.minDistance = 3; controls.maxDistance = 40;
   const fx = new Sparks(1800, 0.07); scene.add(fx.obj);
@@ -198,8 +198,8 @@ function makeAdrenal() {
   const labels = [
     // подписи зон — легендой слева от железы (на цветных кольцах бледный текст не читался)
     ...ZONES.filter((z) => z.name && !MOB).map((z) => ({ left: true, text: z.name, pos: V3(-4.75, { glom: 0.55, fasc: 0.18, ret: -0.19, med: -0.56 }[z.id], 0.3), color: z.col, show: () => st.labels && st.mode === 'steroid' && (st.zone === 'all' || st.zone === z.id) })),
-    ...Object.entries(NODE).map(([k, n]) => ({ text: SHORT[k] || MOL(n.m).name, pos: n.p.clone().add(V3(-0.35, -0.7, 0.3)), color: n.z ? ZC[n.z] : '#E8E0D8', show: () => st.labels && st.mode === 'steroid' && (st.zone === 'all' || !n.z || n.z === st.zone) })),
-    ...ST.filter((s) => s.tag !== 'shunt').map((s) => ({ text: s.enz, pos: NODE[s.a].p.clone().lerp(NODE[s.b].p, s.a === 'preg' && s.b === 'dhea' ? 0.68 : 0.5).add(V3(-0.5, s.a === 'preg' && s.b === 'dhea' ? -0.3 : 0.32, 0.3)), color: st.cah && s.tag === 'h21' ? '#FF6A5A' : '#B8B0C0', show: () => st.labels && st.mode === 'steroid' && st.zone !== 'all' && (s.z === st.zone || (!s.z && st.zone !== 'all')) })),
+    ...Object.entries(NODE).map(([k, n]) => ({ text: SHORT[k] || MOL(n.m).name, pos: n.p.clone().add(k === 'prog' && !MOB ? V3(-0.55, 0.6, 0.3) : V3(-0.35, -0.7, 0.3)), color: n.z ? ZC[n.z] : '#E8E0D8', show: () => st.labels && st.mode === 'steroid' && (st.zone === 'all' || !n.z || n.z === st.zone) })),
+    ...ST.filter((s) => s.tag !== 'shunt').map((s) => ({ text: s.enz, pos: NODE[s.a].p.clone().lerp(NODE[s.b].p, 0.5).add(s.a === 'preg' && s.b === 'dhea' ? V3(-0.9, -0.3, 0.3) : V3(-0.5, 0.55, 0.3)), color: st.cah && s.tag === 'h21' ? '#FF6A5A' : '#B8B0C0', show: () => st.labels && st.mode === 'steroid' && st.zone !== 'all' && (s.z === st.zone || (!s.z && st.zone !== 'all')) })),
     ...ST.filter((s) => s.tag === 'h21').map((s) => ({ text: '✕ 21-гидроксилаза', pos: NODE[s.a].p.clone().lerp(NODE[s.b].p, 0.5).add(V3(-0.5, -0.1, 0.45)), color: '#FF6A5A', show: () => st.labels && st.mode === 'steroid' && st.cah })),
     { text: 'гипоталамус', pos: HYP.clone().add(V3(40.25, 0.22, 0.1)), color: '#9F7BFF', show: () => st.labels && st.mode === 'stress' },
     { text: 'гипофиз (АКТГ)', pos: PIT.clone().add(V3(40.3, -0.08, 0.1)), color: '#7FD6FF', show: () => st.labels && st.mode === 'stress' },
