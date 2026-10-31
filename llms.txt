@@ -59,7 +59,7 @@
 - [Эндокринная система](https://gonya83raul-sketch.github.io/Chelovek/endo.html): Крошечные железы управляют ростом, обменом веществ, сном, стрессом и сахаром крови, рассылая по кровотоку химические письма — гормоны.
 - [Лимфа и иммунитет](https://gonya83raul-sketch.github.io/Chelovek/immune.html): Сеть сосудов и узлов, где триллион лимфоцитов патрулирует тело, узнаёт чужое и запоминает его на годы вперёд.
 - [Размножение и развитие](https://gonya83raul-sketch.github.io/Chelovek/repro.html): Как устроены половые системы, как гормоны гипофиза и яичников задают 28-дневный цикл и что происходит с новой жизнью в первую неделю.
-- [Менструальный цикл](https://gonya83raul-sketch.github.io/Chelovek/menses.html): Около 28 дней, за которые гипофиз и яичники готовят яйцеклетку и слизистую матки к возможной беременности, — по дням, с гормонами, фолликулом и эндометрием.
+- [Менструальный цикл](https://gonya83raul-sketch.github.io/Chelovek/menses.html)
 - [Влечение и сексуальное здоровье](https://gonya83raul-sketch.github.io/Chelovek/shealth.html): Откуда берётся половое влечение, какие системы мозга и гормоны им управляют, и как сделать сексуальные контакты безопасными: инфекции, контрацепция и согласие.
 - [Цикл полового ответа](https://gonya83raul-sketch.github.io/Chelovek/sresp.html): Как мозг, вегетативная нервная система, сосуды и гормоны согласованно проводят тело через четыре фазы полового ответа — от возбуждения до разрешения.
 - [Грудная клетка и молочная железа](https://gonya83raul-sketch.github.io/Chelovek/chest.html): Костный каркас, который защищает сердце и лёгкие и помогает дышать, и устройство молочной железы — от долек до протоков и гормонов кормления.
@@ -145,7 +145,7 @@
 - [Endocrine system](https://gonya83raul-sketch.github.io/Chelovek/endo.en.html): Tiny glands control growth, metabolism, sleep, stress and blood sugar by sending chemical letters — hormones — through the bloodstream.
 - [Lymph and immunity](https://gonya83raul-sketch.github.io/Chelovek/immune.en.html): A network of vessels and nodes where a trillion lymphocytes patrol the body, recognize what is foreign and remember it for years to come.
 - [Reproduction and development](https://gonya83raul-sketch.github.io/Chelovek/repro.en.html): How the reproductive systems are built, how pituitary and ovarian hormones set the 28-day cycle, and what happens to a new life in its first week.
-- [Menstrual cycle](https://gonya83raul-sketch.github.io/Chelovek/menses.en.html): The roughly 28 days during which the pituitary and ovaries prepare an egg and the uterine lining for a possible pregnancy — day by day, with hormones, the follicle and the endometrium.
+- [Menstrual cycle](https://gonya83raul-sketch.github.io/Chelovek/menses.en.html)
 - [Desire and sexual health](https://gonya83raul-sketch.github.io/Chelovek/shealth.en.html): Where sexual desire comes from, which brain systems and hormones control it, and how to make sexual contact safe: infections, contraception and consent.
 - [Sexual response cycle](https://gonya83raul-sketch.github.io/Chelovek/sresp.en.html): How the brain, the autonomic nervous system, blood vessels and hormones work together to carry the body through the four phases of the sexual response — from excitement to resolution.
 - [Chest and breast](https://gonya83raul-sketch.github.io/Chelovek/chest.en.html): The bony frame that protects the heart and lungs and helps us breathe, and how the breast is built — from lobules to ducts and the hormones of breastfeeding.

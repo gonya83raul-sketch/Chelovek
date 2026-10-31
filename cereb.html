@@ -33,28 +33,28 @@
 <meta name="atlas-pages" content="1">
 <script type="importmap">
 { "imports": {
-  "three": "./app60/vendor/three.module.min.js",
-  "three/addons/": "./app60/vendor/jsm/",
+  "three": "./app61/vendor/three.module.min.js",
+  "three/addons/": "./app61/vendor/jsm/",
   "three/addons/libs/draco/gltf/": "./models/draco-r160/"
 } }
 </script>
-<link rel="modulepreload" href="app60/core.js">
-<link rel="modulepreload" href="app60/vendor/three.module.min.js">
-<link rel="modulepreload" href="app60/vendor/jsm/controls/OrbitControls.js">
-<link rel="modulepreload" href="app60/vendor/jsm/environments/RoomEnvironment.js">
-<link rel="modulepreload" href="app60/vendor/jsm/loaders/GLTFLoader.js">
-<link rel="modulepreload" href="app60/vendor/jsm/postprocessing/EffectComposer.js">
-<link rel="modulepreload" href="app60/vendor/jsm/postprocessing/MaskPass.js">
-<link rel="modulepreload" href="app60/vendor/jsm/postprocessing/OutputPass.js">
-<link rel="modulepreload" href="app60/vendor/jsm/postprocessing/Pass.js">
-<link rel="modulepreload" href="app60/vendor/jsm/postprocessing/RenderPass.js">
-<link rel="modulepreload" href="app60/vendor/jsm/postprocessing/ShaderPass.js">
-<link rel="modulepreload" href="app60/vendor/jsm/postprocessing/UnrealBloomPass.js">
-<link rel="modulepreload" href="app60/vendor/jsm/shaders/CopyShader.js">
-<link rel="modulepreload" href="app60/vendor/jsm/shaders/LuminosityHighPassShader.js">
-<link rel="modulepreload" href="app60/vendor/jsm/shaders/OutputShader.js">
-<link rel="modulepreload" href="app60/vendor/jsm/utils/BufferGeometryUtils.js">
-<link rel="modulepreload" href="app60/s/cereb.js">
+<link rel="modulepreload" href="app61/core.js">
+<link rel="modulepreload" href="app61/vendor/three.module.min.js">
+<link rel="modulepreload" href="app61/vendor/jsm/controls/OrbitControls.js">
+<link rel="modulepreload" href="app61/vendor/jsm/environments/RoomEnvironment.js">
+<link rel="modulepreload" href="app61/vendor/jsm/loaders/GLTFLoader.js">
+<link rel="modulepreload" href="app61/vendor/jsm/postprocessing/EffectComposer.js">
+<link rel="modulepreload" href="app61/vendor/jsm/postprocessing/MaskPass.js">
+<link rel="modulepreload" href="app61/vendor/jsm/postprocessing/OutputPass.js">
+<link rel="modulepreload" href="app61/vendor/jsm/postprocessing/Pass.js">
+<link rel="modulepreload" href="app61/vendor/jsm/postprocessing/RenderPass.js">
+<link rel="modulepreload" href="app61/vendor/jsm/postprocessing/ShaderPass.js">
+<link rel="modulepreload" href="app61/vendor/jsm/postprocessing/UnrealBloomPass.js">
+<link rel="modulepreload" href="app61/vendor/jsm/shaders/CopyShader.js">
+<link rel="modulepreload" href="app61/vendor/jsm/shaders/LuminosityHighPassShader.js">
+<link rel="modulepreload" href="app61/vendor/jsm/shaders/OutputShader.js">
+<link rel="modulepreload" href="app61/vendor/jsm/utils/BufferGeometryUtils.js">
+<link rel="modulepreload" href="app61/s/cereb.js">
 </head>
 <body>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -452,7 +452,7 @@ if (!P) { const q = new URLSearchParams(location.search).get('lang'); let m = nu
   else if (want === 'en') { let t = 0; try { t = +sessionStorage.getItem('redir') || 0; sessionStorage.setItem('redir', String(Date.now())); } catch (e) { /* без памяти */ }
     if (Date.now() - t > 10000) go = 'index.en.html' + (new URLSearchParams(location.search).has('rec') ? '?rec' : '') + location.hash; else L = 'en'; }
   else if (!want && !(navigator.languages || [navigator.language || '']).some((l) => /^(ru|uk|be|kk)/i.test(l))) window.__LANGNOTE = 1; }
-if (go) location.replace(go); else { document.documentElement.lang = L; import(L === 'en' ? './app60/en/core.js' : './app60/core.js').catch((e) => {
+if (go) location.replace(go); else { document.documentElement.lang = L; import(L === 'en' ? './app61/en/core.js' : './app61/core.js').catch((e) => {
   console.error(e); const st = document.getElementById('stage'); if (!st || st.querySelector('.fallback')) return;
   const d = document.createElement('div'), p = document.createElement('p'), b = document.createElement('button'); d.className = 'fallback'; d.setAttribute('role', 'alert');
   p.textContent = L === 'en' ? 'Could not load the atlas: no connection, or the site files are unavailable. The topic text is below.' : 'Не удалось загрузить атлас: нет сети или файлы сайта недоступны. Текст темы — ниже.';
