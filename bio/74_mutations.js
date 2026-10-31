@@ -159,7 +159,7 @@ function makeMutations() {
     { text: 'ДНК (кодирующая цепь сверху)', pos: V3(X0 + 1.2, 2.85, 0.2), color: '#C8C8D0', show: () => st.labels && st.mode === 'mut' },
     { text: 'мРНК 5′ → 3′', pos: V3(X0 - 0.2, 1.2, 0.3), color: '#FF6FA8', show: () => st.labels && st.mode === 'mut' },
     { text: 'белок', pos: V3(X0 - 0.2, -0.85, 0.3), color: '#B8C4D8', show: () => st.labels && st.mode === 'mut' },
-    { text: 'рибосома', pos: () => ribo.position.clone().add(V3(0.5, 1.6, 0.2)), color: '#8FB4E6', show: () => st.labels && st.mode === 'mut' && ribo.visible },
+    { text: 'рибосома', pos: () => ribo.position.clone().add(V3(0.5, 1.6, 0.2)), color: '#8FB4E6', show: () => st.labels && st.mode === 'mut' && ribo.visible && DK },
     ...Array.from({ length: NC }, (_, i) => [...new Set(Object.values(MUTS).map((m) => tr3(m.seq.slice(i * 3, i * 3 + 3))))].filter((a) => a !== '*').map((a) => ({ text: AA3[a], pos: V3(BX(i * 3 + 1) - 0.12, i % 2 ? -0.95 : -0.72, 0.35), color: AACOL[a] || '#E8E0D0', show: () => st.labels && st.mode === 'mut' && beads[i].visible && st.prot[i] === a }))).flat(),
     { text: 'стоп-кодон', pos: () => V3(BX(Math.max(0, st.prot.indexOf('*')) * 3 + 1) - 0.2, 0.45, 0.4), color: '#FF3A3A', show: () => st.labels && st.mode === 'mut' && st.prot && st.prot.indexOf('*') >= 0 && Math.floor(st.rx) >= st.prot.indexOf('*') },
     { text: '✕ выпал A', pos: V3(BX(22) - 0.2, 2.75, 0.35), color: '#FF3A3A', show: () => st.labels && st.mode === 'mut' && st.mut === 'frame' },

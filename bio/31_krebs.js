@@ -103,7 +103,7 @@ function makeKrebs() {
     ...NODES.map((n) => ({ text: `${n.d.name} · C${n.d.c}`, pos: n.k === 3 ? n.m.position.clone().add(V3(0.6, 0, 0)) : n.k === 4 ? n.m.position.clone().add(V3(-0.6, 0, 0)) : n.m.position.clone().add(pos(n.k, R + 1.0).sub(n.m.position).multiplyScalar(0.9)).add(V3(-0.4, 0, 0)), left: n.k === 4, color: '#EFEAE6', show: () => st.labels })),
     ...KR.map((d, k) => ({ text: KR[(k + 1) % 8].enz, pos: V3(C.x + Math.cos(ang(k) - 0.39) * (R - 1.15), C.y + Math.sin(ang(k) - 0.39) * (R - 1.15), 0.3).add(V3(-0.55, 0, 0)), color: '#7FD6FF', show: () => st.labels && st.step === k })),
     { text: 'пируватдегидрогеназа', pos: V3(-6.6, -2.2, 0), color: '#F2C14E', show: () => st.labels },
-    { text: 'пируват', pos: V3(-8.2, -3.2, 0), color: '#FF8A5C', show: () => st.labels },
+    { text: 'пируват', pos: V3(-8.2, -3.2, 0), color: '#FF8A5C', show: () => st.labels && pyr.visible },
     { text: 'в дыхательную цепь', pos: ETC.clone().add(V3(-0.9, 1.95, 0)), color: '#FFB070', show: () => st.labels },
     ...['nadh', 'fadh2', 'gtp'].map((kind) => ({ text: KR_TOK[kind][0], pos: tokPos[kind], color: KR_TOK[kind][1], show: () => st.labels && toks.some((q) => q.kind === kind && q.age < 3) })),
     { text: 'малонат блокирует', pos: pos(4, R - 1.0).add(V3(0.3, -0.4, 0)), color: '#FF6A6A', show: () => st.labels && st.malonate },
