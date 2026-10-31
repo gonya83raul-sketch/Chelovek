@@ -164,7 +164,7 @@ function makeDna() {
     { text: 'ДНК-полимераза', pos: V3(40 - 1.6, 2.4, 0.2), color: '#7FD6FF', show: () => st.labels && st.mode === 'rep' },
     { text: 'праймаза · РНК-праймер', pos: V3(40 + 0.3, -0.7, 0.5), color: '#FF6A6A', show: () => st.labels && st.mode === 'rep' },
     { text: 'SSB-белки', pos: V3(40 - 0.6, 0.55, 0.3), color: '#E0C8A0', show: () => st.labels && st.mode === 'rep' },
-    { text: 'замена праймеров', pos: V3(40 - 3.4, -0.3, 0.3), color: '#7FE0A0', show: () => st.labels && st.mode === 'rep' },
+    { text: 'ДНК-полимераза · замена праймеров', pos: V3(40 - 3.4, -0.3, 0.3), color: '#7FE0A0', show: () => st.labels && st.mode === 'rep' },
     { text: 'ДНК-лигаза', pos: V3(40 - 4.4, -1.9, 0.3), color: '#FF8AB0', show: () => st.labels && st.mode === 'rep' },
     { text: 'материнская ДНК', pos: V3(40 + 3.4, -0.4, 0), color: '#8FA8C8', show: () => st.labels && st.mode === 'rep' },
     { text: 'УФ', pos: V3(80, 4.0, 0), color: '#B08AFF', show: () => st.labels && st.mode === 'repair' && st.cyc % 16 < 2.5 },
