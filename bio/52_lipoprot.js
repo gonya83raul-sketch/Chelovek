@@ -13,7 +13,7 @@ function makeLipoprot() {
   rnd = mulberry(1601);
   const scene = bioStage({ rim: 0xff8ab0 });
   const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: кадр уходит из-под заголовка и описания (телефон — прежний ракурс)
-  const VIEW = { part: DK ? flyTarget(V3(-3.2, -1.5, 0), V3(-3.2, 1.4, 25)) : flyTarget(V3(-0.6, 0.4, 0), V3(-0.6, 1.7, 14.5)), trans: DK ? flyTarget(V3(40, -0.4, 0), V3(40.6, 1.7, 18.5)) : flyTarget(V3(40, 0.9, 0), V3(40.34, 2.1, 10.5)), athero: DK ? flyTarget(V3(79, -0.6, 0), V3(80.75, 2.7, 17.5)) : flyTarget(V3(80, -1.2, 0), V3(81.5, 1.6, 15)) };
+  const VIEW = { part: DK ? flyTarget(V3(-3.2, -1.5, 0), V3(-3.2, 1.4, 25)) : flyTarget(V3(-0.6, 0.4, 0), V3(-0.6, 1.7, 14.5)), trans: DK ? flyTarget(V3(40, -0.4, 0), V3(40.6, 1.7, 18.5)) : flyTarget(V3(40, 0.9, 0), V3(40.34, 2.1, 10.5)), athero: DK ? flyTarget(V3(79, -0.6, 0), V3(80.75, 2.7, 17.5)) : flyTarget(V3(80, -0.7, 0), V3(81.1, 1.9, 11)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.part.pos);
   const controls = makeControls(camera, VIEW.part.target); controls.minDistance = 2; controls.maxDistance = 40;
   const fx = new Sparks(1600, 0.08); scene.add(fx.obj);

@@ -92,7 +92,9 @@ function makeEnzyme() {
   function selCls(id) {
     st.cls = id; if (st.mode !== 'classes') setMode('classes'); st.cls = id;
     const s = ST.find((x) => x.c.id === id); const wp = s.p.clone().add(G3.position);
-    st.fly = flyTarget(wp.clone().add(V3(0, DK ? -0.8 : 0.3, 0)), wp.clone().add(s.p.clone().normalize().multiplyScalar(DK ? 14.5 : 9.6)).add(V3(0, DK ? 2.8 : 2.15, 0)));
+    /* компьютер: станция правее описания — цель и камера сдвинуты влево по экрану (вправо от взгляда = cross(−n, y)) */
+    const nOut = s.p.clone().normalize(), sh = new THREE.Vector3().crossVectors(nOut.clone().negate(), V3(0, 1, 0)).multiplyScalar(DK ? -3.4 : 0);
+    st.fly = flyTarget(wp.clone().add(V3(0, DK ? -1.3 : 0.3, 0)).add(sh), wp.clone().add(nOut.multiplyScalar(DK ? 21 : 9.6)).add(V3(0, DK ? 2.6 : 2.15, 0)).add(sh));
     refs.clsSeg && refs.clsSeg.sync(); refs.setInfo();
   }
   pickOn(() => self, camera, () => pick3, (id) => selCls(id));
@@ -134,7 +136,7 @@ function makeEnzyme() {
       st.prog = c < 3 ? c / 3 * 0.25 : c < 5 ? 0.25 + (c - 3) / 2 * 0.2 : c < 7.5 ? 0.45 + (c - 5) / 2.5 * 0.3 : 0.75 + Math.min(1, (c - 7.5) / 3.5) * 0.25;
     }
     if (st.mode === 'classes') {
-      ST.forEach((s, k) => { s.prot.rotation.y += dt * 0.25; s.ms.forEach((m, j) => { m.rotation.y += dt * 0.5; m.position.y = 2.55 + 0.08 * Math.sin(t * 1.3 + j + k); }); s.ring.material.opacity = st.cls === s.c.id ? 0.9 : 0.3; });
+      ST.forEach((s, k) => { s.g.visible = !st.cls || st.cls === s.c.id; s.prot.rotation.y += dt * 0.25; s.ms.forEach((m, j) => { m.rotation.y += dt * 0.5; m.position.y = 2.55 + 0.08 * Math.sin(t * 1.3 + j + k); }); s.ring.material.opacity = st.cls === s.c.id ? 0.9 : 0.3; });
     }
     fx.update(dt);
   }
@@ -161,7 +163,7 @@ function makeEnzyme() {
     { text: 'крышка (LID)', pos: avg(AO, [130, 140, 150]).add(V3(40.3, 0.3, 0)), color: '#F2C14E', show: () => st.labels && st.mode === 'fit' },
     { text: 'карман для АМФ', pos: avg(AO, [35, 45, 55]).add(V3(40.3, 0.2, 0)), color: '#7FE0A0', show: () => st.labels && st.mode === 'fit' },
     { text: 'ядро фермента', pos: avg(AO, [80, 100, 180, 200]).add(V3(40.4, -0.6, 0)), color: '#7FD6FF', show: () => st.labels && st.mode === 'fit' },
-    ...ST.map((s) => ({ text: s.c.name, pos: s.p.clone().add(V3(80, -2.35, 0)), color: s.c.color, show: () => st.labels && st.mode === 'classes' })),
+    ...ST.map((s) => ({ text: s.c.name, pos: s.p.clone().add(V3(80, -2.35, 0)), color: s.c.color, show: () => st.labels && st.mode === 'classes' && (!st.cls || st.cls === s.c.id) })),
     ...ST.map((s) => ({ text: s.c.mols[1], pos: s.p.clone().add(V3(80 - 0.4, 3.35, 0)), color: '#D9D2D8', show: () => st.labels && st.mode === 'classes' && (!st.cls || st.cls === s.c.id) })),
   ];
   const LBF = [[labels[4], [130, 140, 150], V3(40.3, 0.3, 0)], [labels[5], [35, 45, 55], V3(40.3, 0.2, 0)], [labels[6], [80, 100, 180, 200], V3(40.4, -0.6, 0)]];
