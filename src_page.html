@@ -2972,7 +2972,7 @@ function makeGlia() {
   function myelinate() {
     if (st.wrap < 1) return;
     setFocusAll(); st.wrap = 0; st.wrapT = 0;
-    flyTo(V3(wrapAx[0], wrapAx[1], 0), 4.2, V3(0.9, 0.35, 0.55));
+    GLX === 0 ? flyTo(V3(wrapAx[0] - 0.7, wrapAx[1] + 0.3, 0.7), 6.6, V3(0.9, 0.35, 0.55)) : flyTo(V3(wrapAx[0], wrapAx[1], 0), 4.2, V3(0.9, 0.35, 0.55));
     say('<b>Миелинизация.</b> Отросток олигодендроцита распластывается в тонкий язычок и раз за разом оборачивается вокруг голого аксона. Слои мембраны слипаются, цитоплазма из них выдавливается, и получается плотная белая муфта. В ЦНС так делает олигодендроцит (одна клетка обслуживает много аксонов), на периферии — шванновская клетка.');
   }
   /* прунинг: микроглия «съедает» слабый синапс */
@@ -3112,7 +3112,7 @@ function makeGlia() {
     const setInfo = () => { if (st.msg) { info.innerHTML = st.msg; return; } info.innerHTML = st.focus === 'all' ? 'Четыре типа глии вокруг двух нейронов. Выберите клетку, чтобы остальные стали прозрачными. Каждые несколько секунд с кровью проплывает <b style="color:#9ee66a">глутамат</b> плазмы: при закрытом ГЭБ он проходит мимо мозга.' : TY[st.focus].text; };
     const fSeg = seg([{ id: 'all', label: 'Все' }, ...GLIA.map((g) => ({ id: g.id, label: g.name, color: g.color }))], () => st.focus, (v) => { st.focus = v; st.msg = null; applyFocus(); setInfo(); });
     const bbb = toggle('ГЭБ', () => st.bbb, (v) => { st.bbb = v; });
-    const tr = toggle('Травма', () => st.trauma, (v) => { st.trauma = v; st.traumaT = st.t; if (v) { setFocusAll(); flyTo(LES, 9, V3(0.5, 0.3, 1)); say('<b>Травма.</b> Микроглия чувствует продукты распада клеток, вырастает, делится и ползёт в очаг. Там она поглощает обломки (фагоцитоз) и выделяет сигнальные молекулы воспаления.'); } else { st.msg = null; refs.setInfo(); } });
+    const tr = toggle('Травма', () => st.trauma, (v) => { st.trauma = v; st.traumaT = st.t; if (v) { setFocusAll(); GLX === 0 ? flyTo(LES.clone().add(V3(-3.0, 0.5, 1.5)), 14.5, V3(0.5, 0.3, 1)) : flyTo(LES, 9, V3(0.5, 0.3, 1)); say('<b>Травма.</b> Микроглия чувствует продукты распада клеток, вырастает, делится и ползёт в очаг. Там она поглощает обломки (фагоцитоз) и выделяет сигнальные молекулы воспаления.'); } else { st.msg = null; refs.setInfo(); } });
     refs = { fSeg, bbb, tr, setInfo };
     el.append(group('Клетки', '0–5', fSeg),
       group('Опыт', 'F · B · P · T · M', button('Белковая еда', feed, true), bbb, button('Прунинг', startPrune), tr, button('Миелинизация', myelinate), button('Обзор', () => { st.msg = null; setInfo(); flyHome(); })),
@@ -4565,7 +4565,7 @@ function makeVentricles() {
     st.mode = m; refs.modeSeg && refs.modeSeg.sync(); refs.setInfo && refs.setInfo();
     falx.visible = m === 'men'; men.visible = m === 'men';
     shell.solid.opacity = 0.05;
-    if (m === 'men') { st.rot = false; refs.rot && refs.rot.sync(); men.updateMatrixWorld(true); st.fly = flyTarget(MEN_POS, MEN_POS.clone().add(V3(1.5, 0.9, 3.1))); }
+    if (m === 'men') { st.rot = false; refs.rot && refs.rot.sync(); men.updateMatrixWorld(true); st.fly = VDK ? flyTarget(MEN_POS.clone().add(V3(-0.25, 0, 0.12)), MEN_POS.clone().add(V3(1.25, 0.9, 3.22))) : flyTarget(MEN_POS, MEN_POS.clone().add(V3(1.5, 0.9, 3.1))); }
     else st.fly = HOME;
   }
   function update(dt) {
@@ -4573,7 +4573,7 @@ function makeVentricles() {
     flyStep(st, camera, controls, dt);
     // гидроцефалия
     st.swell = clamp(st.swell + (st.hydro ? dt / 10 : -dt / 4), 0, 1);
-    const s = 1 + 0.75 * smooth(0, 1, st.swell); upper.scale.set(s, 1 + 0.55 * smooth(0, 1, st.swell), s);
+    const s = 1 + 0.5 * smooth(0, 1, st.swell); upper.scale.set(s, 1 + 0.45 * smooth(0, 1, st.swell), s);
     st.press = 10 + 25 * smooth(0, 1, st.swell);
     block.visible = blockGlow.visible = st.hydro; blockGlow.material.opacity = 0.6 + 0.4 * Math.sin(t * 6);
     // частицы
@@ -6335,7 +6335,7 @@ function makeHippo() {
   rnd = mulberry(909);
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x060509); scene.environment = envTex;
   labLights(scene, 0xff8a5c);
-  const VIEW = { papez: flyTarget(V3(-0.1, -0.35, 0.2), V3(1.25, 1.2, 6.15)), sec: matchMedia('(max-width:700px)').matches ? flyTarget(V3(0.65, -0.45, 0), V3(0.7, 0.25, 9.5)) : flyTarget(V3(0.95, -0.62, 0), V3(1.0, 0.08, 10.4)) };
+  const VIEW = { papez: flyTarget(V3(-0.1, -0.35, 0.2), V3(1.25, 1.2, 6.15)), sec: matchMedia('(max-width:700px)').matches ? flyTarget(V3(0.65, -0.45, 0), V3(0.7, 0.25, 9.5)) : flyTarget(V3(0.45, -0.85, 0), V3(0.5, -0.15, 11.4)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(VIEW.papez.pos);
   const controls = makeControls(camera, VIEW.papez.target); controls.minDistance = 1.5; controls.maxDistance = 14;
   const brain = new THREE.Group(); scene.add(brain);
@@ -6587,8 +6587,8 @@ function makeCereb() {
   labLights(scene, 0x7fd6c8);
   const VIEW = {
     anat: flyTarget(V3(-0.15, -0.1, 0), V3(3.1, 1.15, 6.5)),   // спереди-сбоку: видны ножки, олива, клочок
-    nuc: flyTarget(V3(-0.6, -0.3, 0), V3(-2.0, 4.9, 0.3)),
-    micro: flyTarget(V3(0, -0.75, 0), V3(6.3, 3.0, 7.6)),
+    nuc: matchMedia('(max-width:700px)').matches ? flyTarget(V3(-0.27, -0.3, 0), V3(-1.67, 4.9, 0.3)) : flyTarget(V3(-0.27, -0.3, -0.6), V3(-1.67, 4.9, -0.3)),
+    micro: matchMedia('(max-width:700px)').matches ? flyTarget(V3(0, -0.75, 0), V3(6.3, 3.0, 7.6)) : flyTarget(V3(-0.49, -1.0, 0.4), V3(5.81, 2.75, 8.0)),
   };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(VIEW.anat.pos);
   const controls = makeControls(camera, VIEW.anat.target); controls.minDistance = 1.5; controls.maxDistance = 16;
@@ -6617,7 +6617,7 @@ function makeCereb() {
   const flocc = [1, -1].map((s) => { const g = displaceGeo(new THREE.SphereGeometry(0.16, 40, 30), (v) => { v.multiplyScalar(1 + 0.08 * Math.sin(v.y * 90)); v.y *= 0.7; }); g.translate(0.42, -0.42, 1.0 * s); const m = new THREE.Mesh(g, tissue(new THREE.Color(CB_ZONES[0].color).multiplyScalar(0.5))); m.userData.pick = 'arch'; anat.add(m); return m; });
   // ствол
   const stemC = new THREE.CatmullRomCurve3([V3(0.95, 1.5, 0), V3(1.0, 0.6, 0), V3(1.05, 0.0, 0), V3(0.95, -0.9, 0), V3(0.85, -1.8, 0)]);
-  const stem = new THREE.Mesh(taperTube(stemC, (u) => 0.3 + 0.17 * Math.exp(-(((u - 0.38) / 0.12) ** 2)) - 0.08 * u, 80, 24), tissue(new THREE.Color(0xd8b2b8).multiplyScalar(0.3), { transparent: true, opacity: 0.6, depthWrite: false }));
+  const stem = new THREE.Mesh(taperTube(stemC, (u) => (0.3 + 0.17 * Math.exp(-(((u - 0.38) / 0.12) ** 2)) - 0.08 * u) * (u < 0.08 ? Math.sqrt(1 - ((0.08 - u) / 0.08) ** 2) : 1), 80, 24), tissue(new THREE.Color(0xd8b2b8).multiplyScalar(0.3), { transparent: true, opacity: 0.6, depthWrite: false }));
   anat.add(stem);
   const olive = [1, -1].map((s) => { const g = new THREE.SphereGeometry(1, 20, 14); g.scale(0.07, 0.17, 0.06); g.translate(1.22, -0.75, 0.17 * s); const m = new THREE.Mesh(g, tissue(new THREE.Color(0xf2c14e).multiplyScalar(0.5))); anat.add(m); return m; });
   // ножки
@@ -6809,7 +6809,7 @@ function makeCereb() {
     learned: '<b>Навык выработан.</b> Мозжечок запомнил, как быстро и точно выполнить это движение. Базальные ганглии собирают такие отдельные движения в длинную программу — весь танец, а мозжечок отвечает за каждое па.',
   };
   const labels = [
-    { text: 'червь', pos: V3(-0.55, 0.55, 0.0), color: '#86B6FF', show: () => st.labels && st.mode === 'anat' && !st.sel },
+    { text: 'червь', pos: V3(-0.55, 0.55, 0.0), color: '#86B6FF', show: () => st.labels && st.mode === 'anat' && (!st.sel || st.sel === 'paleo') },
     { text: 'полушарие', pos: V3(-0.45, 0.4, 1.1), color: '#F4A070', show: () => st.labels && st.mode === 'anat' && !st.sel },
     { text: 'клочок', pos: V3(0.5, -0.5, 1.25), color: '#7FE0A0', show: () => st.labels && st.mode === 'anat' && !st.sel },
     { text: 'ствол', pos: V3(1.1, -1.4, 0.3), color: '#d8b2b8', show: () => st.labels && st.mode === 'anat' && !st.sel },
