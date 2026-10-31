@@ -1428,7 +1428,7 @@ function makeBrain() {
     { text: 'таламус', pos: V3(0.05, 0.12, 0.3) }, { text: 'гипофиз', pos: V3(0.48, -0.86, 0.05) },
   ];
   // в обзоре — по одному ядру на систему; на телефоне анатомические подписи только при выбранной системе
-  const labels = [...anat.map((l) => ({ ...l, show: () => st.labels && !(mqMob.matches && st.sys === 'all') })), ...nucleiLabels.map((l) => ({ text: l.text, pos: l.pos, color: S[l.sys].color, show: () => st.labels && (st.sys === l.sys || (st.sys === 'all' && l.text !== 'чёрная субстанция')) }))];
+  const labels = [...anat.map((l) => ({ ...l, show: () => st.labels && !(mqMob.matches && (st.sys === 'all' || l.text === 'таламус')) })), ...nucleiLabels.map((l) => ({ text: l.text, pos: l.pos, color: S[l.sys].color, show: () => st.labels && (st.sys === l.sys || (st.sys === 'all' && l.text !== 'чёрная субстанция')) }))];
   let refs = {};
   function ui(el) {
     const info = h('div', { class: 'info' });
@@ -3401,7 +3401,7 @@ function makeDevelop() {
     // центр кадра
     const ctr = P[uc(0.5)].clone().lerp(P[uc(0.18)], smooth(2, 4, s)).lerp(hc.clone().addScaledVector(upL, -0.3 * L), back);
     st.goal.copy(ctr); if (st.first) { st.center.copy(ctr); st.first = false; }
-    root.scale.setScalar((1 + 0.15 * (1 - smooth(1.6, 2.6, s))) * (1 + 0.08 * smooth(6, 7, s)));
+    root.scale.setScalar((1 + 0.15 * (1 - smooth(1.6, 2.6, s))) * (1 + 0.08 * smooth(6, 7, s)) * (1 + 0.25 * smooth(4.4, 5, s) * (1 - smooth(5, 6, s))));
     st.th = th; placeRoot();
   }
 
@@ -8356,7 +8356,7 @@ function makeEar() {
     flyStep(st, camera, controls, dt);
     const f = freq(), A = st.vol, vis = Math.min(28, 2 + Math.log10(f) * 4), ph = Math.sin(t * vis * 2);
     // звуковые волны к уху
-    rings.forEach((rg) => { const k = (t * 0.45 + rg.ph) % 1; rg.r.position.set(-3.2 + k * 0.75, 0.0, 0.05); rg.r.scale.setScalar(0.9 - k * 0.65); rg.r.material.opacity = A * 0.5 * Math.sin(k * Math.PI); });
+    rings.forEach((rg) => { const k = (t * 0.45 + rg.ph) % 1; rg.r.position.set(-3.2 + k * 0.75, 0.0, 0.05); rg.r.scale.setScalar(0.9 - k * 0.65); rg.r.material.opacity = (st.mode === 'vest' ? 0 : A * 0.5) * Math.sin(k * Math.PI); });
     drum.position.x = -0.93 + 0.012 * A * ph; drum.scale.setScalar(1);
     mall.rotation.z = 0.12 * A * ph; inc.rotation.z = 0.1 * A * ph; stap.position.x = -0.6 + 0.014 * A * ph;
     // место максимума на улитке
@@ -8575,7 +8575,7 @@ function makeSkin() {
     heat: { name: 'Жара', text: '<b>Жара.</b> Сосуды кожи расширяются (кожа краснеет и отдаёт тепло), потовые железы выделяют пот — испаряясь, он охлаждает тело. За сутки при жаре может выделиться несколько литров пота.' },
   };
   function stim(k) { st.stim = k; st.stimT = st.t; st.msg = STIM[k].text; refs.setInfo(); refs.stSeg && refs.stSeg.sync(); }
-  const LVIEW = matchMedia('(max-width:700px)').matches ? { epi: [V3(1.0, 0.85, 1.0), 2.9], der: [V3(0.1, -0.4, 0.6), 6.4], hyp: [V3(0.2, -1.15, 0.6), 5.6] } : { epi: [V3(-0.5, 0.72, 1.7), 3.8], der: [V3(-0.8, -0.12, 1.0), 6.4], hyp: [V3(-0.8, -1.6, 1.0), 5.8] };
+  const LVIEW = matchMedia('(max-width:700px)').matches ? { epi: [V3(1.0, 0.85, 1.0), 2.9], der: [V3(0.1, -0.4, 0.6), 6.4], hyp: [V3(0.2, -0.55, 0.6), 8.0] } : { epi: [V3(-0.55, 0.7, 1.7), 5.2], der: [V3(-0.9, -0.1, 1.0), 7.4], hyp: [V3(-0.65, -1.0, 1.0), 7.0] };
   function select(id) { st.sel = id === 'all' ? null : id; refs.seg && refs.seg.sync(); { const lv = st.sel && LVIEW[st.sel], dir = HOME.pos.clone().sub(HOME.target).normalize(); st.fly = lv ? flyTarget(lv[0], lv[0].clone().addScaledVector(dir, lv[1])) : (LVIEW[id] === undefined && id !== 'all' ? st.fly : HOME); } const all = [...SK_REC.map((r) => REC[r.id]), ...SK_LAYERS.map((l) => LAY[l.id])]; all.forEach((p) => p.mats.forEach((m) => { m.emissiveIntensity = st.sel === p.id ? 0.6 : (REC[p.id] ? 0.15 : 0); })); st.msg = null; refs.setInfo && refs.setInfo(); }
   pickOn(() => self, camera, pick, (id) => select(id));
   const fire = (id, rate, dt) => { const n = rate * dt; if (rnd() < n) { REC[id].spikes.push(st.t); const c = NERV[id][Math.floor(rnd() * NERV[id].length)]; for (let u = 0; u < 1; u += 0.2) fx.spawn(c.getPointAt(1 - u), V3(0, 0, 0), new THREE.Color(REC[id].color), 0.3 + u * 0.4, 0, 1.4); REC[id].flash = 1; } };
