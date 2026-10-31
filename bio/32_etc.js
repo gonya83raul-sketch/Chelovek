@@ -22,18 +22,36 @@ function makeEtc() {
   // подписи сторон
   const P = (x, y, z = 0) => V3(x, y, z);
   // комплексы
-  const C1 = P(-6.2, 0), C2 = P(-3.5, -0.85), C3 = P(-0.9, 0), C4 = P(2.1, 0), AS = P(5.7, 0);
+  const C1 = P(-6.1, 0), C2 = P(-3.0, 0), C3 = P(-0.9, 0), C4 = P(2.1, 0), AS = P(5.7, 0);
   const cx = [];
   const addBlob = (pos, r, color, seed, pick) => { const m = new THREE.Mesh(blobGeo(r[0], r[1], r[2], seed, 0.1, 4), protMat(color, 0.32)); m.position.copy(pos); m.userData.pick = pick; scene.add(m); cx.push(m); return m; };
-  addBlob(P(-6.0, 0.05), [1.7, 0.6, 0.62], '#FF8A5C', 1, 'I');
-  addBlob(P(-7.1, -1.55), [0.62, 1.35, 0.6], '#FF8A5C', 2, 'I');
-  addBlob(C2, [0.62, 0.9, 0.58], '#7FE0A0', 3, 'II');
-  addBlob(P(-1.3, 0.05), [0.62, 1.25, 0.62], '#F2C14E', 4, 'III'); addBlob(P(-0.5, 0.05), [0.62, 1.25, 0.62], '#F2C14E', 5, 'III');
-  addBlob(C4, [0.78, 1.15, 0.7], '#FF6A6A', 6, 'IV');
-  // Fe-S кластеры (реальные координаты 4Fe-4S из ферредоксина 1BLU) по «руке» комплекса I
-  const sf4 = PDB('fdx').ligm[0]; const fesPts = []; for (let k = 0; k < 6; k++) { const p = P(-7.15 + 0.06 * k, -2.55 + k * 0.42, 0.45); fesPts.push(p); const m = molMesh(sf4, { scale: 0.075 }); m.position.copy(p); scene.add(m); }
-  // цитохром c и убихинон
-  const cytc = new THREE.Mesh(blobGeo(0.3, 0.3, 0.3, 7, 0.12, 4), protMat('#FF5A7A', 0.4)); scene.add(cytc);
+  /* комплексы I–IV и цитохром c — реальные структуры, ориентированные по мембране (OPM): I — 5LC5, II — 1ZOY, III — 1BGY (димер), IV — 1OCC (мономер), c — 1HRC.
+     Общий масштаб SC; sites — точки кофакторов (ФМН, Fe-S, гемы, CuA/CuB), по ним идут электроны. */
+  const SC = 0.019;
+  const place = (key, pick, color, x, rib = false) => {
+    const S = PDB(key).sites; const base = new THREE.Color(color);
+    const g = rib ? proteinMesh(key, { scale: SC, colorBy: (c, ci) => base.clone().offsetHSL(0, 0, ((ci * 7) % 5 - 2) * 0.035).getStyle() }) : new THREE.Group();
+    PDB(key).ligm.forEach((m) => g.add(molMesh(m, { scale: SC, style: 'ball' })));
+    /* большие комплексы — оболочка по атомам (ленты 17 тыс. остатков — 2 млн треугольников и шум); кофакторы видны внутри */
+    if (!rib) g.add(surfaceMesh(caPoints(key, SC), { radius: 7 * SC, res: 64, mat: new THREE.MeshStandardMaterial({ color: base.clone().multiplyScalar(0.62), emissive: base, emissiveIntensity: 0.04, roughness: 0.5, transparent: true, opacity: 0.4, depthWrite: false }) }));
+    if (x !== null) { g.position.set(x, MEMY, 0).sub(V3(...S.mid).multiplyScalar(SC)); scene.add(g); }
+    g.traverse((o) => { if (o.isMesh) { o.userData.pick = pick; if (pick) cx.push(o); } });
+    const at = (k, i = 0) => g.position.clone().add(V3(...S[k][i]).multiplyScalar(SC));
+    return { g, S, at, n: (k) => S[k].length };
+  };
+  const K1 = place('cI', 'I', '#FF8A5C', C1.x), K2 = place('cII', 'II', '#7FE0A0', C2.x), K3 = place('cIII', 'III', '#F2C14E', C3.x), K4 = place('cIV', 'IV', '#FF6A6A', C4.x);
+  // путь в комплексе I: ФМН → кластеры Fe-S снизу вверх → N2 у мембраны
+  const fesPts = [K1.at('fmn')].concat(Array.from({ length: K1.n('fes') }, (_, i) => K1.at('fes', i)).sort((a, b) => a.y - b.y));
+  const N2 = fesPts[fesPts.length - 1];
+  const II_FAD = K2.at('fad'), II_FES = Array.from({ length: K2.n('fes') }, (_, i) => K2.at('fes', i)).sort((a, b) => a.y - b.y), II_Q = K2.at('q');
+  // комплекс III: цитохром c1, ближний к комплексу IV; Fe-S белок Риске и гем bL рядом с ним
+  const c1s = Array.from({ length: K3.n('c1') }, (_, i) => K3.at('c1', i)).sort((a, b) => b.x - a.x), III_C1 = c1s[0], III_FES = K3.at('fes');
+  const III_BL = Array.from({ length: K3.n('hem') }, (_, i) => K3.at('hem', i)).sort((a, b) => a.distanceTo(III_FES) - b.distanceTo(III_FES))[0];
+  const IV_CUA = K4.at('cua'), IV_HEA = Array.from({ length: K4.n('hea') }, (_, i) => K4.at('hea', i)), IV_CUB = K4.at('cub');
+  const IV_A = IV_HEA.slice().sort((a, b) => b.distanceTo(IV_CUB) - a.distanceTo(IV_CUB))[0], IV_A3 = IV_HEA.slice().sort((a, b) => a.distanceTo(IV_CUB) - b.distanceTo(IV_CUB))[0];
+  const NADH0 = fesPts[0].clone().add(P(-0.2, -0.7, 0.3)), SUCC0 = II_FAD.clone().add(P(0, -0.7, 0.3)), Q_I = N2.clone().add(P(0.6, 0.3, 0.2));
+  // цитохром c: гем в точке электрона
+  const KC = place('cytc', null, '#FF5A7A', null, true); const cytc = new THREE.Group(); KC.g.position.copy(V3(...KC.S.hem[0]).multiplyScalar(-SC)); cytc.add(KC.g); scene.add(cytc);
   const Q = [0, 1, 2].map(() => { const m = new THREE.Mesh(new THREE.SphereGeometry(0.13, 16, 12), new THREE.MeshPhysicalMaterial({ color: 0xc8a020, emissive: 0xffd040, emissiveIntensity: 0.3, roughness: 0.3 })); scene.add(m); return { m, busy: false, p: P(-4, 0, 0.5) }; });
   // АТФ-синтаза
   const rotor = new THREE.Group(); rotor.position.copy(AS); scene.add(rotor);
@@ -67,18 +85,18 @@ function makeEtc() {
   function pump(x, n) { for (let k = 0; k < n; k++) { const h = hFree(); if (!h) return; h.s = 'pump'; h.t = 0; h.a.set(x + rand(-0.35, 0.35), -1.0, rand(-0.4, 0.6)); h.b.set(h.a.x + rand(-0.2, 0.2), 1.0, h.a.z); h.p.copy(h.a); h.dur = 0.7 + k * 0.08; } }
   function spawnPair() {
     const route = st.sub === 'nadh' ? ['nadh', 'I', 'Q', 'III', 'c', 'IV'] : ['succ', 'II', 'Q', 'III', 'c', 'IV'];
-    EL.push({ route, i: 0, t: 0, p: st.sub === 'nadh' ? P(-7.15, -3.4) : P(-3.5, -2.0), wait: false });
+    EL.push({ route, i: 0, t: 0, p: st.sub === 'nadh' ? NADH0.clone() : SUCC0.clone(), wait: false });
   }
   const segOf = (e) => {
     const r = e.route[e.i];
-    if (r === 'nadh') return { a: P(-7.15, -3.4), b: fesPts[0], d: 0.6 };
-    if (r === 'succ') return { a: P(-3.5, -2.0), b: P(-3.5, -0.6), d: 0.7 };
-    if (r === 'I') return { a: fesPts[0], b: fesPts[5], d: 1.0, path: fesPts };
-    if (r === 'II') return { a: P(-3.5, -0.6), b: P(-3.2, 0, 0.5), d: 0.5 };
-    if (r === 'Q') return { a: e.route[1] === 'I' ? P(-5.2, 0, 0.6) : P(-3.2, 0, 0.6), b: P(-1.6, 0, 0.6), d: 1.1 };
-    if (r === 'III') return { a: P(-1.6, 0, 0.6), b: P(-0.8, 0.95, 0.4), d: 0.6 };
-    if (r === 'c') return { a: P(-0.8, 1.05, 0.5), b: P(1.8, 1.05, 0.5), d: 0.9 };
-    return { a: P(1.8, 0.9, 0.5), b: P(2.1, -1.0, 0.5), d: 0.6 };
+    if (r === 'nadh') return { a: NADH0, b: fesPts[0], d: 0.6 };
+    if (r === 'succ') return { a: SUCC0, b: II_FAD, d: 0.7 };
+    if (r === 'I') return { a: fesPts[0], b: N2, d: 1.2, path: fesPts };
+    if (r === 'II') return { a: II_FAD, b: II_Q, d: 0.6, path: [II_FAD, ...II_FES, II_Q] };
+    if (r === 'Q') return { a: e.route[1] === 'I' ? Q_I : II_Q, b: III_BL, d: 1.1 };
+    if (r === 'III') return { a: III_BL, b: III_C1, d: 0.6, path: [III_BL, III_FES, III_C1] };
+    if (r === 'c') return { a: III_C1, b: IV_CUA, d: 0.9 };
+    return { a: IV_CUA, b: IV_A3, d: 0.6, path: [IV_CUA, IV_A, IV_A3, IV_CUB] };
   };
   const blockAt = { I: 'rot', III: 'ant', c: 'ant', IV: 'cn' };
   function update(dt) {
@@ -98,19 +116,19 @@ function makeEtc() {
       const sg = segOf(e); const u = clamp(e.t, 0, bl ? 0.95 : 1);
       if (sg.path) { const f = u * (sg.path.length - 1), k = Math.min(sg.path.length - 2, Math.floor(f)); e.p.copy(sg.path[k]).lerp(sg.path[k + 1], f - k); } else e.p.copy(sg.a).lerp(sg.b, smooth(0, 1, u));
       if (r === 'Q') { const q = Q[i % 3]; q.m.position.copy(e.p); q.busy = true; }
-      if (r === 'c') { cytc.position.copy(e.p).add(P(0, 0.05, -0.1)); }
+      if (r === 'c') { cytc.position.copy(e.p); }
       if (e.t >= 1) {
-        if (r === 'I') pump(-6.0 + rand(-0.8, 0.8), 4);
-        if (r === 'III') pump(-0.9, 4);
-        if (r === 'IV') { pump(2.1, 2); st.oCnt += 1; const w = waters.find((x) => x.age > 3); if (w) { w.age = 0; w.m.visible = true; w.m.position.set(2.1 + rand(-0.3, 0.3), -1.3, 0.4); } const o = o2s.find((x) => x.age > 2); if (o) { o.age = 0; o.m.visible = true; } }
+        if (r === 'I') pump(C1.x + 0.8 + rand(-0.9, 0.9), 4);
+        if (r === 'III') pump(C3.x, 4);
+        if (r === 'IV') { pump(2.1, 2); st.oCnt += 1; const w = waters.find((x) => x.age > 3); if (w) { w.age = 0; w.m.visible = true; w.m.position.copy(IV_CUB).add(P(rand(-0.3, 0.3), -1.0, 0.4)); } const o = o2s.find((x) => x.age > 2); if (o) { o.age = 0; o.m.visible = true; } }
         e.i++; e.t = 0;
         if (e.i >= e.route.length) { EL.splice(i, 1); continue; }
       }
     }
     Q.forEach((q, k) => { if (!EL.some((e, i) => e.route[e.i] === 'Q' && i % 3 === k)) { q.m.position.lerp(P(-4.2 + k * 1.3 + Math.sin(t * 0.7 + k) * 0.6, 0, 0.55 + 0.25 * Math.cos(t + k)), 1 - Math.exp(-dt * 2)); } });
-    if (!EL.some((e) => e.route[e.i] === 'c')) cytc.position.lerp(P(0.4 + Math.sin(t * 0.8) * 1.3, 1.0, 0.45), 1 - Math.exp(-dt * 2));
+    if (!EL.some((e) => e.route[e.i] === 'c')) cytc.position.lerp(III_C1.clone().lerp(IV_CUA, 0.5 + 0.45 * Math.sin(t * 0.8)).add(P(0, 0.15, 0)), 1 - Math.exp(-dt * 2));
     // НАДН-жетон
-    nadhTok.visible = st.sub === 'nadh' && !has('rot'); nadhTok.position.set(-7.15, -3.6 + 0.15 * Math.sin(t * 3), 0.62);
+    nadhTok.visible = st.sub === 'nadh' && !has('rot'); nadhTok.position.copy(NADH0).add(P(0, -0.2 + 0.15 * Math.sin(t * 3), 0));
     // протоны
     const synOpen = !has('olig');
     let synRate = synOpen ? clamp(ims / 50, 0, 1) * 7 : 0;
@@ -164,17 +182,17 @@ function makeEtc() {
     { text: 'межмембранное пространство', pos: P(-3.0, 2.45, -1), color: '#FF9AB0', show: () => st.labels },
     { text: 'матрикс', pos: P(3.8, -3.6, -1), color: '#9FD8FF', show: () => st.labels },
     { text: 'I', pos: P(-6.0, 0.55, 0.8), color: '#FF8A5C', show: () => st.labels },
-    { text: 'II', pos: P(-3.5, -2.0, 0.6), color: '#7FE0A0', show: () => st.labels },
+    { text: 'II', pos: P(-3.0, 0.8, 0.6), color: '#7FE0A0', show: () => st.labels },
     { text: 'III', pos: P(-0.9, 1.55, 0.5), color: '#F2C14E', show: () => st.labels },
     { text: 'IV', pos: P(2.1, 1.4, 0.6), color: '#FF6A6A', show: () => st.labels },
     { text: 'цит. c', pos: P(0.4, 1.6, 0.4), color: '#FF5A7A', show: () => st.labels && !MOB },
     { text: 'убихинон Q', pos: P(-3.5, 0.55, 1.4), color: '#F2C14E', show: () => st.labels && !MOB },
-    { text: 'НАДН', pos: P(-8.1, -3.9, 0.6), color: '#FFD070', show: () => st.labels && st.sub === 'nadh' },
-    { text: 'сукцинат', pos: P(-4.4, -2.2, 0.6), color: '#7FE0A0', show: () => st.labels && st.sub === 'succ' },
+    { text: 'НАДН', get pos() { return NADH0.clone().add(P(-0.7, -0.45, 0)); }, color: '#FFD070', show: () => st.labels && st.sub === 'nadh' },
+    { text: 'сукцинат', get pos() { return SUCC0.clone().add(P(-0.8, -0.2, 0)); }, color: '#7FE0A0', show: () => st.labels && st.sub === 'succ' },
     { text: 'O₂ → H₂O', pos: P(2.8, -1.8, 0.6), color: '#9FD8FF', show: () => st.labels && !MOB },
     { text: 'АТФ-синтаза', pos: P(6.9, 0.9, 0.4), color: '#C79BFF', show: () => st.labels },
     { text: 'F₁: α₃β₃', pos: P(6.4, -2.8, 0.6), color: '#F2C14E', show: () => st.labels && !MOB },
-    { text: 'Fe-S', pos: P(-7.8, -1.6, 0.7), color: '#E0773A', show: () => st.labels && !MOB },
+    { text: 'Fe-S', get pos() { return fesPts[3].clone().add(P(-0.75, 0, 0.3)); }, color: '#E0773A', show: () => st.labels && !MOB },
   ];
   const refs = {};
   function ui(el) {
@@ -207,7 +225,7 @@ function makeEtc() {
         <p>Переносчики цепи: <b>НАД-зависимые дегидрогеназы</b> (витамин PP), <b>флавопротеины</b> с ФМН и ФАД (B2), <b>железо-серные белки</b>, подвижный <b>убихинон (KoQ)</b> — коллектор водорода в толще мембраны, <b>цитохромы</b> b, c₁, c, a, a₃ — гемопротеины, переносящие только электроны. Они выстроены по возрастанию окислительно-восстановительного потенциала: от НАД⁺/НАДН (−0,32 В) к O₂/H₂O (+0,82 В).</p>
         <p><b>Сопряжение</b> дыхания с фосфорилированием обеспечивает протонный градиент (ΔpH + мембранный потенциал ≈ 0,2 В). <b>Коэффициент P/O</b> — сколько АТФ образуется на атом кислорода: по учебнику 3 для НАДН и 2 для ФАДН₂, по современным данным ≈ 2,5 и 1,5.</p>
         <h3>Пути потребления кислорода</h3><p>~90% O₂ идёт в дыхательную цепь. Остальное — монооксигеназы (цитохром P450 печени), оксидазы и, к сожалению, утечка электронов с образованием <b>активных форм кислорода</b> (супероксид, H₂O₂), которые обезвреживают супероксиддисмутаза, каталаза и глутатионпероксидаза.</p></div>
-      <div><h2>Условности</h2><ul><li>Комплексы и АТФ-синтаза — схематичные модели в правильных пропорциях; железо-серные кластеры — реальные координаты Fe₄S₄ (PDB 1BLU).</li><li>Протоны и электроны увеличены в миллионы раз, их число условно; 10 протонов на пару электронов от НАДН и 4 протона на АТФ соответствуют современным данным.</li></ul></div>
+      <div><h2>Условности</h2><ul><li>Комплексы I–IV и цитохром c — реальные структуры из Protein Data Bank (I — 5LC5, II — 1ZOY, III — 1BGY, IV — 1OCC, c — 1HRC), повёрнутые по мембране по базе OPM; комплексы показаны оболочкой по атомам, внутри — их кофакторы (ФМН, кластеры Fe-S, гемы), по которым и идут электроны. Мембрана нарисована толще настоящей. АТФ-синтаза — схема в правильных пропорциях.</li><li>Протоны и электроны увеличены в миллионы раз, их число условно; 10 протонов на пару электронов от НАДН и 4 протона на АТФ соответствуют современным данным.</li></ul></div>
       <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>5</code> яды</li><li>клик по комплексу</li><li><code>R</code> вращение · <code>N</code> подписи</li></ul></div>`,
   };
   return self;
