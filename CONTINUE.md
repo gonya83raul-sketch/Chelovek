@@ -1,6 +1,6 @@
 # Продолжение доводки сцен — инструкция для нового сеанса Claude
 
-Состояние на 31.10.2026 (ночь): на сайте **app61**; в source после него — отложенное r6r (glia, lipoprot, enzyme), enzyme с настоящими структурами изомеразы/лигазы, третий круг r7a (betaox, joints, vision, soma, cranial, dien) и r7b (repro, chest, adrenal, spinal, types, referred) внесены — не опубликовано. Дальше r7c…: остальные темы с последней оценкой 3,5 (kidney, endo, immune, blood, lungs, ear, heart, skin, cortex, sresp, shealth, chemo, develop, затем биохимия 3,5), публикация app62 после 2–3 партий. Список последних оценок — скрипт в NOTES не нужен: grep таблиц review/score-r*.md.
+Состояние на 01.11.2026 (ночь): на сайте **app62** — третий круг r7a–r7d (24 темы: betaox, joints, vision, soma, cranial, dien, repro, chest, adrenal, spinal, types, referred, kidney, endo, immune, blood, lungs, ear, heart, skin, cortex, sresp, chemo, develop) и настоящие PDB-структуры вместо «капель» в enzyme, hormsig, etc (см. NOTES конец). Дальше r7e…: остальные темы с оценкой 3,5 (shealth и биохимия — список в NOTES, строка app62), потом «капли» в betaox/diabetes/pituitary/thyroid/bloodchem. Важно: тексты «Что видно» должны влезать в 6 строк (окно .info 9em).
 
 ## 1. Подготовка (машина та же, домашняя папка сохранилась)
 ```sh
