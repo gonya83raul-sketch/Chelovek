@@ -199,7 +199,7 @@ function makeGlia() {
   function myelinate() {
     if (st.wrap < 1) return;
     setFocusAll(); st.wrap = 0; st.wrapT = 0;
-    flyTo(V3(wrapAx[0], wrapAx[1], 0), 4.2, V3(0.9, 0.35, 0.55));
+    GLX === 0 ? flyTo(V3(wrapAx[0] - 0.7, wrapAx[1] + 0.3, 0.7), 6.6, V3(0.9, 0.35, 0.55)) : flyTo(V3(wrapAx[0], wrapAx[1], 0), 4.2, V3(0.9, 0.35, 0.55));
     say('<b>Миелинизация.</b> Отросток олигодендроцита распластывается в тонкий язычок и раз за разом оборачивается вокруг голого аксона. Слои мембраны слипаются, цитоплазма из них выдавливается, и получается плотная белая муфта. В ЦНС так делает олигодендроцит (одна клетка обслуживает много аксонов), на периферии — шванновская клетка.');
   }
   /* прунинг: микроглия «съедает» слабый синапс */
@@ -339,7 +339,7 @@ function makeGlia() {
     const setInfo = () => { if (st.msg) { info.innerHTML = st.msg; return; } info.innerHTML = st.focus === 'all' ? 'Четыре типа глии вокруг двух нейронов. Выберите клетку, чтобы остальные стали прозрачными. Каждые несколько секунд с кровью проплывает <b style="color:#9ee66a">глутамат</b> плазмы: при закрытом ГЭБ он проходит мимо мозга.' : TY[st.focus].text; };
     const fSeg = seg([{ id: 'all', label: 'Все' }, ...GLIA.map((g) => ({ id: g.id, label: g.name, color: g.color }))], () => st.focus, (v) => { st.focus = v; st.msg = null; applyFocus(); setInfo(); });
     const bbb = toggle('ГЭБ', () => st.bbb, (v) => { st.bbb = v; });
-    const tr = toggle('Травма', () => st.trauma, (v) => { st.trauma = v; st.traumaT = st.t; if (v) { setFocusAll(); flyTo(LES, 9, V3(0.5, 0.3, 1)); say('<b>Травма.</b> Микроглия чувствует продукты распада клеток, вырастает, делится и ползёт в очаг. Там она поглощает обломки (фагоцитоз) и выделяет сигнальные молекулы воспаления.'); } else { st.msg = null; refs.setInfo(); } });
+    const tr = toggle('Травма', () => st.trauma, (v) => { st.trauma = v; st.traumaT = st.t; if (v) { setFocusAll(); GLX === 0 ? flyTo(LES.clone().add(V3(-3.0, 0.5, 1.5)), 14.5, V3(0.5, 0.3, 1)) : flyTo(LES, 9, V3(0.5, 0.3, 1)); say('<b>Травма.</b> Микроглия чувствует продукты распада клеток, вырастает, делится и ползёт в очаг. Там она поглощает обломки (фагоцитоз) и выделяет сигнальные молекулы воспаления.'); } else { st.msg = null; refs.setInfo(); } });
     refs = { fSeg, bbb, tr, setInfo };
     el.append(group('Клетки', '0–5', fSeg),
       group('Опыт', 'F · B · P · T · M', button('Белковая еда', feed, true), bbb, button('Прунинг', startPrune), tr, button('Миелинизация', myelinate), button('Обзор', () => { st.msg = null; setInfo(); flyHome(); })),

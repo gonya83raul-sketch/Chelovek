@@ -45,8 +45,8 @@ function makeCereb() {
   labLights(scene, 0x7fd6c8);
   const VIEW = {
     anat: flyTarget(V3(-0.15, -0.1, 0), V3(3.1, 1.15, 6.5)),   // спереди-сбоку: видны ножки, олива, клочок
-    nuc: flyTarget(V3(-0.6, -0.3, 0), V3(-2.0, 4.9, 0.3)),
-    micro: flyTarget(V3(0, -0.75, 0), V3(6.3, 3.0, 7.6)),
+    nuc: matchMedia('(max-width:700px)').matches ? flyTarget(V3(-0.27, -0.3, 0), V3(-1.67, 4.9, 0.3)) : flyTarget(V3(-0.27, -0.3, -0.6), V3(-1.67, 4.9, -0.3)),
+    micro: matchMedia('(max-width:700px)').matches ? flyTarget(V3(0, -0.75, 0), V3(6.3, 3.0, 7.6)) : flyTarget(V3(-0.49, -1.0, 0.4), V3(5.81, 2.75, 8.0)),
   };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(VIEW.anat.pos);
   const controls = makeControls(camera, VIEW.anat.target); controls.minDistance = 1.5; controls.maxDistance = 16;
@@ -75,7 +75,7 @@ function makeCereb() {
   const flocc = [1, -1].map((s) => { const g = displaceGeo(new THREE.SphereGeometry(0.16, 40, 30), (v) => { v.multiplyScalar(1 + 0.08 * Math.sin(v.y * 90)); v.y *= 0.7; }); g.translate(0.42, -0.42, 1.0 * s); const m = new THREE.Mesh(g, tissue(new THREE.Color(CB_ZONES[0].color).multiplyScalar(0.5))); m.userData.pick = 'arch'; anat.add(m); return m; });
   // ствол
   const stemC = new THREE.CatmullRomCurve3([V3(0.95, 1.5, 0), V3(1.0, 0.6, 0), V3(1.05, 0.0, 0), V3(0.95, -0.9, 0), V3(0.85, -1.8, 0)]);
-  const stem = new THREE.Mesh(taperTube(stemC, (u) => 0.3 + 0.17 * Math.exp(-(((u - 0.38) / 0.12) ** 2)) - 0.08 * u, 80, 24), tissue(new THREE.Color(0xd8b2b8).multiplyScalar(0.3), { transparent: true, opacity: 0.6, depthWrite: false }));
+  const stem = new THREE.Mesh(taperTube(stemC, (u) => (0.3 + 0.17 * Math.exp(-(((u - 0.38) / 0.12) ** 2)) - 0.08 * u) * (u < 0.08 ? Math.sqrt(1 - ((0.08 - u) / 0.08) ** 2) : 1), 80, 24), tissue(new THREE.Color(0xd8b2b8).multiplyScalar(0.3), { transparent: true, opacity: 0.6, depthWrite: false }));
   anat.add(stem);
   const olive = [1, -1].map((s) => { const g = new THREE.SphereGeometry(1, 20, 14); g.scale(0.07, 0.17, 0.06); g.translate(1.22, -0.75, 0.17 * s); const m = new THREE.Mesh(g, tissue(new THREE.Color(0xf2c14e).multiplyScalar(0.5))); anat.add(m); return m; });
   // ножки
@@ -267,7 +267,7 @@ function makeCereb() {
     learned: '<b>Навык выработан.</b> Мозжечок запомнил, как быстро и точно выполнить это движение. Базальные ганглии собирают такие отдельные движения в длинную программу — весь танец, а мозжечок отвечает за каждое па.',
   };
   const labels = [
-    { text: 'червь', pos: V3(-0.55, 0.55, 0.0), color: '#86B6FF', show: () => st.labels && st.mode === 'anat' && !st.sel },
+    { text: 'червь', pos: V3(-0.55, 0.55, 0.0), color: '#86B6FF', show: () => st.labels && st.mode === 'anat' && (!st.sel || st.sel === 'paleo') },
     { text: 'полушарие', pos: V3(-0.45, 0.4, 1.1), color: '#F4A070', show: () => st.labels && st.mode === 'anat' && !st.sel },
     { text: 'клочок', pos: V3(0.5, -0.5, 1.25), color: '#7FE0A0', show: () => st.labels && st.mode === 'anat' && !st.sel },
     { text: 'ствол', pos: V3(1.1, -1.4, 0.3), color: '#d8b2b8', show: () => st.labels && st.mode === 'anat' && !st.sel },

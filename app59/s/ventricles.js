@@ -169,7 +169,7 @@ function makeVentricles() {
     st.mode = m; refs.modeSeg && refs.modeSeg.sync(); refs.setInfo && refs.setInfo();
     falx.visible = m === 'men'; men.visible = m === 'men';
     shell.solid.opacity = 0.05;
-    if (m === 'men') { st.rot = false; refs.rot && refs.rot.sync(); men.updateMatrixWorld(true); st.fly = flyTarget(MEN_POS, MEN_POS.clone().add(V3(1.5, 0.9, 3.1))); }
+    if (m === 'men') { st.rot = false; refs.rot && refs.rot.sync(); men.updateMatrixWorld(true); st.fly = VDK ? flyTarget(MEN_POS.clone().add(V3(-0.25, 0, 0.12)), MEN_POS.clone().add(V3(1.25, 0.9, 3.22))) : flyTarget(MEN_POS, MEN_POS.clone().add(V3(1.5, 0.9, 3.1))); }
     else st.fly = HOME;
   }
   function update(dt) {
@@ -177,7 +177,7 @@ function makeVentricles() {
     flyStep(st, camera, controls, dt);
     // гидроцефалия
     st.swell = clamp(st.swell + (st.hydro ? dt / 10 : -dt / 4), 0, 1);
-    const s = 1 + 0.75 * smooth(0, 1, st.swell); upper.scale.set(s, 1 + 0.55 * smooth(0, 1, st.swell), s);
+    const s = 1 + 0.5 * smooth(0, 1, st.swell); upper.scale.set(s, 1 + 0.45 * smooth(0, 1, st.swell), s);
     st.press = 10 + 25 * smooth(0, 1, st.swell);
     block.visible = blockGlow.visible = st.hydro; blockGlow.material.opacity = 0.6 + 0.4 * Math.sin(t * 6);
     // частицы

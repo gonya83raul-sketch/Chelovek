@@ -5,13 +5,13 @@ import { Sparks, THREE, V3, __set_rnd, brainKit, brainShell, button, envTex, flo
    ЛЕКЦИЯ 4 · ПОЛУШАРИЯ: БАЗАЛЬНЫЕ ГАНГЛИИ И ПРОВОДЯЩИЕ ПУТИ
    ========================================================= */
 const BG_PARTS = [
-  { id: 'caud', name: 'Caudate nucleus', color: '#5E8FEF', text: 'The <b>caudate nucleus</b> is C-shaped and lies above and lateral to the thalamus. Its head bulges into the anterior horn of the lateral ventricle, its body lies in the ventricle’s wall, and its tail runs into the temporal lobe toward the amygdala. The brain has to curve its structures into arcs, following the rounded shape of the skull.' },
-  { id: 'put', name: 'Putamen', color: '#E9785F', text: 'The <b>putamen</b> and the caudate nucleus form a single structure, the <b>striatum</b> (corpus striatum): sections show alternating stripes of gray and white matter. Its main job is movement and motor skills.' },
-  { id: 'gp', name: 'Globus pallidus', color: '#F2C14E', text: 'The <b>globus pallidus</b> (external and internal segments) is an inhibitory “filter”: it constantly holds back the thalamus and keeps unwanted motor programs from starting. Putamen + globus pallidus = lentiform nucleus.' },
-  { id: 'cla', name: 'Claustrum', color: '#B8E06A', text: 'The <b>claustrum</b> is a thin layer of gray matter between the putamen and the insular cortex.' },
-  { id: 'amy', name: 'Amygdala', color: '#FF6A9A', text: 'The <b>amygdaloid complex</b> lies deep in the temporal lobe. It is the part of the basal ganglia linked to emotion: fear, anxiety, the “fight or flight” choice.' },
-  { id: 'acc', name: 'Nucleus accumbens', color: '#FFB070', text: 'The <b>nucleus accumbens</b> (ventral striatum) is the center of the reward system. Together with the amygdala, the ventral tegmental area and the hypothalamus, it belongs to the limbic system of needs, motivation and emotion.' },
-  { id: 'thal', name: 'Thalamus', color: '#B9A4FF', text: 'The <b>thalamus</b> is not a basal ganglion, but it is their main partner: the basal ganglia influence the cortex through its ventral anterior nucleus.' },
+  { id: 'caud', name: 'Хвостатое ядро', color: '#5E8FEF', text: '<b>Хвостатое ядро</b> — С-образное, лежит выше и латеральнее таламуса. Голова выступает в передний рог бокового желудочка, тело — в его стенке, хвост уходит в височную долю к миндалине. Мозг вынужден сворачивать структуры дугой, повторяя округлую форму черепа.' },
+  { id: 'put', name: 'Скорлупа', color: '#E9785F', text: '<b>Скорлупа</b> вместе с хвостатым ядром — единая конструкция, <b>стриатум</b> (полосатое тело): на срезах видны чередующиеся полосы серого и белого вещества. Главная её работа — движения и двигательные навыки.' },
+  { id: 'gp', name: 'Бледный шар', color: '#F2C14E', text: '<b>Бледный шар</b> (наружная и внутренняя части) — тормозный «фильтр»: постоянно сдерживает таламус и не даёт запуститься ненужным двигательным программам. Скорлупа + бледный шар = чечевицеобразное ядро.' },
+  { id: 'cla', name: 'Ограда', color: '#B8E06A', text: '<b>Ограда</b> — тонкий слой серого вещества между скорлупой и корой островка.' },
+  { id: 'amy', name: 'Миндалина', color: '#FF6A9A', text: '<b>Миндалевидный комплекс</b> лежит в глубине височной доли. Это часть базальных ганглиев, связанная с эмоциями: страх, тревога, выбор «бежать или драться».' },
+  { id: 'acc', name: 'Прилежащее ядро', color: '#FFB070', text: '<b>Прилежащее ядро</b> (вентральный стриатум) — центр системы вознаграждения. Вместе с миндалиной, вентральной покрышкой и гипоталамусом входит в лимбическую систему потребностей, мотиваций и эмоций.' },
+  { id: 'thal', name: 'Таламус', color: '#B9A4FF', text: '<b>Таламус</b> — не базальный ганглий, но главный партнёр: базальные ганглии влияют на кору через его вентральное переднее ядро.' },
 ];
 function bgSectionCanvas() {
   const W = 1024, H = 900, c = document.createElement('canvas'); c.width = W; c.height = H;
@@ -165,36 +165,36 @@ function makeHemis() {
     fx.update(dt);
   }
   const TXT = {
-    bg: 'The <b>basal ganglia</b> are clusters of gray matter deep in the hemispheres. About 80% of their neurons (caudate nucleus, putamen, globus pallidus), together with the cerebellum, premotor cortex, subthalamus and substantia nigra, control movement: motor learning, skills, assembling movements into a program. About 20% (nucleus accumbens and amygdala) work in the limbic system. Click a nucleus or run the motor loop.',
-    tracts: '<b>The white matter of the hemispheres.</b> <b>Projection</b> fibers (red) connect the cortex with lower parts of the nervous system: all of them pass through the internal capsule. <b>Commissural</b> fibers (blue) connect the hemispheres: the corpus callosum (the “new” commissure), the anterior commissure (the “ancient” one, about 3 million fibers, olfactory areas) and the hippocampal commissure. <b>Association</b> fibers (green) connect cortical areas within a hemisphere: the superior longitudinal fasciculus links the frontal cortex with the parietal, temporal and occipital cortex, and the inferior one links the temporal with the occipital cortex.',
-    section: '<b>Coronal section</b>. On the outside is the cortex with its sulci and gyri, beneath it the white matter. At the top is the corpus callosum, with the lateral ventricles below it. Medially lie the caudate nucleus and the thalamus; laterally, beyond the internal capsule, the putamen and globus pallidus; farther out, the thin claustrum and the insular cortex deep in the lateral sulcus. At the bottom are the amygdala in the temporal lobe and the hypothalamus beside the third ventricle.',
-    loop: '<b>The motor loop.</b> The cortex proposes a movement → signal to the striatum (orange) → the striatum inhibits the internal globus pallidus (blue) → the globus pallidus stops inhibiting the thalamus → the thalamus “lets” the program back through to the motor cortex. Dopamine from the substantia nigra (yellow) makes this launch easier. This is how the right movement is selected from many possible ones.',
-    park: '<b>The loop in Parkinson’s disease.</b> There is no dopamine: the striatum barely inhibits the globus pallidus, which keeps pressing on the thalamus, and the program hardly reaches the cortex. Movements are hard to start, and stiffness and tremor appear.',
+    bg: '<b>Базальные ганглии</b> — скопления серого вещества в глубине полушарий. Около 80% их нейронов (хвостатое ядро, скорлупа, бледный шар) вместе с мозжечком, премоторной корой, субталамусом и чёрной субстанцией управляют движениями: двигательное обучение, навыки, сборка движений в программу. Около 20% (прилежащее ядро и миндалина) работают в лимбической системе. Нажмите на ядро или запустите двигательную петлю.',
+    tracts: '<b>Белое вещество полушарий.</b> <b>Проекционные</b> волокна (красные) связывают кору с нижележащими отделами: все проходят через внутреннюю капсулу. <b>Комиссуральные</b> (синие) соединяют полушария: мозолистое тело («новая» комиссура), передняя комиссура («древняя», около 3 млн волокон, обонятельные зоны) и комиссура гиппокампа. <b>Ассоциативные</b> (зелёные) связывают зоны коры внутри полушария: верхний продольный пучок — лобную кору с теменной, височной и затылочной, нижний — височную с затылочной.',
+    section: '<b>Фронтальный срез</b>. Снаружи — кора с бороздами и извилинами, под ней белое вещество. Сверху мозолистое тело, под ним боковые желудочки. Медиальнее — хвостатое ядро и таламус, латеральнее, за внутренней капсулой, — скорлупа и бледный шар, ещё дальше — тонкая ограда и кора островка в глубине боковой борозды. Внизу — миндалина в височной доле и гипоталамус у III желудочка.',
+    loop: '<b>Двигательная петля.</b> Кора предлагает движение → сигнал в стриатум (оранжевый) → стриатум тормозит внутренний бледный шар (голубой) → бледный шар перестаёт тормозить таламус → таламус «пропускает» программу обратно в моторную кору. Дофамин из чёрной субстанции (жёлтый) облегчает этот запуск. Так из множества возможных движений выбирается нужное.',
+    park: '<b>Петля при болезни Паркинсона.</b> Дофамина нет: стриатум слабо тормозит бледный шар, тот продолжает давить на таламус, и программа почти не доходит до коры. Движение трудно начать, появляются скованность и тремор.',
   };
   const labels = [
     ...BG_PARTS.map((p) => ({ text: p.name, pos: PART[p.id].anchor, color: p.color, left: ['thal', 'gp', 'amy'].includes(p.id), show: () => st.labels && st.mode === 'bg' && (!st.sel || st.sel === p.id) })),
-    { text: 'substantia nigra', pos: SN[0].clone().add(V3(0, -0.04, 0.06)), color: '#F4C542', show: () => st.labels && st.mode === 'bg' && !st.sel },
-    { text: 'projection', pos: V3(-0.3, 0.55, 0.62), color: '#FF6A5A', show: () => st.labels && st.mode === 'tracts' },
-    { text: 'corpus callosum', pos: V3(0.0, 0.48, 0.05), color: '#4FA3FF', show: () => st.labels && st.mode === 'tracts' },
-    { text: 'anterior commissure', pos: V3(0.45, -0.1, 0.02), color: '#9FD0FF', show: () => st.labels && st.mode === 'tracts' },
-    { text: 'superior longitudinal fasciculus', pos: V3(-0.2, 0.6, 0.7), color: '#5CC48A', show: () => st.labels && st.mode === 'tracts' },
-    { text: 'inferior longitudinal fasciculus', pos: V3(-0.5, -0.3, 0.78), color: '#5CC48A', show: () => st.labels && st.mode === 'tracts' },
-    { text: 'internal capsule', pos: V3(0.1, -0.1, 0.3), color: '#FF8A7A', show: () => st.labels && st.mode === 'tracts' },
-    ...[['caudate nucleus', 0.2, 0.2, '#5E8FEF'], ['putamen', 0.48, -0.04, '#E9785F'], ['globus pallidus', 0.36, -0.12, '#F2C14E'], ['claustrum', 0.6, 0.14, '#B8E06A'], ['insula', 0.72, -0.34, '#c8b0c0'], ['lateral sulcus', 1.1, -0.2, '#c8b0c0'], ['thalamus', 0.13, -0.1, '#B9A4FF'], ['amygdala', 0.48, -0.4, '#FF6A9A'], ['corpus callosum', 0.0, 0.44, '#efe8dc'], ['lateral ventricle', 0.12, 0.3, '#8fd4ff'], ['hypothalamus', 0.07, -0.32, '#f0b8a0'], ['cingulate cortex', 0.1, 0.6, '#E58FC4']].map(([t2, z, y, c]) => ({ text: t2, pos: V3(0.16, y, z), color: c, show: () => st.labels && st.mode === 'section' })),
+    { text: 'чёрная субстанция', pos: SN[0].clone().add(V3(0, -0.04, 0.06)), color: '#F4C542', show: () => st.labels && st.mode === 'bg' && !st.sel }, { text: 'субталамическое ядро', pos: STN[0].clone().add(V3(0, 0.02, 0.06)), color: '#7FD6C8', left: true, show: () => st.labels && st.mode === 'bg' && !st.sel },
+    { text: 'проекционные', pos: V3(-0.3, 0.55, 0.62), color: '#FF6A5A', show: () => st.labels && st.mode === 'tracts' },
+    { text: 'мозолистое тело', pos: V3(0.0, 0.48, 0.05), color: '#4FA3FF', show: () => st.labels && st.mode === 'tracts' },
+    { text: 'передняя комиссура', pos: V3(0.45, -0.1, 0.02), color: '#9FD0FF', show: () => st.labels && st.mode === 'tracts' },
+    { text: 'верхний продольный пучок', pos: V3(-0.2, 0.6, 0.7), color: '#5CC48A', show: () => st.labels && st.mode === 'tracts' },
+    { text: 'нижний продольный пучок', pos: V3(-0.5, -0.3, 0.78), color: '#5CC48A', show: () => st.labels && st.mode === 'tracts' },
+    { text: 'внутренняя капсула', pos: V3(0.1, -0.1, 0.3), color: '#FF8A7A', show: () => st.labels && st.mode === 'tracts' },
+    ...[['хвостатое ядро', 0.2, 0.2, '#5E8FEF'], ['скорлупа', 0.48, -0.04, '#E9785F'], ['бледный шар', 0.36, -0.12, '#F2C14E'], ['ограда', 0.6, 0.14, '#B8E06A'], ['островок', 0.72, -0.34, '#c8b0c0'], ['боковая борозда', 1.1, -0.2, '#c8b0c0'], ['таламус', 0.13, -0.1, '#B9A4FF'], ['миндалина', 0.48, -0.4, '#FF6A9A'], ['мозолистое тело', 0.0, 0.44, '#efe8dc'], ['боковой желудочек', 0.12, 0.3, '#8fd4ff'], ['гипоталамус', 0.07, -0.32, '#f0b8a0'], ['поясная кора', 0.1, 0.6, '#E58FC4']].map(([t2, z, y, c]) => ({ text: t2, pos: V3(0.16, y, z), color: c, show: () => st.labels && st.mode === 'section' })),
   ];
   pickOn(() => self, camera, pick, (id) => { if (st.mode === 'bg') select(id); });
   const refs = {};
   function ui(el) {
     const ib = infoBox('1 1 320px');
     refs.setInfo = () => { ib.info.innerHTML = st.msg || (st.mode === 'bg' && st.sel ? PART[st.sel].text : TXT[st.mode]); };
-    refs.modeSeg = seg([{ id: 'bg', label: 'Basal ganglia' }, { id: 'tracts', label: 'Tracts' }, { id: 'section', label: 'Coronal section' }], () => st.mode, (v) => setMode(v));
-    refs.seg = seg([{ id: 'all', label: 'All' }, ...BG_PARTS.map((p) => ({ id: p.id, label: p.name, color: p.color }))], () => st.sel || 'all', (v) => { if (st.mode !== 'bg') setMode('bg'); select(v); });
-    const pk = toggle('Parkinson’s', () => st.park, (v) => { st.park = v; });
-    refs.rot = toggle('Rotate', () => st.rot, (v) => { st.rot = v; });
-    const lab = toggle('Labels', () => st.labels, (v) => { st.labels = v; });
+    refs.modeSeg = seg([{ id: 'bg', label: 'Базальные ганглии' }, { id: 'tracts', label: 'Проводящие пути' }, { id: 'section', label: 'Фронтальный срез' }], () => st.mode, (v) => setMode(v));
+    refs.seg = seg([{ id: 'all', label: 'Все' }, ...BG_PARTS.map((p) => ({ id: p.id, label: p.name, color: p.color }))], () => st.sel || 'all', (v) => { if (st.mode !== 'bg') setMode('bg'); select(v); });
+    const pk = toggle('Паркинсон', () => st.park, (v) => { st.park = v; });
+    refs.rot = toggle('Вращение', () => st.rot, (v) => { st.rot = v; });
+    const lab = toggle('Подписи', () => st.labels, (v) => { st.labels = v; });
     Object.assign(refs, { pk, lab });
-    el.append(group('Mode', '1 · 2 · 3', refs.modeSeg), h('div', { class: 'grp', style: 'flex:1 1 480px' }, h('div', { class: 'glabel' }, 'Nuclei', h('kbd', {}, 'click a nucleus')), h('div', { class: 'gctl' }, refs.seg)),
-      group('Experiment', 'L · P', button('Motor loop', loop, true), pk), group('View', 'R · N', refs.rot, lab), ib.el);
+    el.append(group('Режим', '1 · 2 · 3', refs.modeSeg), h('div', { class: 'grp', style: 'flex:1 1 480px' }, h('div', { class: 'glabel' }, 'Ядра', h('kbd', {}, 'клик по ядру')), h('div', { class: 'gctl' }, refs.seg)),
+      group('Опыт', 'L · P', button('Двигательная петля', loop, true), pk), group('Вид', 'R · N', refs.rot, lab), ib.el);
     refs.setInfo();
   }
   function onKey(e) {
@@ -205,22 +205,22 @@ function makeHemis() {
     if (e.key === 'Escape') { select('all'); return true; }
     return false;
   }
-  function stats() { return st.mode === 'tracts' ? [['Anterior commissure', '≈3', 'million fibers']] : [['Motor part', '≈80', '%'], ['Limbic', '≈20', '%']]; }
+  function stats() { return st.mode === 'tracts' ? [['Передняя комиссура', '≈3', 'млн волокон']] : [['Моторная часть', '≈80', '%'], ['Лимбическая', '≈20', '%']]; }
   const self = {
     labelBg: true, mobZoom: 0.6, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#5E8FEF',
-    kicker: 'Brain · telencephalon', title: 'Hemispheres and basal ganglia',
-    lede: 'Beneath the cortex lie the white matter and the nuclei of the basal ganglia. They assemble individual movements into programs and, together with the limbic system, decide what we need.',
+    kicker: 'Мозг · конечный мозг', title: 'Полушария и базальные ганглии',
+    lede: 'Под корой — белое вещество и ядра базальных ганглиев. Они собирают отдельные движения в программы и вместе с лимбической системой решают, что нам нужно.',
     notes: `
-      <div><h2>The telencephalon</h2>
-        <p>The largest part of the brain, it covers all the others, and the longitudinal fissure divides it into two hemispheres. On the outside is the cortex with its sulci and gyri, beneath it the white matter, and deep inside the basal ganglia: the caudate nucleus, putamen, globus pallidus, claustrum and amygdala.</p>
-        <h3>What the parts are called</h3>
-        <p>Putamen + globus pallidus = <b>lentiform nucleus</b>. Caudate + lentiform = <b>corpus striatum</b> (the classical anatomical term). In the modern sense the <b>striatum</b> is the caudate + putamen (dorsal striatum) and the nucleus accumbens (ventral striatum); the globus pallidus is not part of it but a separate stage of the basal ganglia.</p>
-        <h3>Basal ganglia and cerebellum</h3>
-        <p>The cerebellum remembers how to perform a particular movement quickly and precisely (a single step in a dance). The basal ganglia assemble movements into a long program (the whole dance with its transitions between figures). In both cases synaptic plasticity is at work.</p></div>
-      <div><h2>What is accurate here</h2><ul>
-        <li>The C-shaped caudate nucleus along the lateral ventricle, with its tail near the amygdala.</li><li>The order of layers on the section: internal capsule, globus pallidus, putamen, claustrum, insula.</li><li>The three types of white matter fibers.</li><li>The scheme of the motor loop “cortex — striatum — globus pallidus — thalamus — cortex”.</li></ul>
-        <h2 style="margin-top:22px">Simplifications</h2><ul><li>The brain is a simplified model, and the nuclei are shown as smooth bodies.</li><li>In reality there are millions of fibers; here there are dozens.</li></ul></div>
-      <div class="keys"><h2>Keys</h2><ul><li><code>1</code>–<code>3</code> mode</li><li>click a nucleus: select</li><li><code>L</code> motor loop</li><li><code>P</code> Parkinson’s</li><li><code>R</code> rotate</li><li><code>N</code> labels</li></ul></div>`,
+      <div><h2>Конечный мозг</h2>
+        <p>Самый крупный отдел, покрывает все остальные, продольная щель делит его на два полушария. Снаружи — кора с бороздами и извилинами, под ней белое вещество, в глубине — базальные ганглии: хвостатое ядро, скорлупа, бледный шар, ограда, миндалина.</p>
+        <h3>Как называют части</h3>
+        <p>Скорлупа + бледный шар = <b>чечевицеобразное ядро</b>. Хвостатое + чечевицеобразное = <b>полосатое тело</b> (corpus striatum, классическое анатомическое понятие). В современном смысле <b>стриатум</b> — это хвостатое ядро + скорлупа (дорзальный стриатум) и прилежащее ядро (вентральный); бледный шар в него не входит, это отдельное звено базальных ганглиев.</p>
+        <h3>Базальные ганглии и мозжечок</h3>
+        <p>Мозжечок запоминает, как быстро и точно выполнить конкретное движение (отдельное па в танце). Базальные ганглии собирают движения в длинную программу (весь танец с переходами фигур). В обоих случаях работает синаптическая пластичность.</p></div>
+      <div><h2>Что здесь настоящее</h2><ul>
+        <li>С-образное хвостатое ядро вдоль бокового желудочка, хвост у миндалины.</li><li>Порядок слоёв на срезе: внутренняя капсула, бледный шар, скорлупа, ограда, островок.</li><li>Три типа волокон белого вещества.</li><li>Схема двигательной петли «кора — стриатум — бледный шар — таламус — кора».</li></ul>
+        <h2 style="margin-top:22px">Условности</h2><ul><li>Мозг — упрощённая модель, ядра показаны гладкими телами.</li><li>Волокон в реальности миллионы, здесь — десятки.</li></ul></div>
+      <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>3</code> режим</li><li>клик по ядру: выбрать</li><li><code>L</code> двигательная петля</li><li><code>P</code> Паркинсон</li><li><code>R</code> вращение</li><li><code>N</code> подписи</li></ul></div>`,
   };
   return self;
 }

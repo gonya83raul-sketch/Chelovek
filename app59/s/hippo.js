@@ -18,7 +18,7 @@ function makeHippo() {
   __set_rnd(mulberry(909));
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x060509); scene.environment = envTex;
   labLights(scene, 0xff8a5c);
-  const VIEW = { papez: flyTarget(V3(-0.1, -0.35, 0.2), V3(1.25, 1.2, 6.15)), sec: flyTarget(V3(0.45, -0.6, 0), V3(0.5, 0.1, 7.6)) };
+  const VIEW = { papez: flyTarget(V3(-0.1, -0.35, 0.2), V3(1.25, 1.2, 6.15)), sec: matchMedia('(max-width:700px)').matches ? flyTarget(V3(0.65, -0.45, 0), V3(0.7, 0.25, 9.5)) : flyTarget(V3(0.45, -0.85, 0), V3(0.5, -0.15, 11.4)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(VIEW.papez.pos);
   const controls = makeControls(camera, VIEW.papez.target); controls.minDistance = 1.5; controls.maxDistance = 14;
   const brain = new THREE.Group(); scene.add(brain);
@@ -171,7 +171,7 @@ function makeHippo() {
     after: '<b>После ДВП</b> тот же одиночный стимул вызывает в CA1 заметно больший ответ: синапс «запомнил» тренировку. Так в гиппокампе прописываются карты знакомых мест и события дня.',
   };
   const labels = [
-    ...PZ_PARTS.map((p) => ({ text: p.name, pos: { hip: V3(-0.32, -0.2, 0.62), fx: V3(-0.2, 0.36, 0.12), mam: V3(0.12, -0.7, 0.12), ant: V3(0.32, 0.18, 0.22), cing: V3(0.1, 0.78, 0.12), ent: V3(-0.1, -0.74, 0.5), amy: V3(0.55, -0.28, 0.6), olf: V3(1.24, -0.62, 0.2) }[p.id], color: p.color, show: () => st.labels && st.mode === 'papez' && (!st.sel || st.sel === p.id) })),
+    ...PZ_PARTS.map((p) => ({ text: p.name, pos: { hip: V3(-0.32, -0.2, 0.62), fx: V3(-0.2, 0.36, 0.12), mam: V3(0.12, -0.7, 0.12), ant: V3(0.32, 0.18, 0.22), cing: V3(0.1, 0.78, 0.12), ent: V3(-0.1, -0.74, 0.5), amy: V3(0.55, -0.28, 0.6), olf: V3(1.2, -0.56, 0.2) }[p.id], color: p.color, show: () => st.labels && st.mode === 'papez' && (!st.sel || st.sel === p.id) })),
     { text: 'мозолистое тело', pos: V3(-0.2, 0.5, 0.0), color: '#efe8dc', show: () => st.labels && st.mode === 'papez' && !st.sel },
     { text: 'таламус', pos: V3(-0.1, -0.05, 0.4), color: '#B9A4FF', show: () => st.labels && st.mode === 'papez' && !st.sel },
     { text: 'CA1', pos: CA.getPointAt(0.2).add(V3(0.2, 0, 0.1)), color: '#86B6FF', show: () => st.labels && st.mode === 'sec' },
@@ -179,7 +179,7 @@ function makeHippo() {
     { text: 'CA3', pos: CA.getPointAt(0.76).add(V3(-0.2, 0.05, 0.1)), color: '#86B6FF', show: () => st.labels && st.mode === 'sec' },
     { text: 'зубчатая извилина', pos: DG.getPointAt(0.5).add(V3(-0.1, -0.12, 0.1)), color: '#FF8A7A', show: () => st.labels && st.mode === 'sec' },
     { text: 'субикулум', pos: V3(1.95, -0.6, 0.1), color: '#C77DFF', show: () => st.labels && st.mode === 'sec' },
-    { text: 'энторинальная кора', pos: V3(2.5, -1.0, 0.15), color: '#5CC48A', show: () => st.labels && st.mode === 'sec' },
+    { text: 'энторинальная кора', pos: V3(2.5, -1.0, 0.15), color: '#5CC48A', left: true, show: () => st.labels && st.mode === 'sec' },
     { text: 'перфорантный путь', pos: V3(1.0, -0.55, 0.12), color: '#5CC48A', show: () => st.labels && st.mode === 'sec' },
     { text: 'мшистые волокна', pos: DGc.clone().add(V3(-0.35, 0.22, 0.1)), color: '#FF8A5C', show: () => st.labels && st.mode === 'sec' },
     { text: 'коллатерали Шаффера', pos: V3(0.25, 0.48, 0.12), color: '#F4C542', show: () => st.labels && st.mode === 'sec' },

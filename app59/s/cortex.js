@@ -70,10 +70,10 @@ function makeCortex() {
   labLights(scene, 0xe58fc4);
   { const k2 = new THREE.DirectionalLight(0xfff1e6, 1.15); k2.position.set(5, 8, -7); scene.add(k2); }   // ключевой свет и для левого полушария (z<0)
   const VIEWS = {
-    lat: flyTarget(V3(0.55, -0.3, -0.55), V3(0.27, 0.75, -8.2)),   // левое полушарие (z<0) снаружи
+    lat: flyTarget(V3(0.8, -0.3, -0.55), V3(0.52, 0.75, -8.2)),   // левое полушарие (z<0) снаружи
     med: flyTarget(V3(-0.22, -0.3, -0.3), V3(-0.5, 0.55, 8.4)),      // его медиальная стенка, правое скрыто
     top: flyTarget(V3(-0.3, -0.1, 0), V3(-3.4, 7.4, 0.01)),
-    col: flyTarget(V3(0.2, -0.75, 0), V3(4.4, 0.9, 8.0)),
+    col: flyTarget(V3(0.2, -0.95, 0), V3(4.82, 0.87, 8.8)),
   };
   const VIEWSM = {   // телефон: кадр выше и ниже — модель крупнее (mobZoom)
     lat: flyTarget(V3(-0.22, -0.25, -0.55), V3(-0.45, 0.6, -8.4)),   /* телефон: мозг крупнее */ med: flyTarget(V3(-0.22, -0.25, -0.3), V3(-0.5, 0.6, 9.2)),
@@ -269,7 +269,7 @@ function makeCortex() {
     ...LOBE_LBL.map((l) => latLbl(LOBES[l.li].name + ' доля', l.x, l.y, LOBES[l.li].color, () => st.mode === 'lobes' && st.view !== 'med')),
     latLbl('центральная борозда', bkCs(0.95) + 0.02, 0.95, '#ffffff', () => st.mode === 'lobes' && st.view !== 'med'),
     latLbl('боковая борозда', -0.1, bkLs(-0.1), '#ffffff', () => st.mode === 'lobes' && st.view !== 'med'),
-    latLbl('теменно-затылочная', bkPo(0.75) - 0.02, 0.75, '#ffffff', () => st.mode === 'lobes' && st.view !== 'med'),
+    latLbl('теменно-затылочная', bkPo(0.75) - 0.02, 0.75, '#ffffff', () => st.mode === 'lobes' && st.view !== 'med'), { text: 'мозжечок', pos: V3(-1.2, -0.95, -0.95), color: '#c8b0c0', show: () => st.labels && st.mode === 'lobes' && st.view === 'lat' && camera.position.z < -1 && !mqm.matches },
     { text: 'Лимбическая доля', pos: V3(0, 0, 0), color: LOBES[4].color, show: () => st.labels && st.mode === 'lobes' && st.view === 'med', _med: [-0.2, 0.42] },
     { text: 'мозолистое тело', pos: V3(0.0, 0.32, 0.15), color: '#efe8dc', show: () => st.labels && st.mode === 'lobes' && st.view === 'med' },
     { text: 'шпорная борозда', pos: V3(0, 0, 0), color: '#F2D14E', show: () => st.labels && st.mode === 'lobes' && st.view === 'med', _med: [-1.35, 0.1] },
@@ -321,7 +321,7 @@ function makeCortex() {
   }
   function stats() { return st.mode === 'zones' ? [['Полей Бродмана', 52, ''], ['Год карты', 1909, '']] : st.mode === 'layers' ? [['Слоёв', 6, ''], ['Пирамид', '≈75', '%']] : [['Доли', 5, ''], ['Главные борозды', 3, '']]; }
   const self = {
-    labelBg: true, mobZoom: 0.62, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#E9785F', mobZoom: 0.68,
+    labelBg: true, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#E9785F', mobZoom: 0.58,
     kicker: 'Мозг · новая кора', title: 'Кора больших полушарий',
     lede: 'Пять долей, 52 поля Бродмана, шесть слоёв и колонки-процессоры. Посмотрите, где говорит, видит и двигается кора и как сигнал проходит через её слои.',
     notes: `

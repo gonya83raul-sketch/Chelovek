@@ -199,7 +199,7 @@ function makeGlia() {
   function myelinate() {
     if (st.wrap < 1) return;
     setFocusAll(); st.wrap = 0; st.wrapT = 0;
-    flyTo(V3(wrapAx[0], wrapAx[1], 0), 4.2, V3(0.9, 0.35, 0.55));
+    GLX === 0 ? flyTo(V3(wrapAx[0] - 0.7, wrapAx[1] + 0.3, 0.7), 6.6, V3(0.9, 0.35, 0.55)) : flyTo(V3(wrapAx[0], wrapAx[1], 0), 4.2, V3(0.9, 0.35, 0.55));
     say('<b>Myelination.</b> A process of the oligodendrocyte flattens into a thin tongue and wraps around a bare axon again and again. The membrane layers stick together, the cytoplasm is squeezed out of them, and a dense white sleeve forms. In the CNS this is done by the oligodendrocyte (one cell serves many axons), in the periphery by the Schwann cell.');
   }
   /* прунинг: микроглия «съедает» слабый синапс */
@@ -339,7 +339,7 @@ function makeGlia() {
     const setInfo = () => { if (st.msg) { info.innerHTML = st.msg; return; } info.innerHTML = st.focus === 'all' ? 'Four types of glia around two neurons. Select a cell to make the others transparent. Every few seconds plasma <b style="color:#9ee66a">glutamate</b> floats by in the blood: with the BBB closed, it passes the brain by.' : TY[st.focus].text; };
     const fSeg = seg([{ id: 'all', label: 'All' }, ...GLIA.map((g) => ({ id: g.id, label: g.name, color: g.color }))], () => st.focus, (v) => { st.focus = v; st.msg = null; applyFocus(); setInfo(); });
     const bbb = toggle('BBB', () => st.bbb, (v) => { st.bbb = v; });
-    const tr = toggle('Injury', () => st.trauma, (v) => { st.trauma = v; st.traumaT = st.t; if (v) { setFocusAll(); flyTo(LES, 9, V3(0.5, 0.3, 1)); say('<b>Injury.</b> Microglia sense the breakdown products of cells, grow, divide and crawl to the lesion. There they engulf the debris (phagocytosis) and release inflammatory signaling molecules.'); } else { st.msg = null; refs.setInfo(); } });
+    const tr = toggle('Injury', () => st.trauma, (v) => { st.trauma = v; st.traumaT = st.t; if (v) { setFocusAll(); GLX === 0 ? flyTo(LES.clone().add(V3(-3.0, 0.5, 1.5)), 14.5, V3(0.5, 0.3, 1)) : flyTo(LES, 9, V3(0.5, 0.3, 1)); say('<b>Injury.</b> Microglia sense the breakdown products of cells, grow, divide and crawl to the lesion. There they engulf the debris (phagocytosis) and release inflammatory signaling molecules.'); } else { st.msg = null; refs.setInfo(); } });
     refs = { fSeg, bbb, tr, setInfo };
     el.append(group('Cells', '0–5', fSeg),
       group('Experiment', 'F · B · P · T · M', button('Protein meal', feed, true), bbb, button('Pruning', startPrune), tr, button('Myelination', myelinate), button('Overview', () => { st.msg = null; setInfo(); flyHome(); })),
