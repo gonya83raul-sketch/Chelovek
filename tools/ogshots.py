@@ -50,6 +50,8 @@ def save(png, name):
         q -= 5
     open(os.path.join(CACHE, name), 'wb').write(b.getvalue()); return b.tell()
 OGADV = {'express': 11}   # секунды анимации до кадра: у express полимераза уходит вправо от заголовка
+# сдвиг кадра превью (dx, dy) в единицах сцены: объект правее = цель и камера на −dx, ниже = на +dy
+OGSHIFT = {'etc': (-5.5, 4.2), 'hormsig': (-3.5, 3.6)}
 done = 0
 with sync_playwright() as p:
     br = p.chromium.launch(args=['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'])
@@ -62,7 +64,10 @@ with sync_playwright() as p:
             pg.goto(f'http://127.0.0.1:8765/index.html?lang=ru#{sid}')
             pg.wait_for_function('window.__ready === %r' % sid, timeout=180000)
             pg.add_style_tag(content=HIDE); pg.evaluate('window.dispatchEvent(new Event("resize"))')
-            pg.evaluate('window.__adv && window.__adv(%g)' % OGADV.get(i, 2)); time.sleep(4 if i in ('skeleton', 'home', 'digest', 'vision') else 1.5)
+            pg.evaluate('window.__adv && window.__adv(%g)' % OGADV.get(i, 2))
+            if i in OGSHIFT:
+                pg.evaluate('''([dx, dy]) => { const s = window.__cur(); for (const v of [s.camera.position, s.controls.target]) { v.x += dx; v.y += dy; } s.controls.update && s.controls.update(); window.__adv(0.05); }''', list(OGSHIFT[i]))
+            time.sleep(4 if i in ('skeleton', 'home', 'digest', 'vision') else 1.5)
             pg.evaluate('document.fonts.ready')
             sz = []
             for lang in ('ru', 'en'):
