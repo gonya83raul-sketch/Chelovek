@@ -20,7 +20,7 @@ function makeSkin() {
   __set_rnd(mulberry(1919));
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x07060a); scene.environment = envTex;
   labLights(scene, 0xffb08a);
-  const HOME = flyTarget(V3(-0.3, -0.62, 0), V3(4.15, 2.53, 9.7));
+  const HOME = matchMedia('(max-width:700px)').matches ? flyTarget(V3(-0.3, -0.62, 0), V3(4.15, 2.53, 9.7)) : flyTarget(V3(-0.5, -0.62, 0), V3(3.95, 2.53, 9.7));
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(HOME.pos);
   const controls = makeControls(camera, HOME.target); controls.minDistance = 1.5; controls.maxDistance = 16;
   const sk = new THREE.Group(); scene.add(sk);
@@ -125,7 +125,7 @@ function makeSkin() {
     heat: { name: 'Жара', text: '<b>Жара.</b> Сосуды кожи расширяются (кожа краснеет и отдаёт тепло), потовые железы выделяют пот — испаряясь, он охлаждает тело. За сутки при жаре может выделиться несколько литров пота.' },
   };
   function stim(k) { st.stim = k; st.stimT = st.t; st.msg = STIM[k].text; refs.setInfo(); refs.stSeg && refs.stSeg.sync(); }
-  const LVIEW = matchMedia('(max-width:700px)').matches ? { epi: [V3(1.0, 0.85, 1.0), 2.9], der: [V3(0.1, -0.4, 0.6), 6.4], hyp: [V3(0.2, -0.55, 0.6), 8.0] } : { epi: [V3(-0.55, 0.7, 1.7), 5.2], der: [V3(-0.9, -0.1, 1.0), 7.4], hyp: [V3(-0.65, -1.0, 1.0), 7.0] };
+  const LVIEW = matchMedia('(max-width:700px)').matches ? { epi: [V3(1.0, 0.85, 1.0), 2.9], der: [V3(0.1, -0.4, 0.6), 6.4], hyp: [V3(0.2, -0.55, 0.6), 8.0] } : { epi: [V3(-0.55, 0.7, 1.7), 5.2], der: [V3(-0.9, -0.1, 1.0), 8.7], hyp: [V3(-0.65, -0.1, 1.0), 9.1] };
   function select(id) { st.sel = id === 'all' ? null : id; refs.seg && refs.seg.sync(); { const lv = st.sel && LVIEW[st.sel], dir = HOME.pos.clone().sub(HOME.target).normalize(); st.fly = lv ? flyTarget(lv[0], lv[0].clone().addScaledVector(dir, lv[1])) : (LVIEW[id] === undefined && id !== 'all' ? st.fly : HOME); } const all = [...SK_REC.map((r) => REC[r.id]), ...SK_LAYERS.map((l) => LAY[l.id])]; all.forEach((p) => p.mats.forEach((m) => { m.emissiveIntensity = st.sel === p.id ? 0.6 : (REC[p.id] ? 0.15 : 0); })); st.msg = null; refs.setInfo && refs.setInfo(); }
   pickOn(() => self, camera, pick, (id) => select(id));
   const fire = (id, rate, dt) => { const n = rate * dt; if (rnd() < n) { REC[id].spikes.push(st.t); const c = NERV[id][Math.floor(rnd() * NERV[id].length)]; for (let u = 0; u < 1; u += 0.2) fx.spawn(c.getPointAt(1 - u), V3(0, 0, 0), new THREE.Color(REC[id].color), 0.3 + u * 0.4, 0, 1.4); REC[id].flash = 1; } };
@@ -173,7 +173,7 @@ function makeSkin() {
     { text: 'роговой', pos: V3(W / 2 + 0.03, Y_TOP + 0.02, D / 2), color: '#F2E6D8', show: () => st.labels && st.sel === 'epi' },
     { text: 'зернистый', pos: V3(W / 2 + 0.03, Y_TOP - 0.06, D / 2), color: '#D8B080', show: () => st.labels && st.sel === 'epi' },
     { text: 'шиповатый', pos: V3(W / 2 + 0.03, Y_EPI + 0.12, D / 2), color: '#E8C8B0', show: () => st.labels && st.sel === 'epi' },
-    { text: 'базальный', pos: V3(W / 2 + 0.03, Y_EPI + 0.04, D / 2), color: '#C09070', show: () => st.labels && st.sel === 'epi' },
+    { text: 'базальный', pos: V3(-W / 2, Y_EPI + 0.02, D / 2), color: '#C09070', left: true, show: () => st.labels && st.sel === 'epi' },
     { text: 'сосочковый слой', pos: V3(W / 2 + 0.03, 0.82, D / 2), color: '#F0B0B0', show: () => st.labels && st.sel === 'der' },
     { text: 'сетчатый слой', pos: V3(-W / 2 + 0.05, -0.05, D / 2), color: '#D89090', show: () => st.labels && st.sel === 'der' },
     { text: 'меланоцит', pos: MEL0.clone().add(V3(0.04, 0.03, 0.04)), color: '#C08060', show: () => st.labels && st.sel === 'epi' },

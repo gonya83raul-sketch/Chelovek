@@ -58,9 +58,9 @@ function makeRepro(initMode) {
   const egg = new THREE.Mesh(new THREE.SphereGeometry(0.014, 16, 12), new THREE.MeshPhysicalMaterial({ color: 0xfff0f8, emissive: 0x806070, emissiveIntensity: 0.8 })); F.add(egg); egg.visible = false;
   // зародыш: группа шаров
   const embryo = new THREE.Group(); F.add(embryo); embryo.visible = false;
-  const emCells = []; const emMat = new THREE.MeshPhysicalMaterial({ color: 0xffe8f0, roughness: 0.3, transparent: true, opacity: 0.9, emissive: 0x604050, emissiveIntensity: 0.6, clearcoat: 0.6 });
-  for (let i = 0; i < 32; i++) { const m = new THREE.Mesh(new THREE.SphereGeometry(1, 12, 10), emMat); embryo.add(m); emCells.push(m); }
-  const blast = new THREE.Mesh(new THREE.SphereGeometry(1, 24, 18), new THREE.MeshPhysicalMaterial({ color: 0xffd8e8, transparent: true, opacity: 0.35, depthWrite: false, emissive: 0x604050, emissiveIntensity: 0.4 })); embryo.add(blast);
+  const emCells = []; const emMat = new THREE.MeshPhysicalMaterial({ color: 0xffe8f0, roughness: 0.3, transparent: true, opacity: 0.9, depthTest: false, emissive: 0x604050, emissiveIntensity: 0.6, clearcoat: 0.6 });
+  for (let i = 0; i < 32; i++) { const m = new THREE.Mesh(new THREE.SphereGeometry(1, 12, 10), emMat); m.renderOrder = 20; embryo.add(m); emCells.push(m); }
+  const blast = new THREE.Mesh(new THREE.SphereGeometry(1, 24, 18), new THREE.MeshPhysicalMaterial({ color: 0xffd8e8, transparent: true, opacity: 0.35, depthWrite: false, depthTest: false, emissive: 0x604050, emissiveIntensity: 0.4 })); blast.renderOrder = 20; embryo.add(blast);
   const PATH = new THREE.CatmullRomCurve3([...TUBE[0].getPoints(8).reverse().slice(1), V3(0.06, 0.3, 0.03), V3(0.03, 0.24, 0.05)]);
   /* ---------- мужская система ---------- */
   ghost(ell3(0.12, 0.1, 0.1, V3(0, 0.06, 0.18)), '#F2D860', M); ghost(tube([V3(0, 0.4, -0.3), V3(0.02, 0.0, -0.28), V3(0, -0.4, -0.18)], 0.06, 20, 10), '#C8A090', M);
@@ -79,7 +79,7 @@ function makeRepro(initMode) {
     { id: 'r_ut', name: 'Uterus and vagina', color: '#E88A9A', keys: ['Uterus_and_vagina'], text: '<b>The uterus</b> is a hollow muscular organ the size of a pear (7–8 cm): fundus, body and cervix. Its wall: the endometrium (renewed monthly), the powerful myometrium and the outer coat. It usually tilts forward over the bladder. The cervix opens into the <b>vagina</b>, an elastic muscular canal 7–10 cm long.' },
     { id: 'r_tube', name: 'Uterine tubes', color: '#F2C88A', keys: ['Tubes'], text: '<b>The uterine tubes</b> (10–12 cm) arise from the corners of the uterus. Their funnels with fimbriae wrap around the ovary and catch the egg; cilia and contractions of the wall carry it to the uterus. Fertilization usually takes place in the wide outer part of the tube (the ampulla).' },
     { id: 'r_ov', name: 'Ovaries', color: '#F2B0C8', keys: ['Ovaries'], text: '<b>The ovaries</b> (3–4 cm) lie on either side of the uterus against the pelvic wall. They store immature eggs in follicles; usually one matures and is released each month. The ovaries secrete estrogens and progesterone.' },
-    { id: 'r_lig', name: 'Ligaments', color: '#C8D8B0', keys: ['Broad_ligament', 'Round_ligament', 'Cardinal_ligament', 'Uterosacral_lig', 'Ovarian_ligament', 'Pubocervical_facia'], text: '<b>The ligaments.</b> The <b>broad ligament</b> is a peritoneal fold holding the tubes and vessels. The <b>round ligaments</b> run to the inguinal canals and keep the uterus tilted forward. The <b>cardinal</b> and <b>uterosacral</b> ligaments and the <b>pubocervical fascia</b> are the main support of the cervix. When support weakens (childbirth, age), organs may prolapse.' },
+    { id: 'r_lig', name: 'Ligaments', color: '#C8D8B0', keys: ['Broad_ligament', 'Round_ligament', 'Cardinal_ligament', 'Uterosacral_lig', 'Ovarian_ligament', 'Pubocervical_facia'], text: '<b>The ligaments.</b> The <b>broad ligament</b> is a peritoneal fold holding the tubes and vessels. The <b>round ligaments</b> run to the inguinal canals and keep the uterus tilted forward. The <b>cardinal</b> and <b>uterosacral</b> ligaments and <b>pubocervical fascia</b> support the cervix. If support weakens (childbirth, age), organs may prolapse.' },
     { id: 'r_blad', name: 'Urinary bladder', color: '#F2D860', keys: ['Bladder'], text: '<b>The urinary bladder</b> lies in front of the uterus, behind the pubic symphysis. When it fills, it lifts the uterus, and the growing uterus in pregnancy presses on the bladder — which is why pregnant women need to urinate more often.' },
     { id: 'r_int', name: 'Rectum', color: '#C8A090', keys: ['Large_intestine'], text: '<b>The sigmoid colon and rectum</b> lie behind the uterus. Between them the peritoneum forms the rectouterine pouch — the lowest point of the peritoneal cavity.' },
     { id: 'r_bone', name: 'Pelvis and sacrum', color: '#E8D8BB', keys: ['Pelvis', 'Sacrum'], text: '<b>The pelvis</b>: two hip bones, the sacrum and the coccyx. The female pelvis is wider and shallower than the male one, with a more rounded inlet, and the angle below the pubic symphysis is larger — an adaptation to childbirth.' },
@@ -110,7 +110,7 @@ function makeRepro(initMode) {
   const parts = () => (st.mode === 'male' ? RP_M : st.mode === 'female' && st.realLoad === 2 ? RP_R : RP_F);
   const schem = () => st.mode === 'cycle' || st.mode === 'dev' || (st.mode === 'female' && st.realLoad !== 2);
   function select(id) { st.sel = id === 'all' ? null : id; refs.seg && refs.seg.sync(); dimOthers(parts().map((p) => PART[p.id]), st.sel); if (parts() === RP_F) ut.material.opacity = st.sel && st.sel !== 'ut' ? 0.12 : 0.55; boneGlass(); st.msg = null; refs.setInfo && refs.setInfo(); }
-  function setMode(m) { st.mode = m; refs.modeSeg && refs.modeSeg.sync(); st.msg = null; const real = m === 'female' && st.realLoad === 2; F.visible = m !== 'male' && !real; REAL.visible = real; M.visible = m === 'male'; if (m === 'female') loadReal(); if (real) { dimOthers(RP_R.map((p) => PART[p.id]), null); boneGlass(); } st.fly = VIEW[m]; st.sel = null; fGhosts.forEach((g) => { g.visible = m !== 'cycle'; }); refs.rebuild && refs.rebuild(); if (m === 'dev') { st.devT = st.t; st.devStage = -1; } refs.cycUI && refs.cycUI(); refs.setInfo && refs.setInfo(); }
+  function setMode(m) { st.mode = m; refs.modeSeg && refs.modeSeg.sync(); st.msg = null; const real = m === 'female' && st.realLoad === 2; F.visible = m !== 'male' && !real; REAL.visible = real; M.visible = m === 'male'; if (m === 'female') loadReal(); if (real) { dimOthers(RP_R.map((p) => PART[p.id]), null); boneGlass(); } st.fly = VIEW[m]; st.sel = null; fGhosts.forEach((g) => { g.visible = m !== 'cycle' && m !== 'dev'; }); refs.rebuild && refs.rebuild(); if (m === 'dev') { st.devT = st.t; st.devStage = -1; } refs.cycUI && refs.cycUI(); refs.setInfo && refs.setInfo(); }
   pickOn(() => self, camera, pick, (id) => { if (st.mode === 'female' || st.mode === 'male') select(id); });
   // гормоны цикла (день 1–28)
   const gau = (x, m, s) => Math.exp(-(((x - m) / s) ** 2));
@@ -177,10 +177,11 @@ function makeRepro(initMode) {
     { text: 'uterus', pos: matchMedia('(max-width:700px)').matches ? V3(-0.05, 0.25, 0.12) : V3(0.0, 0.36, 0.1), color: '#E88A9A', show: () => st.labels && schem() },
     { text: 'endometrium', pos: matchMedia('(max-width:700px)').matches ? V3(-0.06, 0.12, 0.12) : V3(-0.06, 0.25, 0.12), color: '#ff7a8a', show: () => st.labels && st.mode === 'cycle' },
     { text: 'cervix and vagina', pos: V3(0.08, -0.3, -0.02), color: '#D8A0B0', left: true, show: () => st.labels && schem() },
-    { text: 'urinary bladder', pos: V3(0.1, -0.02, 0.36), color: '#F2D860', show: () => st.labels && ((st.mode === 'female' && schem()) || st.mode === 'male') },
+    { text: 'urinary bladder', pos: V3(0.1, -0.02, 0.36), color: '#F2D860', show: () => st.labels && st.mode === 'female' && schem() },
+    { text: 'urinary bladder', pos: V3(-0.1, 0.16, 0.22), color: '#F2D860', show: () => st.labels && st.mode === 'male' },
     { text: 'testis', pos: V3(0.16, -0.6, 0.36), color: '#C8D8F0', show: () => st.labels && st.mode === 'male' },
     { text: 'vas deferens', pos: V3(0.24, 0.25, 0.18), color: '#9FD0FF', show: () => st.labels && st.mode === 'male' },
-    { text: 'seminal vesicle', pos: V3(-0.2, 0.05, 0.05), color: '#F2D88A', show: () => st.labels && st.mode === 'male' },
+    { text: 'seminal vesicle', pos: V3(0.13, 0.04, 0.06), color: '#F2D88A', show: () => st.labels && st.mode === 'male' },
     { text: 'prostate', pos: V3(0.08, -0.16, 0.2), color: '#F2D88A', show: () => st.labels && st.mode === 'male' },
     { text: 'embryo', pos: V3(0, 0, 0), color: '#ffe8f0', show: () => st.labels && st.mode === 'dev', dyn: true },
   ];
@@ -190,18 +191,18 @@ function makeRepro(initMode) {
   loadReal();
   function ui(el) {
     const ib = infoBox('1 1 360px');
-    refs.setInfo = () => { const stat = st.mode === 'female' && st.realErr ? 'Could not load the 3D model: ' + st.realErr : st.mode === 'female' && st.realLoad === 1 ? 'Loading realistic 3D model…' : ''; ib.info.innerHTML = st.msg || ((st.mode === 'cycle' ? cycText() : (st.mode === 'female' || st.mode === 'male') && st.sel ? PART[st.sel].text : TXT[st.mode]) + (stat ? '<br><span style="opacity:.6">' + stat + '</span>' : '')); };
+    refs.setInfo = () => { const stat = st.mode === 'female' && st.realErr ? 'Could not load the 3D model: ' + st.realErr : st.mode === 'female' && st.realLoad === 1 ? 'Loading realistic 3D model…' : ''; ib.info.innerHTML = st.msg || ((st.mode === 'cycle' ? (initMode === 'cycle' && st.sel ? PART[st.sel].text : cycText()) : (st.mode === 'female' || st.mode === 'male') && st.sel ? PART[st.sel].text : TXT[st.mode]) + (stat ? '<br><span style="opacity:.6">' + stat + '</span>' : '')); };
     refs.modeSeg = seg([{ id: 'female', label: 'Female system' }, { id: 'male', label: 'Male system' }, { id: 'cycle', label: 'Cycle' }, { id: 'dev', label: 'First week' }], () => st.mode, (v) => setMode(v));
     const segBox = h('div', { class: 'gctl' });
-    refs.rebuild = () => { segBox.innerHTML = ''; const list = parts(); refs.seg = seg([{ id: 'all', label: 'All' }, ...list.map((p) => ({ id: p.id, label: p.name, color: p.color }))], () => st.sel || 'all', (v) => { if (st.mode === 'cycle' || st.mode === 'dev') setMode('female'); select(v); }); segBox.append(refs.seg); };
+    refs.rebuild = () => { segBox.innerHTML = ''; const list = parts(); refs.seg = seg([{ id: 'all', label: 'All' }, ...list.map((p) => ({ id: p.id, label: p.name, color: p.color }))], () => st.sel || 'all', (v) => { if (st.mode === 'dev' || (st.mode === 'cycle' && initMode !== 'cycle')) setMode('female'); select(v); }); segBox.append(refs.seg); };
     refs.rebuild();
     st.speed = 1.5; const sp = range('rpspeed', 0.5, 4, 0.1, () => st.speed, (v) => { st.speed = v; }, (v) => v.toFixed(1) + ' d/s');
     refs.rot = toggle('Rotate', () => st.rot, (v) => { st.rot = v; });
     const lab = toggle('Labels', () => st.labels, (v) => { st.labels = v; });
     Object.assign(refs, { lab });
-    el.append(initMode === 'cycle' ? '' : group('Mode', '1–4', refs.modeSeg), h('div', { class: 'grp', style: 'flex:1 1 440px' }, h('div', { class: 'glabel' }, 'Organs', h('kbd', {}, 'click')), segBox), refs.phG = group('Cycle phases', initMode === 'cycle' ? '1–4' : '', ...(refs.phB = [['Menstruation', 1.5], ['Follicular', 8], ['Ovulation', 13.7], ['Luteal', 21]].map(([n, d], i) => button(n, () => { if (st.mode !== 'cycle') setMode('cycle'); st.day = d; st.msg = null; refs.setInfo(); }, false))), toggle('Pause', () => st.pause, (v) => { st.pause = v; })), refs.spG = group('Cycle speed', '', sp), group('View', 'R · N', refs.rot, lab), ib.el);
+    el.append(initMode === 'cycle' ? '' : group('Mode', '1–4', refs.modeSeg), h('div', { class: 'grp', style: 'flex:1 1 440px' }, h('div', { class: 'glabel' }, 'Organs', h('kbd', {}, 'click')), segBox), refs.phG = group('Cycle phases', initMode === 'cycle' ? '1–4' : '', ...(refs.phB = [['Menstruation', 1.5], ['Follicular', 8], ['Ovulation', 13.7], ['Luteal', 21]].map(([n, d], i) => button(n, () => { if (st.mode !== 'cycle') setMode('cycle'); if (st.sel) select('all'); st.day = d; st.msg = null; refs.setInfo(); }, false))), toggle('Pause', () => st.pause, (v) => { st.pause = v; })), refs.spG = group('Cycle speed', '', sp), group('View', 'R · N', refs.rot, lab), ib.el);
     // фазы и скорость цикла нужны только в режиме «Цикл»: в остальных режимах пульт ниже — сцене больше места
-    refs.cycUI = () => { const on = st.mode === 'cycle'; refs.phG.style.display = refs.spG.style.display = on ? '' : 'none'; }; refs.cycUI();
+    refs.cycUI = () => { const on = st.mode === 'cycle'; refs.phG.style.display = on || initMode === 'cycle' ? '' : 'none'; refs.spG.style.display = on ? '' : 'none'; }; refs.cycUI();
     refs.setInfo();
   }
   const _upd = update; function update2(dt) { _upd(dt); if (st.mode === 'dev') embLabel.pos.copy(embryo.position).add(V3(0.04, 0.03, 0.03)); }
