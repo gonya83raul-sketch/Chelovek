@@ -17,13 +17,16 @@ JS = """async () => {
     const mg2 = groups().find(isMode);
     if (mg2) { mg2.querySelectorAll('button')[m].click(); await sleep(500); }
     const mname = mg2 ? mg2.querySelectorAll('button')[m].textContent.trim() : '';
-    for (const g of groups()) {
-      if (isMode(g) || /^(Вид|View)/.test(lab(g))) continue;
-      const bs = [...g.querySelectorAll('button')];
-      for (const b of bs) {
+    // пульт может перерисовать группы после клика — группы и кнопки каждый раз ищем заново по подписи группы и номеру кнопки
+    const labs = groups().filter(g => !isMode(g) && !/^(Вид|View)/.test(lab(g))).map(lab);
+    for (const L of labs) {
+      for (let i = 0; ; i++) {
+        const g = groups().find(g => lab(g) === L); if (!g) break;
+        const b = g.querySelectorAll('button')[i]; if (!b) break;
         if (!b.offsetParent) continue;
+        const name = b.textContent.trim();
         b.click(); await sleep(250);
-        for (const r of measure()) { if (seen.has(r.text)) continue; seen.add(r.text); out.push({ mode: mname, grp: lab(g), btn: b.textContent.trim(), ...r }); }
+        for (const r of measure()) { if (seen.has(r.text)) continue; seen.add(r.text); out.push({ mode: mname, grp: L, btn: name, ...r }); }
       }
     }
   }

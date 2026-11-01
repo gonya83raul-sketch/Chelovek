@@ -2291,9 +2291,9 @@ function makeSkeleton() {
   const camD = V3(0, 0, 0), behind = (p) => { camD.copy(controls.target).sub(camera.position).normalize(); return (p.x - 0.15) * camD.x + p.z * camD.z > 0.6 ? 0.3 : 1; };
   const labels = [...MUSCLE_LABELS.map(([t, p]) => ({ text: t, pos: V3(...p), color: '#ff9f8a', show: () => st.labels && st.mus && st.musLoad === 2, fade() { return behind(this.pos); } })),
     ...BONE_LABELS.map((b) => ({ text: b.t, pos: V3(...b.p), show: () => st.loaded && st.labels && !st.mus && !((st.pulse || (st.vlabels && st.ves)) && !st.sel) && (st.sel ? st.sel === b.g : MAINB.has(b.t)), fade() { return behind(this.pos); } })),
-    ...VES.labels.map((l) => ({ text: l.t, pos: l.p, color: l.k === 'v' ? '#8aa6ff' : '#ff8a7a', show: () => st.ves && st.vlabels && !st.pulse && !st.sel && !st.mus && !(l.k === 'v' && st.vmode === 'art') && !(l.k === 'a' && st.vmode === 'ven') })),
+    ...VES.labels.map((l) => ({ text: l.t, pos: l.p, color: l.k === 'v' ? '#8aa6ff' : '#ff8a7a', show: () => st.ves && st.vlabels && !st.pulse && !st.sel && !st.mus && !(l.k === 'v' && st.vmode === 'art') && !(l.k === 'a' && st.vmode === 'ven') && !(matchMedia('(max-width:700px)').matches && ['Межрёберная артерия', 'Лёгкие: сосуды малого круга', 'Синус твёрдой оболочки', 'Большая подкожная вена', 'Ладонная дуга'].includes(l.t)) })),
     ...VES.pulse.filter((q) => q.s === 1).map((q) => ({ text: q.t, pos: q.p.clone().add(q.med < 0 ? V3(0, 0.05, 0.16) : V3(0.12, 0.05, 0.1)), color: '#ffd27a', show: () => st.pulse && !st.sel && !st.mus, fade() { return behind(this.pos); } }))];
-  const PULSE_TEXT = 'Пульс прощупывают там, где артерия лежит неглубоко и её можно прижать к кости или плотной ткани. Удар сердца гонит по стенкам артерий волну давления (5–10 м/с), поэтому на стопе толчок приходит примерно на 0,2 с позже, чем на шее, — видно по вспышкам. Обычно считают пульс на лучевой артерии: в покое 60–90 ударов в минуту. Сонную артерию щупают только с одной стороны и не сдавливают.';
+  const PULSE_TEXT = 'Пульс прощупывают там, где артерия лежит неглубоко и её можно прижать к кости. Волна давления бежит по стенкам артерий со скоростью 5–10 м/с, поэтому на стопе толчок приходит на 0,1–0,2 с позже, чем на шее, — видно по вспышкам. В покое 60–90 ударов в минуту (считают на лучевой артерии). Сонную щупают с одной стороны и не сдавливают.';
   const refs = {};
   function ui(el) {
     const info = h('div', { class: 'info' });
@@ -9127,18 +9127,18 @@ function makeRepro(initMode) {
   loadReal();
   function ui(el) {
     const ib = infoBox('1 1 360px');
-    refs.setInfo = () => { const stat = st.mode === 'female' && st.realErr ? 'Не удалось загрузить 3D-модель: ' + st.realErr : st.mode === 'female' && st.realLoad === 1 ? 'Загружаю реалистичную 3D-модель…' : ''; ib.info.innerHTML = st.msg || ((st.mode === 'cycle' ? cycText() : (st.mode === 'female' || st.mode === 'male') && st.sel ? PART[st.sel].text : TXT[st.mode]) + (stat ? '<br><span style="opacity:.6">' + stat + '</span>' : '')); };
+    refs.setInfo = () => { const stat = st.mode === 'female' && st.realErr ? 'Не удалось загрузить 3D-модель: ' + st.realErr : st.mode === 'female' && st.realLoad === 1 ? 'Загружаю реалистичную 3D-модель…' : ''; ib.info.innerHTML = st.msg || ((st.mode === 'cycle' ? (initMode === 'cycle' && st.sel ? PART[st.sel].text : cycText()) : (st.mode === 'female' || st.mode === 'male') && st.sel ? PART[st.sel].text : TXT[st.mode]) + (stat ? '<br><span style="opacity:.6">' + stat + '</span>' : '')); };
     refs.modeSeg = seg([{ id: 'female', label: 'Женская система' }, { id: 'male', label: 'Мужская система' }, { id: 'cycle', label: 'Цикл' }, { id: 'dev', label: 'Первая неделя' }], () => st.mode, (v) => setMode(v));
     const segBox = h('div', { class: 'gctl' });
-    refs.rebuild = () => { segBox.innerHTML = ''; const list = parts(); refs.seg = seg([{ id: 'all', label: 'Все' }, ...list.map((p) => ({ id: p.id, label: p.name, color: p.color }))], () => st.sel || 'all', (v) => { if (st.mode === 'cycle' || st.mode === 'dev') setMode('female'); select(v); }); segBox.append(refs.seg); };
+    refs.rebuild = () => { segBox.innerHTML = ''; const list = parts(); refs.seg = seg([{ id: 'all', label: 'Все' }, ...list.map((p) => ({ id: p.id, label: p.name, color: p.color }))], () => st.sel || 'all', (v) => { if (st.mode === 'dev' || (st.mode === 'cycle' && initMode !== 'cycle')) setMode('female'); select(v); }); segBox.append(refs.seg); };
     refs.rebuild();
     st.speed = 1.5; const sp = range('rpspeed', 0.5, 4, 0.1, () => st.speed, (v) => { st.speed = v; }, (v) => v.toFixed(1) + ' дн/с');
     refs.rot = toggle('Вращение', () => st.rot, (v) => { st.rot = v; });
     const lab = toggle('Подписи', () => st.labels, (v) => { st.labels = v; });
     Object.assign(refs, { lab });
-    el.append(initMode === 'cycle' ? '' : group('Режим', '1–4', refs.modeSeg), h('div', { class: 'grp', style: 'flex:1 1 440px' }, h('div', { class: 'glabel' }, 'Органы', h('kbd', {}, 'клик')), segBox), refs.phG = group('Фазы цикла', initMode === 'cycle' ? '1–4' : '', ...(refs.phB = [['Менструация', 1.5], ['Фолликулярная', 8], ['Овуляция', 13.7], ['Лютеиновая', 21]].map(([n, d], i) => button(n, () => { if (st.mode !== 'cycle') setMode('cycle'); st.day = d; st.msg = null; refs.setInfo(); }, false))), toggle('Пауза', () => st.pause, (v) => { st.pause = v; })), refs.spG = group('Скорость цикла', '', sp), group('Вид', 'R · N', refs.rot, lab), ib.el);
+    el.append(initMode === 'cycle' ? '' : group('Режим', '1–4', refs.modeSeg), h('div', { class: 'grp', style: 'flex:1 1 440px' }, h('div', { class: 'glabel' }, 'Органы', h('kbd', {}, 'клик')), segBox), refs.phG = group('Фазы цикла', initMode === 'cycle' ? '1–4' : '', ...(refs.phB = [['Менструация', 1.5], ['Фолликулярная', 8], ['Овуляция', 13.7], ['Лютеиновая', 21]].map(([n, d], i) => button(n, () => { if (st.mode !== 'cycle') setMode('cycle'); if (st.sel) select('all'); st.day = d; st.msg = null; refs.setInfo(); }, false))), toggle('Пауза', () => st.pause, (v) => { st.pause = v; })), refs.spG = group('Скорость цикла', '', sp), group('Вид', 'R · N', refs.rot, lab), ib.el);
     // фазы и скорость цикла нужны только в режиме «Цикл»: в остальных режимах пульт ниже — сцене больше места
-    refs.cycUI = () => { const on = st.mode === 'cycle'; refs.phG.style.display = refs.spG.style.display = on ? '' : 'none'; }; refs.cycUI();
+    refs.cycUI = () => { const on = st.mode === 'cycle'; refs.phG.style.display = on || initMode === 'cycle' ? '' : 'none'; refs.spG.style.display = on ? '' : 'none'; }; refs.cycUI();
     refs.setInfo();
   }
   const _upd = update; function update2(dt) { _upd(dt); if (st.mode === 'dev') embLabel.pos.copy(embryo.position).add(V3(0.04, 0.03, 0.03)); }
