@@ -25,10 +25,12 @@ for s in secs:
         if re.search(r'не внесено|не проверял', line): pend = None; continue
         ticks = re.findall(r'`([^`]+)`', line)
         if '→' in line and not re.search(r'было:|стало:', line):
-            pairs += re.findall(r'`([^`]+)`\s*→\s*`([^`]*)`', line)
+            pairs += re.findall(r'`([^`]+)`\s*→\s*(?:стало\s*)?`([^`]*)`', line)
         if re.search(r'было:', line) and ticks: pend = ticks[0]
         elif re.search(r'стало:', line) and pend is not None:
             pairs.append((pend, ticks[0] if ticks else '')); pend = None
+        if re.search(r'ключ[^`]*«?стало', line) and re.search(r'значение', line) and ticks and pairs:
+            en.append((pairs[-1][1], ticks[-1])); continue
         if re.search(r'ключ', line): mode = 'k'
         if re.search(r'значение', line): mode = 'v'
         if ticks and mode == 'k' and not re.search(r'было:|стало:', line): enk = ticks[-1]; mode = None
