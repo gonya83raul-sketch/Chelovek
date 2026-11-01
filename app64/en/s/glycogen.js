@@ -1,7 +1,7 @@
-import { BODY, Sparks, THREE, V3, __set_rnd, bodyShell, button, clamp, ell3, flyStep, flyTarget, group, h, infoBox, makeControls, mulberry, organMat, rand, randUnit, rnd, scopeShow, seg, toggle, tube } from '../core.js';
+import { BODY, LANG, Sparks, THREE, V3, __set_rnd, bodyShell, button, clamp, ell3, flyStep, flyTarget, group, h, infoBox, makeControls, mulberry, organMat, rand, randUnit, rnd, scopeShow, seg, toggle, tube } from '../core.js';
 import { BIO_MOL, BIO_PDB, MOL, bioStage, blobGeo, flowArrow, molGlow, molMesh, plotAxes, protMat } from './kit.js';
-Object.assign(BIO_PDB, {"ins":{"title":"Инсулин 4INS","r":18.7,"chains":[{"id":"A","k":"p","seq":"GIVEQCCTSICSLYQLENYCN","num":1,"ss":"HHHHHHHHHHCHHHHHHCCCC","ca":"CACCAKIA/f9LAG4AQwAwAG0ARQAnALcA/v8QAL4ABgDY/4sAQwC+/64AMQDJ//gA6P+2//AAxP+g/7AAqf/H/3MAe/+5/zoAhP/D/+//Tf/3//H/d/8hACEAs/8aAPP/iv81ALn/jv95ANz/1/98AMn/zv90AH7/1v+yAFH/","o":"FrdA76EZHKAJCqYr4K0u6Z8ADqMh/L1KNbHh4FUrG6LtL1j/J0G/+1bOIF7yRD7XBD2xDWP2WhvfzkA716/W","brk":[]},{"id":"B","k":"p","seq":"FVNQHLCGSHLVEALYLVCGERGFFYTPKA","num":1,"ss":"CCCCCCCCHHHHHHHHHHHHCCCEEECCCC","ca":"N/9J/+v/V/86/y4Aff9k/2EAyP9h/1kABQBq/4UAOQCM/1oAfQCj/20AuQC//0YAvQCx//3/gACF/wEAVQDE/woAcwDj/8v/YgCl/6T/GQCp/7z/FgDz/6j/MgDh/2T/+/+s/1r/w//Z/3P/1v8ZAE7/+f/9/xH///8zANz+3f9pAAT/HgBnACz/IwB3AHb/RgCcAK//awB1AOT/bAChACEAiQCDAGEAjgCpAKQA0QDJALAA","o":"qAAwNzfBDJ0E9VkrLrHW6F4aBr+0ry7b2BWntevBrRfN1CqxzwKprf/Iuy/J1xqpv/20qhLQ3zy3P0MmJk/PDWMLov8jWRDUtNEtWC3wrxM4E1zeNaz80xNX","brk":[]}],"ligs":[],"res":[]}});
-Object.assign(BIO_MOL, {"g1p":{"name":"Глюкозо-1-фосфат","el":"O C C O C O P O O O C O C O C O H H H H H H H H H H H H H","xyz":"+v7wAF0ADP/OANT/Y/9RAMT/5/9sAPP/IQAFAEAAoQAkAGwAHwEeAAYAkwFxAEcAWQGE//X/BQFhAHH/DgB8/wIANwBy/3v/d/9Z/wQAW/8O/3kAH//Y/wMAqP66/7v/ov7SAHoAPf8iAaH/q/69AKb/a/89AFj/5f8DAJ8AgAGB/5z/9AAXADb/QgAx/z4AMwAW/17/YP8d/6z/Qv+0/mAABP/u/2sAlf5c/8P/","b":"AAABAAEAAgACAAMAAwAEAAQABQAFAAYABgAHAAYACAAGAAkABAAKAAoACwAKAAwADAANAAwADgACAA4ADgAPAAAAEAABABEAAQASAAIAEwAEABQACAAVAAkAFgAKABcACwAYAAwAGQANABoADgAbAA8AHAA=","o":"11111121111111111111111111111"},"glu":{"name":"Глутамат","el":"N C C C C O O C O O H H H H H H H H H","xyz":"1gCAAMP/iABIADEAAgCQADwAqv90AMP/Tf///+P/Vf+X/6P/7f4KAEsAegCy/x8AWABr/30AlAB2/6D/7QDhANf/LAFLALj/wQBaAI4Az/9vAJcAFAD8AEQAbv/NAK3/5v9cAGz/Af/Y/5wAdgCo/1P/","b":"AAABAAEAAgACAAMAAwAEAAQABQAEAAYAAQAHAAcACAAHAAkAAAAKAAAACwABAAwAAgANAAIADgADAA8AAwAQAAYAEQAJABIA","o":"111121121111111111"}});
+Object.assign(BIO_PDB, {"ins":{"title":"Insulin 4INS","r":18.7,"chains":[{"id":"A","k":"p","seq":"GIVEQCCTSICSLYQLENYCN","num":1,"ss":"HHHHHHHHHHCHHHHHHCCCC","ca":"CACCAKIA/f9LAG4AQwAwAG0ARQAnALcA/v8QAL4ABgDY/4sAQwC+/64AMQDJ//gA6P+2//AAxP+g/7AAqf/H/3MAe/+5/zoAhP/D/+//Tf/3//H/d/8hACEAs/8aAPP/iv81ALn/jv95ANz/1/98AMn/zv90AH7/1v+yAFH/","o":"FrdA76EZHKAJCqYr4K0u6Z8ADqMh/L1KNbHh4FUrG6LtL1j/J0G/+1bOIF7yRD7XBD2xDWP2WhvfzkA716/W","brk":[]},{"id":"B","k":"p","seq":"FVNQHLCGSHLVEALYLVCGERGFFYTPKA","num":1,"ss":"CCCCCCCCHHHHHHHHHHHHCCCEEECCCC","ca":"N/9J/+v/V/86/y4Aff9k/2EAyP9h/1kABQBq/4UAOQCM/1oAfQCj/20AuQC//0YAvQCx//3/gACF/wEAVQDE/woAcwDj/8v/YgCl/6T/GQCp/7z/FgDz/6j/MgDh/2T/+/+s/1r/w//Z/3P/1v8ZAE7/+f/9/xH///8zANz+3f9pAAT/HgBnACz/IwB3AHb/RgCcAK//awB1AOT/bAChACEAiQCDAGEAjgCpAKQA0QDJALAA","o":"qAAwNzfBDJ0E9VkrLrHW6F4aBr+0ry7b2BWntevBrRfN1CqxzwKprf/Iuy/J1xqpv/20qhLQ3zy3P0MmJk/PDWMLov8jWRDUtNEtWC3wrxM4E1zeNaz80xNX","brk":[]}],"ligs":[],"res":[]}});
+Object.assign(BIO_MOL, {"g1p":{"name":"Glucose-1-phosphate","el":"O C C O C O P O O O C O C O C O H H H H H H H H H H H H H","xyz":"+v7wAF0ADP/OANT/Y/9RAMT/5/9sAPP/IQAFAEAAoQAkAGwAHwEeAAYAkwFxAEcAWQGE//X/BQFhAHH/DgB8/wIANwBy/3v/d/9Z/wQAW/8O/3kAH//Y/wMAqP66/7v/ov7SAHoAPf8iAaH/q/69AKb/a/89AFj/5f8DAJ8AgAGB/5z/9AAXADb/QgAx/z4AMwAW/17/YP8d/6z/Qv+0/mAABP/u/2sAlf5c/8P/","b":"AAABAAEAAgACAAMAAwAEAAQABQAFAAYABgAHAAYACAAGAAkABAAKAAoACwAKAAwADAANAAwADgACAA4ADgAPAAAAEAABABEAAQASAAIAEwAEABQACAAVAAkAFgAKABcACwAYAAwAGQANABoADgAbAA8AHAA=","o":"11111121111111111111111111111"},"glu":{"name":"Glutamate","el":"N C C C C O O C O O H H H H H H H H H","xyz":"1gCAAMP/iABIADEAAgCQADwAqv90AMP/Tf///+P/Vf+X/6P/7f4KAEsAegCy/x8AWABr/30AlAB2/6D/7QDhANf/LAFLALj/wQBaAI4Az/9vAJcAFAD8AEQAbv/NAK3/5v9cAGz/Af/Y/5wAdgCo/1P/","b":"AAABAAEAAgACAAMAAwAEAAQABQAEAAYAAQAHAAcACAAHAAkAAAAKAAAACwABAAwAAgANAAIADgADAA8AAwAQAAYAEQAJABIA","o":"111121121111111111"},"metformin":{"name":"Metformin","el":"C N C C N N C N N H H H H H H H H H H H","xyz":"NAE5AAAAvQDj/wAAzQBT/wAAOAAkAAAAPAClAAAAwf/S/wAANf/5/wAA0v6M/wAABv9wAAAAMQF6AKj/NAF2AFoAjQH7//3/kgAn/7D/NgE6//H/rAAq/2AA7f/hAAAAz/9s/wAA8v4s/wAAcP6i/wAAov6BAAAA","b":"AAABAAEAAgABAAMAAwAEAAMABQAFAAYABgAHAAYACAAAAAkAAAAKAAAACwACAAwAAgANAAIADgAEAA8ABQAQAAcAEQAHABIACAATAA==","o":"1112111211111111111"}});
 
 
 // @scene glycogen makeGlycogen | Гликоген и сахар крови | Углеводы
@@ -113,46 +113,46 @@ function makeGlycogen() {
   }
   function drawScope(ctx, w, h) {
     if (st.mode !== 'blood') { scopeShow(false); return; } scopeShow(true);
-    const A = plotAxes(ctx, w, h, { title: 'глюкоза крови, ммоль/л · 8 часов', xl: 'время →', yl: '' });
+    const A = plotAxes(ctx, w, h, { title: 'blood glucose, mmol/L · 8 hours', xl: 'time →', yl: '' });
     const Y = (v) => A.Y(v / 16);
     ctx.fillStyle = 'rgba(127,224,160,.12)'; ctx.fillRect(A.X(0), Y(5.5), A.X(1) - A.X(0), Y(3.9) - Y(5.5));
     ctx.setLineDash([3, 4]); ctx.strokeStyle = 'rgba(255,106,106,.5)'; ctx.beginPath(); ctx.moveTo(A.X(0), Y(10)); ctx.lineTo(A.X(1), Y(10)); ctx.stroke(); ctx.setLineDash([]);
     ctx.strokeStyle = '#F2C14E'; ctx.lineWidth = 2; ctx.beginPath(); st.hist.forEach(([x, v], i) => { const X = A.X((x - (st.hrs - 8)) / 8); i ? ctx.lineTo(X, Y(v)) : ctx.moveTo(X, Y(v)); }); ctx.stroke();
-    ctx.font = '500 9px JetBrains Mono, monospace'; ctx.fillStyle = 'rgba(127,224,160,.8)'; ctx.fillText('норма 3,9–5,5', A.X(0.02), Y(5.5) - 3); ctx.fillStyle = 'rgba(255,140,140,.8)'; ctx.fillText('почечный порог ~10', A.X(0.55), Y(10) - 3);
+    ctx.font = '500 9px JetBrains Mono, monospace'; ctx.fillStyle = 'rgba(127,224,160,.8)'; ctx.fillText('normal 3.9–5.5', A.X(0.02), Y(5.5) - 3); ctx.fillStyle = 'rgba(255,140,140,.8)'; ctx.fillText('renal threshold ~10', A.X(0.55), Y(10) - 3);
   }
   const TXT = {
-    build: '<b>Синтез гликогена (гликогенез).</b> После еды глюкоза в печени и мышцах превращается в глюкозо-6-фосфат → глюкозо-1-фосфат → <b>УДФ-глюкозу</b> (активированная форма, зелёные огоньки). <b>Гликогенсинтаза</b> пришивает остатки к концам цепей связью <b>α-1,4</b>, а <b>ветвящий фермент</b> переносит кусочки по 6–7 остатков, создавая точки ветвления <b>α-1,6</b> (примерно каждые 8–12 остатков). Затравка — белок <b>гликогенин</b> в центре (розовый). Ветвление делает гранулу компактной, растворимой и даёт много концов для быстрого распада. Гликогенсинтазу включает инсулин (через дефосфорилирование).',
-    break: '<b>Распад гликогена (гликогенолиз).</b> <b>Гликогенфосфорилаза</b> (кофермент — пиридоксальфосфат, витамин B6) отщепляет глюкозу от концов цепей не водой, а фосфатом — сразу получается <b>глюкозо-1-фосфат</b> (летящие молекулы), без затраты АТФ. Фосфорилаза останавливается за 4 остатка до ветвления; дальше работает <b>деветвящий фермент</b>. Включается адреналином (мышцы, печень) и глюкагоном (печень) через цАМФ и протеинкиназу A. <b>В печени</b> глюкозо-6-фосфатаза отдаёт глюкозу в кровь, <b>в мышцах</b> — только на собственный гликолиз.',
-    blood: '<b>Сахар крови</b> держится в узком коридоре ~3,9–5,5 ммоль/л натощак (в старых справочниках — 3,3–5,5). После еды глюкоза растёт → <b>инсулин</b> (голубой поток от β-клеток поджелудочной) заставляет печень и мышцы забирать глюкозу и запасать её в гликоген и жир. Натощак сахар падает → <b>глюкагон</b> (оранжевый) заставляет печень расщеплять гликоген и синтезировать глюкозу. Мозг потребляет ~120 г глюкозы в сутки. Нажмите «Поесть» и сравните с диабетом.',
+    build: '<b>Glycogen synthesis.</b> After a meal glucose → glucose-6-phosphate → glucose-1-phosphate → <b>UDP-glucose</b> (green sparks). <b>Glycogen synthase</b> attaches residues to the ends of chains with <b>α-1,4</b> bonds, and the <b>branching enzyme</b> moves pieces of 6–7 residues and creates <b>α-1,6</b> branch points (every 8–12 residues). The primer is the protein <b>glycogenin</b> (pink). Insulin switches the synthase on.',
+    break: '<b>Glycogen breakdown.</b> <b>Glycogen phosphorylase</b> (vitamin B6) cleaves glucose off chain ends with phosphate — straight to <b>glucose-1-phosphate</b> (flying molecules), no ATP spent. The <b>debranching enzyme</b> handles branch points. Epinephrine and glucagon activate it. <b>Liver:</b> glucose-6-phosphatase releases glucose into the blood; <b>muscle:</b> only its own glycolysis.',
+    blood: '<b>Blood sugar</b> is kept within a fasting range of ~3.9–5.5 mmol/L. After a meal it rises → <b>insulin</b> (light blue stream from the β cells) makes the liver and muscles store glucose as glycogen and fat. During fasting it falls → <b>glucagon</b> (orange) makes the liver break down glycogen and synthesize glucose. The brain uses ~120 g of glucose a day. Click “Eat” and compare with diabetes.',
   };
   const labels = [
-    { text: 'гликогенин', pos: V3(-0.2, 1.0, 0.6), left: true, color: '#FF8AB0', show: () => st.labels && G1.visible },
-    { text: 'α-1,6 ветвление', pos: LB.br, color: '#FF6A6A', show: () => st.labels && G1.visible && st.brOn },
-    { text: 'УДФ-глюкоза', pos: LB.udp, color: '#7FE0A0', show: () => st.labels && st.mode === 'build' && st.udpOn },
-    { text: 'глюкозо-1-фосфат', pos: LB.g1p, color: '#FF9A30', show: () => st.labels && st.mode === 'break' && st.g1pOn },
-    { text: 'печень', pos: V3(40 - 1.3, 1.6, 0.3), color: '#E07A5A', show: () => st.labels && st.mode === 'blood' },
-    { text: 'поджелудочная', pos: V3(40 + 0.75, 1.0, 0.2), color: '#E8B070', show: () => st.labels && st.mode === 'blood' },
-    { text: 'мозг', pos: V3(40.4, 4.4, 0), color: '#E0A0B8', show: () => st.labels && st.mode === 'blood' },
-    { text: 'мышцы', pos: V3(40.8, -1.2, 0.2), color: '#C0504A', show: () => st.labels && st.mode === 'blood' },
-    { text: 'жировая ткань', pos: V3(40 - 1.0, 0.5, 0.4), color: '#F2D08A', show: () => st.labels && st.mode === 'blood' },
-    { text: 'почки (глюкозурия)', pos: V3(40 + 0.82, 0.85, 0.2), color: '#E07070', show: () => st.labels && st.mode === 'blood' },
+    { text: 'glycogenin', pos: V3(-0.2, 1.0, 0.6), left: true, color: '#FF8AB0', show: () => st.labels && G1.visible },
+    { text: 'α-1,6 branch', pos: LB.br, color: '#FF6A6A', show: () => st.labels && G1.visible && st.brOn },
+    { text: 'UDP-glucose', pos: LB.udp, color: '#7FE0A0', show: () => st.labels && st.mode === 'build' && st.udpOn },
+    { text: 'glucose-1-phosphate', pos: LB.g1p, color: '#FF9A30', show: () => st.labels && st.mode === 'break' && st.g1pOn },
+    { text: 'liver', pos: V3(40 - 1.3, 1.6, 0.3), color: '#E07A5A', show: () => st.labels && st.mode === 'blood' },
+    { text: 'pancreas', pos: V3(40 + 0.75, 1.0, 0.2), color: '#E8B070', show: () => st.labels && st.mode === 'blood' },
+    { text: 'brain', pos: V3(40.4, 4.4, 0), color: '#E0A0B8', show: () => st.labels && st.mode === 'blood' },
+    { text: 'muscles', pos: V3(40.8, -1.2, 0.2), color: '#C0504A', show: () => st.labels && st.mode === 'blood' },
+    { text: 'adipose tissue', pos: V3(40 - 1.0, 0.5, 0.4), color: '#F2D08A', show: () => st.labels && st.mode === 'blood' },
+    { text: 'kidneys (glucosuria)', pos: V3(40 + 0.82, 0.85, 0.2), color: '#E07070', show: () => st.labels && st.mode === 'blood' },
   ];
   const refs = {};
   function ui(el) {
     const ib = infoBox('1 1 440px');
     refs.setInfo = () => { ib.info.innerHTML = st.msg || TXT[st.mode]; };
-    refs.modeSeg = seg([{ id: 'build', label: 'Синтез' }, { id: 'break', label: 'Распад' }, { id: 'blood', label: 'Сахар крови' }], () => st.mode, (v) => setMode(v));
+    refs.modeSeg = seg([{ id: 'build', label: 'Synthesis' }, { id: 'break', label: 'Breakdown' }, { id: 'blood', label: 'Blood sugar' }], () => st.mode, (v) => setMode(v));
     const box = h('div', { class: 'grp', style: 'flex:1 1 420px' });
     refs.rebuild = () => {
       box.innerHTML = '';
       if (st.mode === 'blood') {
-        box.append(h('div', { class: 'glabel' }, 'Опыт'), h('div', { class: 'gctl' }, button('Поесть', () => { st.meal = st.hrs; }, true), seg([{ id: 'none', label: 'Здоров' }, { id: 't1', label: 'Диабет 1 типа', color: '#FF6A6A' }, { id: 't2', label: 'Диабет 2 типа', color: '#FF9A50' }], () => st.diab, (v) => { st.diab = v; st.msg = v === 't1' ? '<b>Сахарный диабет 1 типа</b> — иммунитет разрушил β-клетки, инсулина нет. Глюкоза не входит в мышцы и жир, печень продолжает её выбрасывать (глюкагона много). Сахар выше почечного порога (~10 ммоль/л) уходит с мочой (глюкозурия), жиры распадаются до кетоновых тел (кетоацидоз). Лечение — инсулин.' : v === 't2' ? '<b>Сахарный диабет 2 типа</b> — инсулин есть, но ткани к нему малочувствительны (инсулинорезистентность, чаще при ожирении). Сахар после еды падает медленно. Лечение — питание, движение, метформин и другие препараты.' : null; refs.setInfo(); })));
-      } else box.append(h('div', { class: 'glabel' }, 'Гранула'), h('div', { class: 'gctl' }, button('Сначала', () => { st.g = st.mode === 'build' ? 0 : T_ALL; }, true)));
+        box.append(h('div', { class: 'glabel' }, 'Experiment'), h('div', { class: 'gctl' }, button('Eat', () => { st.meal = st.hrs; }, true), seg([{ id: 'none', label: 'Healthy' }, { id: 't1', label: 'Type 1 diabetes', color: '#FF6A6A' }, { id: 't2', label: 'Type 2 diabetes', color: '#FF9A50' }], () => st.diab, (v) => { st.diab = v; st.msg = v === 't1' ? '<b>Type 1 diabetes mellitus</b> — the immune system has destroyed the β cells, and there is no insulin. Glucose cannot enter muscle and fat, while the liver keeps releasing it (glucagon is high). Sugar above the renal threshold (~10 mmol/L) spills into the urine (glucosuria), and fats are broken down to ketone bodies (ketoacidosis). Treatment: insulin.' : v === 't2' ? '<b>Type 2 diabetes mellitus</b> — insulin is present, but the tissues respond poorly to it (insulin resistance, more common with obesity). Blood sugar falls slowly after a meal. Treatment: diet, exercise, metformin and other drugs.' : null; refs.setInfo(); })));
+      } else box.append(h('div', { class: 'glabel' }, 'Granule'), h('div', { class: 'gctl' }, button('Restart', () => { st.g = st.mode === 'build' ? 0 : T_ALL; }, true)));
     };
-    refs.rot = toggle('Вращение', () => st.rot, (v) => { st.rot = v; });
-    const lab = toggle('Подписи', () => st.labels, (v) => { st.labels = v; });
+    refs.rot = toggle('Rotate', () => st.rot, (v) => { st.rot = v; });
+    const lab = toggle('Labels', () => st.labels, (v) => { st.labels = v; });
     Object.assign(refs, { lab });
-    el.append(group('Режим', '1–3', refs.modeSeg), box, group('Вид', 'R · N', refs.rot, lab), ib.el);
+    el.append(group('Mode', '1–3', refs.modeSeg), box, group('View', 'R · N', refs.rot, lab), ib.el);
     refs.rebuild(); refs.setInfo();
   }
   function onKey(e) {
@@ -161,19 +161,19 @@ function makeGlycogen() {
     if (k === 'r' || k === 'к') { refs.rot.click(); return true; } if (k === 'n' || k === 'т') { refs.lab.click(); return true; }
     return false;
   }
-  function stats() { return st.mode === 'blood' ? [['Глюкоза', st.glu.toFixed(1), 'ммоль/л'], ['Инсулин', Math.round(st.ins * 60), '%'], ['Гликоген печени', Math.round(st.glycL * 100), '%']] : [['Остатков глюкозы', st.res || 0, ''], ['В реальной грануле', '≈ 30 000', '']]; }
+  function stats() { return st.mode === 'blood' ? [['Glucose', st.glu.toFixed(1).replace('.', LANG === 'ru' ? ',' : '.'), 'mmol/L'], ['Insulin', Math.round(st.ins * 60), '%'], ['Liver glycogen', Math.round(st.glycL * 100), '%']] : [['Glucose residues', st.res || 0, ''], ['In a real granule', '≈ 30 000', '']]; }
   const self = {
     labelBg: true, mobZoom: 0.52, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#F2C14E',
-    kicker: 'Биохимия · обмен углеводов', title: 'Гликоген и сахар крови',
-    lede: 'Глюкоза — быстрое топливо, но хранить её в свободном виде нельзя: вода хлынула бы в клетку. Поэтому печень и мышцы запасают её в ветвистых гранулах гликогена.',
+    kicker: 'Biochemistry · carbohydrate metabolism', title: 'Glycogen and blood sugar',
+    lede: 'Glucose is a fast fuel, but it cannot be stored in free form: water would rush into the cell. So the liver and muscles store it in branched glycogen granules.',
     notes: `
-      <div><h2>Запасы</h2>
-        <p>В печени — около 100–120 г гликогена (до 6% массы), его хватает на 12–24 часа голодания и он служит всему организму. В мышцах — 300–400 г (1–2%), но только «для себя»: в мышцах нет глюкозо-6-фосфатазы.</p>
-        <h3>Регуляция</h3>
-        <p><b>Инсулин</b> активирует гликогенсинтазу и тормозит фосфорилазу (через фосфатазы). <b>Глюкагон</b> (печень) и <b>адреналин</b> (печень и мышцы) запускают каскад: рецептор → G-белок → аденилатциклаза → цАМФ → протеинкиназа A → киназа фосфорилазы → фосфорилаза. Фосфорилирование включает фосфорилазу и одновременно выключает гликогенсинтазу. В мышцах распад ускоряют также Ca²⁺ сокращения и АМФ.</p>
-        <h3>Гликогенозы</h3><p>Наследственные дефекты ферментов распада: болезнь Гирке (глюкозо-6-фосфатаза — гипогликемия, большая печень), Помпе (лизосомная α-глюкозидаза — поражение сердца), Мак-Ардла (мышечная фосфорилаза — судороги при нагрузке). Агликогенозы — дефекты синтеза.</p></div>
-      <div><h2>Условности и модели</h2><ul><li>Гранула показана упрощённо: несколько сотен остатков из ~30 000, каждый шарик — один остаток глюкозы.</li><li>Модель сахара крови качественная: «8 часов» сжаты в полминуты.</li></ul></div>
-      <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>3</code> режим</li><li><code>R</code> вращение · <code>N</code> подписи</li></ul></div>`,
+      <div><h2>Stores</h2>
+        <p>The liver holds about 100–120 g of glycogen (up to 6% of its mass); it lasts for 12–24 hours of fasting and serves the whole body. Muscles hold 300–400 g (1–2%), but only “for themselves”: muscle lacks glucose-6-phosphatase.</p>
+        <h3>Regulation</h3>
+        <p><b>Insulin</b> activates glycogen synthase and inhibits phosphorylase (via phosphatases). <b>Glucagon</b> (liver) and <b>epinephrine</b> (liver and muscle) trigger a cascade: receptor → G protein → adenylate cyclase → cAMP → protein kinase A → phosphorylase kinase → phosphorylase. Phosphorylation switches phosphorylase on and at the same time switches glycogen synthase off. In muscle, breakdown is also accelerated by the Ca²⁺ of contraction and by AMP.</p>
+        <h3>Glycogen storage diseases</h3><p>Inherited defects of the breakdown enzymes: von Gierke disease (glucose-6-phosphatase — hypoglycemia, enlarged liver), Pompe disease (lysosomal α-glucosidase — heart involvement), McArdle disease (muscle phosphorylase — cramps during exercise). Aglycogenoses are defects of synthesis.</p></div>
+      <div><h2>Simplifications and models</h2><ul><li>The granule is simplified: a few hundred residues out of ~30,000; each bead is one glucose residue.</li><li>The blood sugar model is qualitative: “8 hours” are compressed into half a minute.</li></ul></div>
+      <div class="keys"><h2>Keys</h2><ul><li><code>1</code>–<code>3</code> mode</li><li><code>R</code> rotate · <code>N</code> labels</li></ul></div>`,
   };
   setMode('build'); st.fly = null; st.g = T_ALL * 0.55;   // первый кадр — уже заметная гранула, а не редкий «ёжик»
   return self;

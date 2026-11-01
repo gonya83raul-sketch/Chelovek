@@ -181,16 +181,16 @@ function makeRadicals() {
   }
   const TXT = {
     paths: '<b>Oxygen is the cell’s main oxidant.</b> Almost all O₂ is turned into water in the mitochondria, but a small part takes other routes: it is inserted into molecules (oxygenases), converted into hydrogen peroxide (oxidases) or — one electron at a time — into <b>free radicals</b>. The thickness of the arrows and the bars show the proportions. Click a pathway.',
-    ros: '<b>Reactive oxygen species and the defenses against them.</b> <b>SOD</b> converts superoxide O₂•⁻ into H₂O₂; <b>catalase</b> and <b>glutathione peroxidase</b> (selenium, glutathione) convert H₂O₂ into water. With an Fe²⁺ ion, H₂O₂ gives <b>•OH</b> (the Fenton reaction), which triggers <b>chain lipid peroxidation</b> in the membrane (product: malondialdehyde). <b>Vitamin E</b> breaks the chain, and <b>vitamin C</b> regenerates vitamin E. Switch off defenses and add stress.',
-    burst: '<b>Radicals as weapons.</b> Neutrophils and macrophages kill engulfed microbes with an “oxidative burst”: <b>NADPH oxidase</b> in the phagosome membrane (orange) produces superoxide, which gives rise to H₂O₂, and <b>myeloperoxidase</b> (green granules) makes <b>hypochlorous acid HOCl</b> — the active ingredient of chlorine bleach — from H₂O₂ and chloride. Click “Engulf a bacterium”.',
+    ros: '<b>Reactive oxygen species and their defenses.</b> <b>SOD</b> converts superoxide O₂•⁻ into H₂O₂; <b>catalase</b> and <b>glutathione peroxidase</b> convert H₂O₂ into water. With Fe²⁺, H₂O₂ gives <b>•OH</b> (the Fenton reaction), which triggers lipid peroxidation in the membrane. <b>Vitamin E</b> breaks the chain, and <b>vitamin C</b> regenerates it. Switch off defenses and add stress.',
+    burst: '<b>Radicals as weapons.</b> Neutrophils and macrophages kill microbes with an “oxidative burst”: <b>NADPH oxidase</b> of the phagosome (orange) produces superoxide, which gives rise to H₂O₂, and <b>myeloperoxidase</b> (green granules) makes <b>hypochlorous acid HOCl</b> from H₂O₂ and chloride — the active ingredient of bleach. Click “Engulf a bacterium”.',
     eat: '<b>Phagocytosis and the respiratory burst.</b> Bacteria are surrounded by membrane and end up in a phagosome. The cell’s oxygen consumption rises 50–100-fold — not for respiration, but to produce ROS. Superoxide, H₂O₂ and HOCl destroy bacterial membranes and proteins.',
     cgd: '<b>Chronic granulomatous disease</b> is an inherited defect of NADPH oxidase. Phagocytes engulf bacteria but cannot kill them: there is no burst, and the microbes survive inside the cells. Patients suffer severe recurrent infections from childhood.',
   };
   const labels = [
-    ...PATHS.map((p) => ({ text: p.name, pos: p.pos.clone().add(V3(-0.75, 1.15, 0)).add(V3(0.5, 0, 0)), color: p.col, show: () => st.labels && st.mode === 'paths' })),
+    ...PATHS.map((p) => ({ text: p.name, pos: p.pos.clone().add(V3(-0.75, DK && p.pos.y < 0 ? 1.05 : 1.15, 0)).add(V3(DK && p.pos.x < 0 && p.pos.y < 0 ? 0.7 : 0.5, 0, 0)), color: p.col, show: () => st.labels && st.mode === 'paths' })),
     { text: 'O₂', pos: V3(1.15, 0.85, 0.3), color: C.o2, show: () => st.labels && st.mode === 'paths' },
-    { text: 'H₂O', pos: V3(-2.75, 0.7, 0.3), color: '#7FE0A0', show: () => st.labels && st.mode === 'paths' },
-    { text: 'RH → ROH', pos: V3(3.15, 0.7, 0.3), color: '#7FD6FF', show: () => st.labels && st.mode === 'paths' },
+    { text: 'H₂O', pos: V3(-2.75, DK ? 0.82 : 0.7, 0.3), color: '#7FE0A0', show: () => st.labels && st.mode === 'paths' },
+    { text: 'RH → ROH', pos: V3(3.15, DK ? 0.82 : 0.7, 0.3), color: '#7FD6FF', show: () => st.labels && st.mode === 'paths' },
     { text: 'H₂O₂', pos: V3(-2.75, -1.9, 0.3), color: '#F2C14E', show: () => st.labels && st.mode === 'paths' },
     { text: 'O₂•⁻', pos: V3(3.15, -1.9, 0.3), color: '#FF6A5A', show: () => st.labels && st.mode === 'paths' },
     { text: 'O₂', pos: N.o2.clone().add(V3(40 - 0.2, 0.5, 0)), color: C.o2, show: () => st.labels && st.mode === 'ros' },

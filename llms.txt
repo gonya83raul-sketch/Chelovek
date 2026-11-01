@@ -40,7 +40,7 @@
 - [Гемоглобин и перенос кислорода](https://gonya83raul-sketch.github.io/Chelovek/hemoglobin.html): Около 270 миллионов молекул гемоглобина в каждом эритроците. Как этот белок забирает кислород в лёгких и вовремя отдаёт его тканям.
 - [Обмен гема и желтухи](https://gonya83raul-sketch.github.io/Chelovek/heme.html): Как клетка собирает гем из глицина и сукцинил-КоА — и во что он превращается, когда эритроцит отслужил свои 120 дней.
 - [Кровь: pH, белки плазмы, свёртывание](https://gonya83raul-sketch.github.io/Chelovek/bloodchem.html): Как кровь держит pH с точностью до сотых, что переносят белки плазмы и как за минуты затягивается рана.
-- [Печень: обезвреживание, алкоголь, парацетамол](https://gonya83raul-sketch.github.io/Chelovek/liver.html): Главная химическая фабрика тела: всё, что всосалось в кишечнике, сначала проходит через неё — и лекарства, и алкоголь, и яды.
+- [Печень: обезвреживание, алкоголь, парацетамол](https://gonya83raul-sketch.github.io/Chelovek/liver.html): Главная химическая фабрика тела: почти всё, что всосалось в кишечнике, сначала проходит через неё — и лекарства, и алкоголь, и яды.
 - [Азот крови, буферы и кислотно-основное состояние](https://gonya83raul-sketch.github.io/Chelovek/nitrogen.html): По нескольким числам из пробирки — мочевине, креатинину, pH и CO₂ — врач видит, как работают почки, печень и лёгкие.
 
 ## Клетка
@@ -126,7 +126,7 @@
 - [Hemoglobin and oxygen transport](https://gonya83raul-sketch.github.io/Chelovek/hemoglobin.en.html): About 270 million hemoglobin molecules in every red blood cell. How this protein picks up oxygen in the lungs and releases it to the tissues right when they need it.
 - [Heme metabolism and jaundice](https://gonya83raul-sketch.github.io/Chelovek/heme.en.html): How the cell assembles heme from glycine and succinyl-CoA — and what it turns into once a red blood cell has served its 120 days.
 - [Blood: pH, plasma proteins, clotting](https://gonya83raul-sketch.github.io/Chelovek/bloodchem.en.html): How blood holds its pH to within hundredths, what plasma proteins carry, and how a wound seals within minutes.
-- [Liver: detoxification, alcohol, acetaminophen](https://gonya83raul-sketch.github.io/Chelovek/liver.en.html): The body’s main chemical factory: everything absorbed in the intestine passes through it first — drugs, alcohol and poisons alike.
+- [Liver: detoxification, alcohol, acetaminophen](https://gonya83raul-sketch.github.io/Chelovek/liver.en.html): The body’s main chemical factory: almost everything absorbed in the intestine passes through it first — drugs, alcohol and poisons alike.
 - [Blood nitrogen, buffers and acid–base balance](https://gonya83raul-sketch.github.io/Chelovek/nitrogen.en.html): From a few numbers from a test tube — urea, creatinine, pH and CO₂ — a doctor can see how the kidneys, liver and lungs are working.
 
 ### Cell

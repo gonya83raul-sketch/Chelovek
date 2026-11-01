@@ -1,4 +1,4 @@
-import { Sparks, THREE, V3, __set_rnd, bodyShell, button, clamp, ell3, flyStep, flyTarget, glassMat, glowNucleus, group, h, infoBox, makeControls, mulberry, organMat, rand, rnd, scopeShow, seg, toggle } from '../core.js';
+import { LANG, Sparks, THREE, V3, __set_rnd, bodyShell, button, clamp, ell3, flyStep, flyTarget, glassMat, glowNucleus, group, h, infoBox, makeControls, mulberry, organMat, rand, rnd, scopeShow, seg, toggle } from '../core.js';
 import { BIO_MOL, MOL, bioStage, flowArrow, molFit, molMesh, plotAxes } from './kit.js';
 Object.assign(BIO_MOL, {"urate":{"name":"Мочевая кислота","el":"O C N C O C N C O N C N H H H H","xyz":"wP6AAAAALP9GAAAAMP+6/wAArP94/wAAsf/+/gAAJADK/wAAqACk/wAA9QAZAAAAbAEfAAAAnACEAAAAHABPAAAAo/+RAAAA2v6E/wAAzQBI/wAAtQDkAAAAnf/2AAAA","b":"AAABAAEAAgACAAMAAwAEAAMABQAFAAYABgAHAAcACAAHAAkACQAKAAUACgAKAAsAAQALAAIADAAGAA0ACQAOAAsADwA=","o":"21121112112111111"},"creatinine":{"name":"Креатинин","el":"C N C C O N C N H H H H H H H","xyz":"M/+QAAAArf9DAAAAMwB8AAAAkwAFAAAACgELAAAAQwCM/wAAt/+z/wAAVf9i/wAAM//WAFQA3f5NAAkAKv/IAKP/QwC4AKf/QwC4AFkAZQAv/wAAY//+/gAA","b":"AAABAAEAAgACAAMAAwAEAAMABQAFAAYAAQAGAAYABwAAAAgAAAAJAAAACgACAAsAAgAMAAUADQAHAA4A","o":"111211121111111"},"gly":{"name":"Глицин","el":"N C C O O H H H H H","xyz":"vQDw/wsAUABOAPL/yv8FAP7/Y/9FAAkAxv93//v/DQEiAC8A1gDC/7X/WwB4AI7/VACfADwA8/9K/0QA","b":"AAABAAEAAgACAAMAAgAEAAAABQAAAAYAAQAHAAEACAAEAAkA","o":"112111111"},"urea":{"name":"Мочевина","el":"N C N O H H H H","xyz":"gv9DAAAAAAD6/wAAfgBDAAAAAACA/wAAgv+oAAAAKv8RAAAAfgCoAAAA1gARAAAA","b":"AAABAAEAAgABAAMAAAAEAAAABQACAAYAAgAHAA==","o":"1121111"},"co2":{"name":"CO₂","el":"O C O","xyz":"hv8AAAAAAAAAAAAAegAAAAAA","b":"AAABAAEAAgA=","o":"22"},"nh3":{"name":"Аммиак","el":"N H H H","xyz":"GQAEAAMA8/9JAMP/6f8LAFwACwCo/93/","b":"AAABAAAAAgAAAAMA","o":"111"},"h2co3":{"name":"Угольная кислота","el":"O C O O H H","xyz":"hf9CAAAAAAD7/wAAAACB/wAAewBCAAAANf8MAAgAdwCfAB0A","b":"AAABAAEAAgABAAMAAAAEAAMABQA=","o":"12111"},"hco3":{"name":"Гидрокарбонат","el":"O C O O H","xyz":"hf9CAAAAAAD7/wAAAACB/wAAewBCAAAAi/+iAPT/","b":"AAABAAEAAgABAAMAAAAEAA==","o":"1211"}});
 
@@ -154,18 +154,18 @@ function makeNitrogen() {
       return;
     }
     scopeShow(true); const A = plotAxes(ctx, w, h, { title: 'доля от нормы (черта — норма)', x0: 10 });
-    const S = NPNS[st.npn]; NP.forEach((k, i) => { const y = 24 + i * (h - 34) / NP.length, v = S[k.id]; ctx.fillStyle = 'rgba(255,255,255,.08)'; ctx.fillRect(A.X(0.32), y, A.X(1) - A.X(0.32), 6); ctx.fillStyle = k.col; ctx.fillRect(A.X(0.32), y, (A.X(1) - A.X(0.32)) * clamp(v / 5, 0, 1), 6); ctx.fillStyle = 'rgba(255,255,255,.5)'; ctx.fillRect(A.X(0.32 + 0.68 * 0.2), y - 2, 1, 10); ctx.fillStyle = k.col; ctx.font = '500 9px JetBrains Mono, monospace'; ctx.fillText(k.name, A.X(0), y + 6); });
+    const S = NPNS[st.npn], u0 = w < 280 ? 0.46 : 0.32; NP.forEach((k, i) => { const y = 24 + i * (h - 34) / NP.length, v = S[k.id]; ctx.fillStyle = 'rgba(255,255,255,.08)'; ctx.fillRect(A.X(u0), y, A.X(1) - A.X(u0), 6); ctx.fillStyle = k.col; ctx.fillRect(A.X(u0), y, (A.X(1) - A.X(u0)) * clamp(v / 5, 0, 1), 6); ctx.fillStyle = 'rgba(255,255,255,.5)'; ctx.fillRect(A.X(u0 + (1 - u0) * 0.2), y - 2, 1, 10); ctx.fillStyle = k.col; ctx.font = '500 9px JetBrains Mono, monospace'; ctx.fillText(k.name, A.X(0), y + 6); });
   }
 
   const NPNTXT = {
-    norm: '<b>Остаточный (небелковый) азот</b> — азот всего, что остаётся в крови после осаждения белков: около 14–28 ммоль/л. Половина — <b>мочевина</b> (её делает печень из аммиака), остальное — аминокислоты, <b>мочевая кислота</b> (распад пуринов), <b>креатинин</b> (из креатинфосфата мышц, его образуется почти постоянное количество), немного аммиака. Всё это фильтруется в почечном клубочке; мочевина и креатинин уходят с мочой, а аминокислоты почти целиком и мочевая кислота большей частью всасываются обратно в канальцах. Креатинин и мочевина — главные показатели работы почек.',
+    norm: '<b>Остаточный (небелковый) азот</b> — азот всего, что остаётся в крови после осаждения белков: 14–28 ммоль/л. Половина — <b>мочевина</b> (её делает печень из аммиака), остальное — аминокислоты, <b>мочевая кислота</b>, <b>креатинин</b> (из мышц) и немного аммиака. Всё фильтруется в клубочке; мочевина и креатинин уходят с мочой, остальное всасывается обратно.',
     renal: '<b>Почечная недостаточность</b> — ретенционная азотемия: клубочки фильтруют мало, и мочевина с креатинином копятся в крови (креатинин — особенно, по нему считают скорость фильтрации, СКФ). Растёт и мочевая кислота, задерживаются калий, фосфат, кислоты — ацидоз. При тяжёлой форме — уремия, нужен диализ.',
     liver: '<b>Печёночная недостаточность</b> — печень не превращает аммиак в мочевину: мочевина <b>падает</b>, а аммиак и аминокислоты растут. Аммиак токсичен для мозга — печёночная энцефалопатия (спутанность, «хлопающий» тремор, кома).',
     catab: '<b>Распад белков</b> (голодание, тяжёлые ожоги, лихорадка, кровотечение в кишечник, приём глюкокортикоидов) — продукционная азотемия: мочевины образуется больше, почки справляются, но её уровень растёт.',
     gout: '<b>Подагра</b> — мочевой кислоты больше, чем может раствориться: при уровне выше ~420 мкмоль/л (≈7 мг/дл, предел растворимости урата) кристаллы урата натрия откладываются в суставах (приступ боли в большом пальце стопы), в почках — камни. Цель лечения — урат ниже 360 мкмоль/л.',
   };
   const BTXT = {
-    open: '<b>Гидрокарбонатный буфер</b> — главный во внеклеточной жидкости: H⁺ + HCO₃⁻ ⇄ H₂CO₃ ⇄ CO₂ + H₂O. Добавьте кислоту: красные H⁺ захватываются гидрокарбонатом, получается угольная кислота, она распадается, и <b>CO₂ выдыхается лёгкими</b> (пузырьки). Система открытая — продукт уходит, и pH почти не меняется. Почки затем восстанавливают HCO₃⁻ и выводят H⁺ с мочой. pH = 6,1 + lg([HCO₃⁻] / 0,03·pCO₂).',
+    open: '<b>Гидрокарбонатный буфер</b> — главный во внеклеточной жидкости: H⁺ + HCO₃⁻ ⇄ H₂CO₃ ⇄ CO₂ + H₂O. Добавьте кислоту: красные H⁺ захватываются гидрокарбонатом, угольная кислота распадается, и <b>CO₂ выдыхается лёгкими</b> (пузырьки). Система открытая, pH почти не меняется; почки восстанавливают HCO₃⁻. pH = 6,1 + lg([HCO₃⁻] / 0,03·pCO₂).',
     closed: '<b>Закрытая система</b> (крышка): CO₂ не может уйти — угольная кислота копится, и тот же буфер держит pH гораздо хуже. Так бывает при плохом дыхании: при остановке вентиляции гидрокарбонатный буфер почти бесполезен. Поэтому его сила — в связке с лёгкими.',
   };
   const ABGTXT = {
@@ -216,9 +216,9 @@ function makeNitrogen() {
   }
   const f2 = (v) => v.toFixed(2).replace('.', ','), f0 = (v) => Math.round(v);
   function stats() {
-    if (st.mode === 'buffer') return [['pH', f2(st.pH), ''], ['HCO₃⁻', f0(st.HCO3), 'усл.'], ['H₂CO₃', f2(st.H2CO3).replace(',00', ''), 'усл.']];
+    if (st.mode === 'buffer') return [['pH', f2(st.pH), ''], ['HCO₃⁻', f0(st.HCO3), 'усл.'], ['H₂CO₃', f2(st.H2CO3).replace(/[.,]00$/, ''), 'усл.']];
     if (st.mode === 'abg') return [['pH', f2(st.pH), ''], ['pCO₂', f0(st.pCO2), 'мм рт. ст.'], ['HCO₃⁻', f0(st.bic), 'ммоль/л']];
-    const S = NPNS[st.npn]; return [['Мочевина', (5.5 * S.urea).toFixed(1).replace('.', ','), 'ммоль/л'], ['Креатинин', f0(85 * S.crea), 'мкмоль/л'], ['Мочевая к-та', f0(300 * S.urate), 'мкмоль/л'], ['Аммиак', f0(25 * S.nh3), 'мкмоль/л']];
+    const S = NPNS[st.npn]; return [['Мочевина', (5.5 * S.urea).toFixed(1).replace('.', LANG === 'ru' ? ',' : '.'), 'ммоль/л'], ['Креатинин', f0(85 * S.crea), 'мкмоль/л'], ['Мочевая к-та', f0(300 * S.urate), 'мкмоль/л'], ['Аммиак', f0(25 * S.nh3), 'мкмоль/л']];
   }
   const self = {
     mobZoom: 1.0, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#9FE0FF',
