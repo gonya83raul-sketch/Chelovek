@@ -24,7 +24,7 @@ function makeMembrane() {
   const scene = bioStage({ rim: 0xf2c14e });
   const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: кадр уходит из-под заголовка и описания (телефон — прежний ракурс)
   const CSP = DK ? 2.0 : 2.7;   /* шаг ряда «Классы липидов» */
-  const VIEW = { bilayer: DK ? flyTarget(V3(-1.1, -0.3, 1.5), V3(3.8, 0.9, 17.2)) : flyTarget(V3(0.4, -0.7, 1.5), V3(4.0, 0.25, 13.6)), fa: DK ? flyTarget(V3(37.2, -1.2, 0), V3(37.2, 1.7, 19.5)) : flyTarget(V3(39.3, -1.2, 0), V3(39.3, 1.8, 19.9)), classes: DK ? flyTarget(V3(76.95, -1.2, 0), V3(76.95, 1.55, 19)) : flyTarget(V3(80, -1.2, 0), V3(80, 0.9, 14.5)), digest: flyTarget(V3(120, -1.2, 0), V3(120.4, 0.6, 13.5)) };
+  const VIEW = { bilayer: DK ? flyTarget(V3(-1.1, -0.3, 1.5), V3(3.8, 0.9, 17.2)) : flyTarget(V3(0.4, -0.7, 1.5), V3(4.0, 0.25, 13.6)), fa: DK ? flyTarget(V3(37.2, -1.2, 0), V3(37.2, 1.7, 19.5)) : flyTarget(V3(39.3, -1.2, 0), V3(39.3, 1.8, 19.9)), classes: DK ? flyTarget(V3(76.95, -1.2, 0), V3(76.95, 1.55, 19)) : flyTarget(V3(79.2, -1.2, 0), V3(79.8, 0.8, 21)), digest: DK ? flyTarget(V3(118.4, -1.6, 0), V3(118.8, 0.2, 15)) : flyTarget(V3(119.2, -0.3, 0), V3(119.7, 1.7, 17.6)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.bilayer.pos);
   const controls = makeControls(camera, VIEW.bilayer.target); controls.minDistance = 2; controls.maxDistance = 40;
   const fx = new Sparks(1400, 0.08); scene.add(fx.obj);
@@ -52,7 +52,7 @@ function makeMembrane() {
   /* ---------- 4. переваривание ---------- */
   const G4 = new THREE.Group(); G4.position.set(120, 0, 0); scene.add(G4);
   const oilMat = new THREE.MeshPhysicalMaterial({ color: 0xc89a30, roughness: 0.1, clearcoat: 1, transmission: 0, transparent: true, opacity: 0.85, emissive: 0x6a4a10, emissiveIntensity: 0.15 });
-  const drops = []; for (let k = 0; k < 18; k++) { const m = new THREE.Mesh(new THREE.SphereGeometry(1, 28, 20), oilMat); G4.add(m); drops.push({ m, home: V3(rand(-3.8, 3.8), rand(-0.5, 2.4), rand(-1, 1)), r: rand(0.18, 0.32) }); }
+  const drops = []; for (let k = 0; k < 18; k++) { const m = new THREE.Mesh(new THREE.SphereGeometry(1, 28, 20), oilMat); G4.add(m); drops.push({ m, home: V3(rand(-3.6, 3.4), rand(-0.6, 1.9), rand(-1, 1)), r: rand(0.18, 0.32) }); }
   const big = new THREE.Mesh(new THREE.SphereGeometry(1.6, 48, 32), oilMat); big.position.set(0, 0.9, 0); G4.add(big);
   const bileMat = new THREE.MeshBasicMaterial({ color: 0x3f8a5a }); const BILE = new THREE.InstancedMesh(new THREE.CapsuleGeometry(0.03, 0.09, 4, 6), bileMat, 400); G4.add(BILE);
   const lipases = []; for (let k = 0; k < 5; k++) { const m = new THREE.Mesh(blobGeo(0.22, 0.18, 0.2, k + 40, 0.12, 3), protMat('#FF8AB0', 0.45)); G4.add(m); lipases.push(m); }
@@ -82,10 +82,10 @@ function makeMembrane() {
     fx.update(dt);
   }
   const TXT = {
-    bilayer: '<b>Мембрана</b> — двойной слой фосфолипидов. Это реальный фрагмент из компьютерной модели молекулярной динамики: 128 молекул фосфатидилхолина, каждый атом — шарик (<span style="color:#FF9A30">●</span> фосфор, <span style="color:#4F74FF">●</span> азот холина, <span style="color:#F04848">●</span> кислород; бежевое — углеводородные хвосты). Головы смотрят в воду, хвосты прячутся внутрь — толщина около 4 нм. Между фосфолипидами встроен <b>холестерин</b> (жёлтые), а насквозь проходит интегральный белок — <b>родопсин</b> (PDB 1U19). Мембрана жидкая: липиды за секунду проходят микрометры.',
-    fa: '<b>Высшие жирные кислоты</b> — длинные углеводородные цепи с карбоксильной группой (слева на модели — красные атомы кислорода). <b>Насыщенные</b> — без двойных связей, прямые. <b>Ненасыщенные</b> содержат двойные связи, природные — в цис-форме, с изломом. Нажмите на кислоту.',
+    bilayer: '<b>Мембрана</b> — двойной слой фосфолипидов; показан реальный фрагмент молекулярной динамики: 128 молекул фосфатидилхолина (<span style="color:#FF9A30">●</span> фосфор, <span style="color:#4F74FF">●</span> азот, <span style="color:#F04848">●</span> кислород; бежевое — хвосты). Головы смотрят в воду, хвосты прячутся внутрь — толщина около 4 нм. Между липидами — <b>холестерин</b> (жёлтый), насквозь — белок <b>родопсин</b> (PDB 1U19). Мембрана жидкая.',
+    fa: '<b>Высшие жирные кислоты</b> — длинные углеводородные цепи с карбоксильной группой (вверху на модели — красные атомы кислорода). <b>Насыщенные</b> — без двойных связей, прямые. <b>Ненасыщенные</b> содержат двойные связи, природные — в цис-форме, с изломом. Нажмите на кислоту.',
     classes: '<b>Классы липидов</b>: объединяет их нерастворимость в воде. Нажмите на молекулу.',
-    digest: '<b>Переваривание жиров</b> идёт в тонкой кишке. Желчные кислоты (зелёные) из печени дробят большую каплю жира на мелкие — <b>эмульгируют</b>, увеличивая поверхность в тысячи раз. <b>Панкреатическая липаза</b> с колипазой (розовые) отщепляет жирные кислоты, оставляя 2-моноацилглицерин. Вместе с желчными кислотами продукты образуют <b>мицеллы</b> и всасываются клетками ворсинок; там ТАГ собираются заново и упаковываются в <b>хиломикроны</b>, которые уходят в лимфу, а не в кровь. Без желчи (закупорка протока) жир выходит с калом — стеаторея — и теряются жирорастворимые витамины.',
+    digest: '<b>Переваривание жиров</b> идёт в тонкой кишке. Желчные кислоты (зелёные) <b>эмульгируют</b> жир — дробят каплю на мелкие. <b>Панкреатическая липаза</b> с колипазой (розовые) отщепляет жирные кислоты; с желчными кислотами они образуют <b>мицеллы</b> и всасываются, а в клетках ворсинок собираются в <b>хиломикроны</b> и уходят в лимфу. Без желчи — стеаторея.',
   };
   const labels = [
     { text: 'полярные головы', pos: DK ? V3(2.9, 2.1, 2.4) : V3(-2.5, 2.3, 2.4), color: '#FF9A30', show: () => st.labels && st.mode === 'bilayer' },
@@ -95,7 +95,7 @@ function makeMembrane() {
     { text: 'вода', pos: V3(2.0, 2.8, 0), color: '#7FB8E0', show: () => st.labels && st.mode === 'bilayer' },
     ...MB_FA.map((f, k) => ({ text: f.n, pos: V3(40 + (k - 3) * 1.55, -1.75, 0), color: f.id === 'elaidic' ? '#FF8A5C' : /ω/.test(f.n) ? '#7FE0A0' : '#F2E6C8', show: () => st.labels && st.mode === 'fa' })),
     ...MB_CL.map((c, k) => ({ text: c.name, pos: V3(80 + (k - 2) * CSP - 0.6, -1.65, 0), color: '#F2C14E', show: () => st.labels && st.mode === 'classes' })),
-    { text: 'капли, покрытые желчными кислотами', pos: V3(120 - 1.5, 3.0, 0), color: '#7FE0A0', show: () => st.labels && st.mode === 'digest' && st.cyc % 14 > 4 },
+    { text: 'капли, покрытые желчными кислотами', pos: V3(120 - 1.5, DK ? 2.5 : 3.0, 0), color: '#7FE0A0', show: () => st.labels && st.mode === 'digest' && st.cyc % 14 > 4 },
     { text: 'липаза', pos: V3(120 + 2.6, 2.6, 0), color: '#FF8AB0', show: () => st.labels && st.mode === 'digest' && st.cyc % 14 > 4.5 && st.cyc % 14 < 11 },
     { text: 'ворсинки кишки', pos: V3(120 - 4.6, -2.9, 0.3), color: '#E8A0A0', show: () => st.labels && st.mode === 'digest' },
   ];
