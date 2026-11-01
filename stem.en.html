@@ -33,28 +33,28 @@
 <meta name="atlas-pages" content="1">
 <script type="importmap">
 { "imports": {
-  "three": "./app66/vendor/three.module.min.js",
-  "three/addons/": "./app66/vendor/jsm/",
+  "three": "./app67/vendor/three.module.min.js",
+  "three/addons/": "./app67/vendor/jsm/",
   "three/addons/libs/draco/gltf/": "./models/draco-r160/"
 } }
 </script>
-<link rel="modulepreload" href="app66/en/core.js">
-<link rel="modulepreload" href="app66/vendor/three.module.min.js">
-<link rel="modulepreload" href="app66/vendor/jsm/controls/OrbitControls.js">
-<link rel="modulepreload" href="app66/vendor/jsm/environments/RoomEnvironment.js">
-<link rel="modulepreload" href="app66/vendor/jsm/loaders/GLTFLoader.js">
-<link rel="modulepreload" href="app66/vendor/jsm/postprocessing/EffectComposer.js">
-<link rel="modulepreload" href="app66/vendor/jsm/postprocessing/MaskPass.js">
-<link rel="modulepreload" href="app66/vendor/jsm/postprocessing/OutputPass.js">
-<link rel="modulepreload" href="app66/vendor/jsm/postprocessing/Pass.js">
-<link rel="modulepreload" href="app66/vendor/jsm/postprocessing/RenderPass.js">
-<link rel="modulepreload" href="app66/vendor/jsm/postprocessing/ShaderPass.js">
-<link rel="modulepreload" href="app66/vendor/jsm/postprocessing/UnrealBloomPass.js">
-<link rel="modulepreload" href="app66/vendor/jsm/shaders/CopyShader.js">
-<link rel="modulepreload" href="app66/vendor/jsm/shaders/LuminosityHighPassShader.js">
-<link rel="modulepreload" href="app66/vendor/jsm/shaders/OutputShader.js">
-<link rel="modulepreload" href="app66/vendor/jsm/utils/BufferGeometryUtils.js">
-<link rel="modulepreload" href="app66/en/s/stem.js">
+<link rel="modulepreload" href="app67/en/core.js">
+<link rel="modulepreload" href="app67/vendor/three.module.min.js">
+<link rel="modulepreload" href="app67/vendor/jsm/controls/OrbitControls.js">
+<link rel="modulepreload" href="app67/vendor/jsm/environments/RoomEnvironment.js">
+<link rel="modulepreload" href="app67/vendor/jsm/loaders/GLTFLoader.js">
+<link rel="modulepreload" href="app67/vendor/jsm/postprocessing/EffectComposer.js">
+<link rel="modulepreload" href="app67/vendor/jsm/postprocessing/MaskPass.js">
+<link rel="modulepreload" href="app67/vendor/jsm/postprocessing/OutputPass.js">
+<link rel="modulepreload" href="app67/vendor/jsm/postprocessing/Pass.js">
+<link rel="modulepreload" href="app67/vendor/jsm/postprocessing/RenderPass.js">
+<link rel="modulepreload" href="app67/vendor/jsm/postprocessing/ShaderPass.js">
+<link rel="modulepreload" href="app67/vendor/jsm/postprocessing/UnrealBloomPass.js">
+<link rel="modulepreload" href="app67/vendor/jsm/shaders/CopyShader.js">
+<link rel="modulepreload" href="app67/vendor/jsm/shaders/LuminosityHighPassShader.js">
+<link rel="modulepreload" href="app67/vendor/jsm/shaders/OutputShader.js">
+<link rel="modulepreload" href="app67/vendor/jsm/utils/BufferGeometryUtils.js">
+<link rel="modulepreload" href="app67/en/s/stem.js">
 </head>
 <body>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -403,7 +403,7 @@ dialog.finder::backdrop{background:rgba(6,5,8,.72)}
       </section>
       <section class="notes" id="notes">
       <div><h2>What the brainstem is made of</h2>
-        <p>The <b>medulla oblongata</b> resembles a truncated cone about 4 cm long (from 1.5 to 2.5 cm wide). In front are the pyramids and olives; behind is the floor of the fourth ventricle, the rhomboid fossa. The <b>pons</b> is almost square, 2.5–3 cm; it becomes a separate structure only in mammals, together with the cortex and cerebellum: through the pontine nuclei the cortex sends copies of motor programs to the cerebellum. The <b>midbrain</b> is small but important: the corpora quadrigemina, the aqueduct with the periaqueductal gray, the red nucleus and the substantia nigra.</p>
+        <p>The <b>medulla oblongata</b> resembles a truncated cone about 3 cm long (from 1.5 to 2.5 cm wide). In front are the pyramids and olives; behind is the floor of the fourth ventricle, the rhomboid fossa. The <b>pons</b> is almost square, 2.5–3 cm; it becomes a separate structure only in mammals, together with the cortex and cerebellum: through the pontine nuclei the cortex sends copies of motor programs to the cerebellum. The <b>midbrain</b> is small but important: the corpora quadrigemina, the aqueduct with the periaqueductal gray, the red nucleus and the substantia nigra.</p>
         <h3>Genes</h3>
         <p>The parts of the brainstem are laid down by homeotic genes: Pax, Otx2, Wnt1, Gbx2, Fgf8, Shh, Hox. In a newer classification, the medulla and pons are assembled from 11 stereotyped units.</p>
         <h3>Evolution</h3>
@@ -454,7 +454,7 @@ if (!P) { const q = new URLSearchParams(location.search).get('lang'); let m = nu
   else if (want === 'en') { let t = 0; try { t = +sessionStorage.getItem('redir') || 0; sessionStorage.setItem('redir', String(Date.now())); } catch (e) { /* без памяти */ }
     if (Date.now() - t > 10000) go = 'index.en.html' + (new URLSearchParams(location.search).has('rec') ? '?rec' : '') + location.hash; else L = 'en'; }
   else if (!want && !(navigator.languages || [navigator.language || '']).some((l) => /^(ru|uk|be|kk)/i.test(l))) window.__LANGNOTE = 1; }
-if (go) location.replace(go); else { document.documentElement.lang = L; import(L === 'en' ? './app66/en/core.js' : './app66/core.js').catch((e) => {
+if (go) location.replace(go); else { document.documentElement.lang = L; import(L === 'en' ? './app67/en/core.js' : './app67/core.js').catch((e) => {
   console.error(e); const st = document.getElementById('stage'); if (!st || st.querySelector('.fallback')) return;
   const d = document.createElement('div'), p = document.createElement('p'), b = document.createElement('button'); d.className = 'fallback'; d.setAttribute('role', 'alert');
   p.textContent = L === 'en' ? 'Could not load the atlas: no connection, or the site files are unavailable. The topic text is below.' : 'Не удалось загрузить атлас: нет сети или файлы сайта недоступны. Текст темы — ниже.';

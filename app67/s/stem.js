@@ -164,8 +164,8 @@ function makeStem() {
   const st = { t: 0, mode: 'floors', labels: true, cere: false, park: false, fly: null, rot: true, breath: 0, beat: 0, trace: [], orT: -9, headYaw: 0, msg: null };
   function setMode(m) {
     st.mode = m; refs.modeSeg && refs.modeSeg.sync(); st.msg = null; refs.setInfo && refs.setInfo();
-    floors.visible = m === 'floors'; rf.visible = m === 'rf'; nuc.visible = m === 'nuclei'; paths.visible = m === 'paths'; orient.visible = m === 'orient'; cnn.visible = m === 'floors' || m === 'rf';
-    if (m === 'orient') { st.rot = false; refs.rot && refs.rot.sync(); st.fly = flyTarget(V3(0, -0.4, 0.5), V3(-8.5, 4.5, 11.5)); } else st.fly = HOME;
+    floors.visible = m === 'floors'; rf.visible = m === 'rf'; nuc.visible = m === 'nuclei'; paths.visible = m === 'paths'; orient.visible = m === 'orient'; cnn.visible = m === 'floors' || m === 'rf'; csfM.opacity = m === 'paths' || m === 'orient' ? 0.12 : 0.6;
+    if (m === 'orient') { st.rot = false; refs.rot && refs.rot.sync(); st.fly = flyTarget(V3(0, -0.4, 0.5), V3(-8.5, 4.5, 11.5)); } else st.fly = (m === 'nuclei' || m === 'paths') && matchMedia('(max-width:700px)').matches ? flyTarget(V3(0, 0.55, 0), V3(-9.6, 5.5, 12.0)) : HOME;
   }
   function orientGo() { if (st.mode !== 'orient') setMode('orient'); st.orT = st.t; }
   const C_RESP = new THREE.Color(0x6fc3ff), C_VASO = new THREE.Color(0xff6a5a), C_OR = new THREE.Color(0xf2c14e);
@@ -218,7 +218,7 @@ function makeStem() {
     { text: 'мост', pos: V3(1.3, 0.2, 0.6), show: () => st.labels },
     { text: 'продолговатый мозг', pos: V3(0.8, -1.6, 0.6), show: () => st.labels },
     { text: 'спинной мозг', pos: V3(0.5, -2.85, 0.3), show: () => st.labels },
-    { text: 'таламус', pos: V3(-0.2, 3.05, 0.75), color: '#b9a4ff', show: () => st.labels && !matchMedia('(max-width:700px)').matches },   /* телефон: висела в пустоте над стволом */
+    { text: 'таламус', pos: V3(-0.2, 3.05, 0.75), color: '#b9a4ff', show: () => false },   /* телефон: висела в пустоте над стволом */
     { text: 'четверохолмие', pos: V3(-0.9, 1.5, 0.45), color: '#F2C14E', show: () => st.labels && (st.mode === 'floors' || st.mode === 'orient') },
     { text: 'ромбовидная ямка', pos: V3(-0.7, -0.4, 0.2), color: '#6fc3ff', show: () => st.labels && st.mode === 'floors' && !st.cere },
     { text: 'основание', pos: V3(1.05, -1.6, 0.3), color: '#FF7A6A', show: () => st.labels && st.mode === 'floors' },
@@ -236,7 +236,7 @@ function makeStem() {
     { text: 'верхние холмики', pos: SC[0].clone().add(V3(-0.1, 0.12, 0.15)), color: '#F2C14E', show: () => st.labels && st.mode === 'orient' },
     { text: 'нижние холмики', pos: IC[0].clone().add(V3(-0.1, -0.12, 0.15)), color: '#7FD6C8', show: () => st.labels && st.mode === 'orient' },
     { text: 'текто-спинальный путь', pos: V3(0.15, -1.0, -0.25), color: '#F2C14E', show: () => st.labels && st.mode === 'orient' },
-    { text: 'поворот головы', pos: V3(2.6, -2.6, 0), show: () => st.labels && st.mode === 'orient' },
+    { text: 'поворот головы', pos: V3(3.1, -3.2, 0), show: () => st.labels && st.mode === 'orient' },
   ];
   const refs = {};
   function ui(el) {
@@ -259,7 +259,7 @@ function makeStem() {
     if (k === 'r' || k === 'к') { refs.rot.click(); return true; } if (k === 'n' || k === 'т') { refs.lab.click(); return true; }
     return false;
   }
-  function stats() { if (st.mode === 'rf') return [['Дыхание', 15, 'в мин'], ['Пульс', 70, 'уд/мин']]; return [['Продолговатый', '≈4', 'см'], ['Мост', '2,5–3', 'см']]; }
+  function stats() { if (st.mode === 'rf') return [['Дыхание', 15, 'в мин'], ['Пульс', 70, 'уд/мин']]; return [['Продолговатый', '≈3', 'см'], ['Мост', '2,5–3', 'см']]; }
   setMode('floors');
   const self = {
     labelBg: true, mobZoom: 0.6, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#9FE0C0',
@@ -267,7 +267,7 @@ function makeStem() {
     lede: 'Продолговатый и средний мозг — древние отделы, общие для всех позвоночных; мост как отдельный отдел есть только у млекопитающих. Здесь центры дыхания и сердца, сна и бодрствования, и все пути между мозгом и телом.',
     notes: `
       <div><h2>Из чего состоит ствол</h2>
-        <p><b>Продолговатый мозг</b> похож на усечённый конус длиной около 4 см (ширина от 1,5 до 2,5 см). Спереди — пирамиды и оливы, сзади — дно IV желудочка, ромбовидная ямка. <b>Мост</b> почти квадратный, 2,5–3 см; он обособляется только у млекопитающих вместе с корой и мозжечком: через собственные ядра моста кора сбрасывает в мозжечок копии двигательных программ. <b>Средний мозг</b> невелик, но важен: четверохолмие, водопровод с центральным серым веществом, красное ядро и чёрная субстанция.</p>
+        <p><b>Продолговатый мозг</b> похож на усечённый конус длиной около 3 см (ширина от 1,5 до 2,5 см). Спереди — пирамиды и оливы, сзади — дно IV желудочка, ромбовидная ямка. <b>Мост</b> почти квадратный, 2,5–3 см; он обособляется только у млекопитающих вместе с корой и мозжечком: через собственные ядра моста кора сбрасывает в мозжечок копии двигательных программ. <b>Средний мозг</b> невелик, но важен: четверохолмие, водопровод с центральным серым веществом, красное ядро и чёрная субстанция.</p>
         <h3>Гены</h3>
         <p>Отделы ствола закладывают гомеозисные гены: Pax, Otx2, Wnt1, Gbx2, Fgf8, Shh, Hox. По новой классификации продолговатый мозг и мост собираются из 11 стереотипных блоков.</p>
         <h3>Эволюция</h3>

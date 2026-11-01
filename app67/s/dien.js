@@ -177,7 +177,7 @@ function makeDien() {
     { text: 'ретикулярное ядро', pos: V3(0.3, 0.6, 1.15), color: '#8fb4ff', show: () => st.labels && st.mode === 'thal' && st.att !== 'none' },
     { text: 'III желудочек', pos: V3(0.3, -0.9, 0.05), color: '#8fd4ff', show: () => st.labels },
     { text: 'кора', pos: V3(-1.5, 2.3, -1.6), color: '#f2c7d6', show: () => st.labels && st.mode === 'thal' }, { text: 'таламус', pos: V3(-0.5, 0.58, 0.9), color: '#d8c8ff', left: true, show: () => st.labels && st.mode === 'thal' && st.att === 'none' }, { text: 'гипофиз', pos: ANT.clone().add(V3(0.2, -0.1, 0.25)), color: '#ffa070', show: () => st.labels && st.mode === 'thal' },
-    { text: 'эпифиз', pos: pineal.position.clone().add(V3(-0.1, 0.2, 0)), color: '#d8c090', show: () => st.labels },
+    { text: 'эпифиз', pos: pineal.position.clone().add(V3(-0.1, 0.2, 0)), color: '#d8c090', show: () => st.labels && (st.mode === 'hypo' || !matchMedia('(max-width:700px)').matches) },
     ...Object.entries(HN).map(([id, n]) => ({ text: n.name, pos: n.p[0].clone().add(V3(0.04, 0.08, 0.12)), color: n.c, show: () => st.labels && st.mode === 'hypo' })),
     { text: 'передняя доля гипофиза', pos: ANT.clone().add(V3(0.2, -0.1, 0.25)), color: '#ffa070', show: () => st.labels && st.mode === 'hypo' },
     { text: 'задняя доля', pos: POST.clone().add(V3(-0.2, -0.15, 0.2)), color: '#c0a0f0', show: () => st.labels && st.mode === 'hypo' },

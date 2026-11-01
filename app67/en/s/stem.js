@@ -164,8 +164,8 @@ function makeStem() {
   const st = { t: 0, mode: 'floors', labels: true, cere: false, park: false, fly: null, rot: true, breath: 0, beat: 0, trace: [], orT: -9, headYaw: 0, msg: null };
   function setMode(m) {
     st.mode = m; refs.modeSeg && refs.modeSeg.sync(); st.msg = null; refs.setInfo && refs.setInfo();
-    floors.visible = m === 'floors'; rf.visible = m === 'rf'; nuc.visible = m === 'nuclei'; paths.visible = m === 'paths'; orient.visible = m === 'orient'; cnn.visible = m === 'floors' || m === 'rf';
-    if (m === 'orient') { st.rot = false; refs.rot && refs.rot.sync(); st.fly = flyTarget(V3(0, -0.4, 0.5), V3(-8.5, 4.5, 11.5)); } else st.fly = HOME;
+    floors.visible = m === 'floors'; rf.visible = m === 'rf'; nuc.visible = m === 'nuclei'; paths.visible = m === 'paths'; orient.visible = m === 'orient'; cnn.visible = m === 'floors' || m === 'rf'; csfM.opacity = m === 'paths' || m === 'orient' ? 0.12 : 0.6;
+    if (m === 'orient') { st.rot = false; refs.rot && refs.rot.sync(); st.fly = flyTarget(V3(0, -0.4, 0.5), V3(-8.5, 4.5, 11.5)); } else st.fly = (m === 'nuclei' || m === 'paths') && matchMedia('(max-width:700px)').matches ? flyTarget(V3(0, 0.55, 0), V3(-9.6, 5.5, 12.0)) : HOME;
   }
   function orientGo() { if (st.mode !== 'orient') setMode('orient'); st.orT = st.t; }
   const C_RESP = new THREE.Color(0x6fc3ff), C_VASO = new THREE.Color(0xff6a5a), C_OR = new THREE.Color(0xf2c14e);
@@ -218,7 +218,7 @@ function makeStem() {
     { text: 'pons', pos: V3(1.3, 0.2, 0.6), show: () => st.labels },
     { text: 'medulla oblongata', pos: V3(0.8, -1.6, 0.6), show: () => st.labels },
     { text: 'spinal cord', pos: V3(0.5, -2.85, 0.3), show: () => st.labels },
-    { text: 'thalamus', pos: V3(-0.2, 3.05, 0.75), color: '#b9a4ff', show: () => st.labels && !matchMedia('(max-width:700px)').matches },   /* телефон: висела в пустоте над стволом */
+    { text: 'thalamus', pos: V3(-0.2, 3.05, 0.75), color: '#b9a4ff', show: () => false },   /* телефон: висела в пустоте над стволом */
     { text: 'corpora quadrigemina', pos: V3(-0.9, 1.5, 0.45), color: '#F2C14E', show: () => st.labels && (st.mode === 'floors' || st.mode === 'orient') },
     { text: 'rhomboid fossa', pos: V3(-0.7, -0.4, 0.2), color: '#6fc3ff', show: () => st.labels && st.mode === 'floors' && !st.cere },
     { text: 'basis', pos: V3(1.05, -1.6, 0.3), color: '#FF7A6A', show: () => st.labels && st.mode === 'floors' },
@@ -236,7 +236,7 @@ function makeStem() {
     { text: 'superior colliculi', pos: SC[0].clone().add(V3(-0.1, 0.12, 0.15)), color: '#F2C14E', show: () => st.labels && st.mode === 'orient' },
     { text: 'inferior colliculi', pos: IC[0].clone().add(V3(-0.1, -0.12, 0.15)), color: '#7FD6C8', show: () => st.labels && st.mode === 'orient' },
     { text: 'tectospinal tract', pos: V3(0.15, -1.0, -0.25), color: '#F2C14E', show: () => st.labels && st.mode === 'orient' },
-    { text: 'head turn', pos: V3(2.6, -2.6, 0), show: () => st.labels && st.mode === 'orient' },
+    { text: 'head turn', pos: V3(3.1, -3.2, 0), show: () => st.labels && st.mode === 'orient' },
   ];
   const refs = {};
   function ui(el) {
@@ -259,7 +259,7 @@ function makeStem() {
     if (k === 'r' || k === 'к') { refs.rot.click(); return true; } if (k === 'n' || k === 'т') { refs.lab.click(); return true; }
     return false;
   }
-  function stats() { if (st.mode === 'rf') return [['Breathing', 15, '/min'], ['Pulse', 70, 'bpm']]; return [['Medulla', '≈4', 'cm'], ['Pons', '2.5–3', 'cm']]; }
+  function stats() { if (st.mode === 'rf') return [['Breathing', 15, '/min'], ['Pulse', 70, 'bpm']]; return [['Medulla', '≈3', 'cm'], ['Pons', '2.5–3', 'cm']]; }
   setMode('floors');
   const self = {
     labelBg: true, mobZoom: 0.6, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#9FE0C0',
@@ -267,7 +267,7 @@ function makeStem() {
     lede: 'The medulla oblongata and midbrain are ancient parts of the brain shared by all vertebrates; the pons stands out as a separate part only in mammals. They hold the centers of breathing and heartbeat, sleep and wakefulness, and all the pathways between the brain and the body.',
     notes: `
       <div><h2>What the brainstem is made of</h2>
-        <p>The <b>medulla oblongata</b> resembles a truncated cone about 4 cm long (from 1.5 to 2.5 cm wide). In front are the pyramids and olives; behind is the floor of the fourth ventricle, the rhomboid fossa. The <b>pons</b> is almost square, 2.5–3 cm; it becomes a separate structure only in mammals, together with the cortex and cerebellum: through the pontine nuclei the cortex sends copies of motor programs to the cerebellum. The <b>midbrain</b> is small but important: the corpora quadrigemina, the aqueduct with the periaqueductal gray, the red nucleus and the substantia nigra.</p>
+        <p>The <b>medulla oblongata</b> resembles a truncated cone about 3 cm long (from 1.5 to 2.5 cm wide). In front are the pyramids and olives; behind is the floor of the fourth ventricle, the rhomboid fossa. The <b>pons</b> is almost square, 2.5–3 cm; it becomes a separate structure only in mammals, together with the cortex and cerebellum: through the pontine nuclei the cortex sends copies of motor programs to the cerebellum. The <b>midbrain</b> is small but important: the corpora quadrigemina, the aqueduct with the periaqueductal gray, the red nucleus and the substantia nigra.</p>
         <h3>Genes</h3>
         <p>The parts of the brainstem are laid down by homeotic genes: Pax, Otx2, Wnt1, Gbx2, Fgf8, Shh, Hox. In a newer classification, the medulla and pons are assembled from 11 stereotyped units.</p>
         <h3>Evolution</h3>

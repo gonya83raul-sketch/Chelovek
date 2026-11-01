@@ -169,7 +169,7 @@ function makeVentricles() {
     st.mode = m; refs.modeSeg && refs.modeSeg.sync(); refs.setInfo && refs.setInfo();
     falx.visible = m === 'men'; men.visible = m === 'men';
     shell.solid.opacity = 0.05;
-    if (m === 'men') { st.rot = false; refs.rot && refs.rot.sync(); men.updateMatrixWorld(true); st.fly = VDK ? flyTarget(MEN_POS.clone().add(V3(-0.25, 0, 0.12)), MEN_POS.clone().add(V3(1.25, 0.9, 3.22))) : flyTarget(MEN_POS, MEN_POS.clone().add(V3(1.5, 0.9, 3.1))); }
+    if (m === 'men') { st.rot = false; refs.rot && refs.rot.sync(); men.updateMatrixWorld(true); st.fly = VDK ? flyTarget(MEN_POS.clone().add(V3(-0.25, 0, 0.12)), MEN_POS.clone().add(V3(1.25, 0.9, 3.22))) : flyTarget(MEN_POS.clone().add(V3(-0.12, 0, 0)), MEN_POS.clone().add(V3(1.08, 0.72, 2.5))); }
     else st.fly = HOME;
   }
   function update(dt) {
@@ -222,7 +222,7 @@ function makeVentricles() {
     { text: 'central canal', pos: V3(-0.49, -1.85, 0.04), color: '#8fd4ff', show: () => st.labels && st.mode === 'vent' },
     { text: 'choroid plexus', pos: V3(-0.2, 0.23, 0.33), color: '#ff8090', show: () => st.labels && st.mode === 'vent' },
     { text: 'foramina of Magendie and Luschka', pos: MAG.clone().add(V3(-0.05, -0.04, 0.05)), color: '#9fdcff', show: () => st.labels && st.mode === 'flow' },
-    { text: 'sinus and granulations', pos: sinus.getPointAt(0.32).add(V3(0, 0.08, 0)), color: '#a8a0ff', show: () => st.labels && st.mode !== 'vent' },
+    { text: 'sinus and granulations', pos: sinus.getPointAt(0.32).add(V3(0, 0.08, 0)), color: '#a8a0ff', show: () => st.labels && st.mode === 'flow' },
     { text: 'aqueduct blockage', pos: aq.getPointAt(0.55).add(V3(0.06, 0, 0.06)), color: '#ff7a6a', show: () => st.labels && st.hydro },
     { text: 'falx cerebri', pos: V3(0.2, 0.9, 0.02), color: '#efe8dc', show: () => st.labels && st.mode === 'men' },
     { text: 'tentorium cerebelli', pos: V3(-1.3, -0.5, 0.6), color: '#efe8dc', show: () => st.labels && st.mode === 'men' },
@@ -231,7 +231,7 @@ function makeVentricles() {
   const refs = {};
   function ui(el) {
     const ib = infoBox();
-    refs.setInfo = () => { ib.info.innerHTML = st.hydro ? '<b>Hydrocephalus.</b> The cerebral aqueduct is blocked (this can happen with birth injury, a tumor or inflammation). CSF is still being secreted but cannot drain: the lateral and third ventricles swell and press on the brain from the inside, and intracranial pressure rises. It is treated with a shunt that drains the CSF away.' : TXT[st.mode]; };
+    refs.setInfo = () => { ib.info.innerHTML = st.hydro && st.mode !== 'men' ? '<b>Hydrocephalus.</b> The cerebral aqueduct is blocked (this can happen with birth injury, a tumor or inflammation). CSF is still being secreted but cannot drain: the lateral and third ventricles swell and press on the brain from the inside, and intracranial pressure rises. It is treated with a shunt that drains the CSF away.' : TXT[st.mode]; };
     refs.modeSeg = seg([{ id: 'vent', label: 'Ventricles' }, { id: 'flow', label: 'CSF flow' }, { id: 'men', label: 'Meninges' }], () => st.mode, (v) => setMode(v));
     const hy = toggle('Hydrocephalus', () => st.hydro, (v) => { st.hydro = v; if (v && st.mode === 'men') setMode('flow'); refs.setInfo(); });
     const fl = toggle('Particles', () => st.flow, (v) => { st.flow = v; });
