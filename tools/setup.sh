@@ -11,7 +11,7 @@ for m in skeleton muscles vision digest repro; do
 done
 [ -z "$NEED" ] || python3 tools/models.py
 # 2) инструменты сборки (разбиение на файлы) и three.js 0.160.0: build.py кладёт его (min + нужные аддоны) в appN/vendor/, декодер Draco — в models/draco-r160/
-[ -d /opt/node-tools/node_modules/acorn ] || npm i --no-save acorn acorn-walk eslint-scope three@0.160.0
+[ -d node_modules/acorn ] || npm i --no-save acorn acorn-walk eslint-scope three@0.160.0
 [ -d node_modules/three ] || npm i --no-save three@0.160.0
 rm -rf lt/three && mkdir -p lt/three && cp -r node_modules/three/build node_modules/three/examples lt/three/
 # python-playwright той же версии, что и предустановленный node-playwright, иначе он не найдёт браузер
