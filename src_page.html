@@ -6932,7 +6932,7 @@ function makeHeart() {
   rnd = mulberry(1212);
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x07060a); scene.environment = envTex;
   labLights(scene, 0xff7a6a);
-  const VIEW = { heart: flyTarget(V3(0.0, -0.05, 0), V3(2.2, 0.65, 9.9)), cond: flyTarget(V3(0.05, -0.05, 0), V3(-1.8, 0.65, 9.9)), circ: matchMedia('(max-width:700px)').matches ? flyTarget(V3(0.1, 1.2, 0), V3(5.0, 4.7, 19)) : flyTarget(V3(0.1, 0.8, 0), V3(5.0, 4.3, 19)) };
+  const VIEW = { heart: matchMedia('(max-width:700px)').matches ? flyTarget(V3(0.0, -0.05, 0), V3(2.2, 0.65, 9.9)) : flyTarget(V3(0.0, 0.17, 0), V3(2.024, 0.814, 9.108)), cond: flyTarget(V3(0.05, -0.05, 0), V3(-1.8, 0.65, 9.9)), circ: matchMedia('(max-width:700px)').matches ? flyTarget(V3(0.1, 0.7, 0), V3(4.265, 3.675, 16.15)) : flyTarget(V3(0.1, 0.8, 0), V3(5.0, 4.3, 19)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(VIEW.heart.pos);
   const controls = makeControls(camera, VIEW.heart.target); controls.minDistance = 2; controls.maxDistance = 25;
   const hg = new THREE.Group(); scene.add(hg);
@@ -7123,7 +7123,7 @@ function makeHeart() {
   function drawScope(ctx, w, hgt) {
     ctx.clearRect(0, 0, w, hgt); scopeShow(true);
     if (st.mode === 'circ') {   // Неттер, BP 14: доля минутного объёма (Q) и потребления кислорода по органам, %
-      const ORGQ = [['мозг', 13, 21], ['сердце', 4, 11], ['ЖКТ', 24, 23], ['почки', 20, 7], ['мышцы', 21, 27], ['кожа', 18, 11]];
+      const ORGQ = [['мозг', 13, 21], ['сердце', 4, 11], ['ЖКТ', 24, 23], ['почки', 20, 7], ['мышцы', 21, 27], ['прочее', 18, 11]];
       ctx.font = '500 10px JetBrains Mono, monospace'; ctx.fillStyle = '#FF6A5A'; ctx.fillRect(8, 5, 8, 8); ctx.fillStyle = 'rgba(255,255,255,.75)'; ctx.fillText('кровоток, %', 20, 12);
       const x2 = 30 + ctx.measureText('кровоток, %').width; ctx.fillStyle = '#7FD6FF'; ctx.fillRect(x2, 5, 8, 8); ctx.fillStyle = 'rgba(255,255,255,.75)'; ctx.fillText('кислород, %', x2 + 12, 12);
       const top = 30, bh = hgt - top - 16, gw = (w - 16) / ORGQ.length, Y = (v) => top + bh * (1 - v / 28);
@@ -7135,7 +7135,7 @@ function makeHeart() {
     }
     const x = (tt) => 8 + (1 - (st.t - tt) / 4) * (w - 16), y0 = hgt * 0.62, sc = hgt * 0.42;
     ctx.lineWidth = 2; ctx.strokeStyle = '#7FE0A0'; ctx.beginPath(); st.ecg.forEach(([tt, v], i) => { const yy = y0 - v * sc; i ? ctx.lineTo(x(tt), yy) : ctx.moveTo(x(tt), yy); }); ctx.stroke();
-    ctx.font = '500 10px JetBrains Mono, monospace'; ctx.fillStyle = '#7FE0A0'; ctx.fillText('ЭКГ · ' + st.hr + ' уд/мин', 10, 13);
+    ctx.font = '500 10px JetBrains Mono, monospace'; ctx.fillStyle = '#7FE0A0'; ctx.fillText('ЭКГ · ' + (st.block ? 38 : st.hr) + ' уд/мин', 10, 13);
     let last = -9; st.ecg.forEach(([tt, , s]) => { if (s && tt - last > 0.08) { last = tt; ctx.fillStyle = s === 1 ? '#F2E6C8' : '#c8b8a0'; ctx.fillText(s === 1 ? 'лаб' : 'даб', x(tt) - 8, s === 1 ? hgt - 6 : hgt - 18); } });
   }
   const TXT = {
@@ -7188,7 +7188,7 @@ function makeHeart() {
     if (e.key === 'Escape') { select('all'); return true; }
     return false;
   }
-  function stats() { const mok = (st.hr * 70 / 1000).toFixed(1); return st.mode === 'circ' ? [['Оборот крови', '20–25', 'с'], ['Объём крови', '≈5', 'л']] : [['ЧСС', st.block ? 38 : st.hr, 'уд/мин'], ['Фаза', phaseInfo(st.pv), ''], ['Минутный объём', mok, 'л/мин']]; }
+  function stats() { const mok = ((st.block ? 38 : st.hr) * 70 / 1000).toFixed(1).replace('.', LANG === 'ru' ? ',' : '.'); return st.mode === 'circ' ? [['Оборот крови', '20–25', 'с'], ['Объём крови', '≈5', 'л']] : [['ЧСС', st.block ? 38 : st.hr, 'уд/мин'], ['Фаза', phaseInfo(st.pv), ''], ['Минутный объём', mok, 'л/мин']]; }
   const self = {
     labelBg: true, mobZoom: 0.66, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#E0605A',
     kicker: 'Тело · кровообращение', title: 'Сердце и кровообращение',
@@ -7346,7 +7346,7 @@ function makeLungs() {
   }
   function act(a) { st.act = a; st.actT = st.t; if (a === 'hold') st.holdV = st.V; if (st.mode !== 'mech') setMode('mech'); st.msg = ACT[a].text; refs.setInfo(); }
   function select(id) { st.sel = id === 'all' ? null : id; refs.seg && refs.seg.sync(); dimOthers(LG_PARTS.map((p) => PART[p.id]), st.sel); lungMeshes.forEach((m) => { m.material.opacity = !st.sel ? 0.5 : st.sel === 'lung' ? 0.75 : 0.06; m.material.depthWrite = false; }); st.msg = null; refs.setInfo && refs.setInfo(); }
-  function setMode(m) { st.mode = m; refs.modeSeg && refs.modeSeg.sync(); st.msg = m === 'mech' ? ACT[st.act].text : null; body.visible = m !== 'alv'; alv.visible = m === 'alv'; ribs.visible = m === 'mech'; st.fly = VIEW[m]; refs.setInfo && refs.setInfo(); }
+  function setMode(m) { st.mode = m; refs.modeSeg && refs.modeSeg.sync(); st.msg = m === 'mech' && st.actT > -9 ? ACT[st.act].text : null; body.visible = m !== 'alv'; alv.visible = m === 'alv'; ribs.visible = m === 'mech'; st.fly = VIEW[m]; refs.setInfo && refs.setInfo(); }
   pickOn(() => self, camera, pick, (id) => { if (st.mode !== 'alv') select(id); });
   const C_O2 = new THREE.Color(0x9fe0ff), C_CO2 = new THREE.Color(0xf2c14e), C_B = new THREE.Color(0x6c86e0), C_R = new THREE.Color(0xe0605a);
   function update(dt) {
@@ -7375,14 +7375,14 @@ function makeLungs() {
     ctx.clearRect(0, 0, w, hgt); scopeShow(st.mode === 'mech'); if (st.mode !== 'mech') return;
     const Y = (v) => hgt - 10 - (v / 6200) * (hgt - 22), x = (tt) => 8 + (1 - (st.t - tt) / 12) * (w - 16);
     ctx.font = '500 9px JetBrains Mono, monospace';
-    [[1200, 'ОО'], [2400, 'покой'], [2900, '+ДО'], [5900, 'макс.']].forEach(([v, l]) => { ctx.strokeStyle = 'rgba(255,255,255,.12)'; ctx.setLineDash([3, 4]); ctx.beginPath(); ctx.moveTo(8, Y(v)); ctx.lineTo(w - 8, Y(v)); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle = 'rgba(255,255,255,.4)'; ctx.fillText(l, w - 40, Y(v) - (l === '+ДО' ? 8 : 2)); });
+    [[1200, 'остаток'], [2400, 'покой'], [5900, 'макс.']].forEach(([v, l]) => { ctx.strokeStyle = 'rgba(255,255,255,.12)'; ctx.setLineDash([3, 4]); ctx.beginPath(); ctx.moveTo(8, Y(v)); ctx.lineTo(w - 8, Y(v)); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle = 'rgba(255,255,255,.4)'; ctx.fillText(l, w - 52, Y(v) - 2); });
     ctx.lineWidth = 2; ctx.strokeStyle = '#9FE0FF'; ctx.beginPath(); st.spiro.forEach(([tt, v], i) => { i ? ctx.lineTo(x(tt), Y(v)) : ctx.moveTo(x(tt), Y(v)); }); ctx.stroke();
     ctx.fillStyle = '#9FE0FF'; ctx.font = '500 10px JetBrains Mono, monospace'; ctx.fillText('спирограмма, мл', 10, 13);
   }
   const TXT = {
     tract: '<b>Дыхательная система.</b> Воздух идёт через нос, глотку, гортань и трахею в бронхиальное дерево и заканчивается в альвеолах — микроскопических пузырьках, где кислород переходит в кровь, а углекислый газ — из крови в воздух. Нажмите на орган.',
     alv: '<b>Альвеолы и газообмен.</b> Каждая альвеола (0,2–0,3 мм) оплетена капиллярами. Барьер между воздухом и кровью тоньше 1 мкм, площадь всех альвеол — 70–100 м², треть теннисного корта. Кислород (голубой) уходит в кровь, его связывает гемоглобин эритроцитов — они краснеют; CO₂ (жёлтый) выходит в воздух. Сурфактант изнутри не даёт альвеолам слипаться.',
-    mech: '<b>Механика дыхания.</b> Лёгкие сами не сокращаются: они следуют за грудной клеткой. Диафрагма опускается, рёбра поднимаются — давление в лёгких падает ниже атмосферного, и воздух входит. Ритм задаёт дыхательный центр продолговатого мозга. Попробуйте кнопки справа.',
+    mech: '<b>Механика дыхания.</b> Лёгкие сами не сокращаются: они следуют за грудной клеткой. Диафрагма опускается, рёбра поднимаются — давление в лёгких падает ниже атмосферного, и воздух входит. Ритм задаёт дыхательный центр продолговатого мозга. Попробуйте кнопки «Дыхание».',
   };
   const labels = [
     { text: 'носовая полость', pos: V3(0.1, 4.2, 0.42), color: '#E8A890', show: () => st.labels && st.mode !== 'alv' },
@@ -7719,7 +7719,7 @@ function makeKidney() {
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x07060a); scene.environment = envTex;
   labLights(scene, 0xffc080);
   const MOBK = matchMedia('(max-width:700px)').matches;
-  const VIEW = { sys: MOBK ? flyTarget(V3(0.0, 0.72, 0), V3(1.15, 1.33, -5.5)) : flyTarget(V3(0.0, 0.55, 0), V3(1.15, 1.16, -5.5)), kid: flyTarget(V3(29.6, -0.55, 0), V3(30.5, 0.3, 6.9)), neph: MOBK ? flyTarget(V3(60.2, -1.0, 0), V3(63.0, 0.5, 12.6)) : flyTarget(V3(60.2, -1.2, 0), V3(63.2, 0.4, 13.5)) };
+  const VIEW = { sys: MOBK ? flyTarget(V3(0.0, 0.72, 0), V3(1.15, 1.33, -5.5)) : flyTarget(V3(0.0, 0.55, 0), V3(1.15, 1.16, -5.5)), kid: flyTarget(V3(29.6, -0.55, 0), V3(30.5, 0.3, 6.9)), neph: MOBK ? flyTarget(V3(60.2, -1.0, 0), V3(63.0, 0.5, 12.6)) : flyTarget(V3(60.2, -1.2, 0), V3(63.2, 0.4, 14.3)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 120); camera.position.copy(VIEW.sys.pos);
   const controls = makeControls(camera, VIEW.sys.target); controls.minDistance = 1.5; controls.maxDistance = 22;
   const body = new THREE.Group(); scene.add(body);
@@ -8994,9 +8994,9 @@ function makeRepro(initMode) {
   const egg = new THREE.Mesh(new THREE.SphereGeometry(0.014, 16, 12), new THREE.MeshPhysicalMaterial({ color: 0xfff0f8, emissive: 0x806070, emissiveIntensity: 0.8 })); F.add(egg); egg.visible = false;
   // зародыш: группа шаров
   const embryo = new THREE.Group(); F.add(embryo); embryo.visible = false;
-  const emCells = []; const emMat = new THREE.MeshPhysicalMaterial({ color: 0xffe8f0, roughness: 0.3, transparent: true, opacity: 0.9, emissive: 0x604050, emissiveIntensity: 0.6, clearcoat: 0.6 });
-  for (let i = 0; i < 32; i++) { const m = new THREE.Mesh(new THREE.SphereGeometry(1, 12, 10), emMat); embryo.add(m); emCells.push(m); }
-  const blast = new THREE.Mesh(new THREE.SphereGeometry(1, 24, 18), new THREE.MeshPhysicalMaterial({ color: 0xffd8e8, transparent: true, opacity: 0.35, depthWrite: false, emissive: 0x604050, emissiveIntensity: 0.4 })); embryo.add(blast);
+  const emCells = []; const emMat = new THREE.MeshPhysicalMaterial({ color: 0xffe8f0, roughness: 0.3, transparent: true, opacity: 0.9, depthTest: false, emissive: 0x604050, emissiveIntensity: 0.6, clearcoat: 0.6 });
+  for (let i = 0; i < 32; i++) { const m = new THREE.Mesh(new THREE.SphereGeometry(1, 12, 10), emMat); m.renderOrder = 20; embryo.add(m); emCells.push(m); }
+  const blast = new THREE.Mesh(new THREE.SphereGeometry(1, 24, 18), new THREE.MeshPhysicalMaterial({ color: 0xffd8e8, transparent: true, opacity: 0.35, depthWrite: false, depthTest: false, emissive: 0x604050, emissiveIntensity: 0.4 })); blast.renderOrder = 20; embryo.add(blast);
   const PATH = new THREE.CatmullRomCurve3([...TUBE[0].getPoints(8).reverse().slice(1), V3(0.06, 0.3, 0.03), V3(0.03, 0.24, 0.05)]);
   /* ---------- мужская система ---------- */
   ghost(ell3(0.12, 0.1, 0.1, V3(0, 0.06, 0.18)), '#F2D860', M); ghost(tube([V3(0, 0.4, -0.3), V3(0.02, 0.0, -0.28), V3(0, -0.4, -0.18)], 0.06, 20, 10), '#C8A090', M);
@@ -9046,7 +9046,7 @@ function makeRepro(initMode) {
   const parts = () => (st.mode === 'male' ? RP_M : st.mode === 'female' && st.realLoad === 2 ? RP_R : RP_F);
   const schem = () => st.mode === 'cycle' || st.mode === 'dev' || (st.mode === 'female' && st.realLoad !== 2);
   function select(id) { st.sel = id === 'all' ? null : id; refs.seg && refs.seg.sync(); dimOthers(parts().map((p) => PART[p.id]), st.sel); if (parts() === RP_F) ut.material.opacity = st.sel && st.sel !== 'ut' ? 0.12 : 0.55; boneGlass(); st.msg = null; refs.setInfo && refs.setInfo(); }
-  function setMode(m) { st.mode = m; refs.modeSeg && refs.modeSeg.sync(); st.msg = null; const real = m === 'female' && st.realLoad === 2; F.visible = m !== 'male' && !real; REAL.visible = real; M.visible = m === 'male'; if (m === 'female') loadReal(); if (real) { dimOthers(RP_R.map((p) => PART[p.id]), null); boneGlass(); } st.fly = VIEW[m]; st.sel = null; fGhosts.forEach((g) => { g.visible = m !== 'cycle'; }); refs.rebuild && refs.rebuild(); if (m === 'dev') { st.devT = st.t; st.devStage = -1; } refs.cycUI && refs.cycUI(); refs.setInfo && refs.setInfo(); }
+  function setMode(m) { st.mode = m; refs.modeSeg && refs.modeSeg.sync(); st.msg = null; const real = m === 'female' && st.realLoad === 2; F.visible = m !== 'male' && !real; REAL.visible = real; M.visible = m === 'male'; if (m === 'female') loadReal(); if (real) { dimOthers(RP_R.map((p) => PART[p.id]), null); boneGlass(); } st.fly = VIEW[m]; st.sel = null; fGhosts.forEach((g) => { g.visible = m !== 'cycle' && m !== 'dev'; }); refs.rebuild && refs.rebuild(); if (m === 'dev') { st.devT = st.t; st.devStage = -1; } refs.cycUI && refs.cycUI(); refs.setInfo && refs.setInfo(); }
   pickOn(() => self, camera, pick, (id) => { if (st.mode === 'female' || st.mode === 'male') select(id); });
   // гормоны цикла (день 1–28)
   const gau = (x, m, s) => Math.exp(-(((x - m) / s) ** 2));
@@ -9113,10 +9113,11 @@ function makeRepro(initMode) {
     { text: 'матка', pos: matchMedia('(max-width:700px)').matches ? V3(-0.05, 0.25, 0.12) : V3(0.0, 0.36, 0.1), color: '#E88A9A', show: () => st.labels && schem() },
     { text: 'эндометрий', pos: matchMedia('(max-width:700px)').matches ? V3(-0.06, 0.12, 0.12) : V3(-0.06, 0.25, 0.12), color: '#ff7a8a', show: () => st.labels && st.mode === 'cycle' },
     { text: 'шейка и влагалище', pos: V3(0.08, -0.3, -0.02), color: '#D8A0B0', left: true, show: () => st.labels && schem() },
-    { text: 'мочевой пузырь', pos: V3(0.1, -0.02, 0.36), color: '#F2D860', show: () => st.labels && ((st.mode === 'female' && schem()) || st.mode === 'male') },
+    { text: 'мочевой пузырь', pos: V3(0.1, -0.02, 0.36), color: '#F2D860', show: () => st.labels && st.mode === 'female' && schem() },
+    { text: 'мочевой пузырь', pos: V3(-0.1, 0.16, 0.22), color: '#F2D860', show: () => st.labels && st.mode === 'male' },
     { text: 'яичко', pos: V3(0.16, -0.6, 0.36), color: '#C8D8F0', show: () => st.labels && st.mode === 'male' },
     { text: 'семявыносящий проток', pos: V3(0.24, 0.25, 0.18), color: '#9FD0FF', show: () => st.labels && st.mode === 'male' },
-    { text: 'семенной пузырёк', pos: V3(-0.2, 0.05, 0.05), color: '#F2D88A', show: () => st.labels && st.mode === 'male' },
+    { text: 'семенной пузырёк', pos: V3(0.13, 0.04, 0.06), color: '#F2D88A', show: () => st.labels && st.mode === 'male' },
     { text: 'простата', pos: V3(0.08, -0.16, 0.2), color: '#F2D88A', show: () => st.labels && st.mode === 'male' },
     { text: 'зародыш', pos: V3(0, 0, 0), color: '#ffe8f0', show: () => st.labels && st.mode === 'dev', dyn: true },
   ];
