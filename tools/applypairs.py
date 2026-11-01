@@ -28,6 +28,7 @@ for s in secs:
             pairs += re.findall(r'`([^`]+)`\s*→\s*(?:стало\s*)?`([^`]*)`', line)
         if re.search(r'было:', line) and ticks: pend = ticks[0]
         elif re.search(r'стало:', line) and pend is not None:
+            if line.count('`') % 2: print('ВНИМАНИЕ: многострочное «стало», внести вручную:', pend[:80]); pend = None; continue
             pairs.append((pend, ticks[0] if ticks else '')); pend = None
         if re.search(r'ключ[^`]*«?стало', line) and re.search(r'значение', line) and ticks and pairs:
             en.append((pairs[-1][1], ticks[-1])); continue
