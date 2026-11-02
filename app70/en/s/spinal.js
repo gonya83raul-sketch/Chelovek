@@ -54,9 +54,9 @@ function spinalCanvas(mode) {
   g.strokeStyle = '#000'; g.lineWidth = 6; g.beginPath(); g.moveTo(X(0), Y(0.75)); g.lineTo(X(0), Y(0.28)); g.stroke();
   g.lineWidth = 12; g.beginPath(); g.moveTo(X(0), Y(-0.76)); g.lineTo(X(0), Y(-0.45)); g.stroke();
   if (mode === 'tracts') {
-    g.font = '600 26px system-ui, sans-serif'; g.fillStyle = '#fff'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.font = '700 36px system-ui, sans-serif'; g.fillStyle = '#fff'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineJoin = 'round'; g.strokeStyle = 'rgba(0,0,0,0.55)'; g.lineWidth = 5;
     const num = [[1, 0.07, 0.5], [2, 0.2, 0.5], [3, 0.86, 0.22], [4, 0.88, -0.22], [7, 0.62, 0.06], [11, 0.78, 0.0], [6, 0.62, -0.3], [5, 0.45, -0.56], [8, 0.1, -0.55], [13, 0.27, -0.66], [9, 0.62, -0.55], [10, 0.4, -0.4], [12, 0.8, -0.42]];
-    num.forEach(([n, x, y]) => g.fillText(String(n), X(x), Y(y)));
+    num.forEach(([n, x, y]) => { g.strokeText(String(n), X(x), Y(y)); g.fillText(String(n), X(x), Y(y)); });
   }
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t;
 }

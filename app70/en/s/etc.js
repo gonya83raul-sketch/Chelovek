@@ -208,7 +208,7 @@ function makeEtc() {
     const pb = ETC_POIS.map((p) => { const b = toggle(p.name, () => st.pois.has(p.id), (v) => { if (v) st.pois.add(p.id); else st.pois.delete(p.id); st.msg = v ? p.id : null; st.sel = null; refs.setInfo(); }); return b; });
     refs.rot = toggle('Rotate', () => st.rot, (v) => { st.rot = v; });
     const lab = toggle('Labels', () => st.labels, (v) => { st.labels = v; });
-    const gr = toggle('Graph', () => st.graph, (v) => { st.graph = v; if (!MOB) st.fly = flyTarget(V3(v ? 2.3 : -2.0, v ? -0.6 : -1.0, 0), V3(v ? 2.7 : -1.6, v ? 5.4 : 5.0, 25)); });   /* компьютер: с графиком цепь левее — врезка не закрывает АТФ-синтазу */
+    const gr = toggle('Graph', () => st.graph, (v) => { st.graph = v; if (!MOB) st.fly = flyTarget(V3(v ? 4.0 : -2.0, v ? -0.6 : -1.0, 0), V3(v ? 4.4 : -1.6, v ? 5.4 : 5.0, 25)); });   /* компьютер: с графиком цепь левее — врезка не закрывает АТФ-синтазу */
     Object.assign(refs, { lab, pb, gr });
     el.append(group('Fuel', '', subSeg), group('Poisons and uncouplers', '1–5', ...pb), group('View', 'G · R · N', gr, refs.rot, lab), ib.el);
     refs.setInfo();

@@ -84,7 +84,7 @@ function makeMembrane() {
   /* ---------- 4. переваривание ---------- */
   const G4 = new THREE.Group(); G4.position.set(120, 0, 0); scene.add(G4);
   const oilMat = new THREE.MeshPhysicalMaterial({ color: 0xc89a30, roughness: 0.1, clearcoat: 1, transmission: 0, transparent: true, opacity: 0.85, emissive: 0x6a4a10, emissiveIntensity: 0.15 });
-  const drops = []; for (let k = 0; k < 18; k++) { const m = new THREE.Mesh(new THREE.SphereGeometry(1, 28, 20), oilMat); G4.add(m); drops.push({ m, home: V3(rand(-3.6, 3.4), rand(-0.6, 1.9), rand(-1, 1)), r: rand(0.18, 0.32) }); }
+  const drops = []; for (let k = 0; k < 18; k++) { const m = new THREE.Mesh(new THREE.SphereGeometry(1, 28, 20), oilMat); G4.add(m); drops.push({ m, home: V3(rand(-3.6, 3.4), rand(-0.6, 1.4), rand(-1, 1)), r: rand(0.18, 0.32) }); }
   const big = new THREE.Mesh(new THREE.SphereGeometry(1.6, 48, 32), oilMat); big.position.set(0, 0.9, 0); G4.add(big);
   const bileMat = new THREE.MeshBasicMaterial({ color: 0x3f8a5a }); const BILE = new THREE.InstancedMesh(new THREE.CapsuleGeometry(0.03, 0.09, 4, 6), bileMat, 400); G4.add(BILE);
   const lipases = []; for (let k = 0; k < 5; k++) { const m = new THREE.Mesh(blobGeo(0.22, 0.18, 0.2, k + 40, 0.12, 3), protMat('#FF8AB0', 0.45)); G4.add(m); lipases.push(m); }
@@ -125,10 +125,10 @@ function makeMembrane() {
     { text: 'cholesterol', pos: V3(-1.0, 1.45, 3.1), color: '#F2C14E', show: () => st.labels && st.mode === 'bilayer' },
     { text: 'rhodopsin protein', pos: V3(1.2, 3.4, 2.4), color: '#9FD0FF', show: () => st.labels && st.mode === 'bilayer' },
     { text: 'water', pos: V3(2.0, 2.8, 0), color: '#7FB8E0', show: () => st.labels && st.mode === 'bilayer' },
-    ...MB_FA.map((f, k) => ({ text: f.n, pos: V3(40 + (k - 3) * 1.55, -1.75, 0), color: f.id === 'elaidic' ? '#FF8A5C' : /ω/.test(f.n) ? '#7FE0A0' : '#F2E6C8', show: () => st.labels && st.mode === 'fa' })),
+    ...MB_FA.map((f, k) => ({ text: f.n, pos: V3(40 + (k - 3) * 1.55, DK ? -1.75 : -1.75 - 0.55 * (k % 3), 0), color: f.id === 'elaidic' ? '#FF8A5C' : /ω/.test(f.n) ? '#7FE0A0' : '#F2E6C8', show: () => st.labels && st.mode === 'fa' })),
     ...MB_CL.map((c, k) => ({ text: c.name, pos: V3(80 + (k - 2) * CSP - 0.6, -1.65, 0), color: '#F2C14E', show: () => st.labels && st.mode === 'classes' })),
-    { text: 'droplets coated with bile acids', pos: V3(120 - 1.5, DK ? 2.5 : 3.0, 0), color: '#7FE0A0', show: () => st.labels && st.mode === 'digest' && st.cyc % 14 > 4 },
-    { text: 'lipase', pos: V3(120 + 2.6, 2.6, 0), color: '#FF8AB0', show: () => st.labels && st.mode === 'digest' && st.cyc % 14 > 4.5 && st.cyc % 14 < 11 },
+    { text: 'droplets coated with bile acids', pos: V3(120 - 1.5, DK ? 1.6 : 3.0, 0), color: '#7FE0A0', show: () => st.labels && st.mode === 'digest' && st.cyc % 14 > 4 },
+    { text: 'lipase', pos: V3(120 + 2.6, DK ? 1.6 : 2.6, 0), color: '#FF8AB0', show: () => st.labels && st.mode === 'digest' && st.cyc % 14 > 4.5 && st.cyc % 14 < 11 },
     { text: 'intestinal villi', pos: V3(120 - 4.6, -2.9, 0.3), color: '#E8A0A0', show: () => st.labels && st.mode === 'digest' },
   ];
   const refs = {};

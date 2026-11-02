@@ -592,6 +592,7 @@ if (LANG !== 'ru') {
   T('.dh3', 'Feedback');
   T('.dopt img', 'tips.tips QR code', 'alt'); T('.dqr img', 'USDT address QR code', 'alt'); T('.dcontact img', 'Telegram channel QR code', 'alt');
   T('#srch', 'Search topics (/)', 'title'); T('#srch .stxt', 'Search');
+  T('#bmark', 'Bookmark', 'aria-label'); T('#bmark', 'Add to bookmarks', 'title');
   T('#share', 'Share this topic', 'aria-label'); T('#share', 'Share this topic', 'title');
   T('#recam', 'Reset camera view', 'aria-label'); T('#recam', 'Reset camera view (Home)', 'title');
   T('#anim', 'Pause animation', 'aria-label'); T('#anim', 'Pause animation', 'title'); T('.skip', 'Skip to the topic text');
@@ -699,6 +700,8 @@ function renderNav(id) {
   s.scenes.forEach(([sid, name]) => { if (sid === '#') { og = h('optgroup', { label: name }); sel.append(og); } else { const o = h('option', { value: sid, 'data-n': name }, name); if (sid === id) o.selected = true; og.append(o); } });
   subNav.append(sel);
   if (typeof decorateNav === 'function') decorateNav();
+  bmRender();
+  { const bx = subNav.querySelector('.bmbox'), a2 = subNav.querySelector('.sub[aria-current="page"]'); if (bx && a2 && (a2.offsetTop < subNav.scrollTop + bx.offsetHeight || a2.offsetTop + a2.offsetHeight > subNav.scrollTop + subNav.clientHeight)) subNav.scrollTop = Math.max(0, a2.offsetTop - bx.offsetHeight - (subNav.clientHeight - bx.offsetHeight) / 3); }   /* текущая тема — не под липким блоком закладок */
   if (hadF) { const a = subNav.querySelector('.sub[aria-current="page"]'); (a && a.offsetParent ? a : sel).focus({ preventScroll: true }); }
 }
 /* каждая вкладка — отдельный файл: грузится при первом открытии, старые сцены выгружаются */
@@ -946,7 +949,7 @@ consoleEl.addEventListener('click', (e) => { if (e.target.closest('button, input
 { let sT = 0; window.addEventListener('scroll', () => { if (sT) return; sT = setTimeout(() => { sT = 0; if (dwell >= 3 && notesEl.getBoundingClientRect().top < innerHeight * 0.55) markSeen(curId); }, 300); }, { passive: true }); }
 
 /* список «Все темы атласа»: фильтр, счётчик, сброс прогресса; клик по теме — к сцене */
-let atProg = null, atReset = null, atFilter = null;
+let atProg = null, atReset = null, atFilter = null, atBm = null, atBmOn = false;
 { const at = document.querySelector('.alltopics');
   if (at) {
     const g = at.querySelector('.atgrid');
@@ -954,7 +957,9 @@ let atProg = null, atReset = null, atFilter = null;
     atProg = h('span', { class: 'atprog' });
     atReset = h('button', { class: 'atreset', type: 'button' }, 'Reset progress');
     const none = h('p', { class: 'atnone', hidden: '' }, 'Nothing found. Try another word.');
-    at.querySelector('summary').after(h('div', { class: 'atbar' }, atFilter, atProg, atReset));
+    atBm = h('button', { class: 'atreset atbm', type: 'button', 'aria-pressed': 'false', hidden: '' }, '★ Bookmarks only');
+    atBm.addEventListener('click', () => { atBmOn = !atBmOn; atBm.setAttribute('aria-pressed', String(atBmOn)); atFilter.dispatchEvent(new Event('input')); });
+    at.querySelector('summary').after(h('div', { class: 'atbar' }, atFilter, atBm, atProg, atReset));
     g.after(none);
     let armed = 0;
     atReset.addEventListener('click', () => {
@@ -969,17 +974,48 @@ let atProg = null, atReset = null, atFilter = null;
         let secAny = false;
         sec.querySelectorAll('ul').forEach((ul) => {
           let ulAny = false;
-          ul.querySelectorAll('li[data-id]').forEach((li) => { const t = TOPIC[li.dataset.id]; const ok = !toks.length || (t && scoreTopic(t, toks) >= 0); li.hidden = !ok; if (ok) { ulAny = true; n++; } });
+          ul.querySelectorAll('li[data-id]').forEach((li) => { const t = TOPIC[li.dataset.id]; const ok = (!toks.length || (t && scoreTopic(t, toks) >= 0)) && (!atBmOn || li.classList.contains('bm')); li.hidden = !ok; if (ok) { ulAny = true; n++; } });
           ul.hidden = !ulAny; const hd = ul.previousElementSibling; if (hd && hd.tagName === 'H4') hd.hidden = !ulAny; secAny ||= ulAny;
         });
         sec.hidden = !secAny;
       });
       none.hidden = n > 0;
-      say(toks.length ? (n ? 'Topics found: ' + n : 'Nothing found. Try another word.') : '', 500);
+      say(toks.length || atBmOn ? (n ? 'Topics found: ' + n : 'Nothing found. Try another word.') : '', 500);
     });
     g.addEventListener('click', (e) => { const li = e.target.closest('a') && e.target.closest('li[data-id]'); if (!li || e.ctrlKey || e.metaKey || e.shiftKey || e.button) return; const id = li.dataset.id; if (!BUILDERS[id]) return; e.preventDefault(); fgo(id); });
   }
 }
+
+/* закладки: ★ в заголовке темы; список — вверху оглавления слева (на телефоне — группа в выпадающем списке тем), в «Все темы атласа» — отметки и фильтр */
+const BM_KEY = 'bookmarks';
+let bmMem = [], bmFail = false;   // без памяти браузера — закладки живут, пока открыта вкладка
+function bmRead() { if (bmFail) return bmMem.filter((x) => TOPIC[x]); try { const v = JSON.parse(localStorage.getItem(BM_KEY) || '[]'); return (Array.isArray(v) ? v : []).filter((x) => TOPIC[x]); } catch (e) { return bmMem.slice(); } }
+function bmToggle(id) {
+  if (!id || !TOPIC[id]) return;
+  const l = bmRead(), i = l.indexOf(id), on = i < 0;
+  if (on) l.push(id); else l.splice(i, 1);
+  bmMem = l; try { localStorage.setItem(BM_KEY, JSON.stringify(l)); bmFail = false; } catch (e) { bmFail = true; }
+  bmRender(); toast(!on ? 'Bookmark removed' : bmFail ? 'Bookmarked until you close this tab' : l.length === 1 ? (innerWidth <= 700 ? 'Bookmarked. Find it in the topic menu, under “★ Bookmarks”' : 'Bookmarked. The list is at the top left') : 'Topic bookmarked');
+}
+function bmRender() {
+  const l = bmRead(), on = l.includes(curId), b = $('#bmark');
+  if (b) { const t = on ? 'Remove from bookmarks' : 'Add to bookmarks'; b.setAttribute('aria-pressed', String(on)); b.title = t; }
+  subNav.querySelectorAll('.bmbox, .bmog').forEach((x) => x.remove());
+  if (l.length) {
+    let open = true; try { open = localStorage.getItem('bm-open') !== '0'; } catch (e) { /* по умолчанию раскрыто */ }
+    const box = h('details', { class: 'bmbox' }, h('summary', { class: 'subhead' }, '★ Bookmarks', h('span', { class: 'bmn' }, ' · ' + l.length)),
+      ...l.map((id) => h('a', { class: 'sub' + (id === curId ? ' cur' : ''), href: topicHref(id), 'data-id': id, title: secOf(id).name, onclick: (e) => navClick(e, () => id) }, TOPIC[id].name)));
+    box.open = open; box.addEventListener('toggle', () => { try { localStorage.setItem('bm-open', box.open ? '1' : '0'); } catch (e) { /* без памяти */ } });
+    subNav.prepend(box);
+    const sel = subNav.querySelector('.subsel');
+    if (sel) sel.prepend(h('optgroup', { class: 'bmog', label: '★ Bookmarks' }, ...l.map((id) => h('option', { value: id, 'data-n': TOPIC[id].name }, TOPIC[id].name))));
+  }
+  if (typeof decorateNav === 'function') decorateNav();
+  document.querySelectorAll('.alltopics li[data-id]').forEach((li) => { const on = l.includes(li.dataset.id); li.classList.toggle('bm', on); const a = li.querySelector('a'), v = a && a.querySelector('.vhb'); if (a && on && !v) a.append(h('span', { class: 'vhb' }, ', bookmarked')); else if (v && !on) v.remove(); });
+  if (atBm) { if (!l.length && atBmOn) { atBmOn = false; atBm.setAttribute('aria-pressed', 'false'); atFilter.dispatchEvent(new Event('input')); } atBm.hidden = !l.length; if (atBmOn) atFilter.dispatchEvent(new Event('input')); }
+}
+$('#bmark').addEventListener('click', () => bmToggle(curId));
+window.addEventListener('storage', (e) => { if (e.key === BM_KEY) bmRender(); });
 
 /* всплывающее уведомление (role="status" — его зачитывают экранные дикторы; область всегда на странице) */
 const gtoast = $('#gtoast'); let gtT = 0;
