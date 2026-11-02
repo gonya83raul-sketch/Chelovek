@@ -7,7 +7,7 @@
 function makeHemoglobin() {
   rnd = mulberry(2401);
   const scene = bioStage({ bg: 0x0a0608, rim: 0xff5a5a });
-  const VIEW = { o2: matchMedia('(max-width:700px)').matches ? flyTarget(V3(0.1, -3.0, 0), V3(1.5, -1.1, 21.2)) : flyTarget(V3(0.1, -1.6, 0), V3(1.5, 0.3, 21.2)), heme: flyTarget(V3(39.0, -1.6, 0), V3(40, 5.2, 12.2)), sick: matchMedia('(max-width:700px)').matches ? flyTarget(V3(80.0, -2.6, 0), V3(80.5, -0.8, 27)) : flyTarget(V3(79.8, -1.7, 0), V3(80.4, 0.0, 18.5)) };
+  const VIEW = { o2: matchMedia('(max-width:700px)').matches ? flyTarget(V3(0.1, -3.0, 0), V3(1.5, -1.1, 21.2)) : flyTarget(V3(0.1, -1.6, 0), V3(1.5, 0.3, 21.2)), heme: flyTarget(V3(39.0, -1.6, 0), V3(40, 5.2, 12.2)), sick: matchMedia('(max-width:700px)').matches ? flyTarget(V3(80.0, -2.6, 0), V3(80.5, -0.8, 27)) : flyTarget(V3(79.8, -2.4, 0), V3(80.4, -0.7, 18.5)) };
   // цель камеры — в центре модели, место под нижнюю панель — сдвигом кадра: вращение и приближение идут вокруг модели
   const VOFF = 0.16; Object.values(VIEW).forEach((v) => { const d = VOFF * 2 * Math.tan(17 * Math.PI / 180) * v.pos.distanceTo(v.target); v.target.y += d; v.pos.y += d; });
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.o2.pos); camera.setViewOffset(1, 1, 0, VOFF, 1, 1);
@@ -152,7 +152,7 @@ function makeHemoglobin() {
     { text: 'β-цепь', get pos() { return scrOut(cenB.clone().applyMatrix4(dimer1.matrixWorld), 1.9); }, color: '#FF8AB0', show: () => st.labels && st.mode === 'o2' },
     { text: 'гем · Fe²⁺', get pos() { return scrOut(feP[2].clone().applyMatrix4(dimer2.matrixWorld), 1.6); }, color: '#FF9A9A', show: () => st.labels && st.mode === 'o2' },
     { text: 'O₂', get pos() { return o2m[3].getWorldPosition(V3(0, 0, 0)); }, color: '#F04848', show: () => st.labels && st.mode === 'o2' && st.S < 0.9 },
-    { text: 'порфириновое кольцо', get pos() { return hG.localToWorld(ringEdge.clone()); }, color: '#9FB4FF', show: () => st.labels && st.mode === 'heme' },
+    { text: 'порфириновое кольцо', get pos() { return hG.localToWorld(ringEdge.clone()); }, color: '#9FB4FF', show: () => st.labels && st.mode === 'heme' && !matchMedia('(max-width:700px)').matches },
     { text: 'Fe²⁺', get pos() { return hG.localToWorld(V3(0, 0, 0)).add(V3(0.45, -0.3, 0.3)); }, color: '#FF6A3A', show: () => st.labels && st.mode === 'heme' && st.lig !== 'met' },
     { text: 'Fe³⁺', get pos() { return hG.localToWorld(V3(0, 0, 0)).add(V3(0.45, -0.3, 0.3)); }, color: '#C08A5A', show: () => st.labels && st.mode === 'heme' && st.lig === 'met' },
     { text: 'проксимальный гистидин F8', get pos() { return hG.localToWorld(hisF8C.clone()).add(V3(0.45, -0.1, 0)); }, color: '#7FA8FF', show: () => st.labels && st.mode === 'heme' },

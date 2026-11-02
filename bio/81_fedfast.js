@@ -79,7 +79,7 @@ function makeFedfast() {
     refs.setInfo();
   }
   let lastK = -1;
-  const _upd = update; function update2(dt) { _upd(dt); const k = Math.min(3, Math.round(Math.min(3, st.s))); if (k !== lastK) { lastK = k; refs.setInfo && !st.sel && refs.setInfo(); refs.steps && refs.steps.sync(); } }
+  const _upd = update; function update2(dt) { _upd(dt); if (!st.play && refs.sl) { const sv = Math.min(3, st.s), si = refs.sl.querySelector('input'); if (+si.value !== sv) { si.value = sv; refs.sl.querySelector('output').textContent = stateName(sv); } } const k = Math.min(3, Math.round(Math.min(3, st.s))); if (k !== lastK) { lastK = k; refs.setInfo && !st.sel && refs.setInfo(); refs.steps && refs.steps.sync(); } }
   function onKey(e) {
     const k = e.key.toLowerCase(), n = parseInt(e.key, 10);
     if (n >= 1 && n <= 4) { st.s = n - 1; st.play = false; refs.pl.sync(); st.sel = null; refs.setInfo(); refs.steps.sync(); return true; }
@@ -89,7 +89,7 @@ function makeFedfast() {
   }
   function stats() { return [['Глюкоза', (st.glu || 5).toFixed(1), 'ммоль/л'], ['Кетоны', (st.ket || 0).toFixed(1), 'ммоль/л'], ['Инсулин/глюкагон', st.ins > st.glg ? 'инсулин' : 'глюкагон', '']]; }
   const self = {
-    scene, camera, controls, update: update2, ui, onKey, stats, labels, drawScope, accent: '#F2C14E',
+    mobZoom: 0.55, scene, camera, controls, update: update2, ui, onKey, stats, labels, drawScope, accent: '#F2C14E',
     kicker: 'Биохимия · интеграция обмена', title: 'Обмен веществ: сытость и голод',
     lede: 'Органы делят топливо как слаженная команда: после еды — запасают, натощак — делятся, при голоде — перестраиваются так, чтобы мозг не остался без питания.',
     notes: `
