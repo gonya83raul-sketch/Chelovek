@@ -137,7 +137,7 @@ function makeKinetics() {
       plotLine(ctx, A, (u) => theory(u, 'none') / Math.max(0.05, fT(st.T) * fpH(st.pH)) * 0.9, 'rgba(255,255,255,.3)', { lw: 1.2 });
       plotLine(ctx, A, (u) => theory(u) * 0.9, KN_INH[st.inh].color === '#9FA8B8' ? '#7FD6FF' : KN_INH[st.inh].color, { lw: 2 });
       ctx.fillStyle = '#FFD070'; ctx.beginPath(); ctx.arc(A.X(st.S), A.Y(clamp(theory(st.S) * 0.9, 0, 1.05)), 4.5, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.font = '500 9px JetBrains Mono, monospace'; ctx.fillText('Vmax', A.X(0.02), A.Y(1) - 3);
+      ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.font = '500 9px JetBrains Mono, monospace'; ctx.fillText('Vmax', A.X(0.02), A.Y(1) + 11);
       const km = KM * (st.inh === 'comp' ? 1 + Ieff() * 3 : 1); if (km < 1) { ctx.strokeStyle = 'rgba(242,193,78,.5)'; ctx.beginPath(); ctx.moveTo(A.X(km), A.Y(0)); ctx.lineTo(A.X(km), A.Y(theory(km) * 0.9)); ctx.stroke(); ctx.fillStyle = '#F2C14E'; ctx.fillText('Km', A.X(km) + 3, A.Y(0) - 4); }
     } else {
       const A = plotAxes(ctx, w, h, { title: 'Лайнуивер — Берк: 1/v от 1/[S]', xl: '1/[S] →', yl: '1/v' });
