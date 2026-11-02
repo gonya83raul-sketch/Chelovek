@@ -190,7 +190,7 @@ function makeBloodchem() {
     { text: 'blood: H⁺ · CO₂ · HCO₃⁻', pos: V3(-1.0 + 1.0, -2.75, 0.3), color: 'rgba(239,234,230,.6)', show: () => st.labels && st.mode === 'ph' },
     { text: 'lungs: CO₂', pos: V3(-4.6 + 1.0, -1.95, 0.2), color: '#E8A0A8', show: () => st.labels && st.mode === 'ph' },
     { text: 'acidosis', pos: V3(3.1 - 1.2 + 1.0, -1.5, 0.2), color: '#FF5A5A', show: () => st.labels && st.mode === 'ph' }, { text: 'alkalosis', pos: V3(3.1 + 1.25 + 1.0, -1.5, 0.2), color: '#6A9AFF', show: () => st.labels && st.mode === 'ph' },
-    ...BANDS.map(([n, x, c]) => ({ text: n, pos: V3(40 + x + 1.0, -2.05, 0.2), color: c, show: () => st.labels && st.mode === 'prot' })),
+    ...BANDS.map(([n, x, c]) => ({ text: n, pos: V3(40 + x + 0.6, -2.05, 0.2), color: c, show: () => st.labels && st.mode === 'prot' })),
     { text: 'albumin + ligands', pos: V3(40 - 2.6, 2.2, 0), color: '#7FD6FF', show: () => st.labels && st.mode === 'prot' }, { text: 'transferrin · Fe³⁺', pos: V3(40 + 0.25, 1.8, 0), color: '#FF9A5C', show: () => st.labels && st.mode === 'prot' }, { text: 'IgG antibody', pos: V3(40 + 3.0, 2.6, 0), color: '#FF8AB0', show: () => st.labels && st.mode === 'prot' },
     { text: '+', pos: V3(40 - 3.8, -0.55, 0.2), color: '#FF6A6A', show: () => st.labels && st.mode === 'prot' }, { text: '−  start', pos: V3(40 + 5.2, -0.55, 0.2), color: '#6A9AFF', show: () => st.labels && st.mode === 'prot' },
     ...Object.entries(NOD).map(([k, d]) => ({ text: d.n, pos: d.p.clone().add(V3(80, k === 'X' ? -0.95 : -0.5, 0.3)), color: d.c, show: () => st.labels && st.mode === 'coag' })),
