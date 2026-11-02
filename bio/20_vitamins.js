@@ -30,7 +30,7 @@ function makeVitamins() {
   const G1 = new THREE.Group(); scene.add(G1);
   const center = new THREE.Group(); center.position.set(0, 0.85, 0); G1.add(center);
   const cache = {};
-  const big = (id) => { if (!cache[id]) { const m = MOL(id); cache[id] = molMesh(m, { scale: molFit(m, 2.35), style: 'ball' }); } return cache[id]; };
+  const big = (id) => { if (!cache[id]) { const m = MOL(id); cache[id] = molMesh(m, { scale: molFit(m, id === 'b12' ? 1.4 : 2.35), style: 'ball' }); } return cache[id]; };
   const ring = new THREE.Group(); G1.add(ring);
   const RING = VT.map((v, k) => { const m = MOL(v.mol); const g = molMesh(m, { scale: molFit(m, 0.82), hideH: true }); g.traverse((o) => { if (o.isMesh) o.userData.pick = v.id; }); ring.add(g); const pk = new THREE.Mesh(new THREE.SphereGeometry(0.55, 10, 8), new THREE.MeshBasicMaterial({ visible: false })); pk.userData.pick = v.id; g.add(pk); return { v, g, pk }; });
   // дорожка карусели — та же дуга, по которой стоят витамины (эллипс 6,4 × 1,2 вокруг (0, −1,75, −3,2))

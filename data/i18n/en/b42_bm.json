@@ -4,5 +4,10 @@
  "Тема добавлена в закладки": "Topic bookmarked",
  "Тема убрана из закладок": "Bookmark removed",
  "★ Закладки": "★ Bookmarks",
- "★ Только закладки": "★ Bookmarks only"
+ "★ Только закладки": "★ Bookmarks only",
+ "Закладка": "Bookmark",
+ ", в закладках": ", bookmarked",
+ "Тема в закладках до закрытия вкладки": "Bookmarked until you close this tab",
+ "Тема в закладках. Список — в меню тем, группа «★ Закладки»": "Bookmarked. Find it in the topic menu, under “★ Bookmarks”",
+ "Тема в закладках. Список — слева вверху": "Bookmarked. The list is at the top left"
 }
