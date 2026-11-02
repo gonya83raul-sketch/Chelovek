@@ -8,7 +8,7 @@ function makeEicosanoids() {
   rnd = mulberry(5401);
   const scene = bioStage({ rim: 0xff8a5c });
   const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: кадр уходит из-под заголовка и описания (телефон — прежний ракурс)
-  const VIEW = { path: DK ? [V3(-0.8, -1.2, 0), V3(-0.2, 0.8, 21)] : [V3(0.4, -1.6, 0), V3(0.9, 0.2, 17)], platelet: DK ? [V3(39.2, 0.0, 0), V3(39.6, 2.0, 14)] : [V3(39.2, -0.6, 0), V3(39.6, 1.4, 12.5)], organs: DK ? [V3(79.5, 0.9, 0), V3(80.0, 2.1, 15.5)] : [V3(79.5, 1.1, 0), V3(80.0, 2.3, 12.5)] };
+  const VIEW = { path: DK ? [V3(-0.8, -1.2, 0), V3(-0.2, 0.8, 21)] : [V3(0.4, -1.6, 0), V3(0.9, 0.2, 17)], platelet: DK ? [V3(39.2, 0.0, 0), V3(39.6, 2.0, 14)] : [V3(39.2, -0.6, 0), V3(39.6, 1.4, 12.5)], organs: DK ? [V3(79.5, 0.9, 0), V3(80.0, 2.1, 15.5)] : [V3(79.5, 1.1, 0), V3(79.86, 1.96, 9.0)] };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VIEW.path[1]);
   const controls = makeControls(camera, VIEW.path[0]); controls.minDistance = 3; controls.maxDistance = 40;
   const fx = new Sparks(2200, 0.07); scene.add(fx.obj);

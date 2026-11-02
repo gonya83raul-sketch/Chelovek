@@ -5908,7 +5908,7 @@ function makeHemis() {
     const clipOn = m === 'section';
     [...BG_PARTS.flatMap((p) => PART[p.id].mats), shell.solid, shell.glass, ...shell.meshes.map((x) => x.material)].forEach((mm) => { mm.clippingPlanes = clipOn ? [cutPlane] : []; mm.needsUpdate = true; });
     BG_PARTS.forEach((p) => PART[p.id].mats.forEach((mm) => { mm.opacity = m === 'tracts' ? 0.18 : (p.id === 'thal' ? 0.6 : 0.92); }));
-    if (m === 'section') { st.rot = false; refs.rot && refs.rot.sync(); st.fly = flyTarget(V3(0.15, -0.45, 0), V3(7.0, -0.3, 0.0)); } else st.fly = m === 'tracts' ? TRV : HOME;
+    if (m === 'section') { st.rot = false; refs.rot && refs.rot.sync(); st.fly = flyTarget(V3(0.15, -0.45, 0.7), V3(7.0, -0.3, 0.0)); } else st.fly = m === 'tracts' ? TRV : HOME;
     refs.setInfo && refs.setInfo();
   }
   function loop() { if (st.mode !== 'bg') setMode('bg'); st.loopT = st.t; st.msg = st.park ? TXT.park : TXT.loop; refs.setInfo(); }
@@ -5953,7 +5953,7 @@ function makeHemis() {
     refs.setInfo = () => { ib.info.innerHTML = st.msg || (st.mode === 'bg' && st.sel ? PART[st.sel].text : TXT[st.mode]); };
     refs.modeSeg = seg([{ id: 'bg', label: 'Базальные ганглии' }, { id: 'tracts', label: 'Проводящие пути' }, { id: 'section', label: 'Фронтальный срез' }], () => st.mode, (v) => setMode(v));
     refs.seg = seg([{ id: 'all', label: 'Все' }, ...BG_PARTS.map((p) => ({ id: p.id, label: p.name, color: p.color }))], () => st.sel || 'all', (v) => { if (st.mode !== 'bg') setMode('bg'); select(v); });
-    const pk = toggle('Паркинсон', () => st.park, (v) => { st.park = v; });
+    const pk = toggle('Паркинсон', () => st.park, (v) => { st.park = v; loop(); });
     refs.rot = toggle('Вращение', () => st.rot, (v) => { st.rot = v; });
     const lab = toggle('Подписи', () => st.labels, (v) => { st.labels = v; });
     Object.assign(refs, { pk, lab });
@@ -6598,7 +6598,7 @@ function makeCereb() {
   labLights(scene, 0x7fd6c8);
   const VIEW = {
     anat: flyTarget(V3(-0.15, -0.1, 0), V3(3.1, 1.15, 6.5)),   // спереди-сбоку: видны ножки, олива, клочок
-    nuc: matchMedia('(max-width:700px)').matches ? flyTarget(V3(-0.27, -0.3, 0), V3(-1.67, 4.9, 0.3)) : flyTarget(V3(-0.27, -0.3, -0.6), V3(-1.67, 4.9, -0.3)),
+    nuc: matchMedia('(max-width:700px)').matches ? flyTarget(V3(-0.27, -0.3, 0), V3(-1.67, 4.9, 0.3)) : flyTarget(V3(-0.57, -0.3, -0.6), V3(-1.67, 4.9, -0.3)),
     micro: matchMedia('(max-width:700px)').matches ? flyTarget(V3(0, -0.75, 0), V3(6.3, 3.0, 7.6)) : flyTarget(V3(-0.49, -1.0, 0.4), V3(5.81, 2.75, 8.0)),
   };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(VIEW.anat.pos);
