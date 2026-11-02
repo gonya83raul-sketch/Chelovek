@@ -45,7 +45,7 @@ function makeCereb() {
   labLights(scene, 0x7fd6c8);
   const VIEW = {
     anat: flyTarget(V3(-0.15, -0.1, 0), V3(3.1, 1.15, 6.5)),   // спереди-сбоку: видны ножки, олива, клочок
-    nuc: matchMedia('(max-width:700px)').matches ? flyTarget(V3(-0.27, -0.3, 0), V3(-1.67, 4.9, 0.3)) : flyTarget(V3(-0.27, -0.3, -0.6), V3(-1.67, 4.9, -0.3)),
+    nuc: matchMedia('(max-width:700px)').matches ? flyTarget(V3(-0.27, -0.3, 0), V3(-1.67, 4.9, 0.3)) : flyTarget(V3(-0.57, -0.3, -0.6), V3(-1.67, 4.9, -0.3)),
     micro: matchMedia('(max-width:700px)').matches ? flyTarget(V3(0, -0.75, 0), V3(6.3, 3.0, 7.6)) : flyTarget(V3(-0.49, -1.0, 0.4), V3(5.81, 2.75, 8.0)),
   };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(VIEW.anat.pos);

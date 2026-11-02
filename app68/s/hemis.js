@@ -144,7 +144,7 @@ function makeHemis() {
     const clipOn = m === 'section';
     [...BG_PARTS.flatMap((p) => PART[p.id].mats), shell.solid, shell.glass, ...shell.meshes.map((x) => x.material)].forEach((mm) => { mm.clippingPlanes = clipOn ? [cutPlane] : []; mm.needsUpdate = true; });
     BG_PARTS.forEach((p) => PART[p.id].mats.forEach((mm) => { mm.opacity = m === 'tracts' ? 0.18 : (p.id === 'thal' ? 0.6 : 0.92); }));
-    if (m === 'section') { st.rot = false; refs.rot && refs.rot.sync(); st.fly = flyTarget(V3(0.15, -0.45, 0), V3(7.0, -0.3, 0.0)); } else st.fly = m === 'tracts' ? TRV : HOME;
+    if (m === 'section') { st.rot = false; refs.rot && refs.rot.sync(); st.fly = flyTarget(V3(0.15, -0.45, 0.7), V3(7.0, -0.3, 0.0)); } else st.fly = m === 'tracts' ? TRV : HOME;
     refs.setInfo && refs.setInfo();
   }
   function loop() { if (st.mode !== 'bg') setMode('bg'); st.loopT = st.t; st.msg = st.park ? TXT.park : TXT.loop; refs.setInfo(); }
@@ -189,7 +189,7 @@ function makeHemis() {
     refs.setInfo = () => { ib.info.innerHTML = st.msg || (st.mode === 'bg' && st.sel ? PART[st.sel].text : TXT[st.mode]); };
     refs.modeSeg = seg([{ id: 'bg', label: 'Базальные ганглии' }, { id: 'tracts', label: 'Проводящие пути' }, { id: 'section', label: 'Фронтальный срез' }], () => st.mode, (v) => setMode(v));
     refs.seg = seg([{ id: 'all', label: 'Все' }, ...BG_PARTS.map((p) => ({ id: p.id, label: p.name, color: p.color }))], () => st.sel || 'all', (v) => { if (st.mode !== 'bg') setMode('bg'); select(v); });
-    const pk = toggle('Паркинсон', () => st.park, (v) => { st.park = v; });
+    const pk = toggle('Паркинсон', () => st.park, (v) => { st.park = v; loop(); });
     refs.rot = toggle('Вращение', () => st.rot, (v) => { st.rot = v; });
     const lab = toggle('Подписи', () => st.labels, (v) => { st.labels = v; });
     Object.assign(refs, { pk, lab });

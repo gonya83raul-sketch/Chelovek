@@ -125,7 +125,7 @@ function makeProtein() {
   }
   const TXT = {
     aa: '<b>20 amino acids</b> are the alphabet of proteins: a common part (amino group, carboxyl, hydrogen on the α-carbon) and a distinct <b>side chain</b> that defines the group (ring color). All except glycine are <b>L-isomers</b>. Nine are <b>essential</b> (valine, leucine, isoleucine, threonine, methionine, lysine, phenylalanine, tryptophan, histidine) and must come from food. Click a molecule.',
-    fold: '<b>Folding and denaturation.</b> Sequence sets a protein’s shape, but in the crowded cell <b>chaperones</b> help. On the right is the <b>GroEL/GroES</b> chaperonin (PDB 1AON): a barrel of two rings and a “lid” where a protein folds using ATP. On the left is lysozyme: “Heating” shows <b>denaturation</b> — loss of shape without breaking peptide bonds; mild is reversible, harsh is not (a boiled egg).',
+    fold: '<b>Folding and denaturation.</b> Sequence sets a protein’s shape, but in the crowded cell <b>chaperones</b> help. “Chaperonin”: the <b>GroEL/GroES</b> barrel (PDB 1AON), where a protein folds using ATP. “Heating” and “Boiling” show lysozyme: <b>denaturation</b> — loss of shape without breaking peptide bonds; mild is reversible, harsh is not (a boiled egg).',
   };
   const labels = [
     ...AAM.map((a) => ({ text: `${MOL(a.id).name}${DK ? ' · ' + a.l : ''}${a.ess === 1 ? ' ★' : a.ess === 2 ? ' ☆' : ''}`, pos: a.g.position.clone().add(DK ? V3(-0.55, -1.02, 0) : V3(-0.75, -1.12, 0)), color: PR_GR[a.gr][1], show: () => st.labels && st.mode === 'aa' })),
