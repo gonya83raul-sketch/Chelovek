@@ -17,7 +17,7 @@ function makeHormsig() {
   rnd = mulberry(2201);
   const scene = bioStage({ rim: 0xff8a5c });
   const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: кадр уходит из-под заголовка и описания (телефон — прежний ракурс)
-  const VIEW = { camp: DK ? flyTarget(V3(-2.0, 0.0, 0), V3(-1.0, 2.2, 23)) : flyTarget(V3(-0.6, -1.8, 0), V3(0.4, 0.4, 19.5)), ster: DK ? flyTarget(V3(37.3, -0.8, 0), V3(37.9, 1.4, 18)) : flyTarget(V3(40, -1.4, 0), V3(40.6, 0.8, 18)), ins: DK ? flyTarget(V3(75.0, 0.15, 0), V3(75.9, 3.5, 26)) : flyTarget(V3(80, -1.4, 0), V3(80.6, 0.8, 17)), chem: DK ? flyTarget(V3(119.6, 0.15, 0), V3(119.6, 3.05, 23)) : flyTarget(V3(119.7, -1.6, 0), V3(119.7, 0.6, 23)) };
+  const VIEW = { camp: DK ? flyTarget(V3(-2.0, 0.0, 0), V3(-1.0, 2.2, 23)) : flyTarget(V3(-0.6, -1.8, 0), V3(0.4, 0.4, 19.5)), ster: DK ? flyTarget(V3(37.3, -0.8, 0), V3(37.9, 1.4, 18)) : flyTarget(V3(40, -1.4, 0), V3(40.6, 0.8, 18)), ins: DK ? flyTarget(V3(75.0, 0.15, 0), V3(75.9, 3.5, 26)) : flyTarget(V3(80, -1.4, 0), V3(80.6, 0.8, 17)), chem: DK ? flyTarget(V3(119.6, 0.15, 0), V3(119.6, 3.05, 23)) : flyTarget(V3(120, -0.3, 0), V3(120, -0.3, 17.5)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.camp.pos);
   const controls = makeControls(camera, VIEW.camp.target); controls.minDistance = 2; controls.maxDistance = 40;
   const fx = new Sparks(1800, 0.08); scene.add(fx.obj);
@@ -67,7 +67,7 @@ function makeHormsig() {
   const glcs = []; for (let k = 0; k < 16; k++) { const m = molMesh(MOL('glucose'), { scale: 0.07, hideH: true }); m.visible = false; G3.add(m); glcs.push({ m, age: 9, x: 0 }); }
   /* ---------- 4. химия гормонов ---------- */
   const G4 = new THREE.Group(); G4.position.set(120, 0, 0); scene.add(G4);
-  const HM = HS_MOL.map((d, k) => { const m = molMesh(MOL(d.id), { scale: 0.15, hideH: true }); const g = new THREE.Group(); g.add(m); g.position.set(-6.3 + (k % 4) * 3.6 + (k >= 4 ? 1.8 : 0), k < 4 ? 0.7 : -1.6, 0); if (k >= 4) g.position.x = -6.3 + (k - 4) * 3.6 + 1.0; G4.add(g); const pk = new THREE.Mesh(new THREE.SphereGeometry(1.1, 8, 6), new THREE.MeshBasicMaterial({ visible: false })); pk.userData.pick = d.id; g.add(pk); return { d, g, m }; });
+  const HM = HS_MOL.map((d, k) => { const m = molMesh(MOL(d.id), { scale: 0.15, hideH: true }); const g = new THREE.Group(); g.add(m); g.position.set(DK ? -6.3 + (k % 4) * 3.6 + (k >= 4 ? 1.8 : 0) : -2.6 + (k % 2) * 5.2, DK ? (k < 4 ? 0.7 : -1.6) : 3.9 - Math.floor(k / 2) * 2.8, 0); if (k >= 4 && DK) g.position.x = -6.3 + (k - 4) * 3.6 + 1.0; G4.add(g); const pk = new THREE.Mesh(new THREE.SphereGeometry(1.1, 8, 6), new THREE.MeshBasicMaterial({ visible: false })); pk.userData.pick = d.id; g.add(pk); return { d, g, m }; });
   /* ---------- состояние ---------- */
   const st = { t: 0, mode: 'camp', labels: true, rot: false, fly: null, cyc: 0, msg: null, chol: false, caff: false, sel: null, amp: [0, 0, 0, 0] };
   function setMode(m) { st.mode = m; refs.modeSeg && refs.modeSeg.sync(); [G1, G2, G3, G4].forEach((g, k) => { g.visible = ['camp', 'ster', 'ins', 'chem'][k] === m; }); st.fly = VIEW[m]; st.cyc = 0; st.msg = null; st.sel = null; refs.rebuild && refs.rebuild(); refs.setInfo && refs.setInfo(); }

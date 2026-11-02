@@ -187,7 +187,7 @@ function makeCalcium() {
     { text: 'с мочой', pos: V3(-0.1, -0.35, 0.25), color: CA, show: () => st.labels && st.mode === 'reg' },
     ...VD.map((v) => ({ text: { dhc7: '7-дегидрохолестерин', calciol: 'холекальциферол (D₃)', calcidiol: 'кальцидиол (25-OH-D₃)', calcitriol: 'кальцитриол' }[v.id], pos: V3(40 + v.x - 0.6, -1.25, 0.3), color: v.col, show: () => st.labels && st.mode === 'vitd' })),
     ...VD.map((v) => ({ text: v.organ, pos: V3(40 + v.x - 0.6, 1.3, 0.3), color: '#B8B0C0', show: () => st.labels && st.mode === 'vitd' && DK })),
-    ...VD.filter((v) => v.enz).map((v, i) => ({ text: v.enz, pos: V3(40 + v.x + 0.35, i % 2 ? 0.95 : 0.62, 0.3), color: v.col, show: () => st.labels && st.mode === 'vitd' })),
+    ...VD.filter((v) => v.enz).map((v, i) => ({ text: v.enz, pos: V3(40 + v.x + 0.35, i % 2 ? 0.95 : 0.62, 0.3), color: v.col, show: () => st.labels && st.mode === 'vitd' && DK })),
     { text: '24-гидроксилаза: распад', pos: V3(40 + 4.45 - 2.3, -1.7, 0.3), color: '#8A8A96', show: () => st.labels && st.mode === 'vitd' },
     { text: 'остеокласт', pos: () => ocl.position.clone().add(V3(80.6, 0.85, 0.3)), color: '#B08AE8', show: () => st.labels && st.mode === 'bone' },
     { text: 'остеобласты', pos: () => (OB.find((m) => m.visible) || OB[0]).position.clone().add(V3(80.2, 0.35, 0.3)), color: '#7FD6A8', show: () => st.labels && st.mode === 'bone' && OB.some((m) => m.visible) },
