@@ -9,7 +9,7 @@ function makeJoints() {
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x07070b); scene.environment = envTex;
   labLights(scene, 0xffc89f);
   const VIEW = { bone: [V3(-1.83, -1.08, 0), V3(1.5, 0.75, 20)], osteon: [V3(8.4, -1.0, -0.2), V3(10.6, 4.0, 7.5)], joint: [V3(38.9, -0.4, 0), V3(40.6, 1.4, 17.5)], types: [V3(82.0, 6.6, 0), V3(85, 9.0, 47)] };
-  const VIEWM = { bone: [V3(0.5, -0.8, 0), V3(3.0, 0.8, 24)], osteon: [V3(9.0, -0.2, -0.2), V3(11.2, 4.4, 8.5)], joint: [V3(40, 1.8, 0), V3(41.2, 3.0, 15)], types: [V3(84.6, 8.6, 0), V3(87, 10.3, 42)] }, mqm = window.matchMedia('(max-width:700px)'), VV = (m) => (mqm.matches && VIEWM[m]) || VIEW[m];
+  const VIEWM = { bone: [V3(0.5, -0.8, 0), V3(3.0, 0.8, 24)], osteon: [V3(9.0, -0.2, -0.2), V3(11.2, 4.4, 8.5)], joint: [V3(40, 1.1, 0), V3(41.2, 2.3, 15)], types: [V3(84.6, 8.6, 0), V3(87, 10.3, 42)] }, mqm = window.matchMedia('(max-width:700px)'), VV = (m) => (mqm.matches && VIEWM[m]) || VIEW[m];
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300);
   const controls = makeControls(camera, VIEW.bone[0]); controls.minDistance = 2; controls.maxDistance = 70;
   const fx = new Sparks(800, 0.07); scene.add(fx.obj);
