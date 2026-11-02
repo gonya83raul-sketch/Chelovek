@@ -85,7 +85,7 @@ function makeFedfast() {
     refs.setInfo();
   }
   let lastK = -1;
-  const _upd = update; function update2(dt) { _upd(dt); const k = Math.min(3, Math.round(Math.min(3, st.s))); if (k !== lastK) { lastK = k; refs.setInfo && !st.sel && refs.setInfo(); refs.steps && refs.steps.sync(); } }
+  const _upd = update; function update2(dt) { _upd(dt); if (!st.play && refs.sl) { const sv = Math.min(3, st.s), si = refs.sl.querySelector('input'); if (+si.value !== sv) { si.value = sv; refs.sl.querySelector('output').textContent = stateName(sv); } } const k = Math.min(3, Math.round(Math.min(3, st.s))); if (k !== lastK) { lastK = k; refs.setInfo && !st.sel && refs.setInfo(); refs.steps && refs.steps.sync(); } }
   function onKey(e) {
     const k = e.key.toLowerCase(), n = parseInt(e.key, 10);
     if (n >= 1 && n <= 4) { st.s = n - 1; st.play = false; refs.pl.sync(); st.sel = null; refs.setInfo(); refs.steps.sync(); return true; }
@@ -95,7 +95,7 @@ function makeFedfast() {
   }
   function stats() { return [['Glucose', (st.glu || 5).toFixed(1), 'mmol/L'], ['Ketones', (st.ket || 0).toFixed(1), 'mmol/L'], ['Insulin/glucagon', st.ins > st.glg ? 'insulin' : 'glucagon', '']]; }
   const self = {
-    scene, camera, controls, update: update2, ui, onKey, stats, labels, drawScope, accent: '#F2C14E',
+    mobZoom: 0.55, scene, camera, controls, update: update2, ui, onKey, stats, labels, drawScope, accent: '#F2C14E',
     kicker: 'Biochemistry · metabolic integration', title: 'Metabolism: fed and fasting',
     lede: 'Organs share fuel like a well-coordinated team: after a meal they store it, when fasting they share it, and in starvation they adapt so that the brain is never left without food.',
     notes: `

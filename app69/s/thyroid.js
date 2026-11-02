@@ -200,7 +200,7 @@ function makeThyroid() {
     { text: 'коллоид', pos: V3(-0.6, 1.05, 0.9), color: '#E8B85A', show: () => st.labels && st.mode === 'synth' },
     { text: 'тиреоглобулин', pos: TGP[20].clone().add(V3(-0.3, -0.25, 0.3)), color: '#F2D27A', show: () => st.labels && st.mode === 'synth' },
     { text: 'тироциты', pos: V3(-1.85, -1.35, 0.1), color: '#E890B0', show: () => st.labels && st.mode === 'synth' },
-    { text: 'капилляр', pos: BAS.clone().add(V3(0.35, -1.0, 0.45)), color: '#D84A50', show: () => st.labels && st.mode === 'synth' && DK },
+    { text: 'капилляр', pos: BAS.clone().add(V3(0.35, -1.6, 0.45)), color: '#D84A50', show: () => st.labels && st.mode === 'synth' && DK },
     { text: 'NIS (Na⁺/I⁻)', pos: nis.position.clone().add(V3(0.35, 0.05, 0.2)), color: '#5B8CFF', show: () => st.labels && st.mode === 'synth' },
     { text: 'пендрин', pos: pend.position.clone().add(V3(-0.15, 0.35, 0.25)), color: '#7FE0A0', show: () => st.labels && st.mode === 'synth' },
     { text: 'ТПО', pos: tpo.position.clone().add(V3(-0.1, -0.38, 0.25)), color: '#FF9A5C', show: () => st.labels && st.mode === 'synth' },

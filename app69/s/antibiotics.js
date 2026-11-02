@@ -12,7 +12,8 @@ Object.assign(BIO_MOL, {"chloramphenicol":{"name":"Левомицетин","el":
 function makeAntibiotics() {
   __set_rnd(mulberry(7301));
   const scene = bioStage({ rim: 0x7fd6ff });
-  const VIEW = { ribo: [V3(-2.0, -1.5, 0), V3(-1.4, 0.2, 18.8)], cycle: [V3(38.2, -1.5, 0), V3(38.8, 0.3, 17.5)], resist: [V3(78.9, -2.6, 1.7), V3(78.9, 7.4, 10.8)] };
+  const DK = !matchMedia('(max-width:700px)').matches;   /* телефон: «Цикл» и «Устойчивость» сдвинуты, чтобы не резались кромкой */
+  const VIEW = { ribo: [V3(-2.0, -1.5, 0), V3(-1.4, 0.2, 18.8)], cycle: DK ? [V3(38.2, -1.5, 0), V3(38.8, 0.3, 17.5)] : [V3(39.2, -1.5, 0), V3(39.8, 0.3, 17.5)], resist: DK ? [V3(78.9, -2.6, 1.7), V3(78.9, 7.4, 10.8)] : [V3(80.1, -2.6, 1.7), V3(80.1, 7.4, 10.8)] };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VIEW.ribo[1]);
   const controls = makeControls(camera, VIEW.ribo[0]); controls.minDistance = 3; controls.maxDistance = 40;
   const fx = new Sparks(1600, 0.07); scene.add(fx.obj);
@@ -113,7 +114,7 @@ function makeAntibiotics() {
   /* ---------- состояние ---------- */
   const st = { t: 0, mode: 'ribo', labels: true, rot: false, fly: null, msg: null, abx: 'tet', abx2: 'none', ph: 0, cyc: 0, nAA: 0, nErr: 0, stall: 0, plen: 0, holder: null, course: 'stop', day: 0, run: false, S: 0.5, R: 0.0005, Cd: 0, nextDose: 0, hist: [], cured: false };
   function setMode(m) { st.mode = m; refs.modeSeg && refs.modeSeg.sync(); [G1, G2, G3].forEach((g, k) => { g.visible = ['ribo', 'cycle', 'resist'][k] === m; }); st.fly = flyTarget(VIEW[m][0], VIEW[m][1]); st.msg = null; refs.rebuild && refs.rebuild(); refs.setInfo && refs.setInfo(); }
-  function setAbx(id) { st.abx = id; const a = ABX.find((x) => x.id === id); const c = a.p.clone().lerp(V3(0, 0, 0), 0.5); const tg = V3(c.x - 1.9, -2.2, c.z * 0.5); st.fly = flyTarget(tg, tg.clone().add(V3(0.5, 1.6, 17))); refs.setInfo && refs.setInfo(); }
+  function setAbx(id) { st.abx = id; const a = ABX.find((x) => x.id === id); const c = a.p.clone().lerp(V3(0, 0, 0), 0.5); const tg = V3(c.x - 1.9, DK && id === 'ery' ? -0.6 : -2.2, c.z * 0.5); st.fly = flyTarget(tg, tg.clone().add(V3(0.5, 1.6, 17))); refs.setInfo && refs.setInfo(); }
   function resetCycle() {
     st.ph = 0; st.cyc = 0; st.nAA = 0; st.nErr = 0; st.bounce = 0; st.stallT = 0; st.drop = 0; st.plen = 1; st.bonded = false; st.picked = false; st.wrong = false; st.flash = false;
     setRole(tpool[0], 'P'); tpool[0].g.position.copy(tPos('P')); setRole(tpool[1], 'E'); tpool[1].g.position.copy(tPos('E'));
