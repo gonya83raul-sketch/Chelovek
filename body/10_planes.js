@@ -101,9 +101,9 @@ function makePlanes() {
   const arrowMat = (col) => new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 1 });
   function darrow(a, b, col, both = true) {
     const g = new THREE.Group(); const d = b.clone().sub(a), L = d.length(), mat = arrowMat(col);
-    const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.045, L - 0.5, 10), mat); shaft.position.copy(a).lerp(b, 0.5); shaft.quaternion.setFromUnitVectors(V3(0, 1, 0), d.clone().normalize()); g.add(shaft);
-    const cone = (p, dir) => { const c = new THREE.Mesh(new THREE.ConeGeometry(0.16, 0.38, 14), mat); c.position.copy(p); c.quaternion.setFromUnitVectors(V3(0, 1, 0), dir); g.add(c); };
-    cone(b.clone().addScaledVector(d.clone().normalize(), -0.19), d.clone().normalize()); if (both) cone(a.clone().addScaledVector(d.clone().normalize(), 0.19), d.clone().normalize().negate());
+    const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.085, 0.085, L - 0.7, 12), mat); shaft.position.copy(a).lerp(b, 0.5); shaft.quaternion.setFromUnitVectors(V3(0, 1, 0), d.clone().normalize()); g.add(shaft);
+    const cone = (p, dir) => { const c = new THREE.Mesh(new THREE.ConeGeometry(0.27, 0.56, 16), mat); c.position.copy(p); c.quaternion.setFromUnitVectors(V3(0, 1, 0), dir); g.add(c); };
+    cone(b.clone().addScaledVector(d.clone().normalize(), -0.28), d.clone().normalize()); if (both) cone(a.clone().addScaledVector(d.clone().normalize(), 0.28), d.clone().normalize().negate());
     DG.add(g); g.userData.mat = mat; return g;
   }
   const J = Object.fromEntries(Object.entries(SKEL_META.joints).map(([k, v]) => [k, V3(...v)]));
@@ -112,8 +112,8 @@ function makePlanes() {
     ant: { g: darrow(V3(0, 12.4, -2.3), V3(0, 12.4, 2.6), '#7FD6FF'), view: [V3(0, 9.6, 0), V3(25, 11.5, 6)] },
     med: { g: (() => { const g = new THREE.Group(); g.add(darrow(V3(0.05, 13.0, 1.6), V3(2.6, 13.0, 1.6), '#7FE0A0', false), darrow(V3(-0.05, 13.0, 1.6), V3(-2.6, 13.0, 1.6), '#7FE0A0', false)); const mid = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 17.5, 8), arrowMat('#7FE0A0')); mid.position.set(0.05, 9.3, 1.25); g.add(mid); DG.add(g); return g; })(), view: [V3(-0.4, 9.4, 0), V3(2, 11, 25)] },
     prox: { g: (() => { const g = new THREE.Group(); g.add(darrow(J.shL.clone().add(V3(0.55, 0, 0.5)), J.hdL.clone().add(V3(0.45, -0.6, 0.5)), '#FF8AB0', false), darrow(J.hpL.clone().add(V3(0.7, -0.2, 0.6)), J.anL.clone().add(V3(0.6, -0.5, 0.6)), '#FF8AB0', false)); DG.add(g); return g; })(), view: [V3(-0.6, 4.2, 0), V3(12, 7, 45)] },
-    deep: { g: darrow(V3(J.knL.x + 0.1, 7.2, 1.6), V3(J.knL.x + 0.1, 7.2, 0.05), '#C77DFF', true), view: [V3(0.9, 6.0, 0), V3(13, 8, 12)] },
-    ipsi: { g: (() => { const g = new THREE.Group(); const mk = (a, b, col) => { const c = new THREE.QuadraticBezierCurve3(a, a.clone().lerp(b, 0.5).add(V3(a.x > 0 && b.x > 0 ? 1.6 : 0, 0, 1.4)), b); const m = new THREE.Mesh(new THREE.TubeGeometry(c, 40, 0.05, 8), arrowMat(col)); g.add(m); }; mk(J.hdL.clone().add(V3(0.2, -0.4, 0.3)), J.anL.clone().add(V3(0.2, -0.5, 0.5)), '#7FE0A0'); mk(J.hdL.clone().add(V3(0.1, -0.4, 0.3)), J.anR.clone().add(V3(-0.1, -0.5, 0.5)), '#FF9A5C'); DG.add(g); return g; })(), view: [V3(-1.0, 4.2, 0), V3(4, 7, 46)] },
+    deep: { g: darrow(V3(J.knL.x + 0.1, 7.2, 1.6), V3(J.knL.x + 0.1, 7.2, 0.05), '#C77DFF', true), view: [V3(J.knL.x + 0.3, 7.2, 0.8), V3(J.knL.x + 10.5, 8.0, 4.2)] },   /* сбоку: стрелка «кожа → кость» идёт поперёк экрана */
+    ipsi: { g: (() => { const g = new THREE.Group(); const mk = (a, b, col) => { const c = new THREE.QuadraticBezierCurve3(a, a.clone().lerp(b, 0.5).add(V3(a.x > 0 && b.x > 0 ? 1.6 : 0, 0, 1.4)), b); const m = new THREE.Mesh(new THREE.TubeGeometry(c, 40, 0.1, 10), arrowMat(col)); g.add(m); }; mk(J.hdL.clone().add(V3(0.2, -0.4, 0.3)), J.anL.clone().add(V3(0.2, -0.5, 0.5)), '#7FE0A0'); mk(J.hdL.clone().add(V3(0.1, -0.4, 0.3)), J.anR.clone().add(V3(-0.1, -0.5, 0.5)), '#FF9A5C'); DG.add(g); return g; })(), view: [V3(-1.0, 4.2, 0), V3(4, 7, 46)] },
   };
   const DIRNAME = { sup: 'Верхний ↔ нижний', ant: 'Передний ↔ задний', med: 'Медиальный ↔ латеральный', prox: 'Проксимальный ↔ дистальный', deep: 'Поверхностный ↔ глубокий', ipsi: 'Ипси- и контралатеральный' };
 
@@ -196,7 +196,8 @@ function makePlanes() {
     if (M === 'dirs') Object.entries(DIRS).forEach(([k, d]) => { d.g.visible = k === st.dir; d.g.traverse((o) => { if (o.material) o.material.opacity = 0.75 + 0.25 * Math.sin(t * 3); }); });
     const ghost = M === 'cav' && st.cav !== 'reg';
     if (ghost !== st._ghost) { st._ghost = ghost; boneMat.transparent = ghost; boneMat.opacity = ghost ? 0.18 : 1; boneMat.depthWrite = !ghost; boneMat.needsUpdate = true; Object.values(ORG).forEach((m) => { if (m === ORG.diaph) return; m.material.transparent = ghost; m.material.opacity = ghost ? 0.22 : 1; m.material.depthWrite = !ghost; m.material.needsUpdate = true; }); }
-    if (ghost) { const set = CAVSET[st.cav]; Object.entries(CAV).forEach(([k, m]) => { const on = set.includes(k); m.visible = true; m.material.opacity = on ? 0.42 + 0.08 * Math.sin(t * 3) : 0.05; m.material.emissiveIntensity = on ? 0.35 : 0.05; }); }
+    if (ghost) { const oa = st.cav === 'abd' ? 0.6 : 0.22; Object.values(ORG).forEach((m) => { if (m !== ORG.diaph) m.material.opacity = oa; }); }   /* «Брюшно-тазовая»: органы, о которых текст, видны сквозь полость */
+    if (ghost) { const set = CAVSET[st.cav]; Object.entries(CAV).forEach(([k, m]) => { const on = set.includes(k); m.visible = true; m.material.opacity = on ? (k === 'abd' || k === 'pelv' ? 0.2 + 0.05 * Math.sin(t * 3) : 0.42 + 0.08 * Math.sin(t * 3)) : 0.05;   /* брюшная и тазовая — прозрачнее: внутри видны органы */ m.material.emissiveIntensity = on ? 0.35 : 0.05; }); }
     if (M === 'cav' && st.cav === 'reg') {
       R9.forEach((r) => { r.m.visible = st.reg === 'r9'; r.m.material.opacity = r.id === st.sel ? 0.45 + 0.1 * Math.sin(t * 4) : 0.08; });
       Q4.forEach((r) => { r.m.visible = st.reg === 'q4'; r.m.material.opacity = r.id === st.sel ? 0.45 + 0.1 * Math.sin(t * 4) : 0.08; }); tpy.visible = st.reg === 'r9';
