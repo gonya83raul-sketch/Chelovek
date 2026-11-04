@@ -8647,7 +8647,7 @@ function makeSkin() {
     { text: 'роговой', pos: V3(W / 2 + 0.03, Y_TOP + 0.02, D / 2), color: '#F2E6D8', show: () => st.labels && st.sel === 'epi' },
     { text: 'зернистый', pos: V3(W / 2 + 0.03, Y_TOP - 0.06, D / 2), color: '#D8B080', show: () => st.labels && st.sel === 'epi' },
     { text: 'шиповатый', pos: V3(W / 2 + 0.03, Y_EPI + 0.12, D / 2), color: '#E8C8B0', show: () => st.labels && st.sel === 'epi' },
-    { text: 'базальный', pos: V3(-W / 2, Y_EPI + 0.02, D / 2), color: '#C09070', left: true, show: () => st.labels && st.sel === 'epi' },
+    { text: 'базальный', pos: matchMedia('(max-width:700px)').matches ? V3(W / 2 + 0.03, Y_EPI + 0.04, D / 2) : V3(-W / 2, Y_EPI + 0.02, D / 2), color: '#C09070', left: !matchMedia('(max-width:700px)').matches, show: () => st.labels && st.sel === 'epi' },
     { text: 'сосочковый слой', pos: V3(W / 2 + 0.03, 0.82, D / 2), color: '#F0B0B0', show: () => st.labels && st.sel === 'der' },
     { text: 'сетчатый слой', pos: V3(-W / 2 + 0.05, -0.05, D / 2), color: '#D89090', show: () => st.labels && st.sel === 'der' },
     { text: 'меланоцит', pos: MEL0.clone().add(V3(0.04, 0.03, 0.04)), color: '#C08060', show: () => st.labels && st.sel === 'epi' },
@@ -9120,7 +9120,7 @@ function makeRepro(initMode) {
   const labels = [
     { text: 'яичник', pos: V3(0.42, 0.17, 0.05), color: '#F2B0C8', show: () => st.labels && schem() },
     { text: 'маточная труба', pos: V3(0.38, 0.36, 0.05), color: '#F2C88A', show: () => st.labels && schem() },
-    { text: 'матка', pos: matchMedia('(max-width:700px)').matches ? V3(-0.05, 0.25, 0.12) : V3(0.0, 0.36, 0.1), color: '#E88A9A', show: () => st.labels && schem() },
+    { text: 'матка', pos: matchMedia('(max-width:700px)').matches ? V3(-0.05, 0.25, 0.12) : V3(0.0, 0.36, 0.1), color: '#E88A9A', show: () => st.labels && schem() && !(st.mode === 'dev' && matchMedia('(max-width:700px)').matches) },
     { text: 'эндометрий', pos: matchMedia('(max-width:700px)').matches ? V3(-0.06, 0.12, 0.12) : V3(-0.06, 0.25, 0.12), color: '#ff7a8a', show: () => st.labels && st.mode === 'cycle' },
     { text: 'шейка и влагалище', pos: V3(0.08, -0.3, -0.02), color: '#D8A0B0', left: true, show: () => st.labels && schem() },
     { text: 'мочевой пузырь', pos: V3(0.1, -0.02, 0.36), color: '#F2D860', show: () => st.labels && st.mode === 'female' && schem() },
