@@ -99,10 +99,10 @@ function makePlanes() {
   /* ---------- 2. направления ---------- */
   const DG = new THREE.Group(); G.add(DG);
   const arrowMat = (col) => new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 1 });
-  function darrow(a, b, col, both = true) {
+  function darrow(a, b, col, both = true, k = 1) {
     const g = new THREE.Group(); const d = b.clone().sub(a), L = d.length(), mat = arrowMat(col);
-    const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.085, 0.085, L - 0.7, 12), mat); shaft.position.copy(a).lerp(b, 0.5); shaft.quaternion.setFromUnitVectors(V3(0, 1, 0), d.clone().normalize()); g.add(shaft);
-    const cone = (p, dir) => { const c = new THREE.Mesh(new THREE.ConeGeometry(0.27, 0.56, 16), mat); c.position.copy(p); c.quaternion.setFromUnitVectors(V3(0, 1, 0), dir); g.add(c); };
+    const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.085 * k, 0.085 * k, L - 0.7, 12), mat); shaft.position.copy(a).lerp(b, 0.5); shaft.quaternion.setFromUnitVectors(V3(0, 1, 0), d.clone().normalize()); g.add(shaft);
+    const cone = (p, dir) => { const c = new THREE.Mesh(new THREE.ConeGeometry(0.27 * k, 0.56, 16), mat); c.position.copy(p); c.quaternion.setFromUnitVectors(V3(0, 1, 0), dir); g.add(c); };
     cone(b.clone().addScaledVector(d.clone().normalize(), -0.28), d.clone().normalize()); if (both) cone(a.clone().addScaledVector(d.clone().normalize(), 0.28), d.clone().normalize().negate());
     DG.add(g); g.userData.mat = mat; return g;
   }
@@ -111,9 +111,9 @@ function makePlanes() {
     sup: { g: (() => { const g = new THREE.Group(); g.add(darrow(V3(-3.0, 0.6, 0.3), V3(-3.0, 17.5, 0.3), '#F2C14E'), darrow(V3(2.4, 9.2, 0.6), V3(2.4, 15.0, 0.6), '#FFB86A')); DG.add(g); return g; })(), view: [V3(-1.2, 4.2, 0), V3(5, 7, 46)] },
     ant: { g: darrow(V3(0, 12.4, -2.3), V3(0, 12.4, 2.6), '#7FD6FF'), view: [V3(0, 9.6, 0), V3(25, 11.5, 6)] },
     med: { g: (() => { const g = new THREE.Group(); g.add(darrow(V3(0.05, 13.0, 1.6), V3(2.6, 13.0, 1.6), '#7FE0A0', false), darrow(V3(-0.05, 13.0, 1.6), V3(-2.6, 13.0, 1.6), '#7FE0A0', false)); const mid = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 17.5, 8), arrowMat('#7FE0A0')); mid.position.set(0.05, 9.3, 1.25); g.add(mid); DG.add(g); return g; })(), view: [V3(-0.4, 9.4, 0), V3(2, 11, 25)] },
-    prox: { g: (() => { const g = new THREE.Group(); g.add(darrow(J.shL.clone().add(V3(0.55, 0, 0.5)), J.hdL.clone().add(V3(0.45, -0.6, 0.5)), '#FF8AB0', false), darrow(J.hpL.clone().add(V3(0.7, -0.2, 0.6)), J.anL.clone().add(V3(0.6, -0.5, 0.6)), '#FF8AB0', false)); DG.add(g); return g; })(), view: [V3(-0.6, 4.2, 0), V3(12, 7, 45)] },
+    prox: { g: (() => { const g = new THREE.Group(); g.add(darrow(J.shL.clone().add(V3(0.55, 0, 0.5)), J.hdL.clone().add(V3(0.45, -0.6, 0.5)), '#FF8AB0', false, 1.6), darrow(J.hpL.clone().add(V3(0.7, -0.2, 0.6)), J.anL.clone().add(V3(0.6, -0.5, 0.6)), '#FF8AB0', false, 1.6)); DG.add(g); return g; })(), view: [V3(-0.6, 4.2, 0), V3(10.5, 6.5, 37.2)] },
     deep: { g: darrow(V3(J.knL.x + 0.1, 7.2, 1.6), V3(J.knL.x + 0.1, 7.2, 0.05), '#C77DFF', true), view: [V3(J.knL.x + 0.3, 7.2, 0.8), V3(J.knL.x + 10.5, 8.0, 4.2)] },   /* сбоку: стрелка «кожа → кость» идёт поперёк экрана */
-    ipsi: { g: (() => { const g = new THREE.Group(); const mk = (a, b, col) => { const c = new THREE.QuadraticBezierCurve3(a, a.clone().lerp(b, 0.5).add(V3(a.x > 0 && b.x > 0 ? 1.6 : 0, 0, 1.4)), b); const m = new THREE.Mesh(new THREE.TubeGeometry(c, 40, 0.1, 10), arrowMat(col)); g.add(m); }; mk(J.hdL.clone().add(V3(0.2, -0.4, 0.3)), J.anL.clone().add(V3(0.2, -0.5, 0.5)), '#7FE0A0'); mk(J.hdL.clone().add(V3(0.1, -0.4, 0.3)), J.anR.clone().add(V3(-0.1, -0.5, 0.5)), '#FF9A5C'); DG.add(g); return g; })(), view: [V3(-1.0, 4.2, 0), V3(4, 7, 46)] },
+    ipsi: { g: (() => { const g = new THREE.Group(); const mk = (a, b, col) => { const c = new THREE.QuadraticBezierCurve3(a, a.clone().lerp(b, 0.5).add(V3(a.x > 0 && b.x > 0 ? 1.6 : 0, 0, 1.4)), b); const m = new THREE.Mesh(new THREE.TubeGeometry(c, 40, 0.17, 10), arrowMat(col)); g.add(m); }; mk(J.hdL.clone().add(V3(0.2, -0.4, 0.3)), J.anL.clone().add(V3(0.2, -0.5, 0.5)), '#7FE0A0'); mk(J.hdL.clone().add(V3(0.1, -0.4, 0.3)), J.anR.clone().add(V3(-0.1, -0.5, 0.5)), '#FF9A5C'); DG.add(g); return g; })(), view: [V3(-1.0, 4.2, 0), V3(4, 7, 46)] },
   };
   const DIRNAME = { sup: 'Верхний ↔ нижний', ant: 'Передний ↔ задний', med: 'Медиальный ↔ латеральный', prox: 'Проксимальный ↔ дистальный', deep: 'Поверхностный ↔ глубокий', ipsi: 'Ипси- и контралатеральный' };
 
@@ -156,8 +156,8 @@ function makePlanes() {
     if (st.mode === 'planes' && !mqm.matches) v = PVIEW[st.plane];
     if (st.mode === 'planes' && mqm.matches) v = [V3(0, 10.2, 0), PVIEW[st.plane][1].clone().sub(PVIEW[st.plane][0]).multiplyScalar(0.98).add(V3(0, 10.2, 0))];
     if (st.mode === 'cav' && (st.cav === 'all' || st.cav === 'dorsal')) v = mqm.matches ? [V3(0, 12.0, -1.5), V3(24, 12.5, 4)] : VIEW.cavSide;
-    if (st.mode === 'cav' && st.cav === 'reg') v = mqm.matches ? VIEWM.reg : [V3(-1.7, 8.9, 0), V3(-0.4, 9.8, 14)];
-    if (st.mode === 'dirs') { const dy = ['ant', 'med'].includes(st.dir) ? 1.1 : DIRS[st.dir].view[1].z > 40 ? 3.0 : 0, km = st.dir === 'ant' ? 1.3 : st.dir === 'med' ? 1.16 : 0.8; v = mqm.matches ? [DIRS[st.dir].view[0].clone().setX(0).setY(Math.max(7.6, DIRS[st.dir].view[0].y)), DIRS[st.dir].view[1].clone().multiplyScalar(km)] : [DIRS[st.dir].view[0].clone().add(V3(-0.9, dy, 0)), DIRS[st.dir].view[1].clone().add(V3(0, dy, 0))]; }
+    if (st.mode === 'cav' && st.cav === 'reg') v = mqm.matches ? VIEWM.reg : [V3(-1.7, 10.1, 0), V3(-0.4, 11.0, 16.5)];
+    if (st.mode === 'dirs') { const dy = ['ant', 'med'].includes(st.dir) ? 1.1 : DIRS[st.dir].view[1].z > 40 ? 3.0 : 0, km = st.dir === 'ant' ? 1.3 : st.dir === 'med' ? 1.16 : 0.8; v = mqm.matches ? [DIRS[st.dir].view[0].clone().setX(0).setY(Math.max(7.6, DIRS[st.dir].view[0].y)), DIRS[st.dir].view[1].clone().multiplyScalar(km)] : [DIRS[st.dir].view[0].clone().add(V3(-0.9, dy, 0)), DIRS[st.dir].view[1].clone().add(V3(0, dy, 0))]; if (mqm.matches && st.dir === 'deep') v = [V3(0, 7.6, 0.8), V3(17.4, 7.0, 6.0)]; if (mqm.matches && (st.dir === 'prox' || st.dir === 'ipsi')) v = [v[0].clone().add(V3(0, 1.1, 0)), v[1].clone().add(V3(0, 1.1, 0))]; }
     st.fly = flyTarget(v[0], v[1]);
   }
   let clipOn = null;
@@ -215,7 +215,7 @@ function makePlanes() {
     trans: '<b>Поперечная плоскость</b> (горизонтальная, на КТ и МРТ — <b>аксиальная</b>) перпендикулярна оси тела и делит его на <b>верхнюю</b> и <b>нижнюю</b> части. Срезы КТ смотрят «со стороны ног», поэтому правая сторона тела на снимке слева.',
   };
   const DTXT = {
-    sup: '<b>Верхний</b> (краниальный — ближе к голове) и <b>нижний</b> (каудальный — ближе к «хвосту», к копчику). Сердце расположено выше диафрагмы, мочевой пузырь — ниже пупка. Для конечностей «верхний/нижний» стараются не использовать — там есть проксимальный и дистальный. В мозге и у эмбриона вместо этого часто говорят «ростральный» (к носу).',
+    sup: '<b>Верхний</b> (краниальный — ближе к голове) и <b>нижний</b> (каудальный — ближе к копчику). Сердце расположено выше диафрагмы, мочевой пузырь — ниже пупка. У конечностей «верхний/нижний» не используют — там проксимальный и дистальный. В мозге и у эмбриона часто говорят «ростральный» (к носу).',
     ant: '<b>Передний</b> (вентральный — со стороны живота) и <b>задний</b> (дорсальный — со стороны спины). Грудина лежит кпереди от сердца, позвоночник — кзади. На кисти вместо этого — ладонный и тыльный, на стопе — подошвенный и тыльный.',
     med: '<b>Медиальный</b> — ближе к срединной линии тела (зелёная вертикаль), <b>латеральный</b> — дальше от неё, в сторону. В анатомической позиции большой палец руки лежит латерально, мизинец — медиально; локтевая кость медиальнее лучевой. Лёгкие расположены латеральнее сердца.',
     prox: '<b>Проксимальный</b> — ближе к месту прикрепления конечности к туловищу (или к началу структуры), <b>дистальный</b> — дальше от него. Локоть проксимальнее кисти, колено дистальнее бедра. Так же говорят и о сосудах, нервах, кишке: проксимальный отдел тонкой кишки ближе к желудку.',
@@ -256,7 +256,7 @@ function makePlanes() {
     { text: 'нижний', pos: V3(-3.0, 0.1, 0.3), color: '#F2C14E', show: () => L2() && st.dir === 'sup' },
     { text: 'краниальный', pos: V3(2.5, 15.4, 0.6), color: '#FFB86A', show: () => L2() && st.dir === 'sup' },
     { text: 'каудальный', pos: V3(2.5, 8.8, 0.6), color: '#FFB86A', show: () => L2() && st.dir === 'sup' },
-    { text: 'передний (вентральный)', pos: V3(0, 13.0, 2.8), color: '#7FD6FF', show: () => L2() && st.dir === 'ant' },
+    { text: 'передний (вентральный)', left: true, pos: V3(0, 13.0, 2.8), color: '#7FD6FF', show: () => L2() && st.dir === 'ant' },
     { text: 'задний (дорсальный)', pos: V3(0, 13.0, -2.6), color: '#7FD6FF', show: () => L2() && st.dir === 'ant' },
     { text: 'латеральный', pos: V3(2.7, 13.4, 1.6), color: '#7FE0A0', show: () => L2() && st.dir === 'med' },
     { text: 'медиальный', pos: V3(0.25, 13.5, 1.6), color: '#7FE0A0', show: () => L2() && st.dir === 'med' },
@@ -267,8 +267,8 @@ function makePlanes() {
     { text: 'стопа — дистально', pos: J.anL.clone().add(V3(0.75, -0.7, 0.6)), color: '#FFB0D0', show: () => L2() && st.dir === 'prox' },
     { text: 'поверхностный: кожа', pos: V3(J.knL.x + 0.2, 7.55, 1.65), color: '#C77DFF', show: () => L2() && st.dir === 'deep' },
     { text: 'глубокий: кость', pos: V3(J.knL.x + 0.3, 6.75, 0.1), color: '#C77DFF', show: () => L2() && st.dir === 'deep' },
-    { text: 'ипсилатерально', pos: J.hdL.clone().lerp(J.anL, 0.5).add(V3(1.3, 0, 1.0)), color: '#7FE0A0', show: () => L2() && st.dir === 'ipsi' },
-    { text: 'контралатерально', pos: J.hdL.clone().lerp(J.anR, 0.5).add(V3(-0.6, 0, 1.2)), color: '#FF9A5C', show: () => L2() && st.dir === 'ipsi' },
+    { text: 'ипсилатерально', pos: J.anL.clone().add(V3(1.5, -0.4, 1.3)), color: '#7FE0A0', show: () => L2() && st.dir === 'ipsi' },
+    { text: 'контралатерально', left: true, pos: J.anR.clone().add(V3(-0.5, -0.4, 1.3)), color: '#FF9A5C', show: () => L2() && st.dir === 'ipsi' },
     { text: 'полость черепа', pos: V3(0.6, 16.9, 0.3), color: '#9FB4FF', show: () => L3() && CAVSET[st.cav].includes('cranial') },
     { text: 'позвоночный канал', pos: V3(0.6, 12.5, -0.6), color: '#7FE0A0', show: () => L3() && CAVSET[st.cav].includes('vert') },
     { text: 'плевральная полость', pos: V3(-1.95, 13.6, 0.3), color: '#7FD6FF', show: () => L3() && CAVSET[st.cav].includes('pleuR') },
@@ -279,10 +279,10 @@ function makePlanes() {
     { text: 'полость таза', pos: V3(0.75, 9.0, 0.4), color: '#C77DFF', show: () => L3() && CAVSET[st.cav].includes('pelv') },
     ...['r9', 'q4'].flatMap((rg) => (rg === 'r9' ? R9 : Q4).map((r) => ({ text: r.name, pos: r.c.clone().add(V3(-0.25, 0, 0)), color: rg === 'r9' ? '#F2C14E' : '#7FD6FF', show: () => L4() && st.reg === rg && (!st.sel || st.sel === r.id) }))),
     { text: 'пупок', pos: UMB.clone().add(V3(0.05, 0, 0.03)), color: '#FFFFFF', show: () => L4() && !st.sel },
-    { text: 'подрёберная (L3)', pos: V3(1.25, YB[1], zf(1.15) + 0.05), color: '#F2C14E', show: () => L4() && st.reg === 'r9' && !st.sel },
-    { text: 'межбугорковая (L5)', pos: V3(1.25, YB[2], zf(1.15) + 0.05), color: '#F2C14E', show: () => L4() && st.reg === 'r9' && !st.sel },
+    { text: 'подрёберная (L3)', left: true, pos: V3(-1.3, YB[1], zf(1.15) + 0.05), color: '#F2C14E', show: () => L4() && st.reg === 'r9' && !st.sel },
+    { text: 'межбугорковая (L5)', left: true, pos: V3(-1.3, YB[2], zf(1.15) + 0.05), color: '#F2C14E', show: () => L4() && st.reg === 'r9' && !st.sel },
     { text: 'среднеключичная', pos: V3(XB[2] + 0.05, YB[0] + 0.25, zf(XB[2]) + 0.05), color: '#F2C14E', show: () => L4() && st.reg === 'r9' && !st.sel },
-    { text: 'транспилорическая (L1)', pos: V3(1.25, 11.3, zf(1.15) + 0.05), color: '#FFFFFF', show: () => L4() && st.reg === 'r9' && !st.sel },
+    { text: 'транспилорическая (L1)', left: true, pos: V3(-1.3, 11.65, zf(1.15) + 0.05), color: '#FFFFFF', show: () => L4() && st.reg === 'r9' && !st.sel },
     { text: 'точка Мак-Бёрни', pos: mcb.position.clone().add(V3(-1.3, -0.15, 0.1)), color: '#FF5A5A', show: () => L4() && mcb.visible },
     ...Object.keys(ORG).map((id) => ({ text: ORGNAME[id], pos: () => ORG[id].getWorldPosition(V3(0, 0, 0)).add(V3(id.endsWith('R') ? -0.6 : 0.4, 0, 0.6)), color: '#' + new THREE.Color(ORG[id].userData.col).lerp(new THREE.Color('#ffffff'), 0.55).getHexString(), show: () => L4() && !!st.sel && (st.reg === 'r9' ? R9 : Q4).find((r) => r.id === st.sel)?.organs.includes(id) })),
   ];

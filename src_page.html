@@ -2155,7 +2155,7 @@ function makeSkeleton() {
     sh.fragmentShader = 'uniform float uSel; uniform float uPulse; uniform vec3 uSelColor; varying float vLabel;\n' + sh.fragmentShader.replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\nif (abs(vLabel - uSel) < 0.5) totalEmissiveRadiance += uSelColor * uPulse;');
   };
   const xray = new THREE.ShaderMaterial({
-    uniforms: { uColor: { value: new THREE.Color(0x9fd0ff) }, uRim: { value: 0.95 }, uBase: { value: 0.05 }, uPow: { value: 2.0 }, uFlash: { value: 0 }, uGain: { value: 1 }, ...U },
+    uniforms: { uColor: { value: new THREE.Color(0x9fd0ff) }, uRim: { value: 0.8 }, uBase: { value: 0.2 }, uPow: { value: 1.0 }, uFlash: { value: 0 }, uGain: { value: 1 }, ...U },
     vertexShader: `attribute float aLabel; varying float vLabel; varying vec3 vN; varying vec3 vV;
       void main(){ vLabel = aLabel; vec4 mv = modelViewMatrix*vec4(position,1.0); vN = normalize(normalMatrix*normal); vV = normalize(-mv.xyz); gl_Position = projectionMatrix*mv; }`,
     fragmentShader: `uniform vec3 uColor, uSelColor; uniform float uRim,uBase,uPow,uGain,uSel,uPulse; varying float vLabel; varying vec3 vN; varying vec3 vV;
@@ -2163,7 +2163,7 @@ function makeSkeleton() {
         float a = uBase + f*uRim + (s ? uPulse*0.5 : 0.0); gl_FragColor = vec4(col*(0.25+f*1.35)*uGain*(s ? 1.0+uPulse*2.0 : 1.0), clamp(a,0.0,1.0)); }`,
     transparent: true, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending,
   });
-  xray.userData.rim0 = 0.95; xray.userData.base0 = 0.05; GLASS.push(xray); applyLook();
+  xray.userData.rim0 = 0.8; xray.userData.base0 = 0.2; GLASS.push(xray); applyLook();
 
   const J = Object.fromEntries(Object.entries(SKEL_META.joints).map(([k, v]) => [k, V3(...v)]));
   const hipC = J.hpR.clone().add(J.hpL).multiplyScalar(0.5);
@@ -2242,7 +2242,7 @@ function makeSkeleton() {
     st.sel = id === 'all' ? null : id; st.focusT = 1.6;
     U.uSel.value = st.sel ? BONES.findIndex((b) => b.id === st.sel) : -1;
     const a = st.sel ? anchors[st.sel].getWorldPosition(V3(0, 0, 0)) : V3(0.15, 8.0, 0);
-    const sd = st.sel ? (['skull', 'hand', 'foot'].includes(st.sel) ? 6 : 9) : 38, fr = (matchMedia('(max-width:700px)').matches ? { skull: [0, 0.22], hand: [0, -0.25] } : { skull: [0.12, 0.2], hand: [0.3, 0.12], foot: [0.12, 0] })[st.sel]; st.focus = { target: fr ? a.clone().addScaledVector(V3(1, 0, 0).applyQuaternion(camera.quaternion), -fr[0] * sd).addScaledVector(V3(0, 1, 0).applyQuaternion(camera.quaternion), -fr[1] * sd) : a, dist: sd };
+    const sd = st.sel ? (['skull', 'hand', 'foot'].includes(st.sel) ? 6 : st.sel === 'pelvis' && matchMedia('(max-width:700px)').matches ? 11.7 : 9) : 38, fr = (matchMedia('(max-width:700px)').matches ? { skull: [0, 0.22], hand: [0, -0.25], pelvis: [0, -0.08] } : { skull: [0.12, 0.2], hand: [0.3, 0.12], foot: [0.12, 0] })[st.sel]; st.focus = { target: fr ? a.clone().addScaledVector(V3(1, 0, 0).applyQuaternion(camera.quaternion), -fr[0] * sd).addScaledVector(V3(0, 1, 0).applyQuaternion(camera.quaternion), -fr[1] * sd) : a, dist: sd };
     refs.setInfo && refs.setInfo(); refs.seg && refs.seg.sync();
   }
   const th0 = J.knL.clone().sub(J.hpL), sh0 = J.anL.clone().sub(J.knL), hipOff = J.hpL.clone().sub(hipC), XA = V3(1, 0, 0);
@@ -9034,7 +9034,7 @@ function makeRepro(initMode) {
   RP_R.forEach((p) => { PART[p.id] = { ...p, mats: [], c: V3(0, 0, 0), n: 0 }; });
   const REAL = new THREE.Group(); scene.add(REAL); REAL.visible = false;
   function loadReal() {
-    if (st.realLoad) return; st.realLoad = 1; refs.setInfo && refs.setInfo();
+    if (st.realLoad || initMode === 'cycle') return; st.realLoad = 1; refs.setInfo && refs.setInfo();
     fetchModel('repro').then((buf) => {
       parseGLB(buf, (gltf) => {
         const root = gltf.scene; root.updateMatrixWorld(true);
