@@ -200,7 +200,7 @@ function makeCarbdig() {
     { text: 'капилляр → воротная вена', pos: V3(1.1, YB - 0.95, 0.3), color: '#E06A6A', show: () => st.labels && st.mode === 'dig' },
     { text: 'толстая кишка', pos: V3(XR + 0.45, LUM_Y + 0.35, 0.5), color: '#C8A090', show: () => st.labels && st.mode === 'dig' },
     ...Object.entries(NODES).map(([k, n]) => ({ text: n.name || MOL(n.m).name, pos: n.p.clone().add(k === 'gly' ? V3(OX + 0.35, -0.1, 0.2) : k === 'g6p' ? V3(OX + 0.38, -0.05, 0.2) : k === 'dhap' ? V3(OX - 0.3, 0.5, 0.2) : V3(OX - 0.3, -0.64, 0.2)), color: k === 'gly' || k === 'g6p' || k === 'g1p' ? '#F2C14E' : k.startsWith('udp') ? '#9FB4FF' : ['gal', 'gal1p'].includes(k) ? '#7FE0A0' : '#FF9A5C', show: () => st.labels && st.mode === 'met' })),
-    ...AR.filter((a) => a.name).map((a) => ({ text: a.name, pos: NODES[a.a].p.clone().lerp(NODES[a.b].p, 0.5).add(V3(OX - 0.6, a.id === 'epi' ? -0.55 : a.id === 'tri' ? -0.45 : a.id === 'galt' ? -0.42 : 0.5, 0.3)), color: '#C8C8D0', show: () => st.labels && st.mode === 'met' })),
+    ...AR.filter((a) => a.name).map((a) => ({ text: a.name, pos: NODES[a.a].p.clone().lerp(NODES[a.b].p, 0.5).add(V3(OX - 0.6, a.id === 'epi' ? -0.55 : a.id === 'tri' ? -0.45 : a.id === 'galt' ? -0.42 : 0.5, 0.3)), color: '#C8C8D0', show: () => st.labels && st.mode === 'met' && !mqm.matches })),
     { text: 'гликоген', pos: V3(OX + 3.1, 3.1, 0.3), color: '#F2C14E', show: () => st.labels && st.mode === 'met' },
     { text: 'хрусталик (галактитол)', pos: V3(OX + 3.2, -2.35, 0.4), color: '#E8F0FF', show: () => st.labels && st.mode === 'met' },
     { text: 'АТФ печени', pos: V3(OX + 1.7, -2.75, 0.4), color: '#7FE0A0', show: () => st.labels && st.mode === 'met' },
