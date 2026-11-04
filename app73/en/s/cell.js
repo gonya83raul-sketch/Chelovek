@@ -238,7 +238,7 @@ function makeCell() {
   function select(id) {
     if (st.sel) ORG[st.sel].mats.forEach((m) => { m.emissive.copy(m.userData.e0.c); m.emissiveIntensity = m.userData.e0.i; });
     st.sel = id === 'all' ? null : id; st.focusT = 1.8;
-    st.focus = st.sel ? { target: (LBL[st.sel] && LVIS[st.sel] ? LBL[st.sel] : ORG[st.sel].anchor).clone(), dist: ORG[st.sel].dist } : { target: V3(0, 0, 0), dist: 22.2 };
+    st.focus = st.sel ? { target: (LBL[st.sel] && LVIS[st.sel] ? LBL[st.sel] : ORG[st.sel].anchor).clone().add(V3(0, st.sel === 'lyso' && matchMedia('(max-width:700px)').matches ? -0.12 * ORG[st.sel].dist : 0, 0)), dist: ORG[st.sel].dist } : { target: V3(0, 0, 0), dist: 22.2 };
     accentSet(st.sel ? ORG[st.sel].color : '#9CC8FF');
     refs.setInfo && refs.setInfo(); refs.seg && refs.seg.sync();
   }

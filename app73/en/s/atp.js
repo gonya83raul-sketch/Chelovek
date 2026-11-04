@@ -153,7 +153,7 @@ function makeAtp() {
     { text: 'respiratory chain', pos: V3(40 + 0.9, FY[3] + 0.45, 0), color: '#FFB070', show: () => st.labels && st.mode === 'funnel' },
     { text: 'ATP', pos: V3(40 + 3.7, FY[3] + 0.3, 0), color: '#FFD070', show: () => st.labels && st.mode === 'funnel' },
     ...['CO₂', 'H₂O', 'NH₃ → urea'].map((n, k) => ({ text: n, pos: V3(40 + 0.3, 0, 0).add(OUTP[k]).add(V3(0, -0.05, 0)), color: '#D9D2D8', show: () => st.labels && st.mode === 'funnel' })),
-    ...CAT_ST.map((s, k) => ({ text: s.name, pos: V3(40 + 4.6, [FY[0] + 0.1, (FY[1] + FY[2]) / 2, FY[3]][k], 0), color: s.color, show: () => st.labels && st.mode === 'funnel' })),
+    ...CAT_ST.map((s, k) => ({ text: s.name, pos: V3(40 + 4.6, [FY[0] + 0.1, (FY[1] + FY[2]) / 2, FY[3]][k], 0), color: s.color, show: () => st.labels && st.mode === 'funnel' && DK })),
   ];
   const refs = {};
   function ui(el) {

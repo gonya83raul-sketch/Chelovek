@@ -12,7 +12,7 @@ Object.assign(BIO_MOL, {"b12":{"name":"Cobalamin (B12), core","el":"C C N C C C 
 function makeAmines() {
   __set_rnd(mulberry(6201));
   const scene = bioStage({ rim: 0x9fe870 });
-  const VIEW = { decarb: [V3(1.0, -0.35, 0), V3(1.6, 1.6, 19.5)], fate: [V3(41.2, 0.5, 0), V3(41.8, 2.3, 17.5)], onec: [V3(81.0, -1.6, 0), V3(81.6, 0.3, 18.5)] };
+  const VIEW = (() => { const MB = matchMedia('(max-width:700px)').matches; return { decarb: [V3(1.0, -0.35, 0), V3(1.6, 1.6, 19.5)], fate: MB ? [V3(41.2, 0.5, 0), V3(41.56, 1.58, 10.5)] : [V3(41.2, 0.5, 0), V3(41.8, 2.3, 17.5)], onec: MB ? [V3(81.0, -1.6, 0), V3(81.36, -0.46, 11.1)] : [V3(81.0, -1.6, 0), V3(81.6, 0.3, 18.5)] }; })();
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VIEW.decarb[1]);
   const controls = makeControls(camera, VIEW.decarb[0]); controls.minDistance = 3; controls.maxDistance = 40;
   const fx = new Sparks(1800, 0.08); scene.add(fx.obj);
