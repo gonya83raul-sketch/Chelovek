@@ -5,17 +5,17 @@ import { Sparks, THREE, V3, __set_rnd, button, clamp, displaceGeo, envTex, flowT
    ЛЕКЦИЯ 3 · ПРОМЕЖУТОЧНЫЙ МОЗГ: ТАЛАМУС, ГИПОТАЛАМУС, ГИПОФИЗ, ЭПИФИЗ
    ========================================================= */
 const THAL_CH = [
-  { id: 'vision', name: 'Зрение', color: '#5CC48A', nuc: 'латеральное коленчатое тело', cortex: 'зрительная кора (поле 17)' },
-  { id: 'hearing', name: 'Слух', color: '#3FC1B0', nuc: 'медиальное коленчатое тело', cortex: 'слуховая кора (поля 41, 42)' },
-  { id: 'touch', name: 'Касание и боль', color: '#5E8FEF', nuc: 'вентробазальный комплекс', cortex: 'постцентральная извилина (поля 1–3)' },
-  { id: 'motor', name: 'Движение', color: '#FF8A5A', nuc: 'вентролатеральные ядра', cortex: 'моторная и премоторная кора' },
-  { id: 'limbic', name: 'Память и эмоции', color: '#E58FC4', nuc: 'передние ядра', cortex: 'поясная извилина' },
+  { id: 'vision', name: 'Vision', color: '#5CC48A', nuc: 'lateral geniculate body', cortex: 'visual cortex (area 17)' },
+  { id: 'hearing', name: 'Hearing', color: '#3FC1B0', nuc: 'medial geniculate body', cortex: 'auditory cortex (areas 41, 42)' },
+  { id: 'touch', name: 'Touch and pain', color: '#5E8FEF', nuc: 'ventrobasal complex', cortex: 'postcentral gyrus (areas 1–3)' },
+  { id: 'motor', name: 'Movement', color: '#FF8A5A', nuc: 'ventrolateral nuclei', cortex: 'motor and premotor cortex' },
+  { id: 'limbic', name: 'Memory and emotion', color: '#E58FC4', nuc: 'anterior nuclei', cortex: 'cingulate gyrus' },
 ];
 const HYPO_DEMOS = [
-  { id: 'thirst', name: 'Жажда', color: '#6FC3FF' },
-  { id: 'stress', name: 'Стресс', color: '#FFB070' },
-  { id: 'night', name: 'Ночь', color: '#B48CFF' },
-  { id: 'baby', name: 'Кормление', color: '#FF8FB8' },
+  { id: 'thirst', name: 'Thirst', color: '#6FC3FF' },
+  { id: 'stress', name: 'Stress', color: '#FFB070' },
+  { id: 'night', name: 'Night', color: '#B48CFF' },
+  { id: 'baby', name: 'Nursing', color: '#FF8FB8' },
 ];
 function makeDien() {
   __set_rnd(mulberry(606));
@@ -89,12 +89,12 @@ function makeDien() {
   const hypo = new THREE.Group(); scene.add(hypo);
   { const g = displaceGeo(new THREE.SphereGeometry(1, 48, 32), (v) => { v.set(v.x * 0.75, v.y * 0.38, v.z * 0.42); v.add(V3(0.25, -1.1, 0)); }); hypo.add(new THREE.Mesh(g, mat(0xf0b8a0, { transparent: true, opacity: 0.22, depthWrite: false })), new THREE.Mesh(g, glassMat(0xffc8a8, { rim: 0.55, base: 0.01, pow: 2 }))); }
   const HN = {
-    scn: { p: [V3(0.82, -1.28, 0.06), V3(0.82, -1.28, -0.06)], c: '#B48CFF', name: 'супрахиазменные ядра' },
-    son: { p: [V3(0.62, -1.3, 0.24), V3(0.62, -1.3, -0.24)], c: '#6FC3FF', name: 'супраоптические ядра' },
-    pvn: { p: [V3(0.45, -0.85, 0.1), V3(0.45, -0.85, -0.1)], c: '#FFB070', name: 'паравентрикулярные ядра' },
-    vmh: { p: [V3(0.1, -1.1, 0.18), V3(0.1, -1.1, -0.18)], c: '#F4C542', name: 'вентромедиальные ядра (насыщение)' },
-    lat: { p: [V3(0.2, -0.95, 0.38), V3(0.2, -0.95, -0.38)], c: '#E9785F', name: 'латеральный гипоталамус (голод)' },
-    mam: { p: [V3(-0.4, -1.38, 0.1), V3(-0.4, -1.38, -0.1)], c: '#E58FC4', name: 'сосцевидные тела' },
+    scn: { p: [V3(0.82, -1.28, 0.06), V3(0.82, -1.28, -0.06)], c: '#B48CFF', name: 'suprachiasmatic nuclei' },
+    son: { p: [V3(0.62, -1.3, 0.24), V3(0.62, -1.3, -0.24)], c: '#6FC3FF', name: 'supraoptic nuclei' },
+    pvn: { p: [V3(0.45, -0.85, 0.1), V3(0.45, -0.85, -0.1)], c: '#FFB070', name: 'paraventricular nuclei' },
+    vmh: { p: [V3(0.1, -1.1, 0.18), V3(0.1, -1.1, -0.18)], c: '#F4C542', name: 'ventromedial nuclei (satiety)' },
+    lat: { p: [V3(0.2, -0.95, 0.38), V3(0.2, -0.95, -0.38)], c: '#E9785F', name: 'lateral hypothalamus (hunger)' },
+    mam: { p: [V3(-0.4, -1.38, 0.1), V3(-0.4, -1.38, -0.1)], c: '#E58FC4', name: 'mammillary bodies' },
   };
   const hnG = {}; Object.entries(HN).forEach(([id, n]) => { hnG[id] = n.p.map((p) => glowNucleus(hypo, p, n.c, 0.07, 7)); });
   // хиазма и зрительные нервы
@@ -117,8 +117,8 @@ function makeDien() {
   /* ---------- состояние ---------- */
   const st = { t: 0, mode: 'thal', att: 'none', alertT: -9, demo: null, demoT: -9, light: 1, labels: true, rot: false, fly: null, msg: null, hormone: 0 };
   function setMode(m) { st.mode = m; refs.modeSeg && refs.modeSeg.sync(); st.fly = VIEW[m]; st.msg = null; refs.setInfo && refs.setInfo(); dome.visible = m === 'thal'; }
-  function attend(id) { st.att = id; if (st.mode !== 'thal') setMode('thal'); refs.attSeg && refs.attSeg.sync(); st.msg = null; refs.setInfo(); }
-  function alertMove() { if (st.mode !== 'thal') setMode('thal'); st.alertT = st.t; st.msg = '<b>Непроизвольное внимание.</b> На краю поля зрения что-то двинулось. Четверохолмие сообщает об этом таламусу, и тот открывает «зелёный коридор» зрительному потоку в кору — внимание переключается само, даже если мы были заняты другим.'; refs.setInfo(); }
+  function attend(id) { st.att = id; if (st.mode !== 'thal') setMode('thal'); refs.attSeg && refs.attSeg.sync(); st.msg = ({ vision: '<b>Vision.</b> Retina → optic nerve → <b>lateral geniculate body</b> → visual cortex (area 17) in the occipital lobe. The thalamus dampens the other streams: the inhibitory “shell” (reticular nucleus) silences them.', hearing: '<b>Hearing.</b> Cochlea → brainstem → inferior colliculi → <b>medial geniculate body</b> → auditory cortex (areas 41 and 42) in the temporal lobe. The thalamus dampens the other streams: the inhibitory “shell” (reticular nucleus) silences them.', touch: '<b>Touch and pain.</b> Skin and muscles → spinal cord and brainstem → <b>ventrobasal complex</b> → postcentral gyrus (areas 1–3). The thalamus dampens the other streams: the inhibitory “shell” (reticular nucleus) silences them.', motor: '<b>Movement.</b> Cerebellum and globus pallidus → <b>ventrolateral nuclei</b> → motor and premotor cortex. The thalamus returns the movement program to the cortex; the other streams are dampened.', limbic: '<b>Memory and emotion.</b> Hippocampus → fornix → mammillary bodies → <b>anterior nuclei</b> → cingulate gyrus (Papez circuit). The thalamus dampens the other streams: the inhibitory “shell” (reticular nucleus) silences them.' })[id] || null; refs.setInfo(); }
+  function alertMove() { if (st.mode !== 'thal') setMode('thal'); st.alertT = st.t; st.msg = '<b>Involuntary attention.</b> Something moved at the edge of the visual field. The corpora quadrigemina report this to the thalamus, and it opens a “green corridor” for the visual stream into the cortex: attention switches by itself, even if we were busy with something else.'; refs.setInfo(); }
   function demo(id) { if (st.mode !== 'hypo') setMode('hypo'); st.demo = id; st.demoT = st.t; st.msg = DEMO_TXT[id]; refs.setInfo(); }
   const C = Object.fromEntries(HYPO_DEMOS.map((d) => [d.id, new THREE.Color(d.color)]));
   function update(dt) {
@@ -160,43 +160,43 @@ function makeDien() {
     hyFx.update(dt);
   }
   const DEMO_TXT = {
-    thirst: '<b>Жажда.</b> Нейроны <b>супраоптических</b> ядер чувствуют, что кровь стала слишком концентрированной. Их аксоны идут по ножке прямо в <b>заднюю долю гипофиза</b> и выбрасывают в кровь <b>вазопрессин</b>. Почки начинают возвращать воду, а человек ищет, что попить.',
-    stress: '<b>Стресс.</b> Паравентрикулярные ядра выделяют кортиколиберин в <b>воротные сосуды</b>. Они несут его к <b>передней доле</b> гипофиза, и та выбрасывает в кровь АКТГ. АКТГ доходит до надпочечников, они выделяют кортизол. Решение «бежать или драться» принимает миндалина, а исполняют задние зоны гипоталамуса.',
-    night: '<b>Биологические часы.</b> <b>Супрахиазменные ядра</b> лежат прямо над перекрёстом зрительных нервов и узнают от сетчатки общий уровень освещённости. Когда темнеет, они дают сигнал <b>эпифизу</b>, и тот выделяет <b>мелатонин</b> — гормон, успокаивающий многие системы организма. Так держится суточный ритм.',
-    baby: '<b>Окситоцин.</b> Паравентрикулярные ядра синтезируют окситоцин и по своим аксонам отправляют в заднюю долю гипофиза. Он запускает сокращения матки при родах, выделение молока и участвует в привязанности и заботе — центры родительского поведения лежат в передних зонах гипоталамуса.',
+    thirst: '<b>Thirst.</b> Neurons of the <b>supraoptic</b> nuclei sense that the blood has become too concentrated. Their axons run down the stalk straight into the <b>posterior pituitary</b> and release <b>vasopressin</b> into the blood. The kidneys start to reclaim water, and the person looks for something to drink.',
+    stress: '<b>Stress.</b> The paraventricular nuclei release corticotropin-releasing hormone (CRH) into the <b>portal vessels</b>. These carry it to the <b>anterior lobe</b> of the pituitary, which releases ACTH into the blood. ACTH reaches the adrenal glands, and they secrete cortisol. The “fight or flight” decision is made by the amygdala and carried out by the posterior zones of the hypothalamus.',
+    night: '<b>The biological clock.</b> The <b>suprachiasmatic nuclei</b> lie right above the optic chiasm and learn the overall light level from the retina. When it gets dark, they signal the <b>pineal gland</b>, which releases <b>melatonin</b>, a hormone that calms many of the body’s systems. This is how the daily rhythm is maintained.',
+    baby: '<b>Oxytocin.</b> The paraventricular nuclei synthesize oxytocin and send it along their axons to the posterior pituitary. It triggers uterine contractions during childbirth and milk ejection, and takes part in attachment and caregiving; the centers of parental behavior lie in the anterior zones of the hypothalamus.',
   };
   const TXT = {
-    thal: '<b>Таламус</b> — фильтр на входе в кору. Через него идут зрение, слух, чувствительность кожи и мышц, программы движений от мозжечка и базальных ганглиев, сигналы памяти и эмоций; обоняние — исключение. Выберите поток: таламус откроет ему «зелёный коридор» и приглушит остальные (тормозная «скорлупа» — ретикулярное ядро).',
-    hypo: '<b>Гипоталамус</b> — низ промежуточного мозга, более 30 пар ядер: центры голода и жажды, полового поведения, страха и агрессии, сна и биологических часов. Вместе с <b>гипофизом</b> он правит железами: задняя доля выпускает гормоны нейронов гипоталамуса, передняя слушается его либеринов и статинов. Попробуйте опыты.',
+    thal: 'The <b>thalamus</b> is a filter at the entrance to the cortex. Vision, hearing, skin and muscle sensation, motor programs from the cerebellum and basal ganglia, and memory and emotion signals all pass through it; smell is the exception. Choose a stream: the thalamus opens a “green corridor” for it and dampens the rest.',
+    hypo: 'The <b>hypothalamus</b>, the base of the diencephalon, has more than 30 pairs of nuclei: centers of hunger and thirst, sexual behavior, fear and aggression, sleep and the body clock. With the <b>pituitary</b> it rules the glands: the posterior lobe releases hormones made by hypothalamic neurons; the anterior lobe obeys its releasing and inhibiting hormones. Try the experiments.',
   };
   const labels = [
     ...THAL_CH.map((c) => ({ text: c.nuc, left: c.id === 'vision' || c.id === 'hearing', pos: TN[c.id][0].clone().add({ vision: V3(-0.1, -0.22, 0.25), hearing: V3(-0.2, 0.06, 0.3) }[c.id] || V3(0.05, 0.16, 0.2)), color: c.color, show: () => st.labels && st.mode === 'thal' && (st.att === 'none' || st.att === c.id) })),
     ...THAL_CH.map((c) => ({ text: c.cortex, pos: CX[c.id].clone().add(V3(0, 0.25, 0)), color: c.color, show: () => st.labels && st.mode === 'thal' && st.att === c.id })),
-    { text: 'подушка', pos: V3(-1.15, 0.25, 0.7), color: '#B8E06A', show: () => st.labels && st.mode === 'thal' && st.att === 'none' },
-    { text: 'медиальные ядра', pos: V3(0.1, 0.35, 0.3), color: '#C77DFF', show: () => st.labels && st.mode === 'thal' && st.att === 'none' },
-    { text: 'ретикулярное ядро', pos: V3(0.3, 0.6, 1.15), color: '#8fb4ff', show: () => st.labels && st.mode === 'thal' && st.att !== 'none' },
-    { text: 'III желудочек', pos: V3(0.3, -0.9, 0.05), color: '#8fd4ff', show: () => st.labels },
-    { text: 'кора', pos: V3(-1.5, 2.3, -1.6), color: '#f2c7d6', show: () => st.labels && st.mode === 'thal' }, { text: 'таламус', pos: V3(-0.5, 0.58, 0.9), color: '#d8c8ff', left: true, show: () => st.labels && st.mode === 'thal' && st.att === 'none' }, { text: 'гипофиз', pos: ANT.clone().add(V3(0.2, -0.1, 0.25)), color: '#ffa070', show: () => st.labels && st.mode === 'thal' },
-    { text: 'эпифиз', pos: pineal.position.clone().add(V3(-0.1, 0.2, 0)), color: '#d8c090', show: () => st.labels && (st.mode === 'hypo' || !matchMedia('(max-width:700px)').matches) },
+    { text: 'pulvinar', pos: V3(-1.15, 0.25, 0.7), color: '#B8E06A', show: () => st.labels && st.mode === 'thal' && st.att === 'none' },
+    { text: 'medial nuclei', pos: V3(0.1, 0.35, 0.3), color: '#C77DFF', show: () => st.labels && st.mode === 'thal' && st.att === 'none' },
+    { text: 'reticular nucleus', pos: V3(0.3, 0.6, 1.15), color: '#8fb4ff', show: () => st.labels && st.mode === 'thal' && st.att !== 'none' },
+    { text: 'third ventricle', pos: V3(0.3, -0.9, 0.05), color: '#8fd4ff', show: () => st.labels },
+    { text: 'cortex', pos: V3(-1.5, 2.3, -1.6), color: '#f2c7d6', show: () => st.labels && st.mode === 'thal' }, { text: 'thalamus', pos: V3(-0.5, 0.58, 0.9), color: '#d8c8ff', left: true, show: () => st.labels && st.mode === 'thal' && st.att === 'none' }, { text: 'pituitary gland', pos: ANT.clone().add(V3(0.2, -0.1, 0.25)), color: '#ffa070', show: () => st.labels && st.mode === 'thal' },
+    { text: 'pineal gland', pos: pineal.position.clone().add(V3(-0.1, 0.2, 0)), color: '#d8c090', show: () => st.labels && (st.mode === 'hypo' || !matchMedia('(max-width:700px)').matches) },
     ...Object.entries(HN).map(([id, n]) => ({ text: n.name, pos: n.p[0].clone().add(V3(0.04, 0.08, 0.12)), color: n.c, show: () => st.labels && st.mode === 'hypo' })),
-    { text: 'передняя доля гипофиза', pos: ANT.clone().add(V3(0.2, -0.1, 0.25)), color: '#ffa070', show: () => st.labels && st.mode === 'hypo' },
-    { text: 'задняя доля', pos: POST.clone().add(V3(-0.2, -0.15, 0.2)), color: '#c0a0f0', show: () => st.labels && st.mode === 'hypo' },
-    { text: 'воротные сосуды', pos: V3(0.55, -1.8, 0.1), color: '#ff7080', show: () => st.labels && st.mode === 'hypo' },
-    { text: 'зрительный перекрёст', pos: V3(1.1, -1.55, 0.1), color: '#e8e0d0', show: () => st.labels && st.mode === 'hypo' },
+    { text: 'anterior pituitary', pos: ANT.clone().add(V3(0.2, -0.1, 0.25)), color: '#ffa070', show: () => st.labels && st.mode === 'hypo' },
+    { text: 'posterior lobe', pos: POST.clone().add(V3(-0.2, -0.15, 0.2)), color: '#c0a0f0', show: () => st.labels && st.mode === 'hypo' },
+    { text: 'portal vessels', pos: V3(0.55, -1.8, 0.1), color: '#ff7080', show: () => st.labels && st.mode === 'hypo' },
+    { text: 'optic chiasm', pos: V3(1.1, -1.55, 0.1), color: '#e8e0d0', show: () => st.labels && st.mode === 'hypo' },
   ];
   const refs = {};
   function ui(el) {
     const ib = infoBox('1 1 320px');
     refs.setInfo = () => { ib.info.innerHTML = st.msg || TXT[st.mode]; };
-    refs.modeSeg = seg([{ id: 'thal', label: 'Таламус' }, { id: 'hypo', label: 'Гипоталамус и гипофиз' }], () => st.mode, (v) => setMode(v));
-    refs.attSeg = seg([{ id: 'none', label: 'Всё подряд' }, ...THAL_CH.map((c) => ({ id: c.id, label: c.name, color: c.color }))], () => st.att, (v) => attend(v));
-    const rot = toggle('Вращение', () => st.rot, (v) => { st.rot = v; });
-    const lab = toggle('Подписи', () => st.labels, (v) => { st.labels = v; });
+    refs.modeSeg = seg([{ id: 'thal', label: 'Thalamus' }, { id: 'hypo', label: 'Hypothalamus and pituitary' }], () => st.mode, (v) => setMode(v));
+    refs.attSeg = seg([{ id: 'none', label: 'Everything' }, ...THAL_CH.map((c) => ({ id: c.id, label: c.name, color: c.color }))], () => st.att, (v) => attend(v));
+    const rot = toggle('Rotate', () => st.rot, (v) => { st.rot = v; });
+    const lab = toggle('Labels', () => st.labels, (v) => { st.labels = v; });
     Object.assign(refs, { rot, lab });
-    el.append(group('Отдел', '1 · 2', refs.modeSeg),
-      h('div', { class: 'grp', style: 'flex:1 1 420px' }, h('div', { class: 'glabel' }, 'Внимание таламуса'), h('div', { class: 'gctl' }, refs.attSeg, button('Движение сбоку', alertMove))),
-      group('Гипоталамус', 'T · S · M · O', ...HYPO_DEMOS.map((d, i) => button(d.name, () => demo(d.id), i === 0))),
-      group('Вид', 'R · N', rot, lab), ib.el);
+    el.append(group('Region', '1 · 2', refs.modeSeg),
+      h('div', { class: 'grp', style: 'flex:1 1 420px' }, h('div', { class: 'glabel' }, 'Thalamic attention'), h('div', { class: 'gctl' }, refs.attSeg, button('Movement to the side', alertMove))),
+      group('Hypothalamus', 'T · S · M · O', ...HYPO_DEMOS.map((d, i) => button(d.name, () => demo(d.id), i === 0))),
+      group('View', 'R · N', rot, lab), ib.el);
     refs.setInfo();
   }
   function onKey(e) {
@@ -206,23 +206,23 @@ function makeDien() {
     if (k === 'r' || k === 'к') { refs.rot.click(); return true; } if (k === 'n' || k === 'т') { refs.lab.click(); return true; }
     return false;
   }
-  function stats() { return st.mode === 'thal' ? [['Ядер таламуса', '≈40', ''], ['Длина', '≈4', 'см']] : [['Ядер', '>30', 'пар'], ['Гипофиз', '≈0,5', 'г']]; }
+  function stats() { return st.mode === 'thal' ? [['Thalamic nuclei', '≈40', ''], ['Length', '≈4', 'cm']] : [['Nuclei', '>30', 'pairs'], ['Pituitary', '≈0.5', 'g']]; }
   setMode('thal');
   const self = {
     labelBg: true, mobZoom: 0.64, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, accent: '#B9A4FF',
-    kicker: 'Мозг · промежуточный мозг', title: 'Таламус и гипоталамус',
-    lede: 'Таламус решает, какая информация попадёт в кору. Гипоталамус следит за потребностями тела и через гипофиз управляет гормонами.',
+    kicker: 'Brain · diencephalon', title: 'Thalamus and hypothalamus',
+    lede: 'The thalamus decides which information reaches the cortex. The hypothalamus monitors the body’s needs and controls hormones through the pituitary gland.',
     notes: `
-      <div><h2>Промежуточный мозг</h2>
-        <p>Развивается из переднего мозгового пузыря: нижняя стенка даёт <b>гипоталамус</b> (самая древняя часть), боковые — <b>таламус</b>, верхняя — эпиталамус с <b>эпифизом</b>, задняя — метаталамус (коленчатые тела). Все эти структуры выросли из крыловидной (дорзальной) пластинки нервной трубки, поэтому в них нет мотонейронов — только переключательные нейроны и интернейроны.</p>
-        <h3>Таламус</h3>
-        <p>Нейроанатомы выделяют около 40 ядер, нейрохирурги — до 80. <b>Специфические</b> ядра передают в кору сенсорные и двигательные сигналы с точной картой тела, сетчатки или улитки. <b>Неспецифические</b> задают общий тонус коры и работают в системе сна и бодрствования. <b>Ассоциативные</b> (подушка, дорзальные ядра) связаны с лобной и теменной корой и помогают опознавать сложные образы. При хронической боли нейрохирурги точечно разрушают некоторые сети таламуса.</p>
-        <h3>Гипоталамус</h3>
-        <p>Передние ядра — эффекты парасимпатики (замедление сердца, сужение зрачка), задние — симпатики (расширение зрачка, рост давления). Медиальные зоны — пищевая и питьевая мотивация, передние — половое и родительское поведение, задние — страх и агрессия. Супрахиазменные ядра — биологические часы.</p></div>
-      <div><h2>Что здесь настоящее</h2><ul>
-        <li>Расположение основных ядер таламуса и их связь с зонами коры.</li><li>Ретикулярное ядро как тормозная оболочка таламуса.</li><li>Задняя доля гипофиза получает аксоны супраоптических и паравентрикулярных ядер, передняя — либерины через воротные сосуды.</li><li>Путь «супрахиазменные ядра → эпифиз → мелатонин».</li></ul>
-        <h2 style="margin-top:22px">Условности</h2><ul><li>Кора показана куполом, таламус и гипоталамус увеличены.</li><li>Гормоны нарисованы светящимися частицами, время сжато.</li></ul></div>
-      <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code> таламус, <code>2</code> гипоталамус</li><li><code>T</code> жажда, <code>S</code> стресс, <code>M</code> ночь, <code>O</code> окситоцин</li><li><code>R</code> вращение</li><li><code>N</code> подписи</li></ul></div>`,
+      <div><h2>The diencephalon</h2>
+        <p>It develops from the forebrain vesicle: the lower wall gives rise to the <b>hypothalamus</b> (the most ancient part), the side walls to the <b>thalamus</b>, the upper wall to the epithalamus with the <b>pineal gland</b>, and the back wall to the metathalamus (the geniculate bodies). All these structures grew from the alar (dorsal) plate of the neural tube, so they contain no motor neurons, only relay neurons and interneurons.</p>
+        <h3>Thalamus</h3>
+        <p>Neuroanatomists distinguish about 40 nuclei, neurosurgeons up to 80. <b>Specific</b> nuclei pass sensory and motor signals to the cortex with a precise map of the body, the retina or the cochlea. <b>Nonspecific</b> nuclei set the overall tone of the cortex and work in the sleep–wake system. <b>Association</b> nuclei (the pulvinar, the dorsal nuclei) are connected with the frontal and parietal cortex and help recognize complex images. In chronic pain, neurosurgeons make precise lesions in certain thalamic networks.</p>
+        <h3>Hypothalamus</h3>
+        <p>The anterior nuclei produce parasympathetic effects (slowing of the heart, constriction of the pupil), the posterior nuclei sympathetic ones (dilation of the pupil, a rise in blood pressure). The medial zones handle the motivation to eat and drink, the anterior zones sexual and parental behavior, the posterior zones fear and aggression. The suprachiasmatic nuclei are the biological clock.</p></div>
+      <div><h2>What is accurate here</h2><ul>
+        <li>The location of the main thalamic nuclei and their links to cortical areas.</li><li>The reticular nucleus as the inhibitory shell of the thalamus.</li><li>The posterior pituitary receives axons from the supraoptic and paraventricular nuclei; the anterior pituitary receives releasing hormones through the portal vessels.</li><li>The pathway “suprachiasmatic nuclei → pineal gland → melatonin”.</li></ul>
+        <h2 style="margin-top:22px">Simplifications</h2><ul><li>The cortex is shown as a dome; the thalamus and hypothalamus are enlarged.</li><li>Hormones are drawn as glowing particles, and time is compressed.</li></ul></div>
+      <div class="keys"><h2>Keys</h2><ul><li><code>1</code> thalamus, <code>2</code> hypothalamus</li><li><code>T</code> thirst, <code>S</code> stress, <code>M</code> night, <code>O</code> oxytocin</li><li><code>R</code> rotate</li><li><code>N</code> labels</li></ul></div>`,
   };
   return self;
 }

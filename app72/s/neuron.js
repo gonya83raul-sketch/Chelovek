@@ -177,34 +177,34 @@ function makeNeuron() {
     ctx.strokeStyle = '#FFB070'; ctx.lineWidth = 2; ctx.beginPath();
     st.trace.forEach(([t, v], i) => (i ? ctx.lineTo(x(t), y(v)) : ctx.moveTo(x(t), y(v)))); ctx.stroke();
     ctx.fillStyle = '#A49DA8'; ctx.font = '500 10px JetBrains Mono, monospace';
-    ctx.fillText('+30', 10, y(30) - 3); ctx.fillText('−70 mV', 10, y(-70) - 3); ctx.fillStyle = '#c9a74a'; ctx.textAlign = 'right'; ctx.fillText('threshold', w - 10, y(-50) - 3); ctx.textAlign = 'left';
+    ctx.fillText('+30', 10, y(30) - 3); ctx.fillText('−70 мВ', 10, y(-70) - 3); ctx.fillStyle = '#c9a74a'; ctx.textAlign = 'right'; ctx.fillText('порог', w - 10, y(-50) - 3); ctx.textAlign = 'left';
   }
 
   const labels = [
-    { text: 'cell body', pos: V3(-0.6, 1.5, 0.6) },
-    { text: 'dendrites', pos: V3(-3.4, 2.4, 0) },
-    { text: 'axon hillock', pos: V3(1.4, -0.75, 0.3) },
-    { text: 'myelin', pos: axon.getPointAt(0.37).add(V3(0, 0.6, 0.2)), show: () => st.myelin },
-    { text: 'node of Ranvier', pos: nodes[5].clone().add(V3(0, -0.55, 0)) },
-    { text: 'Schwann cell', pos: SCHW[2].clone().add(V3(0, 0.12, 0.1)), show: () => st.myelin },
-    { text: 'initial segment', pos: axon.getPointAt(0.05).add(V3(-0.3, 0.45, 0.15)) },
-    { text: 'electrode', pos: probeP.clone().add(V3(0.25, 3.6, 0.3)) },
-    { text: 'lidocaine', pos: axon.getPointAt(0.565).add(V3(0, 1.3, 0)), show: () => st.lido },
-    { text: 'axon terminals', pos: V3(19.8, 1.9, 0.6) },
+    { text: 'тело нейрона', pos: V3(-0.6, 1.5, 0.6) },
+    { text: 'дендриты', pos: V3(-3.4, 2.4, 0) },
+    { text: 'аксонный холмик', pos: V3(1.4, -0.75, 0.3) },
+    { text: 'миелин', pos: axon.getPointAt(0.37).add(V3(0, 0.6, 0.2)), show: () => st.myelin },
+    { text: 'перехват Ранвье', pos: nodes[5].clone().add(V3(0, -0.55, 0)), show: () => st.myelin },
+    { text: 'шванновская клетка', pos: SCHW[2].clone().add(V3(0, 0.12, 0.1)), show: () => st.myelin },
+    { text: 'начальный сегмент', pos: axon.getPointAt(0.05).add(V3(-0.3, 0.45, 0.15)) },
+    { text: 'электрод', pos: probeP.clone().add(V3(0.25, 3.6, 0.3)) },
+    { text: 'лидокаин', pos: axon.getPointAt(0.565).add(V3(0, 1.3, 0)), show: () => st.lido },
+    { text: 'окончания аксона', pos: V3(19.8, 1.9, 0.6) },
   ];
 
   let uiRefs = {};
   function ui(el) {
-    const auto = toggle('Auto', () => st.auto, (v) => { st.auto = v; st.nextAuto = st.t + 0.3; });
-    const mye = toggle('Myelin', () => st.myelin, (v) => { st.myelin = v; st.fires = []; setInfo(); });
-    const lido = toggle('Lidocaine', () => st.lido, (v) => { st.lido = v; setInfo(); });
+    const auto = toggle('Авто', () => st.auto, (v) => { st.auto = v; st.nextAuto = st.t + 0.3; });
+    const mye = toggle('Миелин', () => st.myelin, (v) => { st.myelin = v; st.fires = []; setInfo(); });
+    const lido = toggle('Лидокаин', () => st.lido, (v) => { st.lido = v; setInfo(); });
     const sp = seg([{ id: 0.25, label: '¼×' }, { id: 0.5, label: '½×' }, { id: 1, label: '1×' }], () => st.speed, (v) => { st.speed = v; });
-    const INFO = { base: 'Signals from the dendrites (yellow) converge on the cell body. An impulse is born at the hillock: at the nodes <b style="color:#ff9f5a">Na⁺</b> flows in, followed by <b style="color:#7aa7ff">K⁺</b> flowing out.', bare: 'Without myelin the impulse crawls along the whole axon as a continuous wave, several times slower. <b style="color:#ff9f5a">Na⁺</b> enters at every point of the membrane, not only at the nodes.', lido: '<b>Lidocaine</b> blocks the Na⁺ channels on a stretch of the axon (gray cloud). The impulse dies out: the “Arrived” counter stops growing, and the pain signal does not reach the brain.' }; const infoEl = h('div', { class: 'info', html: INFO.base }); const setInfo = () => { infoEl.innerHTML = st.lido ? INFO.lido : st.myelin ? INFO.base : INFO.bare; }; uiRefs = { auto, mye, lido, sp };
+    const INFO = { base: 'Сигналы с дендритов (жёлтые) сходятся к телу. У холмика рождается импульс: в перехватах входит <b style="color:#ff9f5a">Na⁺</b>, следом выходит <b style="color:#7aa7ff">K⁺</b>.', bare: 'Без миелина импульс ползёт сплошной волной по всему аксону — в несколько раз медленнее. <b style="color:#ff9f5a">Na⁺</b> входит в каждую точку мембраны, а не только в перехватах.', lido: '<b>Лидокаин</b> закупоривает Na⁺-каналы на участке аксона (серое облако). Импульс гаснет: счётчик «Дошло» не растёт, и сигнал боли не доходит до мозга.' }; const infoEl = h('div', { class: 'info', html: INFO.base }); const setInfo = () => { infoEl.innerHTML = st.lido ? INFO.lido : st.myelin ? INFO.base : INFO.bare; }; uiRefs = { auto, mye, lido, sp };
     el.append(
-      group('Impulse', 'Space · A', button('Fire', fire, true), auto),
-      group('Axon', 'M · L', mye, lido),
-      group('Speed', ', .', sp),
-      h('div', { class: 'grp', style: 'flex:1 1 260px' }, h('div', { class: 'glabel' }, 'What you see'),
+      group('Импульс', 'пробел · A', button('Запустить', fire, true), auto),
+      group('Аксон', 'M · L', mye, lido),
+      group('Скорость', ', .', sp),
+      h('div', { class: 'grp', style: 'flex:1 1 260px' }, h('div', { class: 'glabel' }, 'Что видно'),
         infoEl),
     );
   }
@@ -219,32 +219,32 @@ function makeNeuron() {
   }
   function stats() {
     return [
-      ['Electrode', Math.round(st.v ?? -70), 'mV'],
-      ['Conduction', st.myelin ? 'saltatory' : 'continuous', ''],
-      ['Arrived', `${st.delivered}/${st.sent}`, ''],
+      ['Электрод', Math.round(st.v ?? -70), 'мВ'],
+      ['Проведение', st.myelin ? 'скачками' : 'сплошное', ''],
+      ['Дошло', `${st.delivered}/${st.sent}`, ''],
     ];
   }
   return {
     scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#FFB070',
-    kicker: 'Brain · nerve impulse', title: 'Neuron and impulse',
-    lede: 'Dendrites collect signals, an action potential is born at the axon hillock, and the impulse leaps along the myelin to the terminals.',
+    kicker: 'Мозг · нервный импульс', title: 'Нейрон и импульс',
+    lede: 'Дендриты собирают сигналы, у аксонного холмика рождается потенциал действия, и импульс скачками бежит по миелину к окончаниям.',
     notes: `
-      <div><h2>How it works</h2>
-        <p>At rest the inside of a neuron is at about <b>−70 mV</b>. This charge is maintained by the Na⁺/K⁺ pump and potassium leak channels.</p>
-        <p>Signals from the dendrites summate on the cell body. If the charge at the <b>axon hillock</b> reaches threshold (about −55…−50 mV), fast Na⁺ channels open and an <b>action potential</b> fires: sodium rushes in, the charge shoots up to +30 mV, then potassium flows out and restores the negative charge.</p>
-        <h3>Why myelin</h3>
-        <p>Myelin is insulation made by glial cells. The channels are clustered at the <b>nodes of Ranvier</b>, and the impulse jumps from node to node. Turn myelin off and the impulse will creep along as a continuous wave, several times slower.</p>
-        <h3>Local anesthesia</h3>
-        <p><b>Lidocaine</b> and procaine plug Na⁺ channels. In the treated segment the impulse dies out, and the pain signal never reaches the brain.</p></div>
-      <div><h2>What is accurate here</h2><ul>
-        <li>The shape of the potential at the electrode: −70 → +30 → −80 mV, threshold about −55…−50 mV.</li>
-        <li>The order of events: summation, hillock, Na⁺ influx, K⁺ efflux.</li>
-        <li>Saltatory conduction and sodium channel block.</li></ul>
-        <h2 style="margin-top:22px">Simplifications</h2><ul>
-        <li>Time is slowed down tens of times.</li>
-        <li>The ions are drawn huge, and the axon is greatly shortened.</li></ul></div>
-      <div class="keys"><h2>Keys</h2><ul>
-        <li><code>Space</code> impulse</li><li><code>A</code> auto</li><li><code>M</code> myelin</li><li><code>L</code> lidocaine</li><li><code>,</code> <code>.</code> speed</li><li>mouse: rotate, wheel: zoom</li></ul></div>`,
+      <div><h2>Как это работает</h2>
+        <p>В покое внутри нейрона около <b>−70 мВ</b>. Этот заряд держат Na⁺/K⁺-насос и калиевые каналы утечки.</p>
+        <p>Сигналы с дендритов суммируются на теле клетки. Если у <b>аксонного холмика</b> заряд дошёл до порога (около −55…−50 мВ), открываются быстрые Na⁺-каналы и запускается <b>потенциал действия</b>: натрий входит, заряд взлетает до +30 мВ, затем выходит калий и возвращает минус.</p>
+        <h3>Зачем миелин</h3>
+        <p>Миелин — изоляция из глиальных клеток. Каналы собраны в <b>перехватах Ранвье</b>, и импульс перепрыгивает от перехвата к перехвату. Выключите миелин: импульс поползёт сплошной волной в несколько раз медленнее.</p>
+        <h3>Местная анестезия</h3>
+        <p><b>Лидокаин</b> и новокаин закупоривают Na⁺-каналы. В обработанном участке импульс гаснет, и сигнал боли не доходит до мозга.</p></div>
+      <div><h2>Что здесь настоящее</h2><ul>
+        <li>Форма потенциала на электроде: −70 → +30 → −80 мВ, порог около −55…−50 мВ.</li>
+        <li>Порядок событий: суммирование, холмик, вход Na⁺, выход K⁺.</li>
+        <li>Скачкообразное проведение и блок натриевых каналов.</li></ul>
+        <h2 style="margin-top:22px">Условности</h2><ul>
+        <li>Время замедлено примерно в десятки раз.</li>
+        <li>Ионы нарисованы огромными, аксон сильно укорочен.</li></ul></div>
+      <div class="keys"><h2>Клавиши</h2><ul>
+        <li><code>пробел</code> импульс</li><li><code>A</code> авто</li><li><code>M</code> миелин</li><li><code>L</code> лидокаин</li><li><code>,</code> <code>.</code> скорость</li><li>мышь: вращать, колесо: приблизить</li></ul></div>`,
   };
 }
 export { makeNeuron };

@@ -18,7 +18,7 @@ function makeEar() {
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x06070a); scene.environment = envTex;
   labLights(scene, 0x7fd6ff);
   const MQM = matchMedia('(max-width:700px)').matches;   /* компьютер: «Улитка изнутри» правее описания */
-  const VIEW = { anat: flyTarget(V3(-1.7, -0.55, 0), V3(-2.0, 1.15, 8.8)), coch: MQM ? flyTarget(V3(30, -0.1, 0), V3(30.6, 2.2, 6.6)) : flyTarget(V3(29.05, -0.35, 0), V3(29.7, 2.15, 7.2)), vest: MQM ? flyTarget(V3(0.1, -0.15, 0), V3(1.9, 1.5, 4.4)) : flyTarget(V3(-0.65, -0.01, 0), V3(0.79, 1.31, 3.52)) };
+  const VIEW = { anat: MQM ? flyTarget(V3(-1.6, -0.55, 0), V3(-1.94, 1.35, 9.86)) : flyTarget(V3(-1.7, -0.55, 0), V3(-2.0, 1.15, 8.8)), coch: MQM ? flyTarget(V3(30, -0.1, 0), V3(30.6, 2.2, 6.6)) : flyTarget(V3(29.05, -0.35, 0), V3(29.7, 2.15, 7.2)), vest: MQM ? flyTarget(V3(0.1, -0.15, 0), V3(1.9, 1.5, 4.4)) : flyTarget(V3(-0.65, -0.01, 0), V3(0.79, 1.31, 3.52)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(VIEW.anat.pos);
   const controls = makeControls(camera, VIEW.anat.target); controls.minDistance = 1; controls.maxDistance = 18;
   const ear = new THREE.Group(); scene.add(ear);

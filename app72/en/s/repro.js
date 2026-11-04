@@ -5,16 +5,16 @@ import { Sparks, THREE, V3, __set_rnd, bodyShell, button, clamp, dimOthers, disp
    ТЕЛО · РАЗМНОЖЕНИЕ И РАЗВИТИЕ (учебная схема)
    ========================================================= */
 const RP_F = [
-  { id: 'ov', name: 'Яичники', color: '#F2B0C8', text: '<b>Яичники</b> (3–4 см) — женские половые железы. В них с рождения заложены сотни тысяч незрелых яйцеклеток в фолликулах; за жизнь созревают и выходят около 400–500. Яичники выделяют эстрогены и прогестерон.' },
-  { id: 'tube', name: 'Маточные трубы', color: '#F2C88A', text: '<b>Маточные (фаллопиевы) трубы</b> (10–12 см) подхватывают яйцеклетку бахромками, реснички и сокращения стенки несут её к матке. Оплодотворение обычно происходит в расширенной наружной трети трубы.' },
-  { id: 'ut', name: 'Матка', color: '#E88A9A', text: '<b>Матка</b> — полый мышечный орган размером с грушу (7–8 см). Её внутренний слой, эндометрий, каждый месяц утолщается, готовясь принять эмбрион, а если беременность не наступила — отторгается (менструация). Во время беременности матка растягивается в сотни раз по объёму.' },
-  { id: 'cerv', name: 'Шейка и влагалище', color: '#D8A0B0', text: '<b>Шейка матки</b> соединяет матку с <b>влагалищем</b> — мышечным каналом, по которому выходит менструальная кровь и рождается ребёнок. Слизь шейки большую часть цикла густая и защищает от микробов.' },
+  { id: 'ov', name: 'Ovaries', color: '#F2B0C8', text: '<b>The ovaries</b> (3–4 cm) are the female gonads. From birth they contain hundreds of thousands of immature eggs in follicles; over a lifetime about 400–500 mature and are released. The ovaries secrete estrogens and progesterone.' },
+  { id: 'tube', name: 'Uterine tubes', color: '#F2C88A', text: '<b>The uterine (fallopian) tubes</b> (10–12 cm) catch the egg with their fimbriae; cilia and contractions of the wall carry it to the uterus. Fertilization usually takes place in the widened outer third of the tube.' },
+  { id: 'ut', name: 'Uterus', color: '#E88A9A', text: '<b>The uterus</b> is a hollow muscular organ the size of a pear (7–8 cm). Its inner layer, the endometrium, thickens every month to prepare to receive an embryo and, if pregnancy does not occur, is shed (menstruation). During pregnancy the volume of the uterus increases hundreds of times.' },
+  { id: 'cerv', name: 'Cervix and vagina', color: '#D8A0B0', text: '<b>The cervix</b> connects the uterus with the <b>vagina</b>, a muscular canal through which menstrual blood leaves and a baby is born. For most of the cycle the cervical mucus is thick and protects against microbes.' },
 ];
 const RP_M = [
-  { id: 'tes', name: 'Яички', color: '#C8D8F0', text: '<b>Яички</b> — мужские половые железы в мошонке, вне брюшной полости: сперматозоидам нужна температура на 2–3 °C ниже температуры тела. В извитых канальцах непрерывно, с полового созревания и до старости, образуются сперматозоиды (~100 млн в сутки); созревание одного занимает ~74 дня. Клетки Лейдига выделяют тестостерон.' },
-  { id: 'epi', name: 'Придаток и семявыносящий проток', color: '#9FD0FF', text: '<b>Придаток яичка</b> — длинный свёрнутый проток, где сперматозоиды дозревают и учатся двигаться. <b>Семявыносящий проток</b> поднимается в брюшную полость, огибает мочевой пузырь и вливается в мочеиспускательный канал.' },
-  { id: 'gl', name: 'Семенные пузырьки и простата', color: '#F2D88A', text: '<b>Семенные пузырьки</b> и <b>предстательная железа</b> выделяют жидкость с фруктозой (энергия для сперматозоидов) и веществами, защищающими их. Простата охватывает начало мочеиспускательного канала; с возрастом она часто увеличивается.' },
-  { id: 'ure', name: 'Мочеиспускательный канал', color: '#E8B0A0', text: '<b>Мочеиспускательный канал</b> у мужчин длиннее (~20 см) и служит общим путём для мочи и семенной жидкости.' },
+  { id: 'tes', name: 'Testes', color: '#C8D8F0', text: '<b>The testes</b> are the male gonads, located in the scrotum outside the abdominal cavity: sperm need a temperature 2–3 °C below body temperature. In the seminiferous tubules sperm are produced continuously from puberty into old age (~100 million per day); the maturation of a single sperm takes ~74 days. Leydig cells secrete testosterone.' },
+  { id: 'epi', name: 'Epididymis and vas deferens', color: '#9FD0FF', text: '<b>The epididymis</b> is a long coiled duct where sperm finish maturing and learn to move. <b>The vas deferens</b> rises into the abdominal cavity, loops around the bladder and joins the urethra.' },
+  { id: 'gl', name: 'Seminal vesicles and prostate', color: '#F2D88A', text: '<b>The seminal vesicles</b> and the <b>prostate gland</b> secrete fluid containing fructose (energy for the sperm) and protective substances. The prostate surrounds the beginning of the urethra; it often enlarges with age.' },
+  { id: 'ure', name: 'Urethra', color: '#E8B0A0', text: '<b>The urethra</b> in men is longer (~20 cm) and serves as a common pathway for urine and semen.' },
 ];
 function makeRepro(initMode) {
   __set_rnd(mulberry(2121));
@@ -76,19 +76,19 @@ function makeRepro(initMode) {
   const fx = new Sparks(2000, 0.035); scene.add(fx.obj);
   /* ---------- реалистичная 3D-модель: Education Resource Fund (Sketchfab, CC BY 4.0) ---------- */
   const RP_R = [
-    { id: 'r_ut', name: 'Матка и влагалище', color: '#E88A9A', keys: ['Uterus_and_vagina'], text: '<b>Матка</b> — полый мышечный орган размером с грушу (7–8 см): дно, тело и шейка. Стенка: эндометрий (обновляется каждый месяц), мощный миометрий и наружная оболочка. Обычно матка наклонена вперёд, над мочевым пузырём. Шейка открывается во <b>влагалище</b> — эластичный мышечный канал 7–10 см.' },
-    { id: 'r_tube', name: 'Маточные трубы', color: '#F2C88A', keys: ['Tubes'], text: '<b>Маточные трубы</b> (10–12 см) отходят от углов матки. Их воронки с бахромками охватывают яичник и подхватывают яйцеклетку; реснички и сокращения стенки несут её к матке. Оплодотворение обычно происходит в широкой наружной части трубы (ампуле).' },
-    { id: 'r_ov', name: 'Яичники', color: '#F2B0C8', keys: ['Ovaries'], text: '<b>Яичники</b> (3–4 см) лежат по бокам матки у стенки таза. В них хранятся незрелые яйцеклетки в фолликулах; каждый месяц обычно созревает и выходит одна. Яичники выделяют эстрогены и прогестерон.' },
-    { id: 'r_lig', name: 'Связки', color: '#C8D8B0', keys: ['Broad_ligament', 'Round_ligament', 'Cardinal_ligament', 'Uterosacral_lig', 'Ovarian_ligament', 'Pubocervical_facia'], text: '<b>Связочный аппарат.</b> <b>Широкая связка</b> — складка брюшины с трубами и сосудами. <b>Круглые связки</b> идут к паховым каналам и держат матку наклонённой вперёд. <b>Кардинальные</b>, <b>крестцово-маточные</b> связки и <b>лобково-шеечная фасция</b> — главная опора шейки. При ослаблении опоры (роды, возраст) органы могут опускаться.' },
-    { id: 'r_blad', name: 'Мочевой пузырь', color: '#F2D860', keys: ['Bladder'], text: '<b>Мочевой пузырь</b> лежит спереди от матки, за лобковым симфизом. При наполнении он приподнимает матку, а растущая при беременности матка давит на пузырь — поэтому беременным чаще хочется в туалет.' },
-    { id: 'r_int', name: 'Прямая кишка', color: '#C8A090', keys: ['Large_intestine'], text: '<b>Сигмовидная и прямая кишка</b> лежат позади матки. Между ними брюшина образует прямокишечно-маточное углубление — самую низкую точку брюшной полости.' },
-    { id: 'r_bone', name: 'Таз и крестец', color: '#E8D8BB', keys: ['Pelvis', 'Sacrum'], text: '<b>Таз</b>: две тазовые кости, крестец и копчик. Женский таз шире, ниже и с более округлым входом, чем мужской, а угол под лобковым симфизом больше — это приспособление к родам.' },
-    { id: 'r_ext', name: 'Наружные органы', color: '#D8A0B0', keys: ['Labia_minora'], text: '<b>Наружные половые органы</b> (на модели показаны малые половые губы) окружают преддверие влагалища, куда открываются влагалище и мочеиспускательный канал.' },
+    { id: 'r_ut', name: 'Uterus and vagina', color: '#E88A9A', keys: ['Uterus_and_vagina'], text: '<b>The uterus</b> is a hollow muscular organ the size of a pear (7–8 cm): fundus, body and cervix. Its wall: the endometrium (renewed monthly), the powerful myometrium and the outer coat. It usually tilts forward over the bladder. The cervix opens into the <b>vagina</b>, an elastic muscular canal 7–10 cm long.' },
+    { id: 'r_tube', name: 'Uterine tubes', color: '#F2C88A', keys: ['Tubes'], text: '<b>The uterine tubes</b> (10–12 cm) arise from the corners of the uterus. Their funnels with fimbriae wrap around the ovary and catch the egg; cilia and contractions of the wall carry it to the uterus. Fertilization usually takes place in the wide outer part of the tube (the ampulla).' },
+    { id: 'r_ov', name: 'Ovaries', color: '#F2B0C8', keys: ['Ovaries'], text: '<b>The ovaries</b> (3–4 cm) lie on either side of the uterus against the pelvic wall. They store immature eggs in follicles; usually one matures and is released each month. The ovaries secrete estrogens and progesterone.' },
+    { id: 'r_lig', name: 'Ligaments', color: '#C8D8B0', keys: ['Broad_ligament', 'Round_ligament', 'Cardinal_ligament', 'Uterosacral_lig', 'Ovarian_ligament', 'Pubocervical_facia'], text: '<b>The ligaments.</b> The <b>broad ligament</b> is a peritoneal fold holding the tubes and vessels. The <b>round ligaments</b> run to the inguinal canals and keep the uterus tilted forward. The <b>cardinal</b> and <b>uterosacral</b> ligaments and <b>pubocervical fascia</b> support the cervix. If support weakens (childbirth, age), organs may prolapse.' },
+    { id: 'r_blad', name: 'Urinary bladder', color: '#F2D860', keys: ['Bladder'], text: '<b>The urinary bladder</b> lies in front of the uterus, behind the pubic symphysis. When it fills, it lifts the uterus, and the growing uterus in pregnancy presses on the bladder — which is why pregnant women need to urinate more often.' },
+    { id: 'r_int', name: 'Rectum', color: '#C8A090', keys: ['Large_intestine'], text: '<b>The sigmoid colon and rectum</b> lie behind the uterus. Between them the peritoneum forms the rectouterine pouch — the lowest point of the peritoneal cavity.' },
+    { id: 'r_bone', name: 'Pelvis and sacrum', color: '#E8D8BB', keys: ['Pelvis', 'Sacrum'], text: '<b>The pelvis</b>: two hip bones, the sacrum and the coccyx. The female pelvis is wider and shallower than the male one, with a more rounded inlet, and the angle below the pubic symphysis is larger — an adaptation to childbirth.' },
+    { id: 'r_ext', name: 'External organs', color: '#D8A0B0', keys: ['Labia_minora'], text: '<b>The external genitalia</b> (the model shows the labia minora) surround the vestibule of the vagina, into which the vagina and urethra open.' },
   ];
   RP_R.forEach((p) => { PART[p.id] = { ...p, mats: [], c: V3(0, 0, 0), n: 0 }; });
   const REAL = new THREE.Group(); scene.add(REAL); REAL.visible = false;
   function loadReal() {
-    if (st.realLoad) return; st.realLoad = 1; refs.setInfo && refs.setInfo();
+    if (st.realLoad || initMode === 'cycle') return; st.realLoad = 1; refs.setInfo && refs.setInfo();
     fetchModel('repro').then((buf) => {
       parseGLB(buf, (gltf) => {
         const root = gltf.scene; root.updateMatrixWorld(true);
@@ -153,37 +153,37 @@ function makeRepro(initMode) {
   function drawScope(ctx, w, hgt) {
     ctx.clearRect(0, 0, w, hgt); const on = st.mode === 'cycle'; scopeShow(on); if (!on) return;
     const x = (d) => 8 + (d - 1) / 27 * (w - 16), Y = (v) => hgt - 10 - v * (hgt - 26);
-    const cols = ['#9FD0FF', '#C77DFF', '#FF8AB0', '#F2C14E'], names = ['ФСГ', 'ЛГ', 'эстроген', 'прогест.'];
+    const cols = ['#9FD0FF', '#C77DFF', '#FF8AB0', '#F2C14E'], names = ['FSH', 'LH', 'estrogen', 'progest.'];
     ctx.fillStyle = 'rgba(255,80,90,.12)'; ctx.fillRect(x(1), 14, x(5) - x(1), hgt - 24);
     cols.forEach((c, k) => { ctx.strokeStyle = c; ctx.lineWidth = 2; ctx.beginPath(); for (let d = 1; d <= 28; d += 0.25) { const hm = HORM(d), v = [hm.fsh, hm.lh, hm.est, hm.prog][k]; d === 1 ? ctx.moveTo(x(d), Y(v)) : ctx.lineTo(x(d), Y(v)); } ctx.globalAlpha = 0.85; ctx.stroke(); ctx.globalAlpha = 1; ctx.fillStyle = c; ctx.font = '500 9px JetBrains Mono, monospace'; ctx.fillText(names[k], 10 + k * Math.min(62, (w - 62) / 3), 11); });
     ctx.strokeStyle = '#fff'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(x(st.day), 14); ctx.lineTo(x(st.day), hgt - 8); ctx.stroke();
   }
   const DEV = [
-    '<b>День 0: оплодотворение.</b> Из ~200 млн сперматозоидов до яйцеклетки в маточной трубе добираются несколько сотен, а проникает внутрь только один. Ядра сливаются — получается <b>зигота</b> с полным набором из 46 хромосом: половина от матери, половина от отца.',
-    '<b>Дни 1–4: дробление.</b> Зигота делится на 2, 4, 8, 16 клеток, не увеличиваясь в размере, и медленно движется по трубе к матке. К 4-му дню это <b>морула</b> — «тутовая ягода» из 16–32 клеток.',
-    '<b>Дни 5–6: бластоциста.</b> Внутри появляется полость. Наружный слой клеток (трофобласт) станет плацентой, а маленькая внутренняя клеточная масса — самим зародышем.',
-    '<b>Дни 6–10: имплантация.</b> Бластоциста внедряется в утолщённый эндометрий. Трофобласт начинает выделять ХГЧ — гормон, который поддерживает жёлтое тело (поэтому менструация не наступает) и который определяют тесты на беременность. Дальше — развитие нервной трубки и мозга (см. вкладку «Развитие мозга»), всего ~38 недель.',
+    '<b>Day 0: fertilization.</b> Of ~200 million sperm, a few hundred reach the egg in the uterine tube, and only one gets inside. The nuclei fuse, producing a <b>zygote</b> with a full set of 46 chromosomes: half from the mother, half from the father.',
+    '<b>Days 1–4: cleavage.</b> The zygote divides into 2, 4, 8, 16 cells without growing in size and slowly moves along the tube toward the uterus. By day 4 it is a <b>morula</b> — a “mulberry” of 16–32 cells.',
+    '<b>Days 5–6: blastocyst.</b> A cavity appears inside. The outer layer of cells (the trophoblast) will become the placenta, and the small inner cell mass will become the embryo itself.',
+    '<b>Days 6–10: implantation.</b> The blastocyst burrows into the thickened endometrium. The trophoblast begins to secrete hCG, the hormone that maintains the corpus luteum (so menstruation does not occur) and that pregnancy tests detect. Next comes the development of the neural tube and brain (see the “Brain development” tab) — ~38 weeks in all.',
   ];
   const TXT = {
-    female: '<b>Женская половая система</b> — реалистичная 3D-модель органов малого таза: матка и влагалище, маточные трубы, яичники, связки, которые их удерживают, а рядом мочевой пузырь, прямая кишка и кости таза. Вращайте модель и нажимайте на органы.',
-    male: '<b>Мужская половая система</b> (схема): яички с придатками, семявыносящие протоки, семенные пузырьки, предстательная железа и мочеиспускательный канал. Нажмите на орган.',
+    female: '<b>The female reproductive system</b> is a realistic 3D model of the pelvic organs: the uterus and vagina, the uterine tubes, the ovaries, the ligaments that hold them in place, and next to them the bladder, the rectum and the pelvic bones. Rotate the model and click the organs.',
+    male: '<b>The male reproductive system</b> (diagram): the testes with the epididymides, the vasa deferentia, the seminal vesicles, the prostate gland and the urethra. Click an organ.',
     cycle: '',
     dev: '',
   };
-  const cycText = () => { const d = Math.floor(st.day); const ph = d <= 5 ? '<b>Менструация (дни 1–5).</b> Уровни эстрогена и прогестерона низкие, функциональный слой эндометрия отторгается. Гипофиз начинает выделять ФСГ — в яичнике растут фолликулы.' : d < 13 ? '<b>Фолликулярная фаза.</b> Под действием ФСГ созревает главный фолликул и выделяет всё больше эстрогена — эндометрий утолщается.' : d <= 15 ? '<b>Овуляция (~14-й день).</b> Пик эстрогена вызывает резкий выброс ЛГ гипофизом — фолликул лопается, яйцеклетка выходит в трубу. Она жизнеспособна около суток.' : '<b>Лютеиновая фаза.</b> На месте фолликула образуется <b>жёлтое тело</b> и выделяет прогестерон — эндометрий становится рыхлым и богатым сосудами. Если оплодотворения нет, через ~12 дней жёлтое тело угасает, гормоны падают, начинается новый цикл.'; return `День ${d} из 28. ` + ph; };
+  const cycText = () => { const d = Math.floor(st.day); const ph = d <= 5 ? '<b>Menstruation (days 1–5).</b> Estrogen and progesterone levels are low, and the functional layer of the endometrium is shed. The pituitary begins to secrete FSH — follicles grow in the ovary.' : d < 13 ? '<b>Follicular phase.</b> Under the influence of FSH the dominant follicle matures and secretes more and more estrogen — the endometrium thickens.' : d <= 15 ? '<b>Ovulation (~day 14).</b> The estrogen peak triggers a sharp surge of LH from the pituitary — the follicle ruptures and the egg is released into the tube. It remains viable for about a day.' : '<b>Luteal phase.</b> In place of the follicle the <b>corpus luteum</b> forms and secretes progesterone — the endometrium becomes soft and rich in blood vessels. If there is no fertilization, after ~12 days the corpus luteum regresses, hormone levels fall and a new cycle begins.'; return `Day ${d} of 28. ` + ph; };
   const labels = [
-    { text: 'яичник', pos: V3(0.42, 0.17, 0.05), color: '#F2B0C8', show: () => st.labels && schem() },
-    { text: 'маточная труба', pos: V3(0.38, 0.36, 0.05), color: '#F2C88A', show: () => st.labels && schem() },
-    { text: 'матка', pos: matchMedia('(max-width:700px)').matches ? V3(-0.05, 0.25, 0.12) : V3(0.0, 0.36, 0.1), color: '#E88A9A', show: () => st.labels && schem() },
-    { text: 'эндометрий', pos: matchMedia('(max-width:700px)').matches ? V3(-0.06, 0.12, 0.12) : V3(-0.06, 0.25, 0.12), color: '#ff7a8a', show: () => st.labels && st.mode === 'cycle' },
-    { text: 'шейка и влагалище', pos: V3(0.08, -0.3, -0.02), color: '#D8A0B0', left: true, show: () => st.labels && schem() },
-    { text: 'мочевой пузырь', pos: V3(0.1, -0.02, 0.36), color: '#F2D860', show: () => st.labels && st.mode === 'female' && schem() },
-    { text: 'мочевой пузырь', pos: V3(-0.1, 0.16, 0.22), color: '#F2D860', show: () => st.labels && st.mode === 'male' },
-    { text: 'яичко', pos: V3(0.16, -0.6, 0.36), color: '#C8D8F0', show: () => st.labels && st.mode === 'male' },
-    { text: 'семявыносящий проток', pos: V3(0.24, 0.25, 0.18), color: '#9FD0FF', show: () => st.labels && st.mode === 'male' },
-    { text: 'семенной пузырёк', pos: V3(0.13, 0.04, 0.06), color: '#F2D88A', show: () => st.labels && st.mode === 'male' },
-    { text: 'простата', pos: V3(0.08, -0.16, 0.2), color: '#F2D88A', show: () => st.labels && st.mode === 'male' },
-    { text: 'зародыш', pos: V3(0, 0, 0), color: '#ffe8f0', show: () => st.labels && st.mode === 'dev', dyn: true },
+    { text: 'ovary', pos: V3(0.42, 0.17, 0.05), color: '#F2B0C8', show: () => st.labels && schem() },
+    { text: 'uterine tube', pos: V3(0.38, 0.36, 0.05), color: '#F2C88A', show: () => st.labels && schem() },
+    { text: 'uterus', pos: matchMedia('(max-width:700px)').matches ? V3(-0.05, 0.25, 0.12) : V3(0.0, 0.36, 0.1), color: '#E88A9A', show: () => st.labels && schem() && !(st.mode === 'dev' && matchMedia('(max-width:700px)').matches) },
+    { text: 'endometrium', pos: matchMedia('(max-width:700px)').matches ? V3(-0.06, 0.12, 0.12) : V3(-0.06, 0.25, 0.12), color: '#ff7a8a', show: () => st.labels && st.mode === 'cycle' },
+    { text: 'cervix and vagina', pos: V3(0.08, -0.3, -0.02), color: '#D8A0B0', left: true, show: () => st.labels && schem() },
+    { text: 'urinary bladder', pos: V3(0.1, -0.02, 0.36), color: '#F2D860', show: () => st.labels && st.mode === 'female' && schem() },
+    { text: 'urinary bladder', pos: V3(-0.1, 0.16, 0.22), color: '#F2D860', show: () => st.labels && st.mode === 'male' },
+    { text: 'testis', pos: V3(0.16, -0.6, 0.36), color: '#C8D8F0', show: () => st.labels && st.mode === 'male' },
+    { text: 'vas deferens', pos: V3(0.24, 0.25, 0.18), color: '#9FD0FF', show: () => st.labels && st.mode === 'male' },
+    { text: 'seminal vesicle', pos: V3(0.13, 0.04, 0.06), color: '#F2D88A', show: () => st.labels && st.mode === 'male' },
+    { text: 'prostate', pos: V3(0.08, -0.16, 0.2), color: '#F2D88A', show: () => st.labels && st.mode === 'male' },
+    { text: 'embryo', pos: V3(0, 0, 0), color: '#ffe8f0', show: () => st.labels && st.mode === 'dev', dyn: true },
   ];
   RP_R.forEach((p) => { const l = { text: p.name.toLowerCase(), pos: V3(0, -9, 0), color: p.color, left: p.id === 'r_int', show: () => st.labels && st.mode === 'female' && st.realLoad === 2 && (!st.sel || st.sel === p.id) && (!matchMedia('(max-width:700px)').matches || st.sel || ['r_ut', 'r_ov', 'r_tube', 'r_bone'].includes(p.id)) }; PART[p.id].lab = l; labels.unshift(l); });
   const embLabel = labels[labels.length - 1];
@@ -191,16 +191,16 @@ function makeRepro(initMode) {
   loadReal();
   function ui(el) {
     const ib = infoBox('1 1 360px');
-    refs.setInfo = () => { const stat = st.mode === 'female' && st.realErr ? 'Не удалось загрузить 3D-модель: ' + st.realErr : st.mode === 'female' && st.realLoad === 1 ? 'Загружаю реалистичную 3D-модель…' : ''; ib.info.innerHTML = st.msg || ((st.mode === 'cycle' ? (initMode === 'cycle' && st.sel ? PART[st.sel].text : cycText()) : (st.mode === 'female' || st.mode === 'male') && st.sel ? PART[st.sel].text : TXT[st.mode]) + (stat ? '<br><span style="opacity:.6">' + stat + '</span>' : '')); };
-    refs.modeSeg = seg([{ id: 'female', label: 'Женская система' }, { id: 'male', label: 'Мужская система' }, { id: 'cycle', label: 'Цикл' }, { id: 'dev', label: 'Первая неделя' }], () => st.mode, (v) => setMode(v));
+    refs.setInfo = () => { const stat = st.mode === 'female' && st.realErr ? 'Could not load the 3D model: ' + st.realErr : st.mode === 'female' && st.realLoad === 1 ? 'Loading realistic 3D model…' : ''; ib.info.innerHTML = st.msg || ((st.mode === 'cycle' ? (initMode === 'cycle' && st.sel ? PART[st.sel].text : cycText()) : (st.mode === 'female' || st.mode === 'male') && st.sel ? PART[st.sel].text : TXT[st.mode]) + (stat ? '<br><span style="opacity:.6">' + stat + '</span>' : '')); };
+    refs.modeSeg = seg([{ id: 'female', label: 'Female system' }, { id: 'male', label: 'Male system' }, { id: 'cycle', label: 'Cycle' }, { id: 'dev', label: 'First week' }], () => st.mode, (v) => setMode(v));
     const segBox = h('div', { class: 'gctl' });
-    refs.rebuild = () => { segBox.innerHTML = ''; const list = parts(); refs.seg = seg([{ id: 'all', label: 'Все' }, ...list.map((p) => ({ id: p.id, label: p.name, color: p.color }))], () => st.sel || 'all', (v) => { if (st.mode === 'dev' || (st.mode === 'cycle' && initMode !== 'cycle')) setMode('female'); select(v); }); segBox.append(refs.seg); };
+    refs.rebuild = () => { segBox.innerHTML = ''; const list = parts(); refs.seg = seg([{ id: 'all', label: 'All' }, ...list.map((p) => ({ id: p.id, label: p.name, color: p.color }))], () => st.sel || 'all', (v) => { if (st.mode === 'dev' || (st.mode === 'cycle' && initMode !== 'cycle')) setMode('female'); select(v); }); segBox.append(refs.seg); };
     refs.rebuild();
-    st.speed = 1.5; const sp = range('rpspeed', 0.5, 4, 0.1, () => st.speed, (v) => { st.speed = v; }, (v) => v.toFixed(1) + ' дн/с');
-    refs.rot = toggle('Вращение', () => st.rot, (v) => { st.rot = v; });
-    const lab = toggle('Подписи', () => st.labels, (v) => { st.labels = v; });
+    st.speed = 1.5; const sp = range('rpspeed', 0.5, 4, 0.1, () => st.speed, (v) => { st.speed = v; }, (v) => v.toFixed(1) + ' d/s');
+    refs.rot = toggle('Rotate', () => st.rot, (v) => { st.rot = v; });
+    const lab = toggle('Labels', () => st.labels, (v) => { st.labels = v; });
     Object.assign(refs, { lab });
-    el.append(initMode === 'cycle' ? '' : group('Режим', '1–4', refs.modeSeg), h('div', { class: 'grp', style: 'flex:1 1 440px' }, h('div', { class: 'glabel' }, 'Органы', h('kbd', {}, 'клик')), segBox), refs.phG = group('Фазы цикла', initMode === 'cycle' ? '1–4' : '', ...(refs.phB = [['Менструация', 1.5], ['Фолликулярная', 8], ['Овуляция', 13.7], ['Лютеиновая', 21]].map(([n, d], i) => button(n, () => { if (st.mode !== 'cycle') setMode('cycle'); if (st.sel) select('all'); st.day = d; st.msg = null; refs.setInfo(); }, false))), toggle('Пауза', () => st.pause, (v) => { st.pause = v; })), refs.spG = group('Скорость цикла', '', sp), group('Вид', 'R · N', refs.rot, lab), ib.el);
+    el.append(initMode === 'cycle' ? '' : group('Mode', '1–4', refs.modeSeg), h('div', { class: 'grp', style: 'flex:1 1 440px' }, h('div', { class: 'glabel' }, 'Organs', h('kbd', {}, 'click')), segBox), refs.phG = group('Cycle phases', initMode === 'cycle' ? '1–4' : '', ...(refs.phB = [['Menstruation', 1.5], ['Follicular', 8], ['Ovulation', 13.7], ['Luteal', 21]].map(([n, d], i) => button(n, () => { if (st.mode !== 'cycle') setMode('cycle'); if (st.sel) select('all'); st.day = d; st.msg = null; refs.setInfo(); }, false))), toggle('Pause', () => st.pause, (v) => { st.pause = v; })), refs.spG = group('Cycle speed', '', sp), group('View', 'R · N', refs.rot, lab), ib.el);
     // фазы и скорость цикла нужны только в режиме «Цикл»: в остальных режимах пульт ниже — сцене больше места
     refs.cycUI = () => { const on = st.mode === 'cycle'; refs.phG.style.display = on || initMode === 'cycle' ? '' : 'none'; refs.spG.style.display = on ? '' : 'none'; }; refs.cycUI();
     refs.setInfo();
@@ -213,19 +213,19 @@ function makeRepro(initMode) {
     if (e.key === 'Escape') { select('all'); return true; }
     return false;
   }
-  function stats() { return st.mode === 'cycle' ? [['День цикла', Math.floor(st.day), 'из 28']] : st.mode === 'dev' ? [['Сутки', Math.max(0, Math.floor(st.devDay || 0)), ''], ['Клеток', (st.devDay || 0) < 1 ? 1 : (st.devDay || 0) < 4.5 ? Math.min(32, 2 ** Math.floor(1 + (st.devDay - 1) * 1.3)) : '≈100', '']] : [['Хромосом в клетке', 46, ''], ['В половой клетке', 23, '']]; }
+  function stats() { return st.mode === 'cycle' ? [['Cycle day', Math.floor(st.day), 'of 28']] : st.mode === 'dev' ? [['Day', Math.max(0, Math.floor(st.devDay || 0)), ''], ['Cells', (st.devDay || 0) < 1 ? 1 : (st.devDay || 0) < 4.5 ? Math.min(32, 2 ** Math.floor(1 + (st.devDay - 1) * 1.3)) : '≈100', '']] : [['Chromosomes per cell', 46, ''], ['In a germ cell', 23, '']]; }
   const self = {
     labelBg: true, mobZoom: initMode === 'cycle' ? 0.72 : 0.58, scene, camera, controls, update: update2, ui, onKey, stats, labels, drawScope, accent: '#F2B0C8',
-    kicker: 'Тело · размножение', title: 'Размножение и развитие',
-    lede: 'Как устроены половые системы, как гормоны гипофиза и яичников задают 28-дневный цикл и что происходит с новой жизнью в первую неделю.',
+    kicker: 'Body · reproduction', title: 'Reproduction and development',
+    lede: 'How the reproductive systems are built, how pituitary and ovarian hormones set the 28-day cycle, and what happens to a new life in its first week.',
     notes: `
-      <div><h2>Половые клетки</h2><p>Яйцеклетка (~0,1 мм) — самая крупная клетка тела, сперматозоид (~0,05 мм с хвостом) — одна из самых маленьких. Обе образуются мейозом и несут по 23 хромосомы. Пол ребёнка определяет сперматозоид: с X-хромосомой — девочка (XX), с Y — мальчик (XY).</p>
-        <h3>Гормональная регуляция</h3><p>Гипоталамус (ГнРГ) → гипофиз (ФСГ и ЛГ) → яичники или яички (эстрогены, прогестерон, тестостерон), которые по обратной связи влияют на гипоталамус и гипофиз.</p>
-        <h3>Фазы цикла</h3><p><b>Менструальная</b> фаза (дни 1–5): прогестерон упал, и функциональный слой эндометрия отторгается. <b>Фолликулярная</b> (примерно до 14-го дня): под действием ФСГ растут фолликулы, доминантный выделяет всё больше эстрадиола, и эндометрий снова утолщается. Когда эстрадиол около двух суток держится высоким, обратная связь меняет знак на <b>положительную</b>: гипофиз выбрасывает <b>пик ЛГ</b>, и примерно через 36 часов происходит <b>овуляция</b>. <b>Лютеиновая</b> фаза почти постоянна (~14 дней): жёлтое тело выделяет прогестерон и эстрадиол, эндометрий готовится к имплантации; без беременности жёлтое тело распадается, гормоны падают, и начинается новая менструация. Поэтому длина цикла (21–35 дней) меняется в основном за счёт фолликулярной фазы.</p></div>
-      <div><h2>Условности</h2><ul><li>Мужская система, цикл и первая неделя показаны схематично, как на учебном рисунке.</li><li>Цикл — усреднённый 28-дневный; в жизни длительность 21–35 дней.</li><li>Зародыш увеличен, время сжато.</li></ul></div>
-      <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>4</code> режим</li><li>клик: орган</li><li><code>R</code> вращение · <code>N</code> подписи</li></ul></div>`,
+      <div><h2>Germ cells</h2><p>The egg (~0.1 mm) is the largest cell in the body; the sperm (~0.05 mm including the tail) is one of the smallest. Both are formed by meiosis and carry 23 chromosomes each. The sex of the child is determined by the sperm: one with an X chromosome gives a girl (XX), one with a Y gives a boy (XY).</p>
+        <h3>Hormonal regulation</h3><p>Hypothalamus (GnRH) → pituitary (FSH and LH) → ovaries or testes (estrogens, progesterone, testosterone), which act back on the hypothalamus and pituitary through feedback.</p>
+        <h3>Phases of the cycle</h3><p><b>Menstrual</b> phase (days 1–5): progesterone has fallen, and the functional layer of the endometrium is shed. <b>Follicular</b> phase (until about day 14): under FSH the follicles grow, the dominant one secretes more and more estradiol, and the endometrium thickens again. When estradiol stays high for about two days, the feedback switches to <b>positive</b>: the pituitary releases an <b>LH surge</b>, and about 36 hours later <b>ovulation</b> occurs. The <b>luteal</b> phase is nearly constant (~14 days): the corpus luteum secretes progesterone and estradiol, and the endometrium prepares for implantation; without pregnancy the corpus luteum regresses, hormone levels fall, and a new menstruation begins. That is why cycle length (21–35 days) varies mainly through the follicular phase.</p></div>
+      <div><h2>Simplifications</h2><ul><li>The male system, the cycle and the first week are shown schematically, like a textbook drawing.</li><li>The cycle is an average 28-day one; in real life it lasts 21–35 days.</li><li>The embryo is enlarged and time is compressed.</li></ul></div>
+      <div class="keys"><h2>Keys</h2><ul><li><code>1</code>–<code>4</code> mode</li><li>click: organ</li><li><code>R</code> rotate · <code>N</code> labels</li></ul></div>`,
   };
-  if (initMode === 'cycle') { self.notes = self.notes.replace(/(<code>4<\/code> )[^<]+/, '$1' + 'фаза цикла').replace(/<li>[^<]*(\u0441\u0445\u0435\u043c\u0430\u0442\u0438\u0447\u043d\u043e|schematically)[^<]*<\/li>/, '<li>' + 'Органы и цикл показаны схематично, как на учебном рисунке.' + '</li>'); self.kicker = 'Тело · женское здоровье'; self.title = 'Менструальный цикл'; self.lede = 'Около 28 дней, за которые гипофиз и яичники готовят яйцеклетку и слизистую матки к возможной беременности, — по дням, с гормонами, фолликулом и эндометрием.'; }
+  if (initMode === 'cycle') { self.notes = self.notes.replace(/(<code>4<\/code> )[^<]+/, '$1' + 'cycle phase').replace(/<li>[^<]*(\u0441\u0445\u0435\u043c\u0430\u0442\u0438\u0447\u043d\u043e|schematically)[^<]*<\/li>/, '<li>' + 'The organs and the cycle are shown schematically, like a textbook drawing.' + '</li>'); self.kicker = 'Body · women’s health'; self.title = 'Menstrual cycle'; self.lede = 'The roughly 28 days during which the pituitary and ovaries prepare an egg and the uterine lining for a possible pregnancy — day by day, with hormones, the follicle and the endometrium.'; }
   return self;
 }
 function makeMenses() { return makeRepro('cycle'); }
