@@ -2171,7 +2171,7 @@ function makeSkeleton() {
         float a = uBase + f*uRim + (s ? uPulse*0.5 : 0.0); gl_FragColor = vec4(col*(0.25+f*1.35)*uGain*(s ? 1.0+uPulse*2.0 : 1.0), clamp(a,0.0,1.0)); }`,
     transparent: true, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending,
   });
-  xray.userData.rim0 = 0.8; xray.userData.base0 = 0.2; GLASS.push(xray); applyLook();
+  xray.userData.rim0 = 0.8; xray.userData.base0 = 0.2;
 
   const J = Object.fromEntries(Object.entries(SKEL_META.joints).map(([k, v]) => [k, V3(...v)]));
   const hipC = J.hpR.clone().add(J.hpL).multiplyScalar(0.5);
@@ -4594,7 +4594,7 @@ function makeVentricles() {
     st.mode = m; refs.modeSeg && refs.modeSeg.sync(); refs.setInfo && refs.setInfo();
     falx.visible = m === 'men'; men.visible = m === 'men';
     shell.solid.opacity = 0.05;
-    if (m === 'men') { st.rot = false; refs.rot && refs.rot.sync(); men.updateMatrixWorld(true); st.fly = VDK ? flyTarget(MEN_POS.clone().add(V3(-0.25, 0, 0.12)), MEN_POS.clone().add(V3(1.25, 0.9, 3.22))) : flyTarget(MEN_POS.clone().add(V3(-0.12, 0, 0)), MEN_POS.clone().add(V3(1.08, 0.72, 2.5))); }
+    if (m === 'men') { st.rot = false; refs.rot && refs.rot.sync(); men.updateMatrixWorld(true); st.fly = VDK ? flyTarget(MEN_POS.clone().add(V3(-0.25, 0, 0.12)), MEN_POS.clone().add(V3(1.25, 0.9, 3.22))) : flyTarget(MEN_POS.clone().add(V3(-0.12, 0, 0)), MEN_POS.clone().add(V3(1.25, 0.82, 2.85))); }
     else st.fly = HOME;
   }
   function update(dt) {
@@ -4629,7 +4629,7 @@ function makeVentricles() {
     }
     plexMat.emissiveIntensity = 0.8 + 0.4 * Math.sin(t * 2);
     gran.forEach((g, i) => g.scale.setScalar(1 + 0.15 * Math.sin(t * 2 + i)));
-    if (men.visible) { const sas = LAY[4]; if (rnd() < dt * 40) menCSF.spawn(V3(-W / 2 + 0.1, sas.y + rand(-0.04, 0.04), rand(-D / 2 + 0.05, D / 2 - 0.05)), V3(rand(0.15, 0.3), 0, rand(-0.03, 0.03)), CC, 6, 0, 1.4); menCSF.update(dt); men.updateMatrixWorld(true); labels.forEach((l) => { if (l.L) l.pos.copy(menLbl(l.L)); }); }
+    if (men.visible) { const sas = LAY[4]; if (rnd() < dt * 40) menCSF.spawn(V3(-W / 2 + 0.1, sas.y + rand(-0.04, 0.04), rand(-D / 2 + 0.05, D / 2 - 0.05)), V3(rand(0.15, 0.3), 0, rand(-0.03, 0.03)), CC, 6, 0, 1.4); menCSF.update(dt); men.updateMatrixWorld(true); labels.forEach((l) => { if (l.L) { l.pos.copy(menLbl(l.L)); if (l.L.id === 'grey' && matchMedia('(max-width:700px)').matches) { l.pos.copy(men.localToWorld(V3(W / 2 - 0.03, l.L.y, D / 2))); l.left = true; } } }); }
   }
   const MEN_TEXT = '<b>Оболочки мозга</b>. Снаружи <b>твёрдая</b> — прочная, как гибкий пластик; между полушариями она образует <b>серп мозга</b>, над мозжечком — <b>намёт</b>. Под ней <b>паутинная</b>: губка из ячеек, гасит удары. Глубже — подпаутинное пространство с ликвором и <b>мягкая</b> оболочка с сосудами, сросшаяся с мозгом.';
   const TXT = {
@@ -4651,7 +4651,7 @@ function makeVentricles() {
     { text: 'закупорка водопровода', pos: aq.getPointAt(0.55).add(V3(0.06, 0, 0.06)), color: '#ff7a6a', show: () => st.labels && st.hydro },
     { text: 'серп мозга', pos: V3(0.2, 0.9, 0.02), color: '#efe8dc', show: () => st.labels && st.mode === 'men' },
     { text: 'намёт мозжечка', pos: V3(-1.3, -0.5, 0.6), color: '#efe8dc', show: () => st.labels && st.mode === 'men' },
-    ...LAY.map((L) => ({ text: L.name, pos: V3(0, 0, 0), L, color: '#' + new THREE.Color(L.c).getHexString(), show: () => st.labels && st.mode === 'men' })),
+    ...LAY.map((L) => ({ text: L.name, pos: V3(0, 0, 0), L, color: '#' + new THREE.Color(L.c).lerp(new THREE.Color(0xffffff), 0.45).getHexString(), show: () => st.labels && st.mode === 'men' })),
   ];
   const refs = {};
   function ui(el) {
@@ -8607,7 +8607,7 @@ function makeSkin() {
     heat: { name: 'Жара', text: '<b>Жара.</b> Сосуды кожи расширяются (кожа краснеет и отдаёт тепло), потовые железы выделяют пот — испаряясь, он охлаждает тело. За сутки при жаре может выделиться несколько литров пота.' },
   };
   function stim(k) { st.stim = k; st.stimT = st.t; st.msg = STIM[k].text; refs.setInfo(); refs.stSeg && refs.stSeg.sync(); }
-  const LVIEW = matchMedia('(max-width:700px)').matches ? { epi: [V3(1.0, 0.85, 1.0), 2.9], der: [V3(0.1, -0.4, 0.6), 6.4], hyp: [V3(0.2, -0.55, 0.6), 8.0] } : { epi: [V3(-0.55, 0.7, 1.7), 5.2], der: [V3(-0.9, -0.1, 1.0), 8.7], hyp: [V3(-0.65, -0.1, 1.0), 9.1] };
+  const LVIEW = matchMedia('(max-width:700px)').matches ? { epi: [V3(0.7, 0.7, 1.0), 4.0], der: [V3(0.1, -0.2, 0.6), 6.4], hyp: [V3(0.2, -0.55, 0.6), 8.0] } : { epi: [V3(-0.55, 0.7, 1.7), 5.2], der: [V3(-0.9, -0.1, 1.0), 8.7], hyp: [V3(-0.65, -0.1, 1.0), 9.1] };
   function select(id) { st.sel = id === 'all' ? null : id; refs.seg && refs.seg.sync(); { const lv = st.sel && LVIEW[st.sel], dir = HOME.pos.clone().sub(HOME.target).normalize(); st.fly = lv ? flyTarget(lv[0], lv[0].clone().addScaledVector(dir, lv[1])) : (LVIEW[id] === undefined && id !== 'all' ? st.fly : HOME); } const all = [...SK_REC.map((r) => REC[r.id]), ...SK_LAYERS.map((l) => LAY[l.id])]; all.forEach((p) => p.mats.forEach((m) => { m.emissiveIntensity = st.sel === p.id ? 0.6 : (REC[p.id] ? 0.15 : 0); })); st.msg = null; refs.setInfo && refs.setInfo(); }
   pickOn(() => self, camera, pick, (id) => select(id));
   const fire = (id, rate, dt) => { const n = rate * dt; if (rnd() < n) { REC[id].spikes.push(st.t); const c = NERV[id][Math.floor(rnd() * NERV[id].length)]; for (let u = 0; u < 1; u += 0.2) fx.spawn(c.getPointAt(1 - u), V3(0, 0, 0), new THREE.Color(REC[id].color), 0.3 + u * 0.4, 0, 1.4); REC[id].flash = 1; } };
@@ -8979,7 +8979,7 @@ function makeRepro(initMode) {
   const VIEW = { female: matchMedia('(max-width:700px)').matches ? flyTarget(V3(0, -0.3, 0), V3(1.25, 0.5, 3.75)) : flyTarget(V3(-0.25, -0.22, 0), V3(1.0, 0.58, 3.75)), male: flyTarget(V3(0.02, -0.28, 0.14), V3(1.55, 0.18, 1.95)), cycle: matchMedia('(max-width:700px)').matches ? flyTarget(V3(-0.08, -0.14, 0), initMode === 'cycle' ? V3(0.25, 0.1, 2.7) : V3(0.33, 0.16, 3.35)) : flyTarget(V3(-0.08, -0.04, 0), V3(0.25, 0.2, 2.7)), dev: matchMedia('(max-width:700px)').matches ? flyTarget(V3(0, 0.05, 0), V3(-0.8, 0.45, 2.6)) : flyTarget(V3(-0.2, 0.1, 0), V3(-0.84, 0.42, 2.08)) };
   const V0 = VIEW[initMode || 'female']; const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(V0.pos);
   const controls = makeControls(camera, V0.target); controls.minDistance = 0.8; controls.maxDistance = 14;
-  bodyShell(scene, { rim: 0.18, arms: false });
+  bodyShell(scene, { rim: 0.18, arms: false, opacity: initMode === 'cycle' ? 0 : 0.025 });
   const PART = Object.fromEntries([...RP_F, ...RP_M].map((p) => [p.id, { ...p, mats: [] }])), pick = [];
   const F = new THREE.Group(), M = new THREE.Group(); scene.add(F, M); M.visible = false;
   const add = (id, g, parent, o = {}) => { const m = organMat(PART[id].color, o.k ?? 0.45, o.mat || {}); PART[id].mats.push(m); const me = new THREE.Mesh(g, m); me.userData.pick = id; pick.push(me); parent.add(me); return me; };
@@ -9007,8 +9007,8 @@ function makeRepro(initMode) {
     for (let k = 0; k < 6; k++) { const a = (k / 5 - 0.5) * 2.2, sd = side.clone().multiplyScalar(Math.sin(a)), up = tg.clone().cross(side).multiplyScalar(Math.cos(a) * 0.6);
       const m1 = end.clone().addScaledVector(tg, 0.02).addScaledVector(sd, 0.014).addScaledVector(up, 0.012), tip = m1.clone().addScaledVector(toOv, 0.03).addScaledVector(sd, 0.016).addScaledVector(up, 0.01);
       add('tube', tube([end, m1, tip], (u) => 0.012 - 0.009 * u, 8, 5), F); } });
-  const ovM = OVP.map((p) => add('ov', ell3(0.07, 0.045, 0.04, p), F));
-  const smallF = [V3(0.03, 0.015, 0.02), V3(-0.035, -0.01, 0.025), V3(0.0, -0.02, -0.03)].map((d) => { const m = new THREE.Mesh(new THREE.SphereGeometry(0.012, 12, 8), new THREE.MeshPhysicalMaterial({ color: 0xffe0f0, transparent: true, opacity: 0.55, emissive: 0x5a2040, emissiveIntensity: 0.4 })); m.position.copy(OVP[1]).add(d); m.visible = false; F.add(m); return m; });   // мелкие фолликулы второго яичника
+  const ovM = OVP.map((p) => add('ov', ell3(0.1, 0.065, 0.055, p), F));
+  const smallF = [V3(0.045, 0.02, 0.045), V3(-0.05, -0.015, 0.04), V3(0.0, -0.02, -0.04)].map((d) => { const m = new THREE.Mesh(new THREE.SphereGeometry(0.012, 12, 8), new THREE.MeshPhysicalMaterial({ color: 0xffe0f0, transparent: true, opacity: 0.55, emissive: 0x5a2040, emissiveIntensity: 0.4 })); m.position.copy(OVP[1]).add(d); m.visible = false; F.add(m); return m; });   // мелкие фолликулы второго яичника
   const foll = new THREE.Mesh(new THREE.SphereGeometry(0.03, 20, 14), new THREE.MeshPhysicalMaterial({ color: 0xffe0f0, transparent: true, opacity: 0.6, emissive: 0x5a2040, emissiveIntensity: 0.5 })); foll.position.copy(OVP[0]).add(V3(0.0, 0.02, 0.035)); F.add(foll);
   const cl = glowNucleus(F, OVP[0].clone().add(V3(0.0, 0.02, 0.035)), '#F2C14E', 0.025, 6);
   const egg = new THREE.Mesh(new THREE.SphereGeometry(0.014, 16, 12), new THREE.MeshPhysicalMaterial({ color: 0xfff0f8, emissive: 0x806070, emissiveIntensity: 0.8 })); F.add(egg); egg.visible = false;
