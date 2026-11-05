@@ -8634,7 +8634,9 @@ function makeSkin() {
     fx.update(dt);
   }
   function drawScope(ctx, w, hgt) {
-    ctx.clearRect(0, 0, w, hgt); scopeShow(true);
+    ctx.clearRect(0, 0, w, hgt);
+    if (['epi', 'der', 'hyp'].includes(st.sel)) { scopeShow(false); return; }   /* режимы слоёв — про строение: график рецепторов не закрывает блок */
+    scopeShow(true);
     const rows = SK_REC.length, rh = (hgt - 18) / rows, x = (tt) => 8 + (1 - (st.t - tt) / 6) * (w - 16);
     ctx.font = '500 9px JetBrains Mono, monospace';
     SK_REC.forEach((r, i) => { const y = 16 + i * rh; ctx.fillStyle = r.color; ctx.globalAlpha = 0.7; ctx.fillText(r.short, 8, y + rh * 0.6); ctx.globalAlpha = 1; ctx.strokeStyle = r.color; ctx.lineWidth = 1.5; REC[r.id].spikes.forEach((tt) => { const xx = x(tt); if (xx < 70) return; ctx.beginPath(); ctx.moveTo(xx, y + 2); ctx.lineTo(xx, y + rh - 2); ctx.stroke(); }); });
