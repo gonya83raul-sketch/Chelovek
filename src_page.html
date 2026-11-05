@@ -1139,6 +1139,7 @@ function makeSynapse() {
     M = MEDIATORS[st.med]; st.drugs.clear(); E = eff();
     molColor.set(M.color).multiplyScalar(1.7); dotMat.color.set(M.color).multiplyScalar(1.5);
     recColor.set(M.color).lerp(new THREE.Color(0xffffff), 0.45);
+    vesicles.forEach((v) => { v.mat.color.set(M.color).lerp(new THREE.Color(0xf2e6ee), 0.55); });   /* оболочка пузырька — оттенком медиатора, а не серой */
     for (let i = 0; i < NR * 5; i++) ionoMesh.setColorAt(i, recColor); for (let i = 0; i < NR * 4; i++) ionoMesh4.setColorAt(i, recColor); for (let i = 0; i < NR * 7; i++) metaMesh.setColorAt(i, recColor);
     ionoMesh.instanceColor.needsUpdate = true; ionoMesh4.instanceColor.needsUpdate = true; metaMesh.instanceColor.needsUpdate = true;
     ionoMesh.visible = M.rec === 'iono' && st.med !== 'glu'; ionoMesh4.visible = M.rec === 'iono' && st.med === 'glu'; metaMesh.visible = M.rec === 'metabo'; gMesh.visible = M.rec === 'metabo';
