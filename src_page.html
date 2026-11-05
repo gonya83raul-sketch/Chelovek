@@ -1425,7 +1425,7 @@ function makeBrain() {
   function apply() {
     SYSTEMS.forEach((s) => {
       const on = st.sys === 'all' || st.sys === s.id;
-      groups[s.id].children.forEach((m) => { if (m.material.uniforms) m.material.uniforms.uOn.value = on ? (st.sys === 'all' ? 0.2 : 1.2) : 0.04; else m.visible = on; });
+      groups[s.id].children.forEach((m) => { if (m.material.uniforms) m.material.uniforms.uOn.value = on ? (st.sys === 'all' ? 0.5 : 1.2) : 0.04;   /* «Все»: тракты видны линией, а не только бегущими штрихами */ else m.visible = on; });
     });
     accentSet(st.sys === 'all' ? '#EFEAE6' : S[st.sys].color);
   }
