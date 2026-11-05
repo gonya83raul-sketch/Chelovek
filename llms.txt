@@ -45,6 +45,7 @@
 
 ## Клетка
 - [Живая клетка](https://gonya83raul-sketch.github.io/Chelovek/cell.html): Ядро, ЭПС, Гольджи, митохондрии и цитоскелет в разрезе. Пузырьки везут белки к мембране, по микротрубочкам едут грузы, митохондрии выдают АТФ.
+- [Деление клетки](https://gonya83raul-sketch.github.io/Chelovek/mitosis.html): Каждая клетка тела — копия одной-единственной оплодотворённой яйцеклетки. Как клетка удваивает ДНК и делится пополам, а половые клетки получают ровно половину хромосом.
 
 ## Тело
 - [Плоскости, направления и полости](https://gonya83raul-sketch.github.io/Chelovek/planes.html): Прежде чем изучать органы, анатомы договорились, как описывать их положение: из какой позы смотреть, как резать и куда показывать.
@@ -131,6 +132,7 @@
 
 ### Cell
 - [Living cell](https://gonya83raul-sketch.github.io/Chelovek/cell.en.html): Nucleus, ER, Golgi, mitochondria and cytoskeleton in cutaway. Vesicles carry proteins to the membrane, cargo travels along microtubules, mitochondria produce ATP.
+- [Cell division](https://gonya83raul-sketch.github.io/Chelovek/mitosis.en.html): Every cell in the body is a copy of a single fertilized egg. How a cell doubles its DNA and splits in two — and how sex cells get exactly half the chromosomes.
 
 ### Body
 - [Planes, directions and cavities](https://gonya83raul-sketch.github.io/Chelovek/planes.en.html): Before studying the organs, anatomists agreed on how to describe their position: from which pose to look, how to cut and where to point.
