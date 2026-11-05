@@ -1535,7 +1535,7 @@ function makeCell() {
   const nucGeo = displaceGeo(new THREE.SphereGeometry(NUC_R, 128, 96), (v) => { const n = v.clone().normalize(); v.multiplyScalar(1 + 0.03 * noise3(n.x * 2, n.y * 2, n.z * 2)); v.add(NUC); });
   const nucMat = phys(0x7d4fb8, { transparent: true, opacity: 0.34, depthWrite: false, side: THREE.DoubleSide });
   scene.add(tag(new THREE.Mesh(nucGeo, nucMat), 'nucleus'));
-  scene.add(new THREE.Mesh(nucGeo, glassMat(0xc79bff, { rim: 0.8, base: 0.02, pow: 2.2 })));
+  const nucGl = new THREE.Mesh(nucGeo, glassMat(0xc79bff, { rim: 0.8, base: 0.02, pow: 2.2 })); scene.add(nucGl);
   const nucIn = new THREE.Mesh(nucGeo, glassMat(0xc79bff, { rim: 0.3, base: 0, pow: 2.4 })); nucIn.position.copy(NUC).multiplyScalar(0.05); nucIn.scale.setScalar(0.95); scene.add(nucIn);
   const poreDirs = fib(240), porePts = [];
   { const pm = new THREE.InstancedMesh(new THREE.TorusGeometry(0.075, 0.026, 6, 16), phys(0xe7d4ff, { emissive: 0x2a1840 }), poreDirs.length);
@@ -1717,6 +1717,13 @@ function makeCell() {
     if (st.sel) ORG[st.sel].mats.forEach((m) => { m.emissive.copy(m.userData.e0.c); m.emissiveIntensity = m.userData.e0.i; });
     st.sel = id === 'all' ? null : id; st.focusT = 1.8;
     st.focus = st.sel ? { target: (LBL[st.sel] && LVIS[st.sel] ? LBL[st.sel] : ORG[st.sel].anchor).clone().add(V3(0, st.sel === 'lyso' && matchMedia('(max-width:700px)').matches ? -0.12 * ORG[st.sel].dist : 0, 0)), dist: ORG[st.sel].dist } : { target: V3(0, 0, 0), dist: 22.2 };
+    /* выбран органоид — остальные (кроме мембраны) бледнеют: фон за заголовком и текстом не спорит с ним */
+    const mm = (o) => [].concat(o.material || []);
+    const keep = new Set(); scene.traverse((o) => { if ((o.isMesh || o.isLine || o.isPoints) && (!st.sel || o.userData.org === st.sel || o.userData.org === 'membrane' || (!o.userData.org && !o.isPoints))) mm(o).forEach((m) => keep.add(m)); });
+    scene.traverse((o) => { if (!(o.isMesh || o.isLine || o.isPoints)) return; mm(o).forEach((m) => { const u = m.userData; if (u.o0 === undefined) { u.o0 = m.opacity; u.t0 = m.transparent; u.dw0 = m.depthWrite; u.tr0 = m.transmission; u.ei0 = m.emissiveIntensity; }
+      const fade = !keep.has(m), tr = fade || u.t0; if (m.transparent !== tr) m.needsUpdate = true; m.transparent = tr; m.opacity = fade ? Math.min(u.o0, 0.12) : u.o0; m.depthWrite = fade ? false : u.dw0;
+      if (u.tr0 !== undefined) { const t2 = fade ? 0 : u.tr0; if ((m.transmission > 0) !== (t2 > 0)) m.needsUpdate = true; m.transmission = t2; } if (u.ei0 !== undefined) m.emissiveIntensity = fade ? 0 : u.ei0; }); });
+    [nucGl, nucIn].forEach((g) => { g.visible = !st.sel || ['nucleus', 'nucleolus', 'pores'].includes(st.sel); });   /* светящаяся оболочка ядра — тоже фон */
     accentSet(st.sel ? ORG[st.sel].color : '#9CC8FF');
     refs.setInfo && refs.setInfo(); refs.seg && refs.seg.sync();
   }
