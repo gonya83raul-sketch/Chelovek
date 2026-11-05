@@ -20,7 +20,7 @@ function makeRepro(initMode) {
   __set_rnd(mulberry(2121));
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x08060a); scene.environment = envTex;
   labLights(scene, 0xf2b0c8);
-  const VIEW = { female: matchMedia('(max-width:700px)').matches ? flyTarget(V3(0, -0.3, 0), V3(1.25, 0.5, 3.75)) : flyTarget(V3(-0.25, -0.22, 0), V3(1.0, 0.58, 3.75)), male: flyTarget(V3(0, -0.3, 0.1), V3(2.2, 0.4, 2.6)), cycle: matchMedia('(max-width:700px)').matches ? flyTarget(V3(-0.08, -0.14, 0), initMode === 'cycle' ? V3(0.25, 0.1, 2.7) : V3(0.33, 0.16, 3.35)) : flyTarget(V3(-0.08, -0.04, 0), V3(0.25, 0.2, 2.7)), dev: matchMedia('(max-width:700px)').matches ? flyTarget(V3(0, 0.05, 0), V3(-0.8, 0.45, 2.6)) : flyTarget(V3(-0.2, 0.1, 0), V3(-0.84, 0.42, 2.08)) };
+  const VIEW = { female: matchMedia('(max-width:700px)').matches ? flyTarget(V3(0, -0.3, 0), V3(1.25, 0.5, 3.75)) : flyTarget(V3(-0.25, -0.22, 0), V3(1.0, 0.58, 3.75)), male: flyTarget(V3(0.02, -0.28, 0.14), V3(1.55, 0.18, 1.95)), cycle: matchMedia('(max-width:700px)').matches ? flyTarget(V3(-0.08, -0.14, 0), initMode === 'cycle' ? V3(0.25, 0.1, 2.7) : V3(0.33, 0.16, 3.35)) : flyTarget(V3(-0.08, -0.04, 0), V3(0.25, 0.2, 2.7)), dev: matchMedia('(max-width:700px)').matches ? flyTarget(V3(0, 0.05, 0), V3(-0.8, 0.45, 2.6)) : flyTarget(V3(-0.2, 0.1, 0), V3(-0.84, 0.42, 2.08)) };
   const V0 = VIEW[initMode || 'female']; const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(V0.pos);
   const controls = makeControls(camera, V0.target); controls.minDistance = 0.8; controls.maxDistance = 14;
   bodyShell(scene, { rim: 0.18, arms: false });
@@ -65,14 +65,24 @@ function makeRepro(initMode) {
   /* ---------- мужская система ---------- */
   ghost(ell3(0.12, 0.1, 0.1, V3(0, 0.06, 0.18)), '#F2D860', M); ghost(tube([V3(0, 0.4, -0.3), V3(0.02, 0.0, -0.28), V3(0, -0.4, -0.18)], 0.06, 20, 10), '#C8A090', M);
   const TES = [1, -1].map((s) => V3(0.07 * s, -0.56, 0.32));
-  TES.forEach((p, i) => { add('tes', ell3(0.045, 0.065, 0.045, p), M); add('epi', (() => { const g = ell3(0.018, 0.06, 0.02); g.translate(p.x + (i ? -0.035 : 0.035), p.y + 0.01, p.z - 0.03); return g; })(), M); });
+  TES.forEach((p, i) => { const sx = i ? -1 : 1; add('tes', ell3(0.045, 0.065, 0.045, p), M);
+    const EPI = new THREE.CatmullRomCurve3([p.clone().add(V3(0.012 * sx, 0.07, -0.005)), p.clone().add(V3(0.04 * sx, 0.045, -0.03)), p.clone().add(V3(0.05 * sx, 0.0, -0.04)), p.clone().add(V3(0.042 * sx, -0.045, -0.035)), p.clone().add(V3(0.025 * sx, -0.068, -0.02))]);
+    add('epi', taperTube(EPI, (u) => 0.02 - 0.011 * u, 40, 10), M); });   /* придаток: головка сверху, тело и хвост по заднебоковой стороне яичка */
+  // мошонка — полупрозрачный мешок из кожи вокруг обоих яичек, со срединным швом
+  const scrG = displaceGeo(new THREE.SphereGeometry(1, 48, 36), (v) => { const x = v.x, y = v.y; v.x *= 0.14; v.y *= 0.115; v.z *= 0.085; v.z -= 0.012 * Math.exp(-((x / 0.12) ** 2)) * (v.z > 0 ? 1 : 0); if (y < 0) v.y *= 1 + 0.12 * (1 - Math.abs(x)); });
+  scrG.translate(0, -0.575, 0.32); const scr = ghost(scrG, '#E8B8A0', M); scr.material.opacity = 0.32;
   const VAS = [1, -1].map((s) => new THREE.CatmullRomCurve3([V3(0.1 * s, -0.5, 0.29), V3(0.12 * s, -0.3, 0.3), V3(0.17 * s, -0.05, 0.26), V3(0.2 * s, 0.12, 0.15), V3(0.12 * s, 0.14, 0.03), V3(0.06 * s, 0.0, 0.05), V3(0.02 * s, -0.12, 0.13)]));
   VAS.forEach((c) => add('epi', taperTube(c, () => 0.01, 60, 6), M));
   [1, -1].forEach((s) => { const g = ell3(0.025, 0.06, 0.02); g.rotateZ(0.6 * s); g.translate(0.08 * s, 0.02, 0.05); add('gl', g, M); });
   add('gl', ell3(0.05, 0.04, 0.045, V3(0, -0.12, 0.14)), M);
   const URE = new THREE.CatmullRomCurve3([V3(0, -0.02, 0.17), V3(0, -0.12, 0.14), V3(0, -0.26, 0.22), V3(0, -0.36, 0.34), V3(0, -0.5, 0.45), V3(0, -0.66, 0.51)]);
   add('ure', taperTube(URE, () => 0.012, 40, 8), M, { k: 0.5 });
-  ghost(mergeGeometries([tube([V3(0, -0.28, 0.3), V3(0, -0.4, 0.42), V3(0, -0.62, 0.5)], 0.06, 20, 14), ell3(0.065, 0.07, 0.065, V3(0, -0.66, 0.51), 20)]), '#E8B0A0', M);   // половой член с головкой
+  // половой член: два пещеристых тела сверху, губчатое тело с уретрой снизу, головка на конце; полупрозрачно — видна уретра
+  const PEN = new THREE.CatmullRomCurve3([V3(0, -0.26, 0.24), V3(0, -0.34, 0.33), V3(0, -0.45, 0.42), V3(0, -0.57, 0.48), V3(0, -0.64, 0.5)]);
+  const penMat = { transparent: true, opacity: 0.38, depthWrite: false };
+  [1, -1].forEach((s2) => add('ure', taperTube(new THREE.CatmullRomCurve3(PEN.getPoints(8).map((q) => q.clone().add(V3(0.022 * s2, 0.012, -0.012)))), (u) => 0.03 - 0.004 * u, 40, 12), M, { mat: penMat }));
+  add('ure', taperTube(new THREE.CatmullRomCurve3(PEN.getPoints(8).map((q) => q.clone().add(V3(0, -0.022, 0.012)))), () => 0.022, 40, 12), M, { mat: penMat });
+  add('ure', (() => { const g = displaceGeo(new THREE.SphereGeometry(1, 32, 24), (v) => { v.set(v.x * 0.05, v.y * 0.055, v.z * 0.05); }); g.translate(0, -0.67, 0.51); return g; })(), M, { mat: { transparent: true, opacity: 0.5, depthWrite: false } });
   const fx = new Sparks(2000, 0.035); scene.add(fx.obj);
   /* ---------- реалистичная 3D-модель: Education Resource Fund (Sketchfab, CC BY 4.0) ---------- */
   const RP_R = [
@@ -183,6 +193,11 @@ function makeRepro(initMode) {
     { text: 'vas deferens', pos: V3(0.24, 0.25, 0.18), color: '#9FD0FF', show: () => st.labels && st.mode === 'male' },
     { text: 'seminal vesicle', pos: V3(0.13, 0.04, 0.06), color: '#F2D88A', show: () => st.labels && st.mode === 'male' },
     { text: 'prostate', pos: V3(0.08, -0.16, 0.2), color: '#F2D88A', show: () => st.labels && st.mode === 'male' },
+    { text: 'epididymis', pos: V3(-0.13, -0.5, 0.29), color: '#9FD0FF', left: true, show: () => st.labels && st.mode === 'male' },
+    { text: 'scrotum', pos: V3(0.1, -0.67, 0.3), color: '#D8A890', left: true, show: () => st.labels && st.mode === 'male' && !st.sel },
+    { text: 'penis', pos: V3(0.04, -0.47, 0.45), color: '#E8B0A0', show: () => st.labels && st.mode === 'male' && (!st.sel || st.sel === 'ure') },
+    { text: 'urethra', pos: V3(0.02, -0.3, 0.24), color: '#E8B0A0', show: () => st.labels && st.mode === 'male' && st.sel === 'ure' },
+    { text: 'rectum', pos: V3(0.0, -0.36, -0.19), color: '#C8A090', left: true, show: () => st.labels && st.mode === 'male' && !st.sel },
     { text: 'embryo', pos: V3(0, 0, 0), color: '#ffe8f0', show: () => st.labels && st.mode === 'dev', dyn: true },
   ];
   RP_R.forEach((p) => { const l = { text: p.name.toLowerCase(), pos: V3(0, -9, 0), color: p.color, left: p.id === 'r_int', show: () => st.labels && st.mode === 'female' && st.realLoad === 2 && (!st.sel || st.sel === p.id) && (!matchMedia('(max-width:700px)').matches || st.sel || ['r_ut', 'r_ov', 'r_tube', 'r_bone'].includes(p.id)) }; PART[p.id].lab = l; labels.unshift(l); });

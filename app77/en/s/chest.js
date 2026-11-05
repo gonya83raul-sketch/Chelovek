@@ -154,7 +154,7 @@ function makeChest() {
     { text: 'heart', pos: BODY.heart.clone().add(V3(0.15, -0.05, 0.3)), color: '#FF8A7A', show: () => st.labels && st.mode === 'chest' && (!st.sel || st.sel === 'med') },
     { text: 'aortic arch', pos: V3(0.2, 2.66, -0.1), color: '#FF8A7A', show: () => st.labels && st.mode === 'chest' && st.sel === 'med' },
     { text: 'trachea', pos: V3(0.0, 3.1, 0.12), color: '#E8DCC8', left: true, show: () => st.labels && st.mode === 'chest' && st.sel === 'med' },
-    { text: 'esophagus', pos: V3(-0.02, 1.9, -0.27), color: '#D8A090', left: true, show: () => st.labels && st.mode === 'chest' && st.sel === 'med' },
+    { text: 'esophagus', pos: V3(0.09, 1.55, -0.25), color: '#D8A090', left: true, show: () => st.labels && st.mode === 'chest' && st.sel === 'med' },
     { text: 'thymus', pos: V3(-0.12, 2.56, 0.38), color: '#E8C0C8', left: true, show: () => st.labels && st.mode === 'chest' && st.sel === 'med' },
     { text: 'pectoralis major', pos: V3(29.25, 0.95, 0.2), color: '#D07070', show: () => st.labels && st.mode !== 'chest' },
     { text: 'ribs', pos: V3(28.9, 1.05, 0.4), color: '#E8D8BB', show: () => st.labels && st.mode !== 'chest' },
