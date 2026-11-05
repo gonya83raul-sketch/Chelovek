@@ -254,7 +254,7 @@ function makeSexhorm() {
   };
   const L1 = () => st.labels && st.mode === 'synth', L2 = () => st.labels && st.mode === 'axis', L3 = () => st.labels && st.mode === 'preg';
   const labels = [
-    ...Object.values(NODE).map((n) => ({ text: n.name, pos: n.p.clone().add(V3(-0.35, -0.82, 0.3)), color: n.col, show: L1 })),
+    ...Object.values(NODE).map((n) => ({ text: n.name, pos: n.p.clone().add(DK ? V3(-0.35, -0.82, 0.3) : V3(0.1, 0.55, 0.3)), color: n.col, show: L1 })),
     ...EDGES.map((e) => { const A = NODE[e.a].p, B = NODE[e.b].p, d = B.clone().sub(A).normalize(), nn = Math.abs(d.x) < 0.2 ? V3(1, 0, 0) : V3(-d.y, d.x, 0).multiplyScalar(d.x > 0 ? 1 : -1); return { text: e.enz, pos: e.mid.clone().addScaledVector(nn, 0.34).add(V3(-0.2, 0, 0.3)), color: e.tag === 'aro' ? ESTR : e.tag === 'fin' ? '#3A6CFF' : '#B8C4D8', show: () => L1() && DK }; }),
     { text: 'общий путь — как в коре надпочечников', pos: V3(-5.4, 2.35, 0.3), color: '#8A90A8', show: L1 },
     { text: 'клетка теки · ЛГ', pos: V3(-5.7, -1.85, 0), color: '#9FB4FF', show: () => L1() && st.sex === 'f' },
