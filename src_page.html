@@ -9420,6 +9420,9 @@ function makeChest() {
   add('med', ell3(0.27, 0.32, 0.24, BODY.heart), body, { k: 0.45 });
   add('med', tube([V3(0.0, 2.2, 0.0), V3(0.05, 2.55, 0.05), V3(0.2, 2.62, -0.15), V3(0.12, 2.3, -0.38), V3(0.1, 1.3, -0.38)], 0.06, 40, 10), body, { k: 0.5 });
   add('med', tube([V3(0, 3.35, 0.12), V3(0, 2.62, 0.02)], 0.05, 10, 10), body, { k: 0.5, mat: { color: new THREE.Color('#E8DCC8').multiplyScalar(0.45) } });
+  /* пищевод — за трахеей и сердцем, к диафрагме; тимус — две доли над сердцем за грудиной */
+  add('med', tube([V3(0, 3.35, -0.05), V3(0, 2.62, -0.13), V3(-0.02, 2.05, -0.27), V3(0.1, 1.45, -0.2)], 0.042, 30, 10), body, { k: 0.45, mat: { color: new THREE.Color('#D8A090').multiplyScalar(0.45) } });
+  [1, -1].forEach((sg) => add('med', ell3(0.085, 0.16, 0.05, V3(0.065 * sg, 2.52, 0.34)), body, { k: 0.4, mat: { color: new THREE.Color('#E8C0C8').multiplyScalar(0.45) } }));
   const lungMat = new THREE.MeshPhysicalMaterial({ color: new THREE.Color(0xe89aa8).multiplyScalar(0.4), roughness: 0.6, transparent: true, opacity: 0.16, depthWrite: false });
   [1, -1].forEach((s) => body.add(new THREE.Mesh(ell3(0.4, 0.68, 0.4, V3(0.5 * s, 2.25, -0.04)), lungMat)));
   // грудные мышцы и железы (на силуэте, полупрозрачно)
@@ -9510,6 +9513,8 @@ function makeChest() {
     { text: 'сердце', pos: BODY.heart.clone().add(V3(0.15, -0.05, 0.3)), color: '#FF8A7A', show: () => st.labels && st.mode === 'chest' && (!st.sel || st.sel === 'med') },
     { text: 'дуга аорты', pos: V3(0.2, 2.66, -0.1), color: '#FF8A7A', show: () => st.labels && st.mode === 'chest' && st.sel === 'med' },
     { text: 'трахея', pos: V3(0.0, 3.1, 0.12), color: '#E8DCC8', left: true, show: () => st.labels && st.mode === 'chest' && st.sel === 'med' },
+    { text: 'пищевод', pos: V3(-0.02, 1.9, -0.27), color: '#D8A090', left: true, show: () => st.labels && st.mode === 'chest' && st.sel === 'med' },
+    { text: 'тимус', pos: V3(-0.12, 2.56, 0.38), color: '#E8C0C8', left: true, show: () => st.labels && st.mode === 'chest' && st.sel === 'med' },
     { text: 'большая грудная мышца', pos: V3(29.25, 0.95, 0.2), color: '#D07070', show: () => st.labels && st.mode !== 'chest' },
     { text: 'рёбра', pos: V3(28.9, 1.05, 0.4), color: '#E8D8BB', show: () => st.labels && st.mode !== 'chest' },
     { text: 'доли и дольки', pos: V3(30.1, 0.35, 0.1), color: '#F2B0C8', show: () => st.labels && st.mode !== 'chest' },
