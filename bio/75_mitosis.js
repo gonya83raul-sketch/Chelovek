@@ -18,7 +18,7 @@ function makeMitosis() {
   const CHR = [{ L: 1.0, col: C_M }, { L: 1.0, col: C_P }, { L: 0.62, col: C_M }, { L: 0.62, col: C_P }];
   const CH = [];
   CHR.forEach((c, k) => [0, 1].forEach((s) => {
-    const g = new THREE.Group(), a = c.L * 0.38, b = c.L * 0.62, r = 0.075;
+    const g = new THREE.Group(), a = c.L * 0.38, b = c.L * 0.62, r = 0.1;
     const up = new THREE.Mesh(new THREE.CapsuleGeometry(r, a, 6, 12), chMat(c.col)); up.position.y = a / 2 + 0.03; g.add(up);
     const dn = new THREE.Mesh(new THREE.CapsuleGeometry(r, b, 6, 12), chMat(c.col)); dn.position.y = -b / 2 - 0.03; g.add(dn);
     scene.add(g); CH.push({ k, s, g, up, dn, col: c.col, pos: V3(0, 0, 0), cond: 0, vis: 1 });
@@ -38,7 +38,7 @@ function makeMitosis() {
   const marker = new THREE.Mesh(new THREE.SphereGeometry(0.16, 20, 14), new THREE.MeshPhysicalMaterial({ color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 0.6 })); ringG.add(marker);
   /* ---------- стадии ---------- */
   const MIT = [{ id: 'inter', name: 'Интерфаза' }, { id: 'pro', name: 'Профаза' }, { id: 'prometa', name: 'Прометафаза' }, { id: 'meta', name: 'Метафаза' }, { id: 'ana', name: 'Анафаза' }, { id: 'telo', name: 'Телофаза' }];
-  const MEI = [{ id: 'inter', name: 'Интерфаза' }, { id: 'pro1', name: 'Профаза I' }, { id: 'meta1', name: 'Метафаза I' }, { id: 'ana1', name: 'Анафаза I' }, { id: 'telo1', name: 'Телофаза I' }, { id: 'meta2', name: 'Метафаза II' }, { id: 'ana2', name: 'Анафаза II' }];
+  const MEI = [{ id: 'inter', name: 'Интерфаза' }, { id: 'pro1', name: 'Профаза I' }, { id: 'meta1', name: 'Метафаза I' }, { id: 'ana1', name: 'Анафаза I' }, { id: 'telo1', name: 'Телофаза I' }, { id: 'meta2', name: 'Метафаза II' }, { id: 'ana2', name: 'Анафаза и телофаза II' }];
   const BASE = [V3(-0.5, 0.35, 0.1), V3(0.45, 0.45, -0.1), V3(-0.25, -0.45, 0.2), V3(0.4, -0.4, 0)];
   const st = { t: 0, mode: 'cycle', stage: 0, auto: true, stT: 0, cf: 0.1, labels: true, rot: false, fly: null, msg: null };
   const STAGES = () => (st.mode === 'meiosis' ? MEI : MIT);
@@ -46,10 +46,10 @@ function makeMitosis() {
   function plan() {
     const P = { ch: CH.map(() => ({ p: V3(0, 0, 0), cond: 0, vis: 1, pole: -1 })), memb: [[0, 2.5, 1], [0, 2.5, 0], [0, 2.5, 0], [0, 2.5, 0]], nuc: [[0, 1.3, 1], [0, 0.8, 0], [0, 0.8, 0], [0, 0.8, 0]], poles: [], spindle: 0, cross: false };
     const set = (i, x, y, cond, pole = -1) => { const c = P.ch[i]; c.p.set(x, y, 0.05 * (c.k % 2 ? -1 : 1)); c.cond = cond; c.pole = pole; };
-    const inter = (cond = 0) => CH.forEach((c, i) => set(i, BASE[c.k].x + (c.s ? 0.09 : -0.09), BASE[c.k].y, cond));
+    const inter = (cond = 0) => CH.forEach((c, i) => set(i, BASE[c.k].x + (c.s ? 0.115 : -0.115), BASE[c.k].y, cond));
     if (st.mode === 'cycle') {
       const f = st.cf; inter(f > 0.96 ? (f - 0.96) / 0.04 : 0);
-      CH.forEach((c, i) => { P.ch[i].vis = c.s ? Math.min(1, Math.max(0, (f - 0.46) / 0.33)) : 1; if (c.s && f < 0.46) P.ch[i].p.x -= 0.09; });
+      CH.forEach((c, i) => { P.ch[i].vis = c.s ? Math.min(1, Math.max(0, (f - 0.46) / 0.33)) : 1; if (c.s && f < 0.46) P.ch[i].p.x -= 0.115; });
       P.memb[0][1] = 2.05 + 0.45 * Math.min(1, f / 0.46); P.nuc[0][1] = 1.15 + 0.15 * Math.min(1, f / 0.46);
       P.poles = [[0, 1.75, 0], [0.18, 1.75, 0]]; return P;
     }
@@ -57,24 +57,24 @@ function makeMitosis() {
     if (st.mode === 'mitosis') {
       const metaY = (k) => 0.9 - k * 0.6;
       if (s === 'inter') { inter(0); P.poles = [[-0.12, 1.85, 0], [0.12, 1.85, 0]]; }
-      if (s === 'pro') { CH.forEach((c, i) => set(i, BASE[c.k].x * 0.9 + (c.s ? 0.09 : -0.09), BASE[c.k].y * 0.9, 1)); P.nuc[0][2] = 0.55; P.poles = [[-1.4, 1.25, 0], [1.4, 1.25, 0]]; }
-      if (s === 'prometa') { CH.forEach((c, i) => set(i, BASE[c.k].x * 0.4 + (c.s ? 0.09 : -0.09), (BASE[c.k].y + metaY(c.k)) / 2, 1, c.s)); P.nuc[0][2] = 0; P.poles = [[-2.2, 0, 0], [2.2, 0, 0]]; P.spindle = 0.8; }
-      if (s === 'meta') { CH.forEach((c, i) => set(i, c.s ? 0.09 : -0.09, metaY(c.k), 1, c.s)); P.nuc[0][2] = 0; P.poles = [[-2.2, 0, 0], [2.2, 0, 0]]; P.spindle = 1; }
+      if (s === 'pro') { CH.forEach((c, i) => set(i, BASE[c.k].x * 0.9 + (c.s ? 0.115 : -0.115), BASE[c.k].y * 0.9, 1)); P.nuc[0][2] = 0.55; P.poles = [[-1.4, 1.25, 0], [1.4, 1.25, 0]]; }
+      if (s === 'prometa') { CH.forEach((c, i) => set(i, BASE[c.k].x * 0.4 + (c.s ? 0.115 : -0.115), (BASE[c.k].y + metaY(c.k)) / 2, 1, c.s)); P.nuc[0][2] = 0; P.poles = [[-2.2, 0, 0], [2.2, 0, 0]]; P.spindle = 0.8; }
+      if (s === 'meta') { CH.forEach((c, i) => set(i, c.s ? 0.115 : -0.115, metaY(c.k), 1, c.s)); P.nuc[0][2] = 0; P.poles = [[-2.2, 0, 0], [2.2, 0, 0]]; P.spindle = 1; }
       if (s === 'ana') { CH.forEach((c, i) => set(i, c.s ? 1.5 : -1.5, metaY(c.k) * 0.7, 1, c.s)); P.nuc[0][2] = 0; P.poles = [[-2.2, 0, 0], [2.2, 0, 0]]; P.spindle = 1; P.memb[0] = [-0.25, 2.5, 1]; P.memb[1] = [0.25, 2.5, 1]; }
-      if (s === 'telo') { CH.forEach((c, i) => set(i, c.s ? 1.9 : -1.9, metaY(c.k) * 0.5, 0.45)); P.memb[0] = [-1.55, 1.75, 1]; P.memb[1] = [1.55, 1.75, 1]; P.nuc[0] = [-1.9, 0.75, 1]; P.nuc[1] = [1.9, 0.75, 1]; P.poles = [[-2.35, 0.6, 0], [2.35, 0.6, 0]]; P.spindle = 0.25; }
+      if (s === 'telo') { CH.forEach((c, i) => set(i, (c.s ? 1.9 : -1.9) + (c.k % 2 ? 0.14 : -0.14), (c.k < 2 ? 0.28 : -0.28) + (c.k % 2 ? 0.1 : -0.1), 0.75)); P.memb[0] = [-1.55, 1.75, 1]; P.memb[1] = [1.55, 1.75, 1]; P.nuc[0] = [-1.9, 0.75, 1]; P.nuc[1] = [1.9, 0.75, 1]; P.poles = [[-2.35, 0.6, 0], [2.35, 0.6, 0]]; P.spindle = 0.25; }
       return P;
     }
     // мейоз: A — хромосомы 0 (мат.) и 1 (отц.), B — 2 (мат.) и 3 (отц.); в метафазе I пара B ориентирована наоборот — независимое расхождение
     const side = [-1, 1, 1, -1];
-    const off = (c) => (c.s ? 0.09 : -0.09) * (c.k >= 2 ? -1 : 1);   /* пара B развёрнута: внутренние (с кроссинговером) сёстры остаются внутри */
+    const off = (c) => (c.s ? 0.115 : -0.115) * (c.k >= 2 ? -1 : 1);   /* пара B развёрнута: внутренние (с кроссинговером) сёстры остаются внутри */
     if (s === 'inter') { inter(0); P.poles = [[-0.12, 1.85, 0], [0.12, 1.85, 0]]; }
-    if (s === 'pro1') { CH.forEach((c, i) => set(i, (c.k % 2 ? 0.2 : -0.2) + (c.s ? 0.09 : -0.09), c.k < 2 ? 0.4 : -0.5, 1)); P.cross = true; P.nuc[0][2] = 0.5; P.poles = [[-1.4, 1.25, 0], [1.4, 1.25, 0]]; }
+    if (s === 'pro1') { CH.forEach((c, i) => set(i, (c.k % 2 ? 0.2 : -0.2) + (c.s ? 0.115 : -0.115), c.k < 2 ? 0.4 : -0.5, 1)); P.cross = true; P.nuc[0][2] = 0.5; P.poles = [[-1.4, 1.25, 0], [1.4, 1.25, 0]]; }
     if (s === 'meta1') { CH.forEach((c, i) => set(i, side[c.k] * 0.25 + off(c), c.k < 2 ? 0.5 : -0.5, 1, side[c.k] < 0 ? 0 : 1)); P.cross = true; P.nuc[0][2] = 0; P.poles = [[-2.2, 0, 0], [2.2, 0, 0]]; P.spindle = 1; }
     if (s === 'ana1') { CH.forEach((c, i) => set(i, side[c.k] * 1.6 + off(c), c.k < 2 ? 0.4 : -0.4, 1, side[c.k] < 0 ? 0 : 1)); P.cross = true; P.nuc[0][2] = 0; P.poles = [[-2.2, 0, 0], [2.2, 0, 0]]; P.spindle = 1; P.memb[0] = [-0.25, 2.5, 1]; P.memb[1] = [0.25, 2.5, 1]; }
     if (s === 'telo1') { CH.forEach((c, i) => set(i, side[c.k] * 1.8 + off(c), c.k < 2 ? 0.4 : -0.4, 0.8)); P.cross = true; P.memb[0] = [-1.8, 1.55, 1]; P.memb[1] = [1.8, 1.55, 1]; P.nuc[0][2] = 0; P.poles = [[-2.6, 0.9, 0], [2.6, 0.9, 0]]; }
     if (s === 'meta2' || s === 'ana2') {
       const a2 = s === 'ana2';
-      CH.forEach((c, i) => { const cx = side[c.k] * 1.8; set(i, a2 ? cx + (c.s ? 0.75 : -0.75) : cx + (c.s ? 0.09 : -0.09), (c.k < 2 ? 0.4 : -0.4) * (a2 ? 0.6 : 1), a2 ? 0.55 : 1, (side[c.k] < 0 ? 0 : 2) + c.s); });
+      CH.forEach((c, i) => { const cx = side[c.k] * 1.8; set(i, a2 ? cx + (c.s ? 0.75 : -0.75) : cx + (c.s ? 0.115 : -0.115), (c.k < 2 ? 0.4 : -0.4) * (a2 ? 0.6 : 1), a2 ? 0.55 : 1, (side[c.k] < 0 ? 0 : 2) + c.s); });
       P.cross = true; P.nuc[0][2] = 0; P.poles = [[-2.75, 0, 0], [-0.85, 0, 0], [0.85, 0, 0], [2.75, 0, 0]]; P.spindle = a2 ? 0.3 : 1;
       P.memb = a2 ? [[-2.55, 0.8, 1], [-1.05, 0.8, 1], [1.05, 0.8, 1], [2.55, 0.8, 1]] : [[-1.8, 1.55, 1], [1.8, 1.55, 1], [-1.8, 1.55, 0], [1.8, 1.55, 0]];
       if (a2) P.nuc = [[-2.55, 0.45, 1], [-1.05, 0.45, 1], [1.05, 0.45, 1], [2.55, 0.45, 1]];
@@ -84,7 +84,7 @@ function makeMitosis() {
   /* кроссинговер: внутренние сестры гомологов обмениваются нижними плечами (цветом) */
   function cross(on) { [[1, 2], [5, 6]].forEach(([a, b]) => { CH[a].dn.material.color.set(on ? CH[b].col : CH[a].col); CH[a].dn.material.emissive.set(on ? CH[b].col : CH[a].col); CH[b].dn.material.color.set(on ? CH[a].col : CH[b].col); CH[b].dn.material.emissive.set(on ? CH[a].col : CH[b].col); }); }
   let crossed = false;
-  function setMode(m) { st.mode = m; st.stage = 0; st.stT = 0; st.auto = true; refs.modeSeg && refs.modeSeg.sync(); ringG.visible = m === 'cycle'; st.fly = VIEW; st.msg = null; refs.rebuild && refs.rebuild(); refs.setInfo && refs.setInfo(); }
+  function setMode(m) { st.mode = m; st.stage = 0; st.stT = 0; st.auto = true; refs.modeSeg && refs.modeSeg.sync(); ringG.visible = m === 'cycle'; st.fly = m === 'cycle' ? VIEW : flyTarget(VIEW.target.clone().add(V3(0, 0.3, 0)), VIEW.pos.clone().setZ(DK ? 11.5 : 11).add(V3(0, 0.3, 0))); st.msg = null; refs.rebuild && refs.rebuild(); refs.setInfo && refs.setInfo(); }
   function setStage(i, user) { st.stage = i; st.stT = 0; if (user) st.auto = false; refs.stSeg && refs.stSeg.sync(); refs.setInfo && refs.setInfo(); if (refs.autoT) refs.autoT.sync && refs.autoT.sync(); }
   const LR = (a, b, k) => a + (b - a) * k;
   function update(dt) {
@@ -125,17 +125,17 @@ function makeMitosis() {
   };
   const labels = [
     { text: 'ядро', pos: () => nucl[0].c.clone().add(V3(0.9, 1.05, 0)), color: '#C79BFF', show: () => st.labels && nucl[0].op > 0.4 },
-    { text: 'клеточная мембрана', pos: () => memb[0].c.clone().add(V3(-1.6, -1.9, 0)), color: '#9CC8FF', left: true, show: () => st.labels && st.mode === 'cycle' },
+    { text: 'клеточная мембрана', pos: () => memb[0].c.clone().add(V3(-0.9, -1.3, 0)), color: '#9CC8FF', left: true, show: () => st.labels && st.mode === 'cycle' },
     { text: 'центросома', pos: () => poles[0].p.clone().add(V3(-0.1, 0.25, 0)), color: '#9BE8C6', left: true, show: () => st.labels && st.mode !== 'cycle' && st.stage > 0 && !(st.mode === 'meiosis' && st.stage >= 5) },
     { text: 'веретено деления', pos: () => poles[1].p.clone().lerp(V3(0, 0, 0), 0.4).add(V3(0, 0.55, 0)), color: '#9BE8C6', show: () => st.labels && spMat.opacity > 0.4 && st.mode !== 'cycle' },
     { text: 'метафазная пластинка', pos: V3(0, 1.45, 0), color: '#F2C14E', show: () => st.labels && ((st.mode === 'mitosis' && st.stage === 3) || (st.mode === 'meiosis' && st.stage === 2)) },
-    { text: 'сестринские хроматиды', pos: () => CH[0].pos.clone().add(V3(-0.15, 0.62, 0)), color: '#FF9AA8', left: true, show: () => st.labels && st.mode === 'mitosis' && st.stage >= 1 && st.stage <= 3 },
+    { text: 'сестринские хроматиды', pos: () => CH[0].pos.clone().add(V3(0.1, 0.8, 0)), color: '#FF9AA8', show: () => st.labels && st.mode === 'mitosis' && st.stage >= 1 && st.stage <= 3 },
     { text: 'гомологи: от мамы и от папы', pos: () => CH[1].pos.clone().lerp(CH[2].pos, 0.5).add(V3(0, 0.75, 0)), color: '#E8E0F0', show: () => st.labels && st.mode === 'meiosis' && (st.stage === 1 || st.stage === 2) },
     { text: 'кроссинговер', pos: () => CH[1].pos.clone().lerp(CH[2].pos, 0.5).add(V3(0.3, -0.45, 0.2)), color: '#FFE08A', show: () => st.labels && st.mode === 'meiosis' && st.stage === 1 },
     { text: 'две одинаковые клетки', pos: V3(0, -2.15, 0), color: '#E8E0F0', show: () => st.labels && st.mode === 'mitosis' && st.stage === 5 },
     { text: 'четыре разные клетки (n)', pos: V3(0, -1.35, 0), color: '#E8E0F0', show: () => st.labels && st.mode === 'meiosis' && st.stage === 6 },
     ...CYC.map((p) => ({ text: p.id + ' · ' + p.h, pos: onRing((p.f0 + p.f1) / 2, RING + 0.35), color: p.col, left: (p.f0 + p.f1) / 2 > 0.5, show: () => st.labels && st.mode === 'cycle' })),
-    { text: 'G0 — покой', pos: onRing(0.02, RING + 0.9).add(V3(0.5, 0.2, 0)), color: '#8A90A8', show: () => st.labels && st.mode === 'cycle' },
+    { text: 'G0 — покой', pos: onRing(0.36, RING + 0.6), color: '#8A90A8', show: () => st.labels && st.mode === 'cycle' },
   ];
   const dyn = labels.filter((l) => typeof l.pos === 'function'); dyn.forEach((l) => { l.fn = l.pos; l.pos = V3(0, 0, 0); });
   const refs = {};
@@ -165,7 +165,7 @@ function makeMitosis() {
   function stats() {
     if (st.mode === 'cycle') { const p = CYC.find((q) => st.cf >= q.f0 && st.cf < q.f1); return [['Фаза', p.id, ''], ['Время', Math.floor(st.cf * 24), 'ч из 24'], ['ДНК', st.cf < 0.46 ? '2c' : st.cf < 0.79 ? '2c → 4c' : '4c', '']]; }
     const s = st.stage, mei = st.mode === 'meiosis';
-    return [['Фаза', STAGES()[s].name, ''], ['Хромосом в клетке', mei ? (s >= 4 ? 23 : 46) : 46, ''], ['Клеток', mei ? (s === 6 ? 4 : s >= 4 ? 2 : 1) : (s === 5 ? 2 : 1), '']];
+    return [['Фаза', STAGES()[s].name, ''], ['Хромосом в клетке', mei ? (s >= 4 ? 23 : 46) : (s === 4 ? 92 : 46), ''], ['Клеток', mei ? (s === 6 ? 4 : s >= 4 ? 2 : 1) : (s === 5 ? 2 : 1), '']];
   }
   const self = {
     mobZoom: 0.8, scene, camera, controls, update: (dt) => { update(dt); dyn.forEach((l) => { l.pos.copy(l.fn()); }); }, ui, onKey, stats, labels, drawScope: null, accent: '#FF9AB0',
@@ -177,7 +177,7 @@ function makeMitosis() {
         <p>Цикл ведут циклины и циклин-зависимые киназы, а останавливают контрольные точки: в G1 (повреждение ДНК, белок p53), в G2 и в метафазе (все ли хромосомы прицеплены к веретену).</p>
         <h3>Митоз и мейоз</h3><ul><li><b>Митоз</b>: одна клетка → две генетически одинаковые, набор 2n = 46. Рост, обновление кожи и крови, заживление.</li><li><b>Мейоз</b>: два деления подряд → четыре клетки с набором n = 23, все разные благодаря кроссинговеру и независимому расхождению хромосом. Сперматогенез и оогенез.</li></ul>
         <h3>Медицина</h3><p>Опухоль — клетки, вышедшие из-под контроля цикла (мутации в p53, RB и др.). Многие противоопухолевые препараты бьют по делению: винкристин и таксаны ломают веретено, другие повреждают ДНК в S-фазе. Нерасхождение хромосом в мейозе даёт трисомии: лишняя 21-я хромосома — синдром Дауна.</p></div>
-      <div><h2>Условности</h2><ul><li>Показаны 2 пары хромосом вместо 23 у человека; длина и толщина условны, хроматин в интерфазе — упрощённые размотанные палочки.</li><li>Цвет: розовые — хромосомы от матери, голубые — от отца; при кроссинговере сёстры обмениваются нижним плечом целиком.</li><li>Веретено — прямые линии от полюсов к центромерам; длительность фаз ускорена.</li></ul></div>
+      <div><h2>Условности</h2><ul><li>Показаны 2 пары хромосом вместо 23 у человека; длина и толщина условны, хроматин в интерфазе — упрощённые размотанные палочки.</li><li>Цвет: розовые — хромосомы от матери, голубые — от отца; при кроссинговере несестринские хроматиды гомологов обмениваются нижним плечом (в жизни — участками).</li><li>Веретено — прямые линии от полюсов к центромерам; длительность фаз ускорена.</li></ul></div>
       <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>3</code> режим · <code>←</code> <code>→</code> фаза</li><li><code>R</code> вращение · <code>N</code> подписи</li></ul></div>`,
   };
   setMode('cycle'); st.fly = null;
