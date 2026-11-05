@@ -8905,9 +8905,9 @@ function makeBlood() {
   const labels = [
     { text: 'эритроцит', pos: V3(-1.6, 0.4, 0.9), color: '#E0505A', show: () => st.labels && st.mode === 'flow' },
     ...[['neu', 'нейтрофил · 50–70%', '#E8E8F8'], ['lym', 'лимфоцит · 20–30%', '#E8E8F8'], ['mon', 'моноцит · 2–8%', '#E8E8F8'], ['eos', 'эозинофил · 1–4%', '#FFB08A'], ['bas', 'базофил · <1%', '#B8A0F0']].map(([k, tx, c]) => { const w = WBC.find((q) => q.kind === k); w.lab = { text: tx, pos: V3(0, 0, 0), color: c, show: () => st.labels && st.mode === 'flow' && !(MOBB && (k === 'eos' || k === 'bas')) }; return w.lab; }),
-    { text: 'интима', pos: V3(-3.6, Math.sin(Math.PI * 1.85) * R, Math.cos(Math.PI * 1.85) * R + 0.05), color: '#F2C0C8', show: () => st.labels && st.mode === 'flow' },
-    { text: 'медия: гладкие мышцы', pos: V3(-3.6, Math.sin(Math.PI * 1.85) * (R + 0.13), Math.cos(Math.PI * 1.85) * (R + 0.13) + 0.05), color: '#E08080', show: () => st.labels && st.mode === 'flow' },
-    { text: 'адвентиция', pos: V3(-3.6, Math.sin(Math.PI * 1.85) * (R + 0.3), Math.cos(Math.PI * 1.85) * (R + 0.3) + 0.05), color: '#E0D0A8', show: () => st.labels && st.mode === 'flow' },
+    { text: 'интима', pos: V3(MOBB ? -2.1 : -3.6, Math.sin(Math.PI * 1.85) * R, Math.cos(Math.PI * 1.85) * R + 0.05), color: '#F2C0C8', show: () => st.labels && st.mode === 'flow' },
+    { text: 'медия: гладкие мышцы', pos: V3(MOBB ? -2.1 : -3.6, Math.sin(Math.PI * 1.85) * (R + 0.13), Math.cos(Math.PI * 1.85) * (R + 0.13) + 0.05), color: '#E08080', show: () => st.labels && st.mode === 'flow' },
+    { text: 'адвентиция', pos: V3(MOBB ? -2.1 : -3.6, Math.sin(Math.PI * 1.85) * (R + 0.3), Math.cos(Math.PI * 1.85) * (R + 0.3) + 0.05), color: '#E0D0A8', show: () => st.labels && st.mode === 'flow' },
     { text: 'сосуды стенки', pos: V3(2.6, Math.sin(Math.PI * 0.55) * (R + 0.35), Math.cos(Math.PI * 0.55) * (R + 0.35)), color: '#E0505A', show: () => st.labels && st.mode === 'flow' && !MOBB },
     { text: 'нерв стенки', pos: V3(-1.6, Math.sin(Math.PI * 1.25) * (R + 0.32), Math.cos(Math.PI * 1.25) * (R + 0.32)), color: '#F2D060', show: () => st.labels && st.mode === 'flow' && !MOBB },
     { text: 'стенка сосуда', pos: V3(3.6, R + 0.2, -0.5), color: '#E8A0A8', show: () => st.labels && st.mode === 'clot' },
