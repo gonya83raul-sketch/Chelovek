@@ -30,7 +30,6 @@
  "Инфекции (ИППП)": "Infections (STIs)",
  "Защита и согласие": "Protection and consent",
  "Состояние": "State",
- "Новых случаев ИППП в мире": "New STI cases worldwide",
  "млн/день": "million/day",
  "Защищает от ИППП": "Protects against STIs",
  "презерватив": "condom",
@@ -566,5 +565,6 @@
  "Малатдегидрогеназа": "Malate dehydrogenase",
  "<b>8. Малатдегидрогеназа</b> окисляет малат до <b>оксалоацетата</b> с третьим <b>НАДН</b>. Круг замкнулся: оксалоацетат готов принять следующий ацетил-КоА.": "<b>8. Malate dehydrogenase</b> oxidizes malate to <b>oxaloacetate</b>, producing the third <b>NADH</b>. The circle is closed: oxaloacetate is ready to accept the next acetyl-CoA.",
  "ФАДН₂": "FADH₂",
- "ГТФ": "GTP"
+ "ГТФ": "GTP",
+ "Новых излечимых ИППП в мире": "New curable STI cases worldwide"
 }

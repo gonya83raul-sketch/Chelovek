@@ -162,9 +162,9 @@ function makeBetaox() {
     { text: 'β-адренорецептор', pos: V3(2.45, 1.95, 0.4), color: '#FF8A5C', show: () => st.labels && st.mode === 'lipo' },
     { text: 'жирные кислоты → кровь', pos: V3(2.6, -1.4, 0.4), color: '#F2E6C8', show: () => st.labels && st.mode === 'lipo' && !st.ins },
     { text: 'ядро', pos: V3(1.85, -0.6, 0.5), color: '#9F7BFF', show: () => st.labels && st.mode === 'lipo' },
-    { text: 'карнитиновый челнок', pos: MOB ? V3(40 - 5.0, 1.65, 0.3) : V3(40 - 4.2, 0.1, 0.3), color: '#C77DFF', show: () => st.labels && st.mode === 'beta' },
+    { text: 'карнитиновый челнок', pos: MOB ? V3(40 - 5.0, 2.35, 0.3) : V3(40 - 4.2, 0.1, 0.3), color: '#C77DFF', show: () => st.labels && st.mode === 'beta' },
     { text: 'ацил-КоА', pos: V3(40 - 7.2, 1.45, 0.3), color: '#F2E6C8', show: () => st.labels && st.mode === 'beta' && st.cyc % 20 < 2 },
-    { text: 'спираль β-окисления (матрикс)', pos: V3(40 + 0.4, 1.45, 0.3), color: '#FFB070', show: () => st.labels && st.mode === 'beta' },
+    { text: 'спираль β-окисления (матрикс)', pos: MOB ? V3(40.4, 0.3, 0.3) : V3(40 + 0.4, 1.45, 0.3), color: '#FFB070', show: () => st.labels && st.mode === 'beta' },
     { text: 'наружная мембрана', pos: V3(40 - 1.0, 2.55, 0.3), color: '#FFB070', show: () => st.labels && st.mode === 'beta' },
     { text: 'кристы', pos: V3(40 + 4.6, 1.6, 0.4), color: '#FF8A5C', show: () => st.labels && st.mode === 'beta' },
     ...['ФАД', 'H₂O', 'НАД⁺', 'КоА'].map((n, k) => ({ text: n, pos: BEP(k).add(V3(40.28, 0, 0)), color: ['#FFE45A', '#7FD6FF', '#FFD070', '#7FE0A0'][k], show: () => st.labels && st.mode === 'beta' })),
@@ -177,7 +177,7 @@ function makeBetaox() {
     ...['ацетоацетат', 'β-гидроксибутират', 'ацетон'].map((n, k) => ({ text: n, pos: V3(80 + 2.2, 2.6 - k * 0.9, 0.3), color: '#FF8AB0', show: () => st.labels && st.mode === 'keto' })),
     { text: 'цитрат из митохондрии', pos: MOB ? V3(120 - 6.4, 2.3, 0) : V3(120 - 5.9, 0.8, 0), color: '#7FD6FF', show: () => st.labels && st.mode === 'syn' },
     { text: 'ацетил-КоА-карбоксилаза', pos: V3(120 - 4.4, 2.6, 0), color: '#F2C14E', show: () => st.labels && st.mode === 'syn' },
-    { text: 'синтаза жирных кислот', pos: V3(120 + 0.2, 2.2, 0), color: '#7FD6FF', show: () => st.labels && st.mode === 'syn' },
+    { text: 'синтаза жирных кислот', pos: MOB ? V3(121.4, -0.9, 0) : V3(120 + 0.2, 2.2, 0), color: '#7FD6FF', show: () => st.labels && st.mode === 'syn' },
     { text: 'НАДФН', pos: V3(121.5, 2.6, 0.8), color: '#7FE0A0', show: () => st.labels && st.mode === 'syn' },
   ];
   const refs = {};
