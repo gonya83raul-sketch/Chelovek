@@ -90,7 +90,7 @@ button,select{font-family:inherit}
 .stat i{font:normal 500 12px/1.2 var(--f-body);color:var(--mute)}
 .stat b{font:500 25px/1.1 var(--f-body);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
 .stat b small{font-size:13px;color:var(--mute);font-weight:400;margin-left:3px}
-#scope{position:absolute;right:24px;width:300px;height:120px;border-radius:12px;background:rgba(10,9,13,.74);border:1px solid var(--line);pointer-events:none}
+#scope{position:absolute;right:24px;width:300px;height:120px;border-radius:12px;background:rgba(10,9,13,.74);border:1px solid var(--line);pointer-events:none} @media(min-width:701px){#scope.sn{width:200px;height:100px}}
 .labels{position:absolute;inset:0;pointer-events:none;overflow:hidden}
 .lbl{position:absolute;left:0;top:0;font:500 12px/1.2 var(--f-body);letter-spacing:.005em;color:#E2DCE0;white-space:nowrap;display:flex;align-items:center;gap:6px;text-shadow:0 1px 6px #000,0 0 2px #000;will-change:transform}
 .lbl::before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor;flex:none}
@@ -2999,7 +2999,7 @@ function makeGlia() {
   function myelinate() {
     if (st.wrap < 1) return;
     setFocusAll(); st.wrap = 0; st.wrapT = 0;
-    GLX === 0 ? flyTo(V3(wrapAx[0] - 0.7, wrapAx[1] + 0.3, 0.7), 6.6, V3(0.9, 0.35, 0.55)) : flyTo(V3(wrapAx[0], wrapAx[1], 0), 4.2, V3(0.9, 0.35, 0.55));
+    GLX === 0 ? flyTo(V3(wrapAx[0] - 0.7, wrapAx[1] + 0.3, 0.7), 6.6, V3(0.9, 0.35, 0.55)) : flyTo(V3(wrapAx[0], wrapAx[1] + 0.6, 0), 7.5, V3(0.9, 0.35, 0.55));
     say('<b>Миелинизация.</b> Отросток олигодендроцита распластывается в тонкий язычок и раз за разом оборачивается вокруг аксона. Слои слипаются, цитоплазма выдавливается — получается плотная белая муфта. В ЦНС это делает олигодендроцит (одна клетка — много аксонов), на периферии — шванновская клетка.');
   }
   /* прунинг: микроглия «съедает» слабый синапс */
@@ -3139,7 +3139,7 @@ function makeGlia() {
     const setInfo = () => { if (st.msg) { info.innerHTML = st.msg; return; } info.innerHTML = st.focus === 'all' ? 'Четыре типа глии вокруг двух нейронов. Выберите клетку, чтобы остальные стали прозрачными. Каждые несколько секунд с кровью проплывает <b style="color:#9ee66a">глутамат</b> плазмы: при закрытом ГЭБ он проходит мимо мозга.' : TY[st.focus].text; };
     const fSeg = seg([{ id: 'all', label: 'Все' }, ...GLIA.map((g) => ({ id: g.id, label: g.name, color: g.color }))], () => st.focus, (v) => { st.focus = v; st.msg = null; applyFocus(); setInfo(); });
     const bbb = toggle('ГЭБ', () => st.bbb, (v) => { st.bbb = v; });
-    const tr = toggle('Травма', () => st.trauma, (v) => { st.trauma = v; st.traumaT = st.t; if (v) { setFocusAll(); GLX === 0 ? flyTo(LES.clone().add(V3(-3.0, -1.1, 1.5)), 14.5, V3(0.5, 0.3, 1)) : flyTo(LES.clone().add(V3(0, -1.3, 0)), 9, V3(0.5, 0.3, 1)); say('<b>Травма.</b> Микроглия чувствует продукты распада клеток, вырастает, делится и ползёт в очаг. Там она поглощает обломки (фагоцитоз) и выделяет сигнальные молекулы воспаления.'); } else { st.msg = null; refs.setInfo(); } });
+    const tr = toggle('Травма', () => st.trauma, (v) => { st.trauma = v; st.traumaT = st.t; if (v) { if (GLX === 0) setFocusAll(); else { st.focus = 'micro'; applyFocus(); refs.fSeg && refs.fSeg.sync(); } GLX === 0 ? flyTo(LES.clone().add(V3(-3.0, -1.1, 1.5)), 14.5, V3(0.5, 0.3, 1)) : flyTo(LES.clone().add(V3(0, -0.4, 0)), 15.5, V3(0.5, 0.3, 1)); say('<b>Травма.</b> Микроглия чувствует продукты распада клеток, вырастает, делится и ползёт в очаг. Там она поглощает обломки (фагоцитоз) и выделяет сигнальные молекулы воспаления.'); } else { st.msg = null; if (GLX !== 0) setFocusAll(); refs.setInfo(); } });
     refs = { fSeg, bbb, tr, setInfo };
     el.append(group('Клетки', '0–5', fSeg),
       group('Опыт', 'F · B · P · T · M', button('Белковая еда', feed, true), bbb, button('Прунинг', startPrune), tr, button('Миелинизация', myelinate), button('Обзор', () => { st.msg = null; setInfo(); flyHome(); })),
@@ -3445,7 +3445,7 @@ function makeDevelop() {
       refs.sync && refs.sync();
     }
     if (st.s !== lastS || st.mode !== lastMode) { build(); lastS = st.s; lastMode = st.mode; }
-    if (!st.userCam) { camera.position.lerpVectors(CAM_HI, CAM_LO, smooth(1, 2, st.s)); if (!DVP) { const sh = 1 - smooth(1, 2, st.s); camera.position.x += 0.6 * sh; camera.position.y -= 0.5 * sh; controls.target.set(-0.7 + 0.6 * sh, -2.2 - 0.78 * sh, 0); camera.position.lerp(controls.target, -0.1 * sh); } }   /* ранние стадии: плита выше — врезка графика не закрывает угол */
+    if (!st.userCam) { camera.position.lerpVectors(CAM_HI, CAM_LO, smooth(1, 2, st.s)); if (!DVP) { const sh = 1 - smooth(1, 2, st.s); camera.position.x += 0.6 * sh; camera.position.y -= 1.9 * sh; controls.target.set(-0.7 + 0.6 * sh, -2.2 - 2.18 * sh, 0); camera.position.lerp(controls.target, -0.1 * sh); } }   /* ранние стадии: плита выше — врезка графика не закрывает угол */
     st.center.lerp(st.goal, 1 - Math.exp(-dt * 3)); placeRoot();
     // нервный гребень
     if (st.s > 1.05 && st.s < 2.7) {
@@ -6617,7 +6617,7 @@ function makeCereb() {
   const VIEW = {
     anat: flyTarget(V3(-0.15, -0.1, 0), V3(3.1, 1.15, 6.5)),   // спереди-сбоку: видны ножки, олива, клочок
     nuc: matchMedia('(max-width:700px)').matches ? flyTarget(V3(-0.27, -0.3, 0), V3(-1.67, 4.9, 0.3)) : flyTarget(V3(-0.57, -0.3, -0.6), V3(-1.67, 4.9, -0.3)),
-    micro: matchMedia('(max-width:700px)').matches ? flyTarget(V3(0, -0.75, 0), V3(6.3, 3.0, 7.6)) : flyTarget(V3(-0.49, -1.0, 0.4), V3(5.81, 2.75, 8.0)),
+    micro: matchMedia('(max-width:700px)').matches ? flyTarget(V3(0, -0.75, 0), V3(6.3, 3.0, 7.6)) : flyTarget(V3(-0.49, -1.0, 0.4), V3(6.44, 3.125, 8.76)),
   };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100); camera.position.copy(VIEW.anat.pos);
   const controls = makeControls(camera, VIEW.anat.target); controls.minDistance = 1.5; controls.maxDistance = 16;
@@ -6887,7 +6887,7 @@ function makeCereb() {
   }
   function stats() { return st.mode === 'micro' ? [['Ошибка', st.err.length ? Math.round(st.err[st.err.length - 1] * 100) : 100, '%'], ['Слоёв коры', 3, '']] : [['Масса', '120–160', 'г'], ['Нейронов мозга', '>50', '%']]; }
   const self = {
-    mobZoom: 0.62, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#7FD6C8',
+    scopeNarrow: true, mobZoom: 0.62, scene, camera, controls, update, ui, onKey, stats, labels, drawScope, accent: '#7FD6C8',
     kicker: 'Мозг · мозжечок', title: 'Мозжечок и двигательные навыки',
     lede: 'Больше половины нейронов мозга — в мозжечке. На дендритах клеток Пуркинье записывается двигательная память: как быстро и точно сделать каждое движение.',
     notes: `
@@ -10193,7 +10193,7 @@ function activate(id) {
   $('#kicker').textContent = cur.kicker; $('#title').textContent = cur.title; $('#lede').textContent = cur.lede;
   consoleEl.innerHTML = ''; cur.ui(consoleEl);
   notesEl.innerHTML = cur.notes;
-  scopeEl.classList.toggle('sl', !!cur.scopeLeft);   /* график слева (телефон), если сцена просит: scopeLeft: true */
+  scopeEl.classList.toggle('sl', !!cur.scopeLeft); scopeEl.classList.toggle('sn', !!cur.scopeNarrow);   /* график слева (телефон), если сцена просит: scopeLeft: true */
   labelsEl.classList.toggle('bg', cur.labelBg !== false);   // подложка под подписями — по умолчанию у всех сцен (сцена может отключить: labelBg: false)
   labelsEl.innerHTML = ''; labelEls = cur.labels.map((l) => { const e = h('div', { class: 'lbl' }, l.text); if (l.color) e.style.color = l.color; labelsEl.append(e); return e; });
   scopeEl.hidden = !cur.drawScope;

@@ -19,7 +19,7 @@ function makeProtein() {
   rnd = mulberry(1701);
   const scene = bioStage({ rim: 0x7fd6ff });
   const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: кадр уходит из-под заголовка и описания (телефон — прежний ракурс)
-  const VIEW = { aa: DK ? flyTarget(V3(0, -0.15, 0), V3(0, 2.55, 24)) : flyTarget(V3(0, -1.1, 0), V3(0, -0.3, 13.8)), lv1: DK ? flyTarget(V3(39.1, 0.0, 0), V3(39.9, 2.4, 17.5)) : null, lv: DK ? flyTarget(V3(38.9, -0.85, 0), V3(39.7, 1.15, 14.5)) : flyTarget(V3(40, -1.2, 0), V3(40.8, 0.8, 14.5)), fold: DK ? flyTarget(V3(79.5, -1.45, 0), V3(80.5, 1.25, 22)) : flyTarget(V3(80.6, -0.9, 0), V3(81.4, 1.5, 12.5)), lv23: DK ? flyTarget(V3(39.56, -0.62, 0), V3(40.36, 1.38, 10)) : null, foldH: DK ? flyTarget(V3(79.5, 0.55, 0), V3(79.95, 1.5, 8.5)) : flyTarget(V3(80.2, 0.3, 0), V3(80.6, 1.0, 5.5)) };
+  const VIEW = { aa: DK ? flyTarget(V3(0, 0.05, 0), V3(0, 2.75, 24)) : flyTarget(V3(0, -1.1, 0), V3(0, -0.3, 13.8)), lv1: DK ? flyTarget(V3(39.1, 0.0, 0), V3(39.9, 2.4, 17.5)) : null, lv: DK ? flyTarget(V3(38.9, -0.85, 0), V3(39.7, 1.15, 14.5)) : flyTarget(V3(40, -1.2, 0), V3(40.8, 0.8, 14.5)), fold: DK ? flyTarget(V3(79.5, -1.45, 0), V3(80.5, 1.25, 22)) : flyTarget(V3(80.6, -0.9, 0), V3(81.4, 1.5, 12.5)), lv23: DK ? flyTarget(V3(39.56, -0.62, 0), V3(40.36, 1.38, 10)) : null, foldH: DK ? flyTarget(V3(79.5, 0.55, 0), V3(79.95, 1.5, 8.5)) : flyTarget(V3(80.45, 1.15, 0), V3(80.69, 1.57, 3.3)) };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.aa.pos);
   const controls = makeControls(camera, VIEW.aa.target); controls.minDistance = 2; controls.maxDistance = 45;
   const fx = new Sparks(1200, 0.08); scene.add(fx.obj);
@@ -131,7 +131,7 @@ function makeProtein() {
     { text: 'α-цепи', get pos() { return scrOut(cA, 1.8); }, color: '#7FD6FF', show: () => st.labels && st.mode === 'lv' && st.lv === 4 },
     { text: 'β-цепи', get pos() { return scrOut(cB2, 1.8); }, color: '#FF8AB0', show: () => st.labels && st.mode === 'lv' && st.lv === 4 },
     { text: 'шаперонин GroEL/GroES', pos: V3(80 + 4.6, 3.3, 0), color: '#7FD6FF', show: () => st.labels && st.mode === 'fold' && st.fmode === 'chap' },
-    { text: 'белок (лизоцим)', get pos() { return fold.getWorldPosition(V3(0, 0, 0)).add(st.fmode !== 'chap' ? (DK ? V3(-0.9, 1.15, 0) : V3(-1.4, 1.6, 0)) : st.inside ? V3(-3.3, 0.2, 0) : V3(-0.9, 0.9, 0)); }, color: '#F2C14E', show: () => st.labels && st.mode === 'fold' },
+    { text: 'белок (лизоцим)', get pos() { return fold.getWorldPosition(V3(0, 0, 0)).add(st.fmode !== 'chap' ? (DK ? V3(-0.9, 1.15, 0) : V3(-0.7, 0.9, 0)) : st.inside ? V3(-3.3, 0.2, 0) : V3(-0.9, 0.9, 0)); }, color: '#F2C14E', show: () => st.labels && st.mode === 'fold' },
   ];
   const refs = {};
   function ui(el) {
