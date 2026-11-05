@@ -28,7 +28,8 @@ for i, fn, name, grp in scenes:
     if grp != '-' and grp != last:
         items.append(f"['#', '{grp}']"); last = grp
     items.append(f"['{i}', '{name}']")
-bio_sc = [sc for sc in scenes if not sc[3].startswith('@body')]
+bio_sc = [sc for sc in scenes if not sc[3].startswith('@body') and not sc[3].startswith('@cell')]
+cell_sc = [sc for sc in scenes if sc[3].startswith('@cell')]   # сцены раздела «Клетка» из файлов
 body_sc = [sc for sc in scenes if sc[3].startswith('@body')]
 items, last = [], None
 for i, fn, name, grp in bio_sc:
@@ -37,6 +38,9 @@ for i, fn, name, grp in bio_sc:
     items.append(f"['{i}', '{name}']")
 if bio_sc:
     page = page.replace(c0, c0 + "  { id: 'bio', name: 'Биохимия', scenes: [" + ', '.join(items) + '] },\n')
+if cell_sc:
+    c1 = "[['cell', 'Живая клетка']] },"; assert page.count(c1) == 1
+    page = page.replace(c1, "[['cell', 'Живая клетка']" + ''.join(f", ['{i}', '{name}']" for i, fn, name, grp in cell_sc) + '] },')
 # сцены раздела «Тело» из файлов: группа «@body Название группы» (в начало — «@body^Название»)
 if body_sc:
     bm = re.search(r"  \{ id: 'body', name: 'Тело', scenes: \[(.*?)\] \},\n", page)
