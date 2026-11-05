@@ -5,20 +5,20 @@ import { GLOW, Sparks, THREE, V3, __set_rnd, accentSet, addLights, canvas, clamp
    SCENE 0 · ЖИВАЯ КЛЕТКА
    ========================================================= */
 const ORGANELLES = [
-  { id: 'membrane', name: 'Мембрана', color: '#9CC8FF', size: 'толщина 7–10 нм', text: '<b>Плазматическая мембрана</b> — двойной слой липидов со встроенными белками: каналами, насосами, рецепторами. Пропускает внутрь не всё подряд. На ней нейрон держит заряд −70 мВ.' },
-  { id: 'nucleus', name: 'Ядро', color: '#B48CFF', size: '≈ 6 мкм', text: '<b>Ядро</b> хранит ДНК. Окружено двойной оболочкой с порами. Внутри — хроматин: нити ДНК, намотанные на белки.' },
-  { id: 'nucleolus', name: 'Ядрышко', color: '#D36FB6', size: '1–2 мкм', text: '<b>Ядрышко</b> — плотный участок ядра, где собирают субъединицы рибосом.' },
-  { id: 'pores', name: 'Ядерные поры', color: '#E7D4FF', size: '≈ 120 нм', text: '<b>Ядерные поры</b> — ворота в оболочке ядра. Через них наружу выходят мРНК (светлые искры), внутрь заходят белки.' },
-  { id: 'rer', name: 'Шероховатая ЭПС', color: '#5FB0D6', size: 'мешки ≈ 50 нм', text: '<b>Шероховатая ЭПС</b> — стопки мембранных мешков, усыпанные рибосомами. Здесь делают белки для мембраны и на экспорт: рецепторы, каналы, ферменты синтеза медиаторов.' },
-  { id: 'ser', name: 'Гладкая ЭПС', color: '#7FD8C4', size: 'трубочки ≈ 50 нм', text: '<b>Гладкая ЭПС</b> — сеть трубочек без рибосом. Синтезирует липиды и хранит запас Ca²⁺.' },
-  { id: 'golgi', name: 'Аппарат Гольджи', color: '#E6A84E', size: 'стопка 1–3 мкм', text: '<b>Аппарат Гольджи</b> принимает белки из ЭПС (с выпуклой стороны), дорабатывает, сортирует и отправляет в пузырьках к мембране и лизосомам.' },
-  { id: 'mito', name: 'Митохондрии', color: '#E0703F', size: '0.5–2 мкм', text: '<b>Митохондрии</b> вырабатывают АТФ (жёлтые искры). Внутренняя мембрана сложена в кристы, чтобы уместить больше ферментов дыхания. У них своя ДНК.' },
-  { id: 'lyso', name: 'Лизосомы', color: '#9B6BE0', size: '0.1–1 мкм', text: '<b>Лизосомы</b> — пузырьки с пищеварительными ферментами. Переваривают отслужившие части клетки и то, что захвачено с поверхности.' },
-  { id: 'perox', name: 'Пероксисомы', color: '#8FD16A', size: '0.1–1 мкм', text: '<b>Пероксисомы</b> окисляют жирные кислоты и обезвреживают перекись водорода ферментом каталазой (кристаллическое ядро внутри).' },
-  { id: 'centro', name: 'Центросома', color: '#B8F0D0', size: 'центриоль ≈ 0.2 × 0.5 мкм', text: '<b>Центросома</b> — пара центриолей под прямым углом, каждая из 9 троек микротрубочек. Отсюда растут микротрубочки цитоскелета.' },
-  { id: 'cyto', name: 'Цитоскелет', color: '#9BE8C6', size: 'микротрубочка 25 нм', text: '<b>Микротрубочки</b> — рельсы клетки. Моторные белки кинезин и динеин везут по ним грузы: в нейроне так пузырьки едут по аксону к синапсу.' },
-  { id: 'ribo', name: 'Рибосомы', color: '#E06A6A', size: '≈ 25 нм', text: '<b>Рибосомы</b> читают мРНК и собирают белок. Свободные делают белки для самой цитоплазмы.' },
-  { id: 'ves', name: 'Пузырьки', color: '#FFD08A', size: '50–100 нм', text: '<b>Транспортные пузырьки</b> везут груз: ЭПС → Гольджи → мембрана. У мембраны пузырёк сливается с ней и выплёскивает содержимое (экзоцитоз). Так нейрон выпускает медиатор.' },
+  { id: 'membrane', name: 'Membrane', color: '#9CC8FF', size: '7–10 nm thick', text: '<b>The plasma membrane</b> is a lipid bilayer with embedded proteins: channels, pumps, receptors. It does not let just anything in. It is across this membrane that a neuron holds its −70 mV charge.' },
+  { id: 'nucleus', name: 'Nucleus', color: '#B48CFF', size: '≈ 6 µm', text: '<b>The nucleus</b> stores DNA. It is surrounded by a double envelope with pores. Inside is chromatin: DNA strands wound around proteins.' },
+  { id: 'nucleolus', name: 'Nucleolus', color: '#D36FB6', size: '1–2 µm', text: '<b>The nucleolus</b> is a dense region of the nucleus where ribosomal subunits are assembled.' },
+  { id: 'pores', name: 'Nuclear pores', color: '#E7D4FF', size: '≈ 120 nm', text: '<b>Nuclear pores</b> are gates in the nuclear envelope. mRNAs (bright sparks) leave through them, and proteins come in.' },
+  { id: 'rer', name: 'Rough ER', color: '#5FB0D6', size: 'cisternae ≈ 50 nm', text: '<b>Rough ER</b> is stacks of membrane sacs studded with ribosomes. This is where proteins for the membrane and for export are made: receptors, channels, enzymes that synthesize neurotransmitters.' },
+  { id: 'ser', name: 'Smooth ER', color: '#7FD8C4', size: 'tubules ≈ 50 nm', text: '<b>Smooth ER</b> is a network of tubules without ribosomes. It synthesizes lipids and stores Ca²⁺.' },
+  { id: 'golgi', name: 'Golgi apparatus', color: '#E6A84E', size: 'stack 1–3 µm', text: '<b>The Golgi apparatus</b> receives proteins from the ER (on its convex side), modifies and sorts them, and ships them in vesicles to the membrane and lysosomes.' },
+  { id: 'mito', name: 'Mitochondria', color: '#E0703F', size: '0.5–2 µm', text: '<b>Mitochondria</b> produce ATP (yellow sparks). The inner membrane is folded into cristae to fit more respiratory enzymes. They have their own DNA.' },
+  { id: 'lyso', name: 'Lysosomes', color: '#9B6BE0', size: '0.1–1 µm', text: '<b>Lysosomes</b> are vesicles filled with digestive enzymes. They digest worn-out parts of the cell and material taken in from the surface.' },
+  { id: 'perox', name: 'Peroxisomes', color: '#8FD16A', size: '0.1–1 µm', text: '<b>Peroxisomes</b> oxidize fatty acids and detoxify hydrogen peroxide with the enzyme catalase (the crystalline core inside).' },
+  { id: 'centro', name: 'Centrosome', color: '#B8F0D0', size: 'centriole ≈ 0.2 × 0.5 µm', text: '<b>The centrosome</b> is a pair of centrioles at right angles to each other, each made of 9 microtubule triplets. The microtubules of the cytoskeleton grow from here.' },
+  { id: 'cyto', name: 'Cytoskeleton', color: '#9BE8C6', size: 'microtubule 25 nm', text: '<b>Microtubules</b> are the cell’s rails. The motor proteins kinesin and dynein carry cargo along them: this is how vesicles travel down a neuron’s axon to the synapse.' },
+  { id: 'ribo', name: 'Ribosomes', color: '#E06A6A', size: '≈ 25 nm', text: '<b>Ribosomes</b> read mRNA and assemble proteins. Free ribosomes make proteins for the cytoplasm itself.' },
+  { id: 'ves', name: 'Vesicles', color: '#FFD08A', size: '50–100 nm', text: '<b>Transport vesicles</b> carry cargo: ER → Golgi → membrane. At the membrane a vesicle fuses with it and releases its contents (exocytosis). This is how a neuron releases a neurotransmitter.' },
 ];
 
 function makeCell() {
@@ -63,7 +63,7 @@ function makeCell() {
   { const pm = new THREE.InstancedMesh(new THREE.TorusGeometry(0.075, 0.026, 6, 16), phys(0xe7d4ff, { emissive: 0x2a1840 }), poreDirs.length);
     poreDirs.forEach((d, i) => { const p = NUC.clone().addScaledVector(d, NUC_R * 1.01); porePts.push({ p, d }); dummy.position.copy(p); dummy.quaternion.setFromUnitVectors(Z, d); dummy.scale.setScalar(1); dummy.updateMatrix(); pm.setMatrixAt(i, dummy.matrix); });
     scene.add(tag(pm, 'pores')); }
-  ORG.nucleus.anchor = NUC.clone().add(V3(-1.2, 1.25, 1.05)); ORG.nucleus.dist = 9;
+  ORG.nucleus.anchor = NUC.clone().add(V3(-1.2, 1.25, 1.05)); ORG.nucleus.dist = matchMedia('(max-width:700px)').matches ? 11.3 : 9;
   ORG.pores.anchor = NUC.clone().addScaledVector(V3(1, 1.2, -0.4).normalize(), NUC_R); ORG.pores.dist = 4.5;
   const chromMat = phys(0xd27ac0, { roughness: 0.5, emissive: 0x2a0b25 });
   for (let c = 0; c < 30; c++) {
@@ -238,7 +238,7 @@ function makeCell() {
   function select(id) {
     if (st.sel) ORG[st.sel].mats.forEach((m) => { m.emissive.copy(m.userData.e0.c); m.emissiveIntensity = m.userData.e0.i; });
     st.sel = id === 'all' ? null : id; st.focusT = 1.8;
-    st.focus = st.sel ? { target: (LBL[st.sel] && LVIS[st.sel] ? LBL[st.sel] : ORG[st.sel].anchor).clone().add(V3(0, st.sel === 'lyso' && matchMedia('(max-width:700px)').matches ? -0.12 * ORG[st.sel].dist : 0, 0)), dist: ORG[st.sel].dist } : { target: V3(0, 0, 0), dist: 22.2 };
+    st.focus = st.sel ? { target: (LBL[st.sel] && LVIS[st.sel] ? LBL[st.sel] : ORG[st.sel].anchor).clone().add(V3(0, st.sel === 'lyso' && matchMedia('(max-width:700px)').matches ? -0.12 * ORG[st.sel].dist : (st.sel === 'nucleus' && !matchMedia('(max-width:700px)').matches ? -0.15 * ORG[st.sel].dist : 0), 0)), dist: ORG[st.sel].dist } : { target: V3(0, 0, 0), dist: 22.2 };
     /* выбран органоид — остальные (кроме мембраны) бледнеют: фон за заголовком и текстом не спорит с ним */
     const mm = (o) => [].concat(o.material || []);
     const keep = new Set(); scene.traverse((o) => { if ((o.isMesh || o.isLine || o.isPoints) && (!st.sel || o.userData.org === st.sel || o.userData.org === 'membrane' || (!o.userData.org && !o.isPoints))) mm(o).forEach((m) => keep.add(m)); });
@@ -315,16 +315,16 @@ function makeCell() {
   const refs = {};
   function ui(el) {
     const info = h('div', { class: 'info' });
-    refs.setInfo = () => { info.innerHTML = st.sel ? ORG[st.sel].text : 'Нажмите на любой органоид или выберите его в списке. Разрез всегда повёрнут к вам: вращайте клетку, чтобы заглянуть с другой стороны.'; };
-    refs.seg = seg([{ id: 'all', label: 'Обзор' }, ...ORGANELLES.map((o) => ({ id: o.id, label: o.name, color: o.color }))], () => st.sel || 'all', (v) => select(v));
-    const cutB = toggle('Разрез', () => st.cut, (v) => { st.cut = v; });
-    const rot = toggle('Вращение', () => st.rot, (v) => { st.rot = v; });
-    const lab = toggle('Подписи', () => st.labels, (v) => { st.labels = v; });
+    refs.setInfo = () => { info.innerHTML = st.sel ? ORG[st.sel].text : 'Click any organelle or pick it from the list. The cutaway always faces you: rotate the cell to look from the other side.'; };
+    refs.seg = seg([{ id: 'all', label: 'Overview' }, ...ORGANELLES.map((o) => ({ id: o.id, label: o.name, color: o.color }))], () => st.sel || 'all', (v) => select(v));
+    const cutB = toggle('Cutaway', () => st.cut, (v) => { st.cut = v; });
+    const rot = toggle('Rotate', () => st.rot, (v) => { st.rot = v; });
+    const lab = toggle('Labels', () => st.labels, (v) => { st.labels = v; });
     refs.cutB = cutB; refs.rot = rot; refs.lab = lab;
     el.append(
-      h('div', { class: 'grp', style: 'flex:1 1 560px' }, h('div', { class: 'glabel' }, 'Органоиды', h('kbd', {}, 'клик по клетке')), h('div', { class: 'gctl' }, refs.seg)),
-      group('Вид', 'C · R · N', cutB, rot, lab),
-      h('div', { class: 'grp', style: 'flex:1 1 300px' }, h('div', { class: 'glabel' }, 'Что видно'), info),
+      h('div', { class: 'grp', style: 'flex:1 1 560px' }, h('div', { class: 'glabel' }, 'Organelles', h('kbd', {}, 'click the cell')), h('div', { class: 'gctl' }, refs.seg)),
+      group('View', 'C · R · N', cutB, rot, lab),
+      h('div', { class: 'grp', style: 'flex:1 1 300px' }, h('div', { class: 'glabel' }, 'What you see'), info),
     );
     refs.setInfo();
   }
@@ -336,24 +336,24 @@ function makeCell() {
     if (e.key === 'Escape') { select('all'); return true; }
     return false;
   }
-  function stats() { return st.sel ? [['Размер', ORG[st.sel].size, '']] : [['Клетка', '≈ 20', 'мкм'], ['Органоидов', ORGANELLES.length, '']]; }
+  function stats() { return st.sel ? [['Size', ORG[st.sel].size, '']] : [['Cell', '≈ 20', 'µm'], ['Organelles', ORGANELLES.length, '']]; }
   const self = {
     labelBg: true, mobZoom: 0.62, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, get accent() { return st.sel ? ORG[st.sel].color : '#9CC8FF'; },
-    kicker: 'Клетка · строение', title: 'Живая клетка',
-    lede: 'Ядро, ЭПС, Гольджи, митохондрии и цитоскелет в разрезе. Пузырьки везут белки к мембране, по микротрубочкам едут грузы, митохондрии выдают АТФ.',
+    kicker: 'Cell · structure', title: 'Living cell',
+    lede: 'Nucleus, ER, Golgi, mitochondria and cytoskeleton in cutaway. Vesicles carry proteins to the membrane, cargo travels along microtubules, mitochondria produce ATP.',
     notes: `
-      <div><h2>Как устроена клетка</h2>
-        <p>Нейрон — такая же клетка, как остальные, только с очень длинными отростками. Всё, о чём говорится в курсе, начинается здесь: белки-рецепторы и каналы делаются на <b>шероховатой ЭПС</b>, дорабатываются в <b>аппарате Гольджи</b> и в пузырьках едут к мембране.</p>
-        <h3>Что движется</h3>
-        <p><b>Голубые пузырьки</b> несут белки из ЭПС в Гольджи. <b>Золотые</b> идут от Гольджи к мембране и сливаются с ней — это экзоцитоз, тот же механизм, которым синапс выпускает медиатор. <b>Сиреневые</b> отшнуровываются от мембраны и плывут к лизосомам. По <b>микротрубочкам</b> моторные белки везут грузы в обе стороны. Из <b>ядерных пор</b> выходят мРНК, у <b>митохондрий</b> вспыхивает АТФ.</p>
-        <h3>Энергия</h3>
-        <p>Мозг — около 2% массы тела, но потребляет примерно 20% энергии. Большую часть АТФ съедает Na⁺/K⁺-насос, поэтому в нейронах так много митохондрий.</p></div>
-      <div><h2>Что здесь настоящее</h2><ul>
-        <li>Набор органоидов и их взаимное расположение: ЭПС продолжает оболочку ядра, Гольджи лежит у центросомы.</li>
-        <li>Двойная оболочка ядра с порами, кристы митохондрий, 9 троек микротрубочек в центриолях.</li>
-        <li>Маршруты пузырьков.</li></ul>
-        <h2 style="margin-top:22px">Условности</h2><ul><li>Размеры не в масштабе: рибосома в тысячу раз меньше клетки, здесь её видно.</li><li>Органоидов и рибосом в настоящей клетке в сотни раз больше.</li></ul></div>
-      <div class="keys"><h2>Клавиши</h2><ul><li>клик по органоиду: выбрать</li><li><code>C</code> разрез</li><li><code>R</code> вращение</li><li><code>N</code> подписи</li><li><code>Esc</code> обзор</li></ul></div>`,
+      <div><h2>How a cell is built</h2>
+        <p>A neuron is a cell like any other, just with very long processes. Everything discussed in the course starts here: receptor proteins and channels are made on the <b>rough ER</b>, finished in the <b>Golgi apparatus</b> and carried to the membrane in vesicles.</p>
+        <h3>What moves</h3>
+        <p><b>Blue vesicles</b> carry proteins from the ER to the Golgi. <b>Gold ones</b> go from the Golgi to the membrane and fuse with it — this is exocytosis, the same mechanism a synapse uses to release a neurotransmitter. <b>Lilac ones</b> pinch off from the membrane and drift to the lysosomes. Along the <b>microtubules</b> motor proteins carry cargo in both directions. mRNAs exit the <b>nuclear pores</b>, and ATP flashes at the <b>mitochondria</b>.</p>
+        <h3>Energy</h3>
+        <p>The brain is about 2% of body mass but uses roughly 20% of the energy. Most of the ATP is consumed by the Na⁺/K⁺ pump, which is why neurons have so many mitochondria.</p></div>
+      <div><h2>What is accurate here</h2><ul>
+        <li>The set of organelles and their arrangement: the ER is continuous with the nuclear envelope, and the Golgi lies next to the centrosome.</li>
+        <li>The double nuclear envelope with pores, mitochondrial cristae, 9 microtubule triplets in the centrioles.</li>
+        <li>The routes of the vesicles.</li></ul>
+        <h2 style="margin-top:22px">Simplifications</h2><ul><li>Sizes are not to scale: a ribosome is a thousand times smaller than the cell, yet here you can see it.</li><li>A real cell has hundreds of times more organelles and ribosomes.</li></ul></div>
+      <div class="keys"><h2>Keys</h2><ul><li>click an organelle: select</li><li><code>C</code> cutaway</li><li><code>R</code> rotate</li><li><code>N</code> labels</li><li><code>Esc</code> overview</li></ul></div>`,
   };
   return self;
 }
