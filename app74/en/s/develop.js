@@ -265,7 +265,7 @@ function makeDevelop() {
       refs.sync && refs.sync();
     }
     if (st.s !== lastS || st.mode !== lastMode) { build(); lastS = st.s; lastMode = st.mode; }
-    if (!st.userCam) { camera.position.lerpVectors(CAM_HI, CAM_LO, smooth(1, 2, st.s)); if (!DVP) { const sh = 1 - smooth(1, 2, st.s); camera.position.x += 0.6 * sh; camera.position.y -= 0.5 * sh; controls.target.set(-0.7 + 0.6 * sh, -2.2 - 0.5 * sh, 0); } }
+    if (!st.userCam) { camera.position.lerpVectors(CAM_HI, CAM_LO, smooth(1, 2, st.s)); if (!DVP) { const sh = 1 - smooth(1, 2, st.s); camera.position.x += 0.6 * sh; camera.position.y -= 0.5 * sh; controls.target.set(-0.7 + 0.6 * sh, -2.2 - 0.78 * sh, 0); camera.position.lerp(controls.target, -0.1 * sh); } }   /* ранние стадии: плита выше — врезка графика не закрывает угол */
     st.center.lerp(st.goal, 1 - Math.exp(-dt * 3)); placeRoot();
     // нервный гребень
     if (st.s > 1.05 && st.s < 2.7) {

@@ -15,7 +15,7 @@ function makeSexhorm() {
   const scene = bioStage({ rim: 0xff6fa8 });
   const DK = !matchMedia('(max-width:700px)').matches;   // компьютер: кадр уходит из-под заголовка и описания (телефон — прежний ракурс)
   const VIEW = { synth: DK ? [V3(-1.3, 0.65, 0), V3(-1.3, 1.7, 25)] : [V3(1.0, -0.35, 0), V3(1.0, 0.5, 22)], axis: [V3(40.0, -0.2, 0), V3(40.6, 1.1, 20)], preg: [V3(82.3, 0.15, -0.4), V3(82.3, 8.45, 12.0)] };
-  const VIEWM = { synth: [V3(1.4, 0.45, 0), V3(1.8, 1.2, 19)], preg: [V3(79.8, -0.6, -0.4), V3(79.8, 5.85, 10.9)], axis: [V3(40.0, 0.6, 0), V3(40.4, 1.3, 13)] }, mqm = window.matchMedia('(max-width:700px)'), VV = (m) => (mqm.matches && VIEWM[m]) || VIEW[m];
+  const VIEWM = { synth: [V3(0.85, -0.85, 0), V3(1.0, -0.4, 17.5)],   /* телефон: схема синтеза повёрнута вертикально (сверху вниз) */ preg: [V3(79.8, -0.6, -0.4), V3(79.8, 5.85, 10.9)], axis: [V3(40.0, 0.6, 0), V3(40.4, 1.3, 13)] }, mqm = window.matchMedia('(max-width:700px)'), VV = (m) => (mqm.matches && VIEWM[m]) || VIEW[m];
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VIEW.synth[1]);
   const controls = makeControls(camera, VIEW.synth[0]); controls.minDistance = 3; controls.maxDistance = 45;
   const fx = new Sparks(1800, 0.07); scene.add(fx.obj);
@@ -25,7 +25,7 @@ function makeSexhorm() {
   const ANDR = '#5B8CFF', ESTR = '#FF6FA8', PROG = '#F2C14E';
 
   /* ---------- 1. синтез ---------- */
-  const G1 = new THREE.Group(); scene.add(G1);
+  const G1 = new THREE.Group(); scene.add(G1); if (!DK) G1.rotation.z = -Math.PI / 2;   /* телефон: схема вертикально — молекулы крупнее */
   const NODE = {
     chol: { m: 'cholesterol', p: V3(-5.0, 0.35, 0), name: 'холестерин', col: '#E8E0C8' },
     preg: { m: 'pregnenolone', p: V3(-2.55, 1.45, 0), name: 'прегненолон', col: PROG },
@@ -260,7 +260,7 @@ function makeSexhorm() {
   };
   const L1 = () => st.labels && st.mode === 'synth', L2 = () => st.labels && st.mode === 'axis', L3 = () => st.labels && st.mode === 'preg';
   const labels = [
-    ...Object.values(NODE).map((n) => ({ text: n.name, pos: n.p.clone().add(V3(-0.35, -0.82, 0.3)), color: n.col, show: L1 })),
+    ...Object.values(NODE).map((n) => ({ text: n.name, pos: n.p.clone().add(DK ? V3(-0.35, -0.82, 0.3) : V3(0.1, 0.55, 0.3)), color: n.col, show: L1 })),
     ...EDGES.map((e) => { const A = NODE[e.a].p, B = NODE[e.b].p, d = B.clone().sub(A).normalize(), nn = Math.abs(d.x) < 0.2 ? V3(1, 0, 0) : V3(-d.y, d.x, 0).multiplyScalar(d.x > 0 ? 1 : -1); return { text: e.enz, pos: e.mid.clone().addScaledVector(nn, 0.34).add(V3(-0.2, 0, 0.3)), color: e.tag === 'aro' ? ESTR : e.tag === 'fin' ? '#3A6CFF' : '#B8C4D8', show: () => L1() && DK }; }),
     { text: 'общий путь — как в коре надпочечников', pos: V3(-5.4, 2.35, 0.3), color: '#8A90A8', show: L1 },
     { text: 'клетка теки · ЛГ', pos: V3(-5.7, -1.85, 0), color: '#9FB4FF', show: () => L1() && st.sex === 'f' },
@@ -289,6 +289,7 @@ function makeSexhorm() {
     { text: 'антитело IgG (PDB 1IGT)', pos: V3(80 + 1.0, 2.55, -1.0), color: '#7FD6FF', show: L3 },
     { text: 'ХГЧ: α + β', pos: V3(80 + 3.05, 2.15, -1.0), color: '#F2C14E', show: L3 },
   ];
+  if (!DK) labels.forEach((l) => { if ((l.show === L1 || String(l.show).includes('L1()')) && l.pos && l.pos.isVector3) l.pos = V3(l.pos.y, -l.pos.x, l.pos.z); });   /* подписи схемы — вслед за поворотом */
   const dyn = labels.filter((l) => typeof l.pos === 'function'); dyn.forEach((l) => { l.fn = l.pos; l.pos = V3(0, 0, 0); });
   const refs = {};
   function ui(el) {
