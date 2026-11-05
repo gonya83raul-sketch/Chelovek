@@ -1542,7 +1542,7 @@ function makeCell() {
   { const pm = new THREE.InstancedMesh(new THREE.TorusGeometry(0.075, 0.026, 6, 16), phys(0xe7d4ff, { emissive: 0x2a1840 }), poreDirs.length);
     poreDirs.forEach((d, i) => { const p = NUC.clone().addScaledVector(d, NUC_R * 1.01); porePts.push({ p, d }); dummy.position.copy(p); dummy.quaternion.setFromUnitVectors(Z, d); dummy.scale.setScalar(1); dummy.updateMatrix(); pm.setMatrixAt(i, dummy.matrix); });
     scene.add(tag(pm, 'pores')); }
-  ORG.nucleus.anchor = NUC.clone().add(V3(-1.2, 1.25, 1.05)); ORG.nucleus.dist = 9;
+  ORG.nucleus.anchor = NUC.clone().add(V3(-1.2, 1.25, 1.05)); ORG.nucleus.dist = matchMedia('(max-width:700px)').matches ? 11.3 : 9;
   ORG.pores.anchor = NUC.clone().addScaledVector(V3(1, 1.2, -0.4).normalize(), NUC_R); ORG.pores.dist = 4.5;
   const chromMat = phys(0xd27ac0, { roughness: 0.5, emissive: 0x2a0b25 });
   for (let c = 0; c < 30; c++) {
@@ -1717,7 +1717,7 @@ function makeCell() {
   function select(id) {
     if (st.sel) ORG[st.sel].mats.forEach((m) => { m.emissive.copy(m.userData.e0.c); m.emissiveIntensity = m.userData.e0.i; });
     st.sel = id === 'all' ? null : id; st.focusT = 1.8;
-    st.focus = st.sel ? { target: (LBL[st.sel] && LVIS[st.sel] ? LBL[st.sel] : ORG[st.sel].anchor).clone().add(V3(0, st.sel === 'lyso' && matchMedia('(max-width:700px)').matches ? -0.12 * ORG[st.sel].dist : 0, 0)), dist: ORG[st.sel].dist } : { target: V3(0, 0, 0), dist: 22.2 };
+    st.focus = st.sel ? { target: (LBL[st.sel] && LVIS[st.sel] ? LBL[st.sel] : ORG[st.sel].anchor).clone().add(V3(0, st.sel === 'lyso' && matchMedia('(max-width:700px)').matches ? -0.12 * ORG[st.sel].dist : (st.sel === 'nucleus' && !matchMedia('(max-width:700px)').matches ? -0.15 * ORG[st.sel].dist : 0), 0)), dist: ORG[st.sel].dist } : { target: V3(0, 0, 0), dist: 22.2 };
     /* выбран органоид — остальные (кроме мембраны) бледнеют: фон за заголовком и текстом не спорит с ним */
     const mm = (o) => [].concat(o.material || []);
     const keep = new Set(); scene.traverse((o) => { if ((o.isMesh || o.isLine || o.isPoints) && (!st.sel || o.userData.org === st.sel || o.userData.org === 'membrane' || (!o.userData.org && !o.isPoints))) mm(o).forEach((m) => keep.add(m)); });
