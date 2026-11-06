@@ -66,7 +66,7 @@ function makeMitosis() {
       if (s === 'prometa') { CH.forEach((c, i) => set(i, BASE[c.k].x * 0.4 + (c.s ? 0.115 : -0.115), (BASE[c.k].y + metaY(c.k)) / 2, 1, c.s)); P.nuc[0][2] = 0; P.poles = [[-2.2, 0, 0], [2.2, 0, 0]]; P.spindle = 0.8; }
       if (s === 'meta') { CH.forEach((c, i) => set(i, c.s ? 0.115 : -0.115, metaY(c.k), 1, c.s)); P.nuc[0][2] = 0; P.poles = [[-2.2, 0, 0], [2.2, 0, 0]]; P.spindle = 1; }
       if (s === 'ana') { CH.forEach((c, i) => set(i, c.s ? 1.5 : -1.5, metaY(c.k) * 0.7, 1, c.s)); P.nuc[0][2] = 0; P.poles = [[-2.2, 0, 0], [2.2, 0, 0]]; P.spindle = 1; P.memb[0] = [-0.25, 2.5, 1]; P.memb[1] = [0.25, 2.5, 1]; }
-      if (s === 'telo') { CH.forEach((c, i) => set(i, (c.s ? 1.9 : -1.9) + (c.k % 2 ? 0.14 : -0.14), (c.k < 2 ? 0.28 : -0.28) + (c.k % 2 ? 0.1 : -0.1), 0.75)); P.memb[0] = [-1.55, 1.75, 1]; P.memb[1] = [1.55, 1.75, 1]; P.nuc[0] = [-1.9, 0.75, 1]; P.nuc[1] = [1.9, 0.75, 1]; P.poles = [[-2.35, 0.6, 0], [2.35, 0.6, 0]]; P.spindle = 0.25; }
+      if (s === 'telo') { CH.forEach((c, i) => set(i, (c.s ? 1.9 : -1.9) + (c.k - 1.5) * 0.22, 0, 0.75)); P.memb[0] = [-1.55, 1.75, 1]; P.memb[1] = [1.55, 1.75, 1]; P.nuc[0] = [-1.9, 0.75, 1]; P.nuc[1] = [1.9, 0.75, 1]; P.poles = [[-2.35, 0.6, 0], [2.35, 0.6, 0]]; P.spindle = 0.25; }
       return P;
     }
     // мейоз: A — хромосомы 0 (мат.) и 1 (отц.), B — 2 (мат.) и 3 (отц.); в метафазе I пара B ориентирована наоборот — независимое расхождение
@@ -79,7 +79,7 @@ function makeMitosis() {
     if (s === 'telo1') { CH.forEach((c, i) => set(i, side[c.k] * 1.8 + off(c), c.k < 2 ? 0.4 : -0.4, 0.8)); P.cross = true; P.memb[0] = [-1.8, 1.55, 1]; P.memb[1] = [1.8, 1.55, 1]; P.nuc[0][2] = 0; P.poles = [[-2.6, 0.9, 0], [2.6, 0.9, 0]]; }
     if (s === 'meta2' || s === 'ana2') {
       const a2 = s === 'ana2';
-      CH.forEach((c, i) => { const cx = side[c.k] * 1.8; set(i, a2 ? cx + (c.s ? 0.75 : -0.75) : cx + (c.s ? 0.115 : -0.115), (c.k < 2 ? 0.4 : -0.4) * (a2 ? 0.6 : 1), a2 ? 0.55 : 1, (side[c.k] < 0 ? 0 : 2) + c.s); });
+      CH.forEach((c, i) => { const cx = side[c.k] * 1.8; set(i, a2 ? cx + (c.s ? 0.75 : -0.75) + (c.k >= 2 ? 0.2 : -0.2) : cx + (c.s ? 0.115 : -0.115), a2 ? 0 : (c.k < 2 ? 0.4 : -0.4), a2 ? 0.55 : 1, (side[c.k] < 0 ? 0 : 2) + c.s); });
       P.cross = true; P.nuc[0][2] = 0; P.poles = [[-2.75, 0, 0], [-0.85, 0, 0], [0.85, 0, 0], [2.75, 0, 0]]; P.spindle = a2 ? 0.3 : 1;
       P.memb = a2 ? [[-2.55, 0.8, 1], [-1.05, 0.8, 1], [1.05, 0.8, 1], [2.55, 0.8, 1]] : [[-1.8, 1.55, 1], [1.8, 1.55, 1], [-1.8, 1.55, 0], [1.8, 1.55, 0]];
       if (a2) P.nuc = [[-2.55, 0.45, 1], [-1.05, 0.45, 1], [1.05, 0.45, 1], [2.55, 0.45, 1]];
@@ -89,7 +89,7 @@ function makeMitosis() {
   /* кроссинговер: внутренние сестры гомологов обмениваются нижними плечами (цветом) */
   function cross(on) { [[1, 2], [5, 6]].forEach(([a, b]) => { CH[a].dn.material.color.set(on ? CH[b].col : CH[a].col); CH[a].dn.material.emissive.set(on ? CH[b].col : CH[a].col); CH[b].dn.material.color.set(on ? CH[a].col : CH[b].col); CH[b].dn.material.emissive.set(on ? CH[a].col : CH[b].col); }); }
   let crossed = false;
-  function setMode(m) { st.mode = m; st.stage = 0; st.stT = 0; st.auto = true; refs.modeSeg && refs.modeSeg.sync(); ringG.visible = m === 'cycle'; st.fly = m === 'cycle' ? VIEW : flyTarget(VIEW.target.clone().add(V3(0, 0.3, 0)), VIEW.pos.clone().setZ(DK ? 11.5 : 11).add(V3(0, 0.3, 0))); st.msg = null; refs.rebuild && refs.rebuild(); refs.setInfo && refs.setInfo(); }
+  function setMode(m) { st.mode = m; st.stage = 0; st.stT = 0; st.auto = true; refs.modeSeg && refs.modeSeg.sync(); ringG.visible = m === 'cycle'; st.fly = m === 'cycle' ? VIEW : flyTarget(VIEW.target.clone().add(V3(0, DK ? -0.1 : 0.3, 0)), VIEW.pos.clone().setZ(DK ? 13.7 : 11).add(V3(0, DK ? -0.1 : 0.3, 0))); st.msg = null; refs.rebuild && refs.rebuild(); refs.setInfo && refs.setInfo(); }
   function setStage(i, user) { st.stage = i; st.stT = 0; if (user) st.auto = false; refs.stSeg && refs.stSeg.sync(); refs.setInfo && refs.setInfo(); if (refs.autoT) refs.autoT.sync && refs.autoT.sync(); }
   const LR = (a, b, k) => a + (b - a) * k;
   function update(dt) {
@@ -132,7 +132,7 @@ function makeMitosis() {
     { text: 'ядро', pos: () => nucl[0].c.clone().add(V3(0.9, 1.05, 0)), color: '#C79BFF', show: () => st.labels && nucl[0].op > 0.4 },
     { text: 'клеточная мембрана', pos: () => memb[0].c.clone().add(V3(-0.9, -1.3, 0)), color: '#9CC8FF', left: true, show: () => st.labels && st.mode === 'cycle' },
     { text: 'центросома', pos: () => poles[0].p.clone().add(V3(-0.1, 0.25, 0)), color: '#9BE8C6', left: true, show: () => st.labels && st.mode !== 'cycle' && st.stage > 0 && !(st.mode === 'meiosis' && st.stage >= 5) },
-    { text: 'веретено деления', pos: () => poles[1].p.clone().lerp(V3(0, 0, 0), 0.4).add(V3(0, 0.55, 0)), color: '#9BE8C6', show: () => st.labels && spMat.opacity > 0.4 && st.mode !== 'cycle' },
+    { text: 'веретено деления', pos: () => poles[1].p.clone().lerp(V3(0, 0, 0), 0.4).add(V3(1.1, -1.6, 0)), color: '#9BE8C6', show: () => st.labels && spMat.opacity > 0.4 && st.mode !== 'cycle' },
     { text: 'метафазная пластинка', pos: V3(0, 1.45, 0), color: '#F2C14E', show: () => st.labels && ((st.mode === 'mitosis' && st.stage === 3) || (st.mode === 'meiosis' && st.stage === 2)) },
     { text: 'сестринские хроматиды', pos: () => CH[0].pos.clone().add(V3(0.1, 0.8, 0)), color: '#FF9AA8', show: () => st.labels && st.mode === 'mitosis' && st.stage >= 1 && st.stage <= 3 },
     { text: 'гомологи: от мамы и от папы', pos: () => CH[1].pos.clone().lerp(CH[2].pos, 0.5).add(V3(0, 0.75, 0)), color: '#E8E0F0', show: () => st.labels && st.mode === 'meiosis' && (st.stage === 1 || st.stage === 2) },
