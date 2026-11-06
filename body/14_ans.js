@@ -9,7 +9,7 @@ function makeAns() {
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x07070b); scene.environment = envTex;
   labLights(scene, 0xffc070);
   const DK = !matchMedia('(max-width:700px)').matches;
-  const VIEW = { body: DK ? [V3(-1.9, 2.0, 0), V3(-0.6, 2.45, 11.2)] : [V3(0, 1.55, 0), V3(0.5, 2.0, 11.2)], chem: DK ? [V3(40 - 1.0, 0.1, 0), V3(40 - 1.0, 0.6, 10.2)] : [V3(40, -0.1, 0), V3(40, 0.5, 10.5)] };
+  const VIEW = { body: DK ? [V3(-0.8, 2.0, 0), V3(0.5, 2.45, 11.2)] : [V3(0, 1.55, 0), V3(0.5, 2.0, 11.2)], chem: DK ? [V3(40 - 1.0, 0.1, 0), V3(40 - 1.0, 0.6, 10.2)] : [V3(40, -0.1, 0), V3(40, 0.5, 10.5)] };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 200); camera.position.copy(VIEW.body[1]);
   const controls = makeControls(camera, VIEW.body[0]); controls.minDistance = 2; controls.maxDistance = 30;
   const fx = new Sparks(1400, 0.045); scene.add(fx.obj);
@@ -33,7 +33,7 @@ function makeAns() {
   org.saliv = new THREE.Mesh(ell3(0.08, 0.06, 0.05, O.saliv), mat('#E8C08A')); scene.add(org.saliv);
   org.heart = new THREE.Mesh(ell3(0.2, 0.24, 0.18), mat('#E0505A', { e: 0.18 })); org.heart.position.copy(O.heart); org.heart.rotation.z = -0.35; scene.add(org.heart);
   org.lungs = [O.lungL, O.lungR].map((p) => { const m = new THREE.Mesh(ell3(0.3, 0.52, 0.28), mat('#E89AA8', { k: 0.5, op: 0.45 })); m.position.copy(p); scene.add(m); return m; });
-  const bronch = tubeTo([V3(0, 3.0, 0.05), V3(0, 2.62, 0.05), V3(-0.28, 2.42, 0.02)], 0.03, '#E8DCC8'); tubeTo([V3(0, 2.62, 0.05), V3(0.3, 2.42, 0.02)], 0.03, '#E8DCC8');
+  const bronch = tubeTo([V3(0, 3.0, 0.05), V3(0, 2.62, 0.05), V3(-0.28, 2.42, 0.02)], 0.03, '#E8DCC8'); const bronchR = tubeTo([V3(0, 2.62, 0.05), V3(0.3, 2.42, 0.02)], 0.03, '#E8DCC8'); [bronch, bronchR].forEach((b) => { b.m.geometry.translate(0, -2.62, -0.05); b.m.position.set(0, 2.62, 0.05); });
   org.stom = new THREE.Mesh(ell3(0.22, 0.16, 0.13), mat('#E8A08A')); org.stom.position.copy(O.stom); org.stom.rotation.z = 0.5; scene.add(org.stom);
   org.liver = new THREE.Mesh(ell3(0.34, 0.17, 0.2), mat('#9A3A3A')); org.liver.position.copy(O.liver); scene.add(org.liver);
   const gutC = new THREE.CatmullRomCurve3(Array.from({ length: 14 }, (_, i) => V3(Math.sin(i * 1.3) * 0.32, 1.05 - i * 0.045, 0.2 + Math.cos(i * 1.3) * 0.06)));
@@ -89,7 +89,7 @@ function makeAns() {
     const tb = st.mode === 'fight' ? 1 : st.mode === 'rest' ? -1 : 0; st.bal = LR(st.bal, tb, 1 - Math.exp(-dt * 1.8)); const b = st.bal, sy = Math.max(0, b), pa = Math.max(0, -b);
     const hr = 72 + 50 * sy - 12 * pa; st.hr = hr; st.hrPh += dt * hr / 60 * Math.PI * 2; org.heart.scale.setScalar(1 + 0.08 * Math.max(0, Math.sin(st.hrPh)) ** 3);
     const pr = 0.024 + 0.02 * sy - 0.012 * pa; st.pupil = pr; pupil.scale.setScalar(pr);
-    const br = 1 + 0.2 * Math.sin(t * (1.2 + 1.6 * sy)) * (0.6 + 0.4 * sy); org.lungs.forEach((m) => m.scale.set(br, 1 + (br - 1) * 0.6, br)); bronch.m.scale.setScalar(1 + 0.4 * sy - 0.25 * pa);
+    const br = 1 + 0.2 * Math.sin(t * (1.2 + 1.6 * sy)) * (0.6 + 0.4 * sy); org.lungs.forEach((m) => m.scale.set(br, 1 + (br - 1) * 0.6, br)); [bronch, bronchR].forEach((q) => q.m.scale.set(1 + 0.4 * sy - 0.25 * pa, 1, 1 + 0.4 * sy - 0.25 * pa));   /* толщина бронхов; длина прежняя */
     st.gutPh += dt * (1.5 + 3 * pa) * (1 - 0.85 * sy); const gw = (0.06 + 0.1 * pa) * (1 - 0.8 * sy); org.gut.scale.set(1 + gw * Math.sin(st.gutPh), 1, 1 + gw * Math.cos(st.gutPh * 0.7)); org.stom.scale.setScalar(1 + gw * 0.6 * Math.sin(st.gutPh * 0.8));
     org.blad.scale.setScalar(1 + 0.25 * sy - 0.3 * pa); org.adr.material.emissiveIntensity = 0.25 + 1.2 * sy;
     if (sy > 0.6 && rnd() < dt * 18) fx.spawn(O.adr.clone(), V3((rnd() - 0.5) * 0.4, 0.3 + rnd() * 0.3, 0.2), C.set('#F2D27A'), 0.7, 0.1, 1.2);
@@ -105,10 +105,10 @@ function makeAns() {
   }
   /* ---------- тексты ---------- */
   const TXT = {
-    map: '<b>Вегетативная (автономная) нервная система</b> управляет органами без нашего сознательного участия. <b>Симпатический</b> отдел (оранжевый) выходит из грудных и поясничных сегментов T1–L2 через <b>симпатический ствол</b> — цепочку узлов вдоль позвоночника. <b>Парасимпатический</b> (зелёный) — из ствола мозга (нервы III, VII, IX и <b>блуждающий X</b>) и крестцовых сегментов S2–S4.',
+    map: '<b>Вегетативная нервная система</b> управляет органами без нашего ведома. <b>Симпатический</b> отдел (оранжевый) выходит из сегментов T1–L2 спинного мозга через <b>симпатический ствол</b> — цепочку узлов вдоль позвоночника. <b>Парасимпатический</b> (зелёный) — из ствола мозга (нервы III, VII, IX и <b>блуждающий X</b>) и сегментов S2–S4.',
     fight: '<b>«Бей или беги»</b> — симпатика. Зрачки расширяются, сердце бьётся чаще и сильнее, бронхи расширяются, печень выбрасывает глюкозу, надпочечники — <b>адреналин</b> в кровь. Пищеварение замирает, мочевой пузырь расслабляется: всё, что не помогает выжить прямо сейчас, откладывается.',
     rest: '<b>«Отдыхай и переваривай»</b> — парасимпатика, в основном <b>блуждающий нерв</b>. Пульс замедляется, зрачки сужаются, бронхи немного сужаются, слюна и пищеварительные соки текут, кишка активно перемешивает пищу, мочевой пузырь сокращается. Оба отдела работают всегда, меняется только перевес.',
-    chem: '<b>Два нейрона и медиаторы.</b> Путь из мозга к органу — цепочка из двух нейронов с узлом (ганглием) посередине. В узлах обоих отделов медиатор — <b>ацетилхолин</b> (никотиновые рецепторы). На органе симпатика выделяет <b>норадреналин</b>, парасимпатика — снова ацетилхолин (мускариновые рецепторы). Мозговое вещество надпочечника — видоизменённый узел: оно сразу выпускает адреналин в кровь.',
+    chem: '<b>Два нейрона и медиаторы.</b> Путь от мозга к органу — два нейрона с узлом посередине. В узлах обоих отделов — <b>ацетилхолин</b> (никотиновые рецепторы). На органе симпатика выделяет <b>норадреналин</b>, парасимпатика — ацетилхолин (мускариновые рецепторы). Надпочечник — видоизменённый узел: он выпускает адреналин прямо в кровь.',
   };
   const lb = (text, pos, color, show, left) => ({ text, pos, color, show: () => st.labels && show(), left });
   const B = () => st.mode !== 'chem';
