@@ -28,7 +28,8 @@ for i, fn, name, grp in scenes:
     if grp != '-' and grp != last:
         items.append(f"['#', '{grp}']"); last = grp
     items.append(f"['{i}', '{name}']")
-bio_sc = [sc for sc in scenes if not sc[3].startswith('@body') and not sc[3].startswith('@cell')]
+bio_sc = [sc for sc in scenes if not sc[3].startswith('@body') and not sc[3].startswith('@cell') and not sc[3].startswith('@brain')]
+brain_sc = [sc for sc in scenes if sc[3].startswith('@brain')]   # сцены раздела «Мозг»: «@brain Группа» — в конец группы
 cell_sc = [sc for sc in scenes if sc[3].startswith('@cell')]   # сцены раздела «Клетка» из файлов
 body_sc = [sc for sc in scenes if sc[3].startswith('@body')]
 items, last = [], None
@@ -38,6 +39,11 @@ for i, fn, name, grp in bio_sc:
     items.append(f"['{i}', '{name}']")
 if bio_sc:
     page = page.replace(c0, c0 + "  { id: 'bio', name: 'Биохимия', scenes: [" + ', '.join(items) + '] },\n')
+for i, fn, name, grp in brain_sc:
+    g = grp[6:].strip(); i0 = page.index("{ id: 'brain', name: 'Мозг', scenes: ["); i1 = page.index('] },', i0)
+    blk = page[i0:i1]; h = blk.index(f"['#', '{g}']"); nx = blk.find("['#', ", h + 5)
+    tail = blk[:nx] if nx >= 0 else blk; k = tail.rstrip().rstrip(',').rfind(']') + 1
+    blk = blk[:k] + f", ['{i}', '{name}']" + blk[k:]; page = page[:i0] + blk + page[i1:]
 if cell_sc:
     c1 = "[['cell', 'Живая клетка']] },"; assert page.count(c1) == 1
     page = page.replace(c1, "[['cell', 'Живая клетка']" + ''.join(f", ['{i}', '{name}']" for i, fn, name, grp in cell_sc) + '] },')
