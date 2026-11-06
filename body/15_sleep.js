@@ -9,7 +9,7 @@ function makeSleep() {
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x07070b); scene.environment = envTex;
   labLights(scene, 0x9fb4ff);
   const DK = !matchMedia('(max-width:700px)').matches;
-  const VIEW = DK ? [V3(-1.0, -0.35, 0), V3(0.3, 0.2, 8.8)] : [V3(0, -0.55, 0), V3(0.6, 0.0, 9.4)];
+  const VIEW = DK ? [V3(-1.0, -0.35, 0), V3(0.3, 0.2, 8.8)] : [V3(0, -0.55, 0), V3(0.6, 0.0, 6.6)];
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 200); camera.position.copy(VIEW[1]);
   const controls = makeControls(camera, VIEW[0]); controls.minDistance = 2; controls.maxDistance = 20;
   const fx = new Sparks(900, 0.04); scene.add(fx.obj);
@@ -33,14 +33,14 @@ function makeSleep() {
   const moon = new THREE.Mesh(new THREE.SphereGeometry(0.12, 20, 14), new THREE.MeshBasicMaterial({ color: 0xc8d8ff })); scene.add(moon);
   const ray = tube([V3(2.2, 0.6, 0.3), EYE.clone().add(V3(0.12, 0, 0))], '#FFE08A', 0.012, 0.0); ray.m.material.transparent = true;
   /* ---------- гипнограмма: стадии ночи (минуты) ---------- */
-  const NIGHT = [['W', 10], ['N1', 5], ['N2', 20], ['N3', 40], ['N2', 10], ['REM', 10], ['N2', 25], ['N3', 30], ['N2', 15], ['REM', 20], ['N2', 40], ['N3', 10], ['N2', 15], ['REM', 30], ['N2', 45], ['REM', 35], ['N1', 5], ['W', 5], ['N2', 30], ['REM', 30], ['W', 15]];
+  const NIGHT = [['W', 10], ['N1', 5], ['N2', 20], ['N3', 40], ['N2', 10], ['REM', 10], ['N2', 25], ['N3', 30], ['N2', 15], ['REM', 20], ['N2', 40], ['N3', 10], ['N2', 15], ['REM', 30], ['N2', 45], ['REM', 35], ['N1', 5], ['W', 5], ['N2', 30], ['REM', 30], ['N2', 20], ['W', 30]];
   const TOT = NIGHT.reduce((a, [, m]) => a + m, 0), SC = { W: '#F2D27A', REM: '#FF6A8A', N1: '#9FD8E8', N2: '#7FA8FF', N3: '#9F7BFF' }, DEP = { W: 0, REM: 0.3, N1: 0.5, N2: 0.75, N3: 1 };
   const stageAt = (min) => { let a = 0; for (const [s, m] of NIGHT) { if (min < a + m) return s; a += m; } return 'W'; };
   const cycleAt = (min) => { let n = 0, a = 0, prevR = false; for (const [s, m] of NIGHT) { if (min < a) break; if (s === 'REM' && !prevR) n++; prevR = s === 'REM'; a += m; } return Math.min(5, n + 1); };
   /* ---------- суточные кривые (h 0–24) ---------- */
-  const mel = (h, scr) => { const x = ((h + 24 - 21) % 24); const base = x < 10.5 ? Math.sin(Math.PI * x / 10.5) ** 1.5 : 0; return scr && x < 3 ? base * 0.25 : base; };
-  const cort = (h) => { const x = ((h + 24 - 7.5) % 24); return 0.15 + 0.85 * Math.exp(-x / 4) + (x > 20 ? 0.85 * Math.max(0, (x - 20) / 4) : 0) * 0.6; };
-  const temp = (h) => 0.5 - 0.42 * Math.cos(Math.PI * 2 * (h - 17) / 24);
+  const mel = (h, scr) => { const s0 = scr ? 23 : 21, L = scr ? 9.5 : 10.5, x = ((h + 24 - s0) % 24); return (x < L ? Math.sin(Math.PI * x / L) ** 1.5 : 0) * (scr ? 0.8 : 1); };   /* экран вечером: подъём мелатонина позже и ниже */
+  const cort = (h) => { const x = ((h + 24 - 7.5) % 24); return 0.15 + 0.85 * Math.exp(-x / 4) + (x > 19 ? 0.85 * ((x - 19) / 5) ** 2 : 0); };
+  const temp = (h) => 0.5 + 0.42 * Math.cos(Math.PI * 2 * (h - 17) / 24);
   /* ---------- состояние ---------- */
   const st = { t: 0, mode: 'clock', h: 20, min: 0, auto: true, screen: false, labels: true, rot: false, fly: null, msg: null, flow: 0 };
   function setMode(m) { st.mode = m; refs.modeSeg && refs.modeSeg.sync(); st.fly = flyTarget(...VIEW); st.msg = null; refs.rebuild && refs.rebuild(); refs.setInfo && refs.setInfo(); }
@@ -71,7 +71,7 @@ function makeSleep() {
       const x = A.X(st.h / 24); ctx.strokeStyle = '#EFEAE6'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(x, 14); ctx.lineTo(x, hh - 16); ctx.stroke(); return;
     }
     const A = plotAxes(ctx, w, hh, { title: 'гипнограмма: W · REM · N1 · N2 · N3', xl: '8 ч сна' });
-    let a = 0; NIGHT.forEach(([s, m]) => { const x0 = A.X(a / TOT), x1 = A.X((a + m) / TOT), y = A.Y(1 - DEP[s] * 0.9 - 0.05); ctx.fillStyle = SC[s]; ctx.fillRect(x0, y - 2, x1 - x0, 4); a += m; });
+    let a = 0; let py = null; ctx.strokeStyle = 'rgba(255,255,255,.25)'; ctx.lineWidth = 1; NIGHT.forEach(([s, m]) => { const x0 = A.X(a / TOT), x1 = A.X((a + m) / TOT), y = A.Y(1 - DEP[s] * 0.9 - 0.05); if (py !== null) { ctx.beginPath(); ctx.moveTo(x0, py); ctx.lineTo(x0, y); ctx.stroke(); } ctx.fillStyle = SC[s]; ctx.fillRect(x0, y - 2, x1 - x0, 4); py = y; a += m; });
     const x = A.X(st.min / TOT); ctx.strokeStyle = '#EFEAE6'; ctx.beginPath(); ctx.moveTo(x, 14); ctx.lineTo(x, hh - 16); ctx.stroke();
   }
   /* ---------- тексты ---------- */
@@ -129,7 +129,7 @@ function makeSleep() {
     notes: `
       <div><h2>Циркадный ритм</h2>
         <p>Почти у каждой клетки есть свои молекулярные часы (гены CLOCK, BMAL1, PER, CRY — петля обратной связи около 24 ч). Супрахиазматическое ядро синхронизирует их по свету: сетчатка → ретиногипоталамический тракт → СХЯ → (через спинной мозг и верхний шейный узел) → эпифиз. Мелатонин растёт с темнотой, пик — около 2–4 ч ночи.</p>
-        <h3>Сколько спать</h3><p>Взрослым — 7–9 ч, подросткам — 8–10, младенцам — до 14–17. Подростковые часы естественно сдвинуты позже. Цикл сна ≈ 90 мин; за ночь 4–6 циклов: глубокий сон в начале, быстрый — к утру.</p>
+        <h3>Сколько спать</h3><p>Взрослым — 7–9 ч, подросткам — 8–10, новорождённым — 14–17. Подростковые часы естественно сдвинуты позже. Цикл сна ≈ 90 мин; за ночь 4–6 циклов: глубокий сон в начале, быстрый — к утру.</p>
         <h3>Нарушения</h3><ul><li>Бессонница; апноэ сна (остановки дыхания, храп); нарколепсия (нехватка орексина — внезапные засыпания).</li><li>Недосып ухудшает внимание и память, повышает аппетит и риск диабета, ожирения и болезней сердца.</li><li>Помогают постоянный режим, утренний свет, тёмная прохладная спальня, меньше экранов и кофеина вечером.</li></ul></div>
       <div><h2>Условности</h2><ul><li>Голова и мозг упрощены; путь от СХЯ к эпифизу (через спинной мозг и верхний шейный узел) нарисован схематично.</li><li>Кривые мелатонина, кортизола и температуры — типичные формы в условных единицах; гипнограмма — пример одной ночи взрослого.</li><li>Сутки и ночь ускорены; движения глаз и «промывка» мозга показаны наглядно, а не в масштабе.</li></ul></div>
       <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>2</code> режим</li><li><code>R</code> вращение · <code>N</code> подписи</li></ul></div>`,
