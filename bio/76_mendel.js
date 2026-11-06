@@ -9,7 +9,7 @@ function makeMendel() {
   const scene = bioStage({ rim: 0xb0e080 });
   const DK = !matchMedia('(max-width:700px)').matches;
   const GX = { mono: 0, di: 30, abo: 60, sex: 90 };
-  const VIEW = { mono: DK ? [V3(-1.7, -0.05, 0), V3(-1.7, 0.4, 11.0)] : [V3(0, -0.15, 0), V3(0, 0.3, 12.6)], di: DK ? [V3(30 - 1.6, -0.1, 0), V3(30 - 1.6, 0.4, 9.6)] : [V3(30, -0.2, 0), V3(30, 0.3, 11.5)], abo: DK ? [V3(60 - 1.6, 0.0, 0), V3(60 - 1.6, 0.45, 10.4)] : [V3(60, -0.1, 0), V3(60, 0.4, 11.6)], sex: DK ? [V3(90 - 1.6, 0.0, 0), V3(90 - 1.6, 0.45, 10.4)] : [V3(90, -0.1, 0), V3(90, 0.4, 11.6)] };
+  const VIEW = { mono: DK ? [V3(-1.7, -0.05, 0), V3(-1.7, 0.4, 11.0)] : [V3(0, -0.15, 0), V3(0, 0.3, 12.6)], di: DK ? [V3(30 - 1.6, -0.1, 0), V3(30 - 1.6, 0.4, 9.6)] : [V3(30, -0.2, 0), V3(30, 0.3, 11.5)], abo: DK ? [V3(60 - 1.6, 0.0, 0), V3(60 - 1.6, 0.45, 10.4)] : [V3(60, 0.0, 0), V3(60, 0.3, 8.6)], sex: DK ? [V3(90 - 1.6, 0.0, 0), V3(90 - 1.6, 0.45, 10.4)] : [V3(90, 0.0, 0), V3(90, 0.3, 8.6)] };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VIEW.mono[1]);
   const controls = makeControls(camera, VIEW.mono[0]); controls.minDistance = 3; controls.maxDistance = 30;
   const fx = new Sparks(600, 0.05); scene.add(fx.obj);
@@ -25,7 +25,7 @@ function makeMendel() {
   /* ---------- 1. моногибридное: P → F1 → F2 (решётка 2 × 2) ---------- */
   { const X = GX.mono;
     seed(V3(X - 1.3, 2.05, 0), YEL); seed(V3(X + 1.3, 2.05, 0), GRN); seed(V3(X, 1.0, 0), YEL);
-    lab('P: AA (жёлтый)', V3(X - 1.3, 2.4, 0), YEL, 'mono'); lab('aa (зелёный)', V3(X + 1.3, 2.4, 0), GRN, 'mono'); lab('×', V3(X - 0.1, 2.1, 0), '#E8E0F0', 'mono');
+    lab('P: AA (жёлтый)', V3(X - 1.3, 2.4, 0), YEL, 'mono'); lab('P: aa (зелёный)', V3(X + 1.3, 2.62, 0), GRN, 'mono'); lab('×', V3(X - 0.1, 2.1, 0), '#E8E0F0', 'mono');
     lab('F1: все Aa — жёлтые', V3(X + 0.3, 1.05, 0), YEL, 'mono');
     const S = 1.0, G = [['A', 'A'], ['A', 'a'], ['a', 'A'], ['a', 'a']];
     [['A', -0.5], ['a', 0.5]].forEach(([g, dx]) => { lab(g, V3(X + dx * S * 1.0 - 0.05, -0.05, 0), '#E8E0F0', 'mono'); lab(g, V3(X - 1.25 - 0.05, -0.55 - (dx + 0.5) * S, 0), '#E8E0F0', 'mono'); });
@@ -43,9 +43,9 @@ function makeMendel() {
   const phen = (a, b) => { const s = new Set([a, b]); return s.has('A') && s.has('B') ? 'AB' : s.has('A') ? 'A' : s.has('B') ? 'B' : '0'; };
   const aboSeeds = [];
   { const X = GX.abo, S = 1.0; for (let i = 0; i < 4; i++) { const c = V3(X + ((i % 2) - 0.5) * S, -0.45 - Math.floor(i / 2) * S, 0); tile(c, S); const m = seed(c.clone().add(V3(0, 0.08, 0)), '#E8E0D0'); m.geometry = smooth; aboSeeds.push(m); }
-    const pa = seed(V3(X - 1.3, 1.95, 0), '#E8E0D0'), pb = seed(V3(X + 1.3, 1.95, 0), '#E8E0D0'); aboSeeds.push(pa, pb);
+    const pa = seed(V3(X - 1.3, 1.45, 0), '#E8E0D0'), pb = seed(V3(X + 1.3, 1.45, 0), '#E8E0D0'); aboSeeds.push(pa, pb);
     CROSS.forEach((cr) => { const on = () => st.abo === cr.id; const [m, f] = cr.p;
-      lab('мать ' + (phen(m[0], m[1]) === '0' ? '0' : phen(m[0], m[1])) + ' (' + m + ')', V3(X - 1.3, 2.35, 0), ABO[phen(m[0], m[1])], 'abo', on); lab('отец ' + phen(f[0], f[1]) + ' (' + f + ')', V3(X + 1.3, 2.35, 0), ABO[phen(f[0], f[1])], 'abo', on);
+      lab('мать ' + (phen(m[0], m[1]) === '0' ? '0' : phen(m[0], m[1])) + ' (' + m + ')', V3(X - 1.3, 2.35, 0), ABO[phen(m[0], m[1])], 'abo', on, true); lab('отец ' + phen(f[0], f[1]) + ' (' + f + ')', V3(X + 1.3, 2.35, 0), ABO[phen(f[0], f[1])], 'abo', on);
       [0, 1].forEach((j) => { lab(m[j], V3(X - 1.25, -0.45 - j * S, 0), '#E8E0F0', 'abo', on); lab(f[j], V3(X + (j - 0.5) * S - 0.05, 0.05, 0), '#E8E0F0', 'abo', on); });
       for (let i = 0; i < 4; i++) { const a = m[Math.floor(i / 2)], b = f[i % 2], ph = phen(a, b); lab(ph, V3(X + ((i % 2) - 0.5) * S - 0.05, -0.83 - Math.floor(i / 2) * S, 0.1), ABO[ph], 'abo', on); } }); }
   /* ---------- 4. сцеплено с полом: дальтонизм (ген на X) ---------- */
@@ -54,16 +54,17 @@ function makeMendel() {
     sexSeeds.push(seed(V3(X - 1.3, 1.95, 0), '#7FD6FF'), seed(V3(X + 1.3, 1.95, 0), '#7FD6FF'));
     ['X', 'Xᵈ'].forEach((g, j) => lab(g, V3(X - 1.3, -0.45 - j * S, 0), '#E8E0F0', 'sex'));
     [['X', 'Y'], ['Xᵈ', 'Y']].forEach(([g0, g1], k) => { const on = () => (st.dad === 'cb') === (k === 1); lab(g0, V3(X - 0.55, 0.05, 0), '#E8E0F0', 'sex', on); lab(g1, V3(X + 0.45, 0.05, 0), '#E8E0F0', 'sex', on);
-      lab(k ? 'отец XᵈY — дальтоник' : 'отец XY — здоров', V3(X + 1.3, 2.35, 0), k ? '#F2A040' : '#7FD6FF', 'sex', on); });
-    lab('мать XXᵈ — носительница', V3(X - 1.3, 2.35, 0), '#B8E0F0', 'sex');
-    const KIDS = { ok: ['дочь XX', 'сын XY', 'дочь XXᵈ — носит.', 'сын XᵈY — дальтоник'], cb: ['дочь XXᵈ — носит.', 'сын XY', 'дочь XᵈXᵈ — дальтоник', 'сын XᵈY — дальтоник'] };
-    Object.entries(KIDS).forEach(([d, arr]) => arr.forEach((t, i) => lab(t, V3(X + ((i % 2) - 0.5) * S - 0.45, -0.83 - Math.floor(i / 2) * S, 0.1), /дальтоник/.test(t) ? '#F2A040' : /носит/.test(t) ? '#B8E0F0' : '#7FD6FF', 'sex', () => st.dad === d))); }
+      lab(k ? 'отец XᵈY — дальтоник' : 'отец XY — здоров', V3(X + 1.3, DK ? 2.35 : 1.45, 0), k ? '#F2A040' : '#7FD6FF', 'sex', on); });
+    lab('мать XXᵈ — носительница', V3(X - 1.3, 2.35, 0), '#B8E0F0', 'sex', null, true);
+    const KIDS = { ok: ['♀ XX', '♂ XY', '♀ XXᵈ — носит.', '♂ XᵈY — дальт.'], cb: ['♀ XXᵈ — носит.', '♂ XY', '♀ XᵈXᵈ — дальт.', '♂ XᵈY — дальт.'] };
+    Object.entries(KIDS).forEach(([d, arr]) => arr.forEach((t, i) => lab(t, V3(X + ((i % 2) - 0.5) * S - 0.45, -0.83 - Math.floor(i / 2) * S, 0.1), /дальт/.test(t) ? '#F2A040' : /носит/.test(t) ? '#B8E0F0' : '#7FD6FF', 'sex', () => st.dad === d))); }
   /* ---------- состояние ---------- */
   const st = { t: 0, mode: 'mono', abo: 'a0b0', dad: 'ok', trial: null, labels: true, rot: false, fly: null, msg: null };
   function setMode(m) { st.mode = m; refs.modeSeg && refs.modeSeg.sync(); st.fly = flyTarget(...VIEW[m]); st.msg = null; refs.rebuild && refs.rebuild(); refs.setInfo && refs.setInfo(); }
-  function applyAbo() { const cr = CROSS.find((c) => c.id === st.abo), [m, f] = cr.p; for (let i = 0; i < 4; i++) aboSeeds[i].material.color.set(ABO[phen(m[Math.floor(i / 2)], f[i % 2])]).multiplyScalar(0.7), aboSeeds[i].material.emissive.set(ABO[phen(m[Math.floor(i / 2)], f[i % 2])]); aboSeeds[4].material.color.set(ABO[phen(m[0], m[1])]).multiplyScalar(0.7); aboSeeds[5].material.color.set(ABO[phen(f[0], f[1])]).multiplyScalar(0.7); }
-  function applySex() { const cb = st.dad === 'cb'; const col = cb ? ['#B8E0F0', '#7FD6FF', '#F2A040', '#F2A040'] : ['#7FD6FF', '#7FD6FF', '#B8E0F0', '#F2A040']; col.forEach((c, i) => { sexSeeds[i].material.color.set(c).multiplyScalar(0.7); sexSeeds[i].material.emissive.set(c); }); sexSeeds[5].material.color.set(cb ? '#F2A040' : '#7FD6FF').multiplyScalar(0.7); }
-  function grow() { let y = 0; for (let i = 0; i < 100; i++) if (rnd() < 0.75) y++; st.trial = [y, 100 - y]; for (let i = 0; i < 14; i++) fx.spawn(V3(GX.mono + (rnd() - 0.5) * 2, -1.1 + (rnd() - 0.5) * 1.6, 0.3), V3(0, 0.4, 0), new THREE.Color(rnd() < 0.75 ? YEL : GRN), 0.6, 0.2, 1.0); st.msg = `<b>Опыт: 100 горошин из F2.</b> Жёлтых — ${y}, зелёных — ${100 - y} (ожидается 75 : 25). Мендель вырастил 8023 горошины и получил 6022 : 2001 = 3,01 : 1. Законы наследования вероятностные — чем больше потомков, тем точнее соотношение.`; refs.setInfo(); }
+  function applyAbo() { const cr = CROSS.find((c) => c.id === st.abo), [m, f] = cr.p; for (let i = 0; i < 4; i++) aboSeeds[i].material.color.set(ABO[phen(m[Math.floor(i / 2)], f[i % 2])]).multiplyScalar(0.7), aboSeeds[i].material.emissive.set(ABO[phen(m[Math.floor(i / 2)], f[i % 2])]); aboSeeds[4].material.color.set(ABO[phen(m[0], m[1])]).multiplyScalar(0.7); aboSeeds[5].material.color.set(ABO[phen(f[0], f[1])]).multiplyScalar(0.7); aboSeeds[4].material.emissive.set(ABO[phen(m[0], m[1])]); aboSeeds[5].material.emissive.set(ABO[phen(f[0], f[1])]); }
+  function applySex() { const cb = st.dad === 'cb'; sexSeeds[4].material.color.set('#B8E0F0').multiplyScalar(0.7); sexSeeds[4].material.emissive.set('#B8E0F0'); const col = cb ? ['#B8E0F0', '#7FD6FF', '#F2A040', '#F2A040'] : ['#7FD6FF', '#7FD6FF', '#B8E0F0', '#F2A040']; col.forEach((c, i) => { sexSeeds[i].material.color.set(c).multiplyScalar(0.7); sexSeeds[i].material.emissive.set(c); }); sexSeeds[5].material.color.set(cb ? '#F2A040' : '#7FD6FF').multiplyScalar(0.7); sexSeeds[5].material.emissive.set(cb ? '#F2A040' : '#7FD6FF'); sexSeeds[4].material.color.set('#B8E0F0').multiplyScalar(0.7); sexSeeds[4].material.emissive.set('#B8E0F0'); }
+  const crop = []; { const g = new THREE.SphereGeometry(0.055, 10, 8); for (let i = 0; i < 100; i++) { const m = new THREE.Mesh(g, mat(YEL)); m.position.set(GX.mono + 1.55 + (i % 10) * 0.13, -0.15 - Math.floor(i / 10) * 0.13, 0); m.visible = false; scene.add(m); crop.push(m); } }
+  function grow() { let y = 0; for (let i = 0; i < 100; i++) if (rnd() < 0.75) y++; st.trial = [y, 100 - y]; crop.forEach((m, i) => { m.visible = true; const c = i < y ? YEL : GRN; m.material = mat(c); }); for (let i = 0; i < 14; i++) fx.spawn(V3(GX.mono + (rnd() - 0.5) * 2, -1.1 + (rnd() - 0.5) * 1.6, 0.3), V3(0, 0.4, 0), new THREE.Color(rnd() < 0.75 ? YEL : GRN), 0.6, 0.2, 1.0); st.msg = `<b>Опыт: 100 горошин из F2.</b> Жёлтых — ${y}, зелёных — ${100 - y} (ожидается 75 : 25). Мендель вырастил 8023 горошины и получил 6022 : 2001 = 3,01 : 1. Законы наследования вероятностные — чем больше потомков, тем точнее соотношение.`; refs.setInfo(); }
   function update(dt) { st.t += dt; controls.autoRotate = st.rot; controls.autoRotateSpeed = 0.4; flyStep(st, camera, controls, dt); seeds.forEach((m, i) => { m.rotation.y += dt * 0.3 * (i % 2 ? 1 : -1); }); fx.update(dt); }
   /* ---------- тексты ---------- */
   const TXT = {
