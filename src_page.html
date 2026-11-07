@@ -95,6 +95,12 @@ button,select{font-family:inherit}
 .lbl{position:absolute;left:0;top:0;font:500 12px/1.2 var(--f-body);letter-spacing:.005em;color:#E2DCE0;white-space:nowrap;display:flex;align-items:center;gap:6px;text-shadow:0 1px 6px #000,0 0 2px #000;will-change:transform}
 .lbl::before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor;flex:none}
 .lbl.l-left{flex-direction:row-reverse}
+/* выноска: подпись сдвинута с точки (чтобы не налезать на соседнюю) — тонкая линия от неё к своей точке */
+.lbl::after{content:"";position:absolute;left:2px;top:50%;width:1px;height:0;background:currentColor;opacity:.6}
+.lbl.lead::after{top:var(--lt);height:var(--lh)}
+.lbl.l-left::after{left:auto;right:2px}
+.labels.bg .lbl::after{left:7px}
+.labels.bg .lbl.l-left::after{left:auto;right:9px}
 .labels.bg .lbl{background:rgba(6,7,10,.58);padding:1px 7px 1px 5px;border-radius:7px}
 
 /* консоль управления */
@@ -10564,6 +10570,7 @@ function updateLabels() {
     for (const gg of [geo(left0), geo(!left0)]) { for (const d of [0, el._on && el._left === gg.lt ? el._dy || 0 : 0, -lh, lh, -2 * lh, 2 * lh]) { const r = [gg.x0, y + d - lh / 2, gg.x1, y + d + lh / 2]; if (free(r)) { dy = d; g = gg; placed.push(r); break; } } if (g) break; }
     if (dy === null) { if (el._on !== false) { el.style.opacity = '0'; el._on = false; } return; }
     const left = g.lt, xs = g.xs;
+    if ((el._lead || 0) !== dy) { el._lead = dy; el.classList.toggle('lead', dy !== 0); if (dy) { el.style.setProperty('--lh', Math.abs(dy) + 'px'); el.style.setProperty('--lt', dy > 0 ? `calc(50% - ${dy}px)` : '50%'); } }
     el._on = true; el._dy = dy; el.style.opacity = String(op); el._x = xs; el._y = y + dy; el._op = op;   // _x/_y/_op — для записи видео
     if (el._left !== left) { el.classList.toggle('l-left', left); el._left = left; }
     el.style.transform = left ? `translate(${xs.toFixed(1)}px, ${(y + dy).toFixed(1)}px) translate(calc(3px - 100%),-50%)` : `translate(${xs.toFixed(1)}px, ${(y + dy).toFixed(1)}px) translate(-3px,-50%)`;
