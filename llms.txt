@@ -67,6 +67,7 @@
 - [Влечение и сексуальное здоровье](https://gonya83raul-sketch.github.io/Chelovek/shealth.html): Откуда берётся половое влечение, какие системы мозга и гормоны им управляют, и как сделать сексуальные контакты безопасными: инфекции, контрацепция и согласие.
 - [Цикл полового ответа](https://gonya83raul-sketch.github.io/Chelovek/sresp.html): Как мозг, вегетативная нервная система, сосуды и гормоны согласованно проводят тело через четыре фазы полового ответа — от возбуждения до разрешения.
 - [Грудная клетка и молочная железа](https://gonya83raul-sketch.github.io/Chelovek/chest.html): Костный каркас, который защищает сердце и лёгкие и помогает дышать, и устройство молочной железы — от долек до протоков и гормонов кормления.
+- [Гортань и голос](https://gonya83raul-sketch.github.io/Chelovek/larynx.html): Хрящевая коробка размером с грецкий орех: открывает путь воздуху, захлопывается при глотании и превращает выдох в голос — две складки слизистой колеблются сотни раз в секунду.
 
 ## Мозг
 - [Строение нейрона](https://gonya83raul-sketch.github.io/Chelovek/soma.html): Тело нейрона в разрезе: ядро, субстанция Ниссля, аппарат Гольджи, митохондрии и нити цитоскелета. Сигналы с синапсов сходятся к аксонному холмику, где решается, будет ли импульс.
@@ -159,6 +160,7 @@
 - [Desire and sexual health](https://gonya83raul-sketch.github.io/Chelovek/shealth.en.html): Where sexual desire comes from, which brain systems and hormones control it, and how to make sexual contact safe: infections, contraception and consent.
 - [Sexual response cycle](https://gonya83raul-sketch.github.io/Chelovek/sresp.en.html): How the brain, the autonomic nervous system, blood vessels and hormones work together to carry the body through the four phases of the sexual response — from excitement to resolution.
 - [Chest and breast](https://gonya83raul-sketch.github.io/Chelovek/chest.en.html): The bony frame that protects the heart and lungs and helps us breathe, and how the breast is built — from lobules to ducts and the hormones of breastfeeding.
+- [Larynx and voice](https://gonya83raul-sketch.github.io/Chelovek/larynx.en.html): A box of cartilage the size of a walnut: it opens the way for air, snaps shut when you swallow, and turns your breath into a voice — two folds of mucosa vibrating hundreds of times a second.
 
 ### Brain
 - [Neuron structure](https://gonya83raul-sketch.github.io/Chelovek/soma.en.html): The neuron cell body in section: nucleus, Nissl substance, Golgi apparatus, mitochondria and cytoskeletal filaments.
