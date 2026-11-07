@@ -104,6 +104,11 @@ function makeSkull() {
   const BA = V3(MX, 16.22, 0.42);
   function babyPos(x, y, z, out) {
     const sm = (a, b, v) => { const t = Math.min(1, Math.max(0, (v - a) / (b - a))); return t * t * (3 - 2 * t); };
+    {   // зубов у новорождённого нет: полосу зубов у линии смыкания сжимаем в низкие десневые валики
+      const dy = y - occl(z), a = Math.abs(dy), sg = Math.sign(dy), wt = sm(0.28, 0.45, z);
+      const sh = a < 0.1 ? a * 0.7 : 0.07 * Math.max(0, 1 - (a - 0.1) / 0.15);
+      y -= sg * sh * wt;
+    }
     const w = sm(16.36, 15.95, y) * sm(0.02, 0.38, z);
     const k = 1 - 0.45 * w;
     out.set(BA.x + (x - BA.x) * k, BA.y + (y - BA.y) * k, BA.z + (z - BA.z) * (1 - 0.5 * w));
@@ -147,13 +152,42 @@ function makeSkull() {
       }
       lab = nl;
     }
-    const triKey = (a, b, c) => { const A = lab[a], B = lab[b], C = lab[c]; return A && (A === B || A === C) ? A : B && B === C ? B : A || B || C; };
-    const tris = {}, allT = [], tk = [];
-    for (let t = 0; t < IX.length; t += 3) { const k = triKey(IX[t], IX[t + 1], IX[t + 2]); tk.push(k); if (!k) continue; (tris[k] = tris[k] || []).push(IX[t], IX[t + 1], IX[t + 2]); if (k !== 'mand') allT.push(IX[t], IX[t + 1], IX[t + 2]); }
+    // треугольники делим по костям через середины рёбер: граница и шов идут ровнее, чем по краям крупных треугольников скана
+    const nrmA = new Float32Array(N * 3); { const gg = g.clone(); gg.computeVertexNormals(); nrmA.set(gg.attributes.normal.array); }
+    const EX = [], EXN = [], exLab = [], emid = new Map();
+    const gx = (v) => (v < N ? P.getX(v) : EX[(v - N) * 3]), gy = (v) => (v < N ? P.getY(v) : EX[(v - N) * 3 + 1]), gz = (v) => (v < N ? P.getZ(v) : EX[(v - N) * 3 + 2]);
+    const gn = (v, i) => (v < N ? nrmA[v * 3 + i] : EXN[(v - N) * 3 + i]);
+    const labOf = (v) => (v < N ? lab[v] : exLab[v - N]);
+    const addV = (vs) => {
+      const i = N + EX.length / 3, n = [0, 0, 0];
+      for (const c of [gx, gy, gz]) EX.push(vs.reduce((s, v) => s + c(v), 0) / vs.length);
+      vs.forEach((v) => { for (let k = 0; k < 3; k++) n[k] += nrmA[v * 3 + k]; });
+      const l = Math.hypot(n[0], n[1], n[2]) || 1; EXN.push(n[0] / l, n[1] / l, n[2] / l); exLab.push(vs.map((v) => lab[v]).find(Boolean) || null); return i;
+    };
+    const mid = (a, b) => { const key = a < b ? a + '_' + b : b + '_' + a; let i = emid.get(key); if (i === undefined) { i = addV([a, b]); emid.set(key, i); } return i; };
+    const PAIR = (k) => k && BN[k] && (BN[k].n === 2 || k === 'front') && k !== 'conch';
+    const vk = lab.map((k, v) => (PAIR(k) ? k + (P.getX(v) > MX ? 'L' : 'R') : k));
+    const base = (k) => (k && !BN[k] ? k.slice(0, -1) : k);
+    const SKIP = { mand: 1, vom: 1, conch: 1 };
+    const tris = {}, allT = [], sut = [], met = [];
+    const put = (key, a, b, c) => { const k = base(key); if (!k) return; (tris[k] = tris[k] || []).push(a, b, c); if (k !== 'mand') allT.push(a, b, c); };
+    const seg = (k1, k2, a, b) => { const b1 = base(k1), b2 = base(k2); if (!b1 || !b2 || SKIP[b1] || SKIP[b2]) return; (b1 === 'front' && b2 === 'front' ? met : sut).push(a, b); };
+    for (let t = 0; t < IX.length; t += 3) {
+      let a = IX[t], b = IX[t + 1], c = IX[t + 2], A = vk[a], B = vk[b], C = vk[c];
+      if (A === B && B === C) { put(A, a, b, c); continue; }
+      if (A !== B && B !== C && A !== C) {
+        const gc = addV([a, b, c]), ab = mid(a, b), bc = mid(b, c), ca = mid(c, a);
+        put(A, a, ab, gc); put(A, a, gc, ca); put(B, b, bc, gc); put(B, b, gc, ab); put(C, c, ca, gc); put(C, c, gc, bc);
+        seg(A, B, ab, gc); seg(B, C, bc, gc); seg(C, A, ca, gc); continue;
+      }
+      if (A === C) { [a, b, c] = [c, a, b]; [A, B, C] = [C, A, B]; } else if (B === C) { [a, b, c] = [b, c, a]; [A, B, C] = [B, C, A]; }
+      const ac = mid(a, c), bc = mid(b, c);
+      put(A, a, b, bc); put(A, a, bc, ac); put(C, ac, bc, c); seg(A, C, ac, bc);
+    }
     const tmp = V3(0, 0, 0);
     function subGeo(arr, colOf) {
       const map = new Map(), pos = [], bp = [], cl = [];
-      const idx = arr.map((v) => { if (!map.has(v)) { map.set(v, pos.length / 3); pos.push(P.getX(v), P.getY(v), P.getZ(v)); babyPos(P.getX(v), P.getY(v), P.getZ(v), tmp); bp.push(tmp.x, tmp.y, tmp.z); if (colOf) { const c = colOf(v); cl.push(c.r, c.g, c.b); } } return map.get(v); });
+      const idx = arr.map((v) => { if (!map.has(v)) { map.set(v, pos.length / 3); const x = gx(v), y = gy(v), z = gz(v); pos.push(x, y, z); babyPos(x, y, z, tmp); bp.push(tmp.x, tmp.y, tmp.z); if (colOf) { const c = colOf(v); cl.push(c.r, c.g, c.b); } } return map.get(v); });
       const gg = new THREE.BufferGeometry(); gg.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); gg.setIndex(idx); gg.computeVertexNormals();
       if (colOf) gg.setAttribute('color', new THREE.Float32BufferAttribute(cl, 3));
       gg.morphAttributes.position = [new THREE.Float32BufferAttribute(bp, 3)]; return gg;
@@ -163,31 +197,21 @@ function makeSkull() {
       pick.push(m); B.mats.push(m.material); B.meshes.push(m); G.add(m);
       // точка для подписи: ближайшая к «подсказке» вершина этой кости
       const hint = BONE_HINT[k]; let best = 1e9, bi = -1;
-      for (const v of arr) { const d = (P.getX(v) - MX - hint[0]) ** 2 + (P.getY(v) - hint[1]) ** 2 + (P.getZ(v) - hint[2]) ** 2; if (d < best) { best = d; bi = v; } }
-      B.anchor.set(P.getX(bi), P.getY(bi), P.getZ(bi)); B.nrm.set(hint[3], hint[4], hint[5]).normalize();
+      for (const v of arr) { const d = (gx(v) - MX - hint[0]) ** 2 + (gy(v) - hint[1]) ** 2 + (gz(v) - hint[2]) ** 2; if (d < best) { best = d; bi = v; } }
+      B.anchor.set(gx(bi), gy(bi), gz(bi)); B.nrm.set(hint[3], hint[4], hint[5]).normalize();
     });
     // изнанка (видна сквозь глазницы и дыры скана): обычно тёмная, в виде снизу — цветом соседней кости, чуть темнее
     const cream = new THREE.Color(0xf0e6d4), vc = new THREE.Color();
-    const innerCol = (v) => vc.set(lab[v] && BN[lab[v]] ? BN[lab[v]].col : '#cfc3b0').lerp(cream, 0.18).multiplyScalar(0.78);
+    const deep = new THREE.Color(0x4a4038);   // изнанка свода (видна сквозь большое затылочное отверстие) — приглушённая полость
+    const innerCol = (v) => { const k = labOf(v), y = gy(v), t = Math.min(1, Math.max(0, (y - 15.98) / 0.3)); return vc.set(k && BN[k] ? BN[k].col : '#cfc3b0').lerp(cream, 0.18).multiplyScalar(0.78).lerp(deep, t * t * (3 - 2 * t)); };
     st.innerDark = new THREE.MeshBasicMaterial({ color: 0x2a211b, side: THREE.BackSide });
     st.innerLit = new THREE.MeshLambertMaterial({ vertexColors: true, side: THREE.BackSide });
     const inner = new THREE.Mesh(subGeo(allT, innerCol), st.innerDark); inner.morphTargetInfluences = [0]; G.add(inner); st.inner = inner;
-    // швы: рёбра между треугольниками разных костей (парные кости — по сторонам), чуть над поверхностью
-    const nrmA = new Float32Array(N * 3); { const gg = g.clone(); gg.computeVertexNormals(); nrmA.set(gg.attributes.normal.array); }
-    const side = (k, t) => (BN[k] && (BN[k].n === 2 || k === 'front') && k !== 'conch' ? k + ((P.getX(IX[t]) + P.getX(IX[t + 1]) + P.getX(IX[t + 2])) / 3 > MX ? 'L' : 'R') : k);
-    const SKIP = { mand: 1, vom: 1, conch: 1 };
-    const em = new Map();
-    for (let t = 0, f = 0; t < IX.length; t += 3, f++) {
-      const k = tk[f]; if (!k) continue; const sk = side(k, t);
-      for (let e = 0; e < 3; e++) {
-        const a = IX[t + e], b = IX[t + (e + 1) % 3], key = a < b ? a + '_' + b : b + '_' + a;
-        const o = em.get(key); if (o === undefined) em.set(key, sk); else if (o !== sk && o !== null) { em.set(key, null); const ok = !SKIP[o.replace(/[LR]$/, '')] && !SKIP[k]; if (ok) (o.slice(0, 5) === 'front' && sk.slice(0, 5) === 'front' ? (em.met = em.met || []) : (em.sut = em.sut || [])).push(a, b); }
-      }
-    }
-    const lineMesh = (list, mat) => { const sp = [], sb = []; (list || []).forEach((v) => { const o = 0.004; const x = P.getX(v) + nrmA[v * 3] * o, y = P.getY(v) + nrmA[v * 3 + 1] * o, z = P.getZ(v) + nrmA[v * 3 + 2] * o; sp.push(x, y, z); babyPos(x, y, z, tmp); sb.push(tmp.x, tmp.y, tmp.z); });
+    // швы — отрезки границ между костями (парные кости — по сторонам), чуть над поверхностью
+    const lineMesh = (list, mat) => { const sp = [], sb = []; (list || []).forEach((v) => { const o = 0.004; const x = gx(v) + gn(v, 0) * o, y = gy(v) + gn(v, 1) * o, z = gz(v) + gn(v, 2) * o; sp.push(x, y, z); babyPos(x, y, z, tmp); sb.push(tmp.x, tmp.y, tmp.z); });
       const sg = new THREE.BufferGeometry(); sg.setAttribute('position', new THREE.Float32BufferAttribute(sp, 3)); sg.morphAttributes.position = [new THREE.Float32BufferAttribute(sb, 3)];
       const sl = new THREE.LineSegments(sg, mat); sl.morphTargetInfluences = [0]; sutGroup.add(sl); return sl; };
-    st.sutLine = lineMesh(em.sut, sutMat); st.metLine = lineMesh(em.met, sutMat);   // метопический шов — только у новорождённого
+    st.sutLine = lineMesh(sut, sutMat); st.metLine = lineMesh(met, sutMat);   // метопический шов — только у новорождённого
     // роднички: участки поверхности свода вокруг точек схождения швов
     const FPT = { ant: [V3(MX, 17.06, 0.3), 0.2, 0.66], post: [V3(MX, 16.9, -0.62), 0.09, 1], sph: [V3(MX + 0.6, 16.24, 0.52), 0.075, 1], mast: [V3(MX + 0.58, 16.0, -0.22), 0.07, 1] };
     Object.entries(FPT).forEach(([id, [c, r, sx]]) => {
@@ -251,7 +275,7 @@ function makeSkull() {
     if (Math.abs(st.baby - st.babyT) < 0.001) st.baby = st.babyT;
     const b = st.baby;
     pick.forEach((m) => { m.morphTargetInfluences[0] = b; }); if (st.inner) st.inner.morphTargetInfluences[0] = b;
-    if (st.sutLine) { st.sutLine.morphTargetInfluences[0] = b; st.sutLine.visible = st.sut && !st.sel; sutMat.color.setHex(b > 0.5 ? 0x5a3018 : 0x2a1c12); sutMat.opacity = 0.85 - 0.35 * b; if (st.inner) st.inner.material = st.view === 'bottom' ? st.innerLit : st.innerDark; st.metLine.morphTargetInfluences[0] = b; st.metLine.visible = st.sut && b > 0.5; }
+    if (st.sutLine) { st.sutLine.morphTargetInfluences[0] = b; st.sutLine.visible = st.sut && !st.sel; sutMat.color.setHex(b > 0.5 ? 0x5a3018 : 0x2a1c12); sutMat.opacity = 0.85 - 0.45 * b; if (st.inner) st.inner.material = st.view === 'bottom' ? st.innerLit : st.innerDark; st.metLine.morphTargetInfluences[0] = b; st.metLine.visible = st.sut && b > 0.5; }
     const pulse = 0.5 + 0.5 * Math.sin(st.t * 3);
     Object.entries(FONT).forEach(([id, f]) => { f.mesh.morphTargetInfluences[0] = b; f.mesh.material.opacity = b * (st.nsel === id ? 0.75 + 0.2 * pulse : 0.8); f.mesh.material.emissiveIntensity = st.nsel === id ? 0.5 + 0.4 * pulse : 0.35; f.mesh.visible = b > 0.02; });
     Object.values(FOR).forEach((f) => (f.mesh || []).forEach((m) => { m.material.opacity = st.fsel && st.fsel !== f.id ? 0.35 : 0.95; }));
