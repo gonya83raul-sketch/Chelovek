@@ -22,7 +22,7 @@ const SK_BONES = [
 ];
 // отверстия основания черепа (вид снизу): X — от срединной плоскости, z — вперёд (ед. ≈ 10 см)
 const SK_FOR = [
-  { id: 'magn', name: 'Большое затылочное', X: 0, z: -0.12, y: 15.77, col: '#9A7FE0', text: '<b>Большое затылочное отверстие</b> — самое крупное. Через него продолговатый мозг переходит в спинной; рядом проходят позвоночные артерии и корешки добавочного нерва (XI). Его края — в затылочной кости.' },
+  { id: 'magn', name: 'Большое затылочное', X: 0, z: -0.01, y: 15.73, col: '#9A7FE0', text: '<b>Большое затылочное отверстие</b> — самое крупное. Через него продолговатый мозг переходит в спинной; рядом проходят позвоночные артерии и корешки добавочного нерва (XI). Его края — в затылочной кости.' },
   { id: 'hypo', L: 1, name: 'Подъязычный канал', X: 0.13, z: 0.1, col: '#C0B0FF', text: '<b>Подъязычный канал</b> — над мыщелком затылочной кости. Через него выходит подъязычный нерв (XII) — двигательный нерв языка.' },
   { id: 'jug', name: 'Яремное', X: 0.22, z: 0.1, col: '#5A8CFF', text: '<b>Яремное отверстие</b> — между затылочной и височной костями. Через него выходят внутренняя яремная вена (уносит кровь от мозга) и три черепных нерва: языкоглоточный (IX), блуждающий (X) и добавочный (XI).' },
   { id: 'car', L: 1, name: 'Сонный канал', X: 0.25, z: 0.16, col: '#FF5A5A', text: '<b>Сонный канал</b> — в пирамиде височной кости. По нему внутренняя сонная артерия, изогнувшись, входит в полость черепа и несёт кровь к мозгу.' },
@@ -50,10 +50,10 @@ function makeSkull() {
   const MX = 0.11, SC = V3(MX, 16.1, 0.12);
   const OFF = DK ? 0.62 : 0, OFY = DK ? 0 : 0.2;
   const VIEW = {
-    front: flyTarget(SC.clone().add(V3(-OFF, -0.15 + OFY, 0)), SC.clone().add(V3(-OFF, 0.2, 5.3))),
-    side: flyTarget(SC.clone().add(V3(0, -0.15 + OFY, OFF)), SC.clone().add(V3(5.3, 0.25, OFF))),
+    front: flyTarget(SC.clone().add(V3(-OFF, -0.15 + OFY, 0)), SC.clone().add(V3(-OFF, 0.2, 5.55))),
+    side: flyTarget(SC.clone().add(V3(0, -0.15 + OFY, OFF)), SC.clone().add(V3(5.6, 0.25, OFF))),
     top: flyTarget(SC.clone().add(V3(OFF, 0, -0.1 + OFY)), SC.clone().add(V3(OFF, 5.5, -0.35 + OFY))),
-    bottom: flyTarget(SC.clone().add(V3(-OFF, 0, 0.05 + OFY)), SC.clone().add(V3(-OFF, -5.3, 0.2 + OFY))),
+    bottom: flyTarget(SC.clone().add(V3(-OFF, 0, 0.05 + OFY)), SC.clone().add(V3(-OFF, -4.9, 0.2 + OFY))),
     baby: flyTarget(SC.clone().add(V3(-OFF * 0.6, 0.2 + OFY, OFF * 0.55)), SC.clone().add(V3(2.6, 4.1, 3.0))),
     babyAnt: flyTarget(SC.clone().add(V3(-OFF, 0.2, 0.15 - OFY)), SC.clone().add(V3(-OFF + 0.3, 5.8, 1.9 - OFY))),
     babyBack: flyTarget(SC.clone().add(V3(-OFF * 0.6, 0.2 + OFY, -OFF * 0.55)), SC.clone().add(V3(2.6, 3.6, -3.4))),
@@ -137,14 +137,25 @@ function makeSkull() {
       }
       lab = nl;
     }
+    const VB = { temp: 1, par: 1, sph: 1, occ: 1 };   // свод и основание: ещё несколько проходов, чтобы границы шли ровнее
+    for (let it = 0; it < 4; it++) {
+      const nl = lab.slice();
+      for (let i = 0; i < N; i++) {
+        if (!VB[lab[i]]) continue; const cnt = { [lab[i]]: 1 };
+        for (const j of nb[i]) if (VB[lab[j]]) cnt[lab[j]] = (cnt[lab[j]] || 0) + 1;
+        let best = lab[i]; for (const k in cnt) if (cnt[k] > cnt[best]) best = k; nl[i] = best;
+      }
+      lab = nl;
+    }
     const triKey = (a, b, c) => { const A = lab[a], B = lab[b], C = lab[c]; return A && (A === B || A === C) ? A : B && B === C ? B : A || B || C; };
     const tris = {}, allT = [], tk = [];
     for (let t = 0; t < IX.length; t += 3) { const k = triKey(IX[t], IX[t + 1], IX[t + 2]); tk.push(k); if (!k) continue; (tris[k] = tris[k] || []).push(IX[t], IX[t + 1], IX[t + 2]); if (k !== 'mand') allT.push(IX[t], IX[t + 1], IX[t + 2]); }
     const tmp = V3(0, 0, 0);
-    function subGeo(arr) {
-      const map = new Map(), pos = [], bp = [];
-      const idx = arr.map((v) => { if (!map.has(v)) { map.set(v, pos.length / 3); pos.push(P.getX(v), P.getY(v), P.getZ(v)); babyPos(P.getX(v), P.getY(v), P.getZ(v), tmp); bp.push(tmp.x, tmp.y, tmp.z); } return map.get(v); });
+    function subGeo(arr, colOf) {
+      const map = new Map(), pos = [], bp = [], cl = [];
+      const idx = arr.map((v) => { if (!map.has(v)) { map.set(v, pos.length / 3); pos.push(P.getX(v), P.getY(v), P.getZ(v)); babyPos(P.getX(v), P.getY(v), P.getZ(v), tmp); bp.push(tmp.x, tmp.y, tmp.z); if (colOf) { const c = colOf(v); cl.push(c.r, c.g, c.b); } } return map.get(v); });
       const gg = new THREE.BufferGeometry(); gg.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); gg.setIndex(idx); gg.computeVertexNormals();
+      if (colOf) gg.setAttribute('color', new THREE.Float32BufferAttribute(cl, 3));
       gg.morphAttributes.position = [new THREE.Float32BufferAttribute(bp, 3)]; return gg;
     }
     Object.entries(tris).forEach(([k, arr]) => {
@@ -155,7 +166,12 @@ function makeSkull() {
       for (const v of arr) { const d = (P.getX(v) - MX - hint[0]) ** 2 + (P.getY(v) - hint[1]) ** 2 + (P.getZ(v) - hint[2]) ** 2; if (d < best) { best = d; bi = v; } }
       B.anchor.set(P.getX(bi), P.getY(bi), P.getZ(bi)); B.nrm.set(hint[3], hint[4], hint[5]).normalize();
     });
-    const inner = new THREE.Mesh(subGeo(allT), new THREE.MeshBasicMaterial({ color: 0x2a211b, side: THREE.BackSide })); inner.morphTargetInfluences = [0]; G.add(inner); st.inner = inner;
+    // изнанка (видна сквозь глазницы и дыры скана): обычно тёмная, в виде снизу — цветом соседней кости, чуть темнее
+    const cream = new THREE.Color(0xf0e6d4), vc = new THREE.Color();
+    const innerCol = (v) => vc.set(lab[v] && BN[lab[v]] ? BN[lab[v]].col : '#cfc3b0').lerp(cream, 0.18).multiplyScalar(0.78);
+    st.innerDark = new THREE.MeshBasicMaterial({ color: 0x2a211b, side: THREE.BackSide });
+    st.innerLit = new THREE.MeshLambertMaterial({ vertexColors: true, side: THREE.BackSide });
+    const inner = new THREE.Mesh(subGeo(allT, innerCol), st.innerDark); inner.morphTargetInfluences = [0]; G.add(inner); st.inner = inner;
     // швы: рёбра между треугольниками разных костей (парные кости — по сторонам), чуть над поверхностью
     const nrmA = new Float32Array(N * 3); { const gg = g.clone(); gg.computeVertexNormals(); nrmA.set(gg.attributes.normal.array); }
     const side = (k, t) => (BN[k] && (BN[k].n === 2 || k === 'front') && k !== 'conch' ? k + ((P.getX(IX[t]) + P.getX(IX[t + 1]) + P.getX(IX[t + 2])) / 3 > MX ? 'L' : 'R') : k);
@@ -195,7 +211,7 @@ function makeSkull() {
         const p = V3(MX + s * f.X, f.y || 15.8, f.z);
         if (!f.y) { rc.set(V3(p.x, 15.2, p.z), V3(0, 1, 0)); const hit = rc.intersectObjects(skullOnly, false)[0]; p.y = hit && hit.point.y < 16.0 ? hit.point.y - 0.012 : f.yy || 15.8; f.yy = f.yy || p.y; }
         const m = new THREE.Mesh(dotGeo, new THREE.MeshBasicMaterial({ color: f.col, transparent: true, opacity: 0.95, depthTest: false })); m.position.copy(p); m.renderOrder = 5; m.visible = false; forGroup.add(m); f.mesh.push(m);
-        if (s === (f.L ? -1 : 1)) f.pos.copy(p);
+        if (s === (f.L || (!DK && f.id === 'stylo') ? -1 : 1)) f.pos.copy(p);
       });
     });
     st.loaded = true; select(st.sel || 'all'); applyMode(); refs.setInfo && refs.setInfo();
@@ -235,7 +251,7 @@ function makeSkull() {
     if (Math.abs(st.baby - st.babyT) < 0.001) st.baby = st.babyT;
     const b = st.baby;
     pick.forEach((m) => { m.morphTargetInfluences[0] = b; }); if (st.inner) st.inner.morphTargetInfluences[0] = b;
-    if (st.sutLine) { st.sutLine.morphTargetInfluences[0] = b; st.sutLine.visible = st.sut && !st.sel; sutMat.color.setHex(b > 0.5 ? 0x5a3018 : 0x2a1c12); sutMat.opacity = 0.85 - 0.35 * b; if (st.inner) st.inner.material.color.setHex(st.view === 'bottom' ? 0x7a6a5a : 0x2a211b); st.metLine.morphTargetInfluences[0] = b; st.metLine.visible = st.sut && b > 0.5; }
+    if (st.sutLine) { st.sutLine.morphTargetInfluences[0] = b; st.sutLine.visible = st.sut && !st.sel; sutMat.color.setHex(b > 0.5 ? 0x5a3018 : 0x2a1c12); sutMat.opacity = 0.85 - 0.35 * b; if (st.inner) st.inner.material = st.view === 'bottom' ? st.innerLit : st.innerDark; st.metLine.morphTargetInfluences[0] = b; st.metLine.visible = st.sut && b > 0.5; }
     const pulse = 0.5 + 0.5 * Math.sin(st.t * 3);
     Object.entries(FONT).forEach(([id, f]) => { f.mesh.morphTargetInfluences[0] = b; f.mesh.material.opacity = b * (st.nsel === id ? 0.75 + 0.2 * pulse : 0.8); f.mesh.material.emissiveIntensity = st.nsel === id ? 0.5 + 0.4 * pulse : 0.35; f.mesh.visible = b > 0.02; });
     Object.values(FOR).forEach((f) => (f.mesh || []).forEach((m) => { m.material.opacity = st.fsel && st.fsel !== f.id ? 0.35 : 0.95; }));
@@ -244,7 +260,7 @@ function makeSkull() {
   const faces = (p, n) => { camDir.copy(camera.position).sub(p).normalize(); return camDir.dot(n) > 0.2; };
   const labels = [
     ...SK_BONES.map((b) => ({ text: b.name.toLowerCase(), pos: BN[b.id].anchor, color: b.col, left: false, show: () => st.loaded && st.labels && st.mode === 'bones' && (st.sel ? st.sel === b.id : MAJOR[b.id]) && !(b.id === 'mand' && st.view === 'bottom') && faces(BN[b.id].anchor, BN[b.id].nrm) })),
-    ...SK_FOR.map((f) => ({ text: f.name.toLowerCase(), pos: FOR[f.id].pos, color: f.col, left: !!f.L, show: () => st.loaded && st.labels && st.mode === 'base' && (st.fsel ? st.fsel === f.id : DK || PH_FOR[f.id]) })),
+    ...SK_FOR.map((f) => ({ text: f.name.toLowerCase(), pos: FOR[f.id].pos, color: f.col, left: !!f.L || (!DK && f.id === 'stylo'), show: () => st.loaded && st.labels && st.mode === 'base' && (st.fsel ? st.fsel === f.id : DK || PH_FOR[f.id]) })),
     ...SK_FONT.map((f) => ({ text: f.name.toLowerCase() + ' родничок', pos: () => (FONT[f.id] ? FONT[f.id].pos : SC), color: '#FFB8C8', show: () => st.loaded && st.labels && st.mode === 'baby' && st.baby > 0.8 && !!FONT[f.id] && (!st.nsel || st.nsel === f.id) && faces(FONT[f.id].pos, FONT[f.id].pos.clone().sub(SC).normalize()) })),
     { text: 'венечный шов', pos: V3(MX + 0.42, 16.78, 0.42), color: '#E8D8C0', show: () => DK && st.loaded && st.labels && st.sut && st.mode === 'bones' && !st.sel && (st.view === 'side' || st.view === 'top') },
     { text: 'ламбдовидный шов', pos: V3(MX + 0.42, 16.55, -0.6), color: '#E8D8C0', left: true, show: () => DK && st.loaded && st.labels && st.sut && st.mode === 'bones' && !st.sel && st.view === 'side' },
