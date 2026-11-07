@@ -26,7 +26,7 @@ function makeLarynx() {
   labLights(scene, 0x9fc8ff);
   const DK = !matchMedia('(max-width:700px)').matches, OFF = DK ? 2.6 : 0;
   const VIEW = {
-    struct: flyTarget(V3(-OFF * 1.4, DK ? 0.45 : 1.1, 0), DK ? V3(-OFF * 1.4 + 12, 4.2, 14.4) : V3(7.2, 5.0, 10)),
+    struct: flyTarget(V3(-OFF * 1.4, DK ? 0.35 : 1.1, 0), DK ? V3(-OFF * 1.4 + 12, 4.2, 14.4) : V3(7.2, 5.0, 10)),
     glottis: flyTarget(V3(-(DK ? 1.9 : 0), 0.9, 0.1 + (DK ? 0 : -0.5)), V3(-(DK ? 1.9 : 0), 9.8, 1.3 + (DK ? 0 : -0.5))),
     pitch: flyTarget(V3(0, DK ? 0.8 : 1.6, DK ? 3.2 : 0.4), DK ? V3(19, 2.4, 4.0) : V3(15, 3.2, 1.2)),
   };
@@ -185,14 +185,14 @@ function makeLarynx() {
   const inT = (v) => () => inThy.localToWorld(v.clone());
   const labels = [
     lb('подъязычная кость', inT(V3(-1.3, 3.3, 0.35)), P('hyoid').col, () => st.mode === 'struct' && (!st.sel || st.sel === 'hyoid')),
-    lb('надгортанник', () => inThy.localToWorld(st.mode === 'pitch' ? V3(-0.2, 3.4, 0.2) : V3(0.35, 3.75, 0.0)), P('epig').col, () => st.mode !== 'glottis' && (st.sel === 'epig' || (!st.sel && DK))),
+    lb('надгортанник', () => inThy.localToWorld(st.mode === 'pitch' ? V3(-0.35, 2.7, 0.15) : V3(0.35, 3.75, 0.0)), P('epig').col, () => st.mode !== 'glottis' && (st.sel === 'epig' || (!st.sel && DK))),
     lb('щитовидный хрящ', inT(V3(-1.2, 1.6, 0.4)), P('thyroid').col, () => st.mode !== 'glottis' && (!st.sel || st.sel === 'thyroid')),
     lb('кадык', inT(V3(0, 2.0, 1.2)), P('thyroid').col, () => st.mode === 'struct' && st.sel === 'thyroid', true),
     lb('перстневидный хрящ', () => st.mode === 'pitch' ? V3(1.0, -0.95, 1.1) : V3(-0.95, -0.7, 0.55), P('cricoid').col, () => st.mode !== 'glottis' && (!st.sel || st.sel === 'cricoid')),
     lb('черпаловидные хрящи', () => AR[1].g.localToWorld(V3(0, 0.75, 0)), P('aryt').col, () => (!st.sel || st.sel === 'aryt') && (st.mode !== 'pitch' || DK)),
     lb('голосовая складка', () => AR[1].g.localToWorld(AR[1].tip.clone()).lerp(inThy.localToWorld(AC.clone()), 0.5).add(V3(-0.2, 0.05, 0)), '#FFE8E0', () => st.mode === 'glottis' || st.sel === 'folds', true),
     lb('голосовая щель', () => inThy.localToWorld(AC.clone()).lerp(V3(0, 0.75, -0.5), 0.6), '#FFFFFF', () => st.mode === 'glottis' && st.gl !== 'voice'),
-    lb('трахея', V3(-1.0, -2.6, 0.45), P('trach').col, () => st.mode === 'struct' && (!st.sel || st.sel === 'trach')),
+    lb('трахея', V3(-1.0, -2.3, 0.45), P('trach').col, () => st.mode === 'struct' && (!st.sel || st.sel === 'trach')),
     lb('перстнещитовидный сустав', () => V3(1.7, -0.5, -0.5), '#FFFFFF', () => st.mode === 'pitch' && DK),
     lb('исходное положение', V3(1.67, 2.6, -0.3), '#FFFFFF', () => st.mode === 'pitch' && st.pitch > 0.3),
     lb('угол щитовидного хряща', () => inThy.localToWorld(AC.clone()).add(V3(0, 0, 0.1)), P('thyroid').col, () => st.mode === 'glottis'),
@@ -201,7 +201,7 @@ function makeLarynx() {
     lb('межхрящевая щель', V3(0, 0.75, -1.05), '#FFFFFF', () => st.mode === 'glottis' && st.gl === 'whisper'),
     lb('перстнещитовидная мышца', () => MUS.ct[0].position.clone().lerp(MUS.ct2[0].position, 0.5).add(V3(0, 0.35, 0.3)), LX_MUS.ct[1], () => st.mode === 'pitch', true),
     lb('звуковая волна', V3(0, 4.55, 1.4), '#9FD8FF', () => st.mode === 'pitch'),
-    ...['pca', 'lca', 'ia', 'ta'].map((id) => lb(LX_MUS[id][0] + ' мышца', () => MUS[id][0].position.clone(), LX_MUS[id][1], () => st.mode === 'glottis' && LX_GL.find((g) => g.id === st.gl).mus.includes(id))),
+    ...['pca', 'lca', 'ia', 'ta'].map((id) => lb(LX_MUS[id][0] + ' мышца', () => (id === 'lca' || id === 'ta' ? MUS[id][1] : MUS[id][0]).position.clone().add(V3(0, 0, id === 'ta' ? 0.35 : 0)), LX_MUS[id][1], () => { const m = LX_GL.find((g) => g.id === st.gl).mus; return st.mode === 'glottis' && m.includes(id) && (DK || m.length === 1); }, id === 'lca' || id === 'ta')),   // на телефоне три длинные подписи не помещаются — названия есть в тексте
   ];
   labels.forEach((l) => { if (typeof l.pos === 'function') { const f = l.pos; Object.defineProperty(l, 'pos', { get: f }); } });
   Object.defineProperty(labels.find((l) => l.text === 'перстневидный хрящ'), 'left', { get: () => st.mode === 'pitch' });
