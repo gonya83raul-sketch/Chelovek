@@ -51,7 +51,7 @@ function makeSkull() {
   const OFF = DK ? 0.62 : 0, OFY = DK ? 0 : 0.2;
   const VIEW = {
     front: flyTarget(SC.clone().add(V3(-OFF, -0.15 + OFY, 0)), SC.clone().add(V3(-OFF, 0.2, 5.55))),
-    side: flyTarget(SC.clone().add(V3(0, -0.24 + OFY, OFF)), SC.clone().add(V3(5.1, 0.16, OFF))),
+    side: flyTarget(SC.clone().add(V3(0, -0.19 + OFY, OFF)), SC.clone().add(V3(5.1, 0.16, OFF))),
     top: flyTarget(SC.clone().add(V3(OFF, 0, -0.1 + OFY)), SC.clone().add(V3(OFF, 5.75, -0.36 + OFY))),
     bottom: flyTarget(SC.clone().add(V3(-OFF, 0, 0.05 + OFY * 0.4)), SC.clone().add(V3(-OFF, -4.5, 0.2 + OFY * 0.4))),
     babyFront: flyTarget(SC.clone().add(V3(-OFF, 0.25 + OFY, 0)), SC.clone().add(V3(-OFF, 2.7, 4.6))),
@@ -125,6 +125,11 @@ function makeSkull() {
   loadSkeletonStatic(new THREE.Group(), new THREE.MeshBasicMaterial()).then((out) => {
     const head = out.find((m) => { m.geometry.computeBoundingBox(); return m.geometry.boundingBox.max.y > 17; });
     const g = head.geometry, P = g.attributes.position, LB = g.attributes.aLabel, IX = g.index.array, N = P.count;
+    {   // складка скана на темени (кружок из нескольких слоёв): вырезаем участок целиком — вырез закроет гладкий купол
+      const C0 = V3(MX, 16.25, 0.1), cd = V3(MX - 0.09, 17.13, -0.03).sub(C0).normalize(), w = V3(0, 0, 0);
+      const inC = (i) => { w.fromBufferAttribute(P, i).sub(C0); return w.y > 0.6 && w.normalize().dot(cd) > 0.9915; };
+      for (let t = 0; t < IX.length; t += 3) if (inC(IX[t]) && inC(IX[t + 1]) && inC(IX[t + 2])) { IX[t + 1] = IX[t]; IX[t + 2] = IX[t]; }
+    }
     {   // на макушке у скана лишний внутренний слой с вывернутыми треугольниками — убираем его (вырез закроет заплатка)
       const C0 = V3(MX, 16.25, 0.1), a = V3(0, 0, 0), b = V3(0, 0, 0), c = V3(0, 0, 0);
       for (let t = 0; t < IX.length; t += 3) {
@@ -161,6 +166,16 @@ function makeSkull() {
         let best = lab[i]; for (const k in cnt) if (cnt[k] > cnt[best]) best = k; nl[i] = best;
       }
       lab = nl;
+    }
+    {   // мелкие островки чужого цвета (в глазницах) отдаём соседней кости: у каждой кости (по сторонам) остаётся только самый большой кусок
+      const comp = new Int32Array(N).fill(-1), sizes = [], keyOf = (i) => (lab[i] ? lab[i] + (BN[lab[i]] && BN[lab[i]].n === 2 ? (P.getX(i) > MX ? 'L' : 'R') : '') : null);
+      for (let i = 0; i < N; i++) { if (comp[i] >= 0 || !lab[i]) continue; const k = keyOf(i), c = sizes.length, st2 = [i]; comp[i] = c; let n = 0; while (st2.length) { const v = st2.pop(); n++; for (const j of nb[v]) if (comp[j] < 0 && keyOf(j) === k) { comp[j] = c; st2.push(j); } } sizes.push([n, k]); }
+      const big = {}; sizes.forEach(([n, k], c) => { if (!big[k] || n > sizes[big[k]][0]) big[k] = c; });
+      for (let pass = 0; pass < 10; pass++) for (let i = 0; i < N; i++) {
+        const c = comp[i]; if (c < 0 || big[sizes[c][1]] === c || sizes[c][0] > 60) continue;
+        const cnt = {}; for (const j of nb[i]) if (lab[j] && comp[j] !== c) cnt[lab[j]] = (cnt[lab[j]] || 0) + 1;
+        let best = null; for (const k in cnt) if (!best || cnt[k] > cnt[best]) best = k; if (best) { lab[i] = best; comp[i] = -2; }
+      }
     }
     // треугольники делим по костям через середины рёбер: граница и шов идут ровнее, чем по краям крупных треугольников скана
     const nrmA = new Float32Array(N * 3); { const gg = g.clone(); gg.computeVertexNormals(); nrmA.set(gg.attributes.normal.array); }
@@ -204,8 +219,19 @@ function makeSkull() {
       while (!used.has(u) && nextE.has(u) && loop.length < 5000) { used.add(u); const [v, k] = nextE.get(u); loop.push([u, v, k]); u = v; }
       if (loop.length < 3) return;
       const cv = addV(loop.map((e) => e[0])); if (gz(cv) > 0.3) return;   // рот (место смыкания с нижней челюстью) не закрываем — там нёбо
+      if (gy(cv) > 16.8) {   // на своде — гладкий купол из колец по форме черепа, а не плоский веер
+        const C0d = V3(MX, 16.25, 0.1), rOf = (v) => Math.hypot(gx(v) - C0d.x, gy(v) - C0d.y, gz(v) - C0d.z);
+        const rr = loop.reduce((sm, e) => sm + rOf(e[0]), 0) / loop.length;
+        const addP = (x, y, z, rad, k) => { const dx = x - C0d.x, dy = y - C0d.y, dz = z - C0d.z, l = Math.hypot(dx, dy, dz) || 1, i = N + EX.length / 3; EX.push(C0d.x + dx / l * rad, C0d.y + dy / l * rad, C0d.z + dz / l * rad); EXN.push(dx / l, dy / l, dz / l); exLab.push(k); return i; };
+        const c = addP(gx(cv), gy(cv), gz(cv), rr, labOf(cv)), ring = [new Map(), new Map()], T = [2 / 3, 1 / 3];
+        const rv = (j, u) => { if (!ring[j].has(u)) { const t = T[j]; ring[j].set(u, addP(gx(c) + (gx(u) - gx(c)) * t, gy(c) + (gy(u) - gy(c)) * t, gz(c) + (gz(u) - gz(c)) * t, rr + (rOf(u) - rr) * t, labOf(u))); } return ring[j].get(u); };
+        loop.forEach(([u, v, k]) => { const u1 = rv(0, u), v1 = rv(0, v), u2 = rv(1, u), v2 = rv(1, v); put(k, v, u, u1); put(k, v, u1, v1); put(k, v1, u1, u2); put(k, v1, u2, v2); put(k, v2, u2, c); });
+        const cross = loop.filter(([u, v]) => (gx(u) > MX) !== (gx(v) > MX)).map(([u]) => u);   // сагиттальный шов — через купол
+        if (cross.length === 2) sut.push(cross[0], c, c, cross[1]);
+        return;
+      }
       loop.forEach(([u2, v2, k]) => put(k, v2, u2, cv));
-      if (Math.abs(gx(cv) - MX) < 0.08 && gz(cv) > -0.2 && gz(cv) < 0.2 && (!fm || loop.length > fm.n)) fm = { n: loop.length, y: Math.min(...loop.map((e) => gy(e[0]))) };
+      if (gy(cv) < 16.2 && Math.abs(gx(cv) - MX) < 0.08 && gz(cv) > -0.2 && gz(cv) < 0.2 && (!fm || loop.length > fm.n)) fm = { n: loop.length, y: Math.min(...loop.map((e) => gy(e[0]))) };
     });
     if (fm) {   // большое затылочное отверстие — ровный тёмный овал на заплатке
       const eg = new THREE.CircleGeometry(1, 40), ec = [], pp = eg.attributes.position;
@@ -213,6 +239,11 @@ function makeSkull() {
       eg.setAttribute('color', new THREE.Float32BufferAttribute(ec, 3));
       const fmMesh = new THREE.Mesh(eg, new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.DoubleSide }));
       fmMesh.rotation.x = Math.PI / 2; fmMesh.scale.set(0.135, 0.17, 1); fmMesh.position.set(MX, fm.y - 0.006, 0.0); G.add(fmMesh); st.fmMesh = fmMesh;
+      const rim = new THREE.Mesh(new THREE.RingGeometry(1, 1.12, 48), new THREE.MeshBasicMaterial({ color: 0xc9b9d8, side: THREE.DoubleSide, transparent: true, opacity: 0.85 }));
+      rim.position.z = -0.001; fmMesh.add(rim);
+      // затылочные мыщелки — по бокам передней половины отверстия (суставы с атлантом)
+      const conMat = boneMat('#9A7FE0');
+      [-1, 1].forEach((sg) => { const cm = new THREE.Mesh(new THREE.SphereGeometry(1, 20, 14), conMat); cm.scale.set(0.04, 0.028, 0.075); cm.position.set(MX + sg * 0.165, fm.y - 0.012, 0.07); cm.rotation.y = -sg * 0.35; G.add(cm); BN.occ.mats.push(conMat); st.condyles = (st.condyles || []).concat(cm); });
     }
     const tmp = V3(0, 0, 0);
     function subGeo(arr, colOf) {
@@ -264,8 +295,8 @@ function makeSkull() {
       f.mesh = []; pts.forEach((s) => {
         const p = V3(MX + s * f.X, f.y || 15.8, f.z);
         if (!f.y) { rc.set(V3(p.x, 15.2, p.z), V3(0, 1, 0)); const hit = rc.intersectObjects(skullOnly, false)[0]; p.y = hit && hit.point.y < 16.0 ? hit.point.y - 0.012 : f.yy || 15.8; f.yy = f.yy || p.y; }
-        const m = new THREE.Mesh(dotGeo, new THREE.MeshBasicMaterial({ color: f.col, transparent: true, opacity: 0.95, depthTest: false })); m.position.copy(p); m.renderOrder = 5; m.visible = false; m.userData.main = s === (f.L || (!DK && f.id === 'stylo') ? -1 : 1); forGroup.add(m); f.mesh.push(m);
-        if (s === (f.L || (!DK && f.id === 'stylo') ? -1 : 1)) f.pos.copy(p);
+        const m = new THREE.Mesh(dotGeo, new THREE.MeshBasicMaterial({ color: f.col, transparent: true, opacity: 0.95, depthTest: false })); m.position.copy(p); m.renderOrder = 5; m.visible = false; m.userData.main = s === (f.L || f.id === 'stylo' ? -1 : 1); forGroup.add(m); f.mesh.push(m);
+        if (s === (f.L || f.id === 'stylo' ? -1 : 1)) f.pos.copy(p);
       });
     });
     st.loaded = true; select(st.sel || 'all'); applyMode(); refs.setInfo && refs.setInfo();
@@ -282,7 +313,7 @@ function makeSkull() {
   function select(id) {
     st.sel = id === 'all' ? null : id;
     SK_BONES.forEach((b) => BN[b.id].mats.forEach((m) => { const on = !st.sel || st.sel === b.id; m.transparent = !on; m.opacity = on ? 1 : 0.14; m.depthWrite = on; m.emissive = new THREE.Color(b.col); m.emissiveIntensity = st.sel === b.id ? 0.22 : 0; m.needsUpdate = true; }));
-    if (st.inner) st.inner.visible = !st.sel; if (st.fmMesh) st.fmMesh.visible = !st.sel;
+    if (st.inner) st.inner.visible = !st.sel; if (st.fmMesh) st.fmMesh.visible = !st.sel; (st.condyles || []).forEach((m) => { m.visible = !st.sel || st.sel === 'occ'; });
     refs.seg && refs.seg.sync(); refs.setInfo && refs.setInfo();
   }
   function setMode(m) {
@@ -298,9 +329,20 @@ function makeSkull() {
   }
   function setView(v) { if (st.mode === 'base' && v !== 'bottom') { st.mode = 'bones'; refs.modeSeg && refs.modeSeg.sync(); refs.rebuild && refs.rebuild(); refs.setInfo && refs.setInfo(); } st.view = v; st.fly = st.mode === 'baby' && v === 'front' ? VIEW.babyFront : VIEW[v]; applyMode(); }
   pickOn(() => self, camera, pick, (id) => { if (st.mode !== 'bones') setMode('bones'); select(st.sel === id ? 'all' : id); });
+  // перелёт камеры по дуге вокруг черепа (а не по прямой сквозь него): всегда приходит точно, не зависит от частоты кадров
+  const qA = new THREE.Quaternion(), qI = new THREE.Quaternion(), dA = V3(0, 0, 0), dB = V3(0, 0, 0);
+  function flyArc(dt) {
+    const f = st.fly; if (!f) return; if (typeof ANIM !== 'undefined' && ANIM.paused) dt = ANIM.dt;
+    if (st._fly !== f) { st._fly = f; f.t = 0; f.p0 = camera.position.clone(); f.t0 = controls.target.clone(); }
+    f.t += dt; const u = Math.min(1, f.t / 1.8), e = u * u * (3 - 2 * u);
+    dA.copy(f.p0).sub(f.t0); dB.copy(f.pos).sub(f.target); const r = dA.length() + (dB.length() - dA.length()) * e;
+    dA.normalize(); dB.normalize(); qA.setFromUnitVectors(dA, dB); qI.identity().slerp(qA, e);
+    controls.target.copy(f.t0).lerp(f.target, e); camera.position.copy(controls.target).add(dA.applyQuaternion(qI).multiplyScalar(r));
+    if (u >= 1) { st.fly = null; st._fly = null; }
+  }
   function update(dt) {
     under.intensity += ((st.view === 'bottom' ? 1.5 : 0) - under.intensity) * Math.min(1, dt * 4); fill.intensity = st.view === 'bottom' ? 0.9 : 0.55;
-    st.t += dt; controls.autoRotate = st.rot && !st.fly; controls.autoRotateSpeed = 0.6; flyStep(st, camera, controls, dt, 2.6, 4);
+    st.t += dt; controls.autoRotate = st.rot && !st.fly; controls.autoRotateSpeed = 0.6; flyArc(dt);
     st.babyT = st.mode === 'baby' ? 1 : 0; st.baby += (st.babyT - st.baby) * Math.min(1, dt * 2.2);
     if (Math.abs(st.baby - st.babyT) < 0.001) st.baby = st.babyT;
     const b = st.baby;
@@ -314,8 +356,8 @@ function makeSkull() {
   const faces = (p, n) => { camDir.copy(camera.position).sub(p).normalize(); return camDir.dot(n) > 0.2; };
   const labels = [
     ...SK_BONES.map((b) => ({ text: b.name.toLowerCase(), pos: BN[b.id].anchor, color: b.col, left: false, show: () => st.loaded && st.labels && st.mode === 'bones' && (st.sel ? st.sel === b.id : MAJOR[b.id]) && !(b.id === 'mand' && st.view === 'bottom') && faces(BN[b.id].anchor, BN[b.id].nrm) })),
-    ...SK_FOR.map((f) => ({ text: f.name.toLowerCase(), pos: FOR[f.id].pos, color: f.col, left: !!f.L || (!DK && f.id === 'stylo'), show: () => st.loaded && st.labels && st.mode === 'base' && (st.fsel ? st.fsel === f.id : DK || PH_FOR[f.id]) })),
-    ...SK_FONT.map((f) => ({ text: f.name.toLowerCase() + ' родничок', pos: () => (FONT[f.id] ? FONT[f.id].pos : SC), color: '#FFB8C8', show: () => st.loaded && st.labels && st.mode === 'baby' && st.baby > 0.8 && !!FONT[f.id] && (!st.nsel || st.nsel === f.id) && faces(FONT[f.id].pos, FONT[f.id].pos.clone().sub(SC).normalize()) })),
+    ...SK_FOR.map((f) => ({ text: f.name.toLowerCase(), pos: FOR[f.id].pos, color: f.col, left: (!!f.L && f.id !== 'hypo') || f.id === 'stylo', show: () => st.loaded && st.labels && st.mode === 'base' && (st.fsel ? st.fsel === f.id : DK || PH_FOR[f.id]) })),
+    ...SK_FONT.map((f) => ({ text: f.name.toLowerCase() + ' родничок', pos: () => (FONT[f.id] ? FONT[f.id].pos : SC), color: '#FFB8C8', show: () => st.loaded && st.labels && st.mode === 'baby' && st.baby > 0.8 && !!FONT[f.id] && (!st.nsel || st.nsel === f.id) && !(st.view === 'front' && !st.nsel && (f.id === 'sph' || f.id === 'mast')) && faces(FONT[f.id].pos, FONT[f.id].pos.clone().sub(SC).normalize()) })),
     { text: 'венечный шов', pos: V3(MX + 0.42, 16.78, 0.42), color: '#E8D8C0', show: () => DK && st.loaded && st.labels && st.sut && st.mode === 'bones' && !st.sel && (st.view === 'side' || st.view === 'top') },
     { text: 'ламбдовидный шов', pos: V3(MX + 0.42, 16.55, -0.6), color: '#E8D8C0', left: true, show: () => DK && st.loaded && st.labels && st.sut && st.mode === 'bones' && !st.sel && st.view === 'side' },
     { text: 'чешуйчатый шов', pos: V3(MX + 0.68, 16.36, 0.05), color: '#E8D8C0', show: () => DK && st.loaded && st.labels && st.sut && st.mode === 'bones' && !st.sel && st.view === 'side' },
