@@ -218,7 +218,13 @@ function makeSkull() {
       if (used.has(s0)) return; const loop = []; let u = s0;
       while (!used.has(u) && nextE.has(u) && loop.length < 5000) { used.add(u); const [v, k] = nextE.get(u); loop.push([u, v, k]); u = v; }
       if (loop.length < 3) return;
-      const cv = addV(loop.map((e) => e[0])); if (gz(cv) > 0.3) return;   // рот (место смыкания с нижней челюстью) не закрываем — там нёбо
+      const cv = addV(loop.map((e) => e[0])); if (gz(cv) > 0.3) {   // рот: в скане зубы срослись с нижней челюстью — снизу (без неё) закрываем ровной заплаткой цвета верхней челюсти
+        const pos = [], bp = [], nrm = [], w = V3(0, 0, 0), add = (v) => { pos.push(gx(v), gy(v), gz(v)); babyPos(gx(v), gy(v), gz(v), w); bp.push(w.x, w.y, w.z); nrm.push(0, -1, 0); };
+        loop.forEach(([u, v]) => { const cr = (gz(u) - gz(cv)) * (gx(v) - gx(cv)) - (gx(u) - gx(cv)) * (gz(v) - gz(cv)); if (cr > 0) { add(v); add(u); } else { add(u); add(v); } add(cv); });   // все треугольники — лицом вниз
+        const gg = new THREE.BufferGeometry(); gg.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); gg.setAttribute('normal', new THREE.Float32BufferAttribute(nrm, 3)); gg.morphAttributes.position = [new THREE.Float32BufferAttribute(bp, 3)];
+        const mt = boneMat(BN.max.col); const mm = new THREE.Mesh(gg, mt); mm.userData.pick = 'max'; mm.morphTargetInfluences = [0]; mm.visible = false;
+        G.add(mm); pick.push(mm); BN.max.mats.push(mt); st.mouth = (st.mouth || []).concat(mm); return;
+      }   // рот (место смыкания с нижней челюстью) не закрываем — там нёбо
       if (gy(cv) > 16.8) {   // на своде — гладкий купол из колец по форме черепа, а не плоский веер
         const C0d = V3(MX, 16.25, 0.1), rOf = (v) => Math.hypot(gx(v) - C0d.x, gy(v) - C0d.y, gz(v) - C0d.z);
         const rr = loop.reduce((sm, e) => sm + rOf(e[0]), 0) / loop.length;
@@ -242,8 +248,8 @@ function makeSkull() {
       const rim = new THREE.Mesh(new THREE.RingGeometry(1, 1.12, 48), new THREE.MeshBasicMaterial({ color: 0xc9b9d8, side: THREE.DoubleSide, transparent: true, opacity: 0.85 }));
       rim.position.z = -0.001; fmMesh.add(rim);
       // затылочные мыщелки — по бокам передней половины отверстия (суставы с атлантом)
-      const conMat = boneMat('#9A7FE0');
-      [-1, 1].forEach((sg) => { const cm = new THREE.Mesh(new THREE.SphereGeometry(1, 20, 14), conMat); cm.scale.set(0.04, 0.028, 0.075); cm.position.set(MX + sg * 0.165, fm.y - 0.012, 0.07); cm.rotation.y = -sg * 0.35; G.add(cm); BN.occ.mats.push(conMat); st.condyles = (st.condyles || []).concat(cm); });
+      const conMat = boneMat('#B9A6F2');
+      [-1, 1].forEach((sg) => { const cm = new THREE.Mesh(new THREE.SphereGeometry(1, 20, 14), conMat); cm.scale.set(0.05, 0.035, 0.085); cm.position.set(MX + sg * 0.165, fm.y - 0.012, 0.07); cm.rotation.y = -sg * 0.35; G.add(cm); BN.occ.mats.push(conMat); st.condyles = (st.condyles || []).concat(cm); });
     }
     const tmp = V3(0, 0, 0);
     function subGeo(arr, colOf) {
@@ -323,7 +329,7 @@ function makeSkull() {
   }
   function applyMode() {
     const base = st.mode === 'base' || st.view === 'bottom';
-    BN.mand.meshes.forEach((m) => { m.visible = !base; });
+    BN.mand.meshes.forEach((m) => { m.visible = !base; }); (st.mouth || []).forEach((m) => { m.visible = base; });
     Object.values(FOR).forEach((f) => (f.mesh || []).forEach((m) => { m.visible = st.mode === 'base' && (m.userData.main || st.fsel === f.id); m.scale.setScalar(st.fsel === f.id ? 1.6 : 1); }));
     refs.vs && refs.vs.sync();
   }
