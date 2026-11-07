@@ -219,8 +219,11 @@ function makeSkull() {
       while (!used.has(u) && nextE.has(u) && loop.length < 5000) { used.add(u); const [v, k] = nextE.get(u); loop.push([u, v, k]); u = v; }
       if (loop.length < 3) return;
       const cv = addV(loop.map((e) => e[0])); if (gz(cv) > 0.3) {   // рот: в скане зубы срослись с нижней челюстью — снизу (без неё) закрываем ровной заплаткой цвета верхней челюсти
-        const pos = [], bp = [], nrm = [], w = V3(0, 0, 0), add = (v) => { pos.push(gx(v), gy(v), gz(v)); babyPos(gx(v), gy(v), gz(v), w); bp.push(w.x, w.y, w.z); nrm.push(0, -1, 0); };
-        loop.forEach(([u, v]) => { const cr = (gz(u) - gz(cv)) * (gx(v) - gx(cv)) - (gx(u) - gx(cv)) * (gz(v) - gz(cv)); if (cr > 0) { add(v); add(u); } else { add(u); add(v); } add(cv); });   // все треугольники — лицом вниз
+        const sm = new Map(), L = loop.length;   // край заплатки — сглаженный по соседям вдоль контура (без зубцов)
+        loop.forEach(([u], i) => { let x = 0, y = 0, z = 0; for (let d = -3; d <= 3; d++) { const q = loop[(i + d + L) % L][0]; x += gx(q); y += gy(q); z += gz(q); } sm.set(u, [x / 7, y / 7, z / 7]); });
+        const P3 = (v) => sm.get(v) || [gx(v), gy(v), gz(v)];
+        const pos = [], bp = [], nrm = [], w = V3(0, 0, 0), add = (v) => { const [x, y, z] = P3(v); pos.push(x, y, z); babyPos(x, y, z, w); bp.push(w.x, w.y, w.z); nrm.push(0, -1, 0); };
+        loop.forEach(([u, v]) => { const [ux, , uz] = P3(u), [vx, , vz] = P3(v), cr = (uz - gz(cv)) * (vx - gx(cv)) - (ux - gx(cv)) * (vz - gz(cv)); if (cr > 0) { add(v); add(u); } else { add(u); add(v); } add(cv); });   // все треугольники — лицом вниз
         const gg = new THREE.BufferGeometry(); gg.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); gg.setAttribute('normal', new THREE.Float32BufferAttribute(nrm, 3)); gg.morphAttributes.position = [new THREE.Float32BufferAttribute(bp, 3)];
         const mt = boneMat(BN.max.col); const mm = new THREE.Mesh(gg, mt); mm.userData.pick = 'max'; mm.morphTargetInfluences = [0]; mm.visible = false;
         G.add(mm); pick.push(mm); BN.max.mats.push(mt); st.mouth = (st.mouth || []).concat(mm); return;
@@ -248,7 +251,7 @@ function makeSkull() {
       const rim = new THREE.Mesh(new THREE.RingGeometry(1, 1.12, 48), new THREE.MeshBasicMaterial({ color: 0xc9b9d8, side: THREE.DoubleSide, transparent: true, opacity: 0.85 }));
       rim.position.z = -0.001; fmMesh.add(rim);
       // затылочные мыщелки — по бокам передней половины отверстия (суставы с атлантом)
-      const conMat = boneMat('#B9A6F2');
+      const conMat = boneMat('#D6CAFA'); conMat.emissive = new THREE.Color(0x3a2e5a);
       [-1, 1].forEach((sg) => { const cm = new THREE.Mesh(new THREE.SphereGeometry(1, 20, 14), conMat); cm.scale.set(0.05, 0.035, 0.085); cm.position.set(MX + sg * 0.165, fm.y - 0.012, 0.07); cm.rotation.y = -sg * 0.35; G.add(cm); BN.occ.mats.push(conMat); st.condyles = (st.condyles || []).concat(cm); });
     }
     const tmp = V3(0, 0, 0);
