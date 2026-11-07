@@ -40,12 +40,9 @@
  "Высота голоса": "Pitch",
  "Положение складок": "Fold position",
  "Натяжение складок": "Fold tension",
- "Щель": "Glottis",
- "мм у отростков": "mm at the processes",
  "Колебания": "Vibrations",
- "раз/с": "per s",
+ "раз/с": "per sec",
  "Длина складок": "Fold length",
- "Хрящей": "Cartilages",
  "3 непарных + 3 парных": "3 unpaired + 3 paired",
  "Складки": "Folds",
  "Тело · системы органов": "Body · organ systems",
@@ -57,7 +54,11 @@
  "щиточерпаловидная (голосовая)": "thyroarytenoid (vocalis)",
  "исходное положение": "resting position",
  "межхрящевая щель": "interarytenoid gap",
- "мм между хрящами": "mm between the cartilages",
- "3 непарных + 3 пары": "3 unpaired + 3 pairs",
- "Сзади": "Back"
+ "мм между хрящами": "mm between the arytenoids",
+ "Щель спереди": "Front gap",
+ "мм у голосовых отростков": "mm at the vocal processes",
+ "Щель сзади": "Rear gap",
+ "Частота тона": "Frequency",
+ "Хрящи": "Cartilages",
+ "видов: 3 непарных + 3 парных": "kinds: 3 unpaired + 3 paired"
 }
