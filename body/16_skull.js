@@ -51,9 +51,10 @@ function makeSkull() {
   const OFF = DK ? 0.62 : 0, OFY = DK ? 0 : 0.2;
   const VIEW = {
     front: flyTarget(SC.clone().add(V3(-OFF, -0.15 + OFY, 0)), SC.clone().add(V3(-OFF, 0.2, 5.55))),
-    side: flyTarget(SC.clone().add(V3(0, -0.15 + OFY, OFF)), SC.clone().add(V3(5.6, 0.25, OFF))),
+    side: flyTarget(SC.clone().add(V3(0, -0.24 + OFY, OFF)), SC.clone().add(V3(5.1, 0.16, OFF))),
     top: flyTarget(SC.clone().add(V3(OFF, 0, -0.1 + OFY)), SC.clone().add(V3(OFF, 5.5, -0.35 + OFY))),
-    bottom: flyTarget(SC.clone().add(V3(-OFF, 0, 0.05 + OFY)), SC.clone().add(V3(-OFF, -4.9, 0.2 + OFY))),
+    bottom: flyTarget(SC.clone().add(V3(-OFF, 0, 0.05 + OFY * 0.4)), SC.clone().add(V3(-OFF, -4.5, 0.2 + OFY * 0.4))),
+    babyFront: flyTarget(SC.clone().add(V3(-OFF, 0.25 + OFY, 0)), SC.clone().add(V3(-OFF, 2.7, 4.6))),
     baby: flyTarget(SC.clone().add(V3(-OFF * 0.6, 0.2 + OFY, OFF * 0.55)), SC.clone().add(V3(2.6, 4.1, 3.0))),
     babyAnt: flyTarget(SC.clone().add(V3(-OFF, 0.2, 0.15 - OFY)), SC.clone().add(V3(-OFF + 0.3, 5.8, 1.9 - OFY))),
     babyBack: flyTarget(SC.clone().add(V3(-OFF * 0.6, 0.2 + OFY, -OFF * 0.55)), SC.clone().add(V3(2.6, 3.6, -3.4))),
@@ -124,6 +125,15 @@ function makeSkull() {
   loadSkeletonStatic(new THREE.Group(), new THREE.MeshBasicMaterial()).then((out) => {
     const head = out.find((m) => { m.geometry.computeBoundingBox(); return m.geometry.boundingBox.max.y > 17; });
     const g = head.geometry, P = g.attributes.position, LB = g.attributes.aLabel, IX = g.index.array, N = P.count;
+    {   // на макушке у скана есть участок с вывернутыми треугольниками (видна изнанка) — разворачиваем их наружу
+      const C0 = V3(MX, 16.25, 0.1), a = V3(0, 0, 0), b = V3(0, 0, 0), c = V3(0, 0, 0);
+      for (let t = 0; t < IX.length; t += 3) {
+        a.fromBufferAttribute(P, IX[t]); b.fromBufferAttribute(P, IX[t + 1]); c.fromBufferAttribute(P, IX[t + 2]);
+        const cy = (a.y + b.y + c.y) / 3; if (cy < 16.6) continue;
+        const n = b.clone().sub(a).cross(c.clone().sub(a)), m = a.clone().add(b).add(c).multiplyScalar(1 / 3).sub(C0);
+        if (n.dot(m) < 0) { const tt = IX[t + 1]; IX[t + 1] = IX[t + 2]; IX[t + 2] = tt; }
+      }
+    }
     const nb = Array.from({ length: N }, () => []);
     for (let t = 0; t < IX.length; t += 3) { const a = IX[t], b = IX[t + 1], c = IX[t + 2]; nb[a].push(b, c); nb[b].push(a, c); nb[c].push(a, b); }
     // шейные позвонки: заливка от нижних позвонков вверх до сустава с черепом
@@ -161,8 +171,8 @@ function makeSkull() {
     const addV = (vs) => {
       const i = N + EX.length / 3, n = [0, 0, 0];
       for (const c of [gx, gy, gz]) EX.push(vs.reduce((s, v) => s + c(v), 0) / vs.length);
-      vs.forEach((v) => { for (let k = 0; k < 3; k++) n[k] += nrmA[v * 3 + k]; });
-      const l = Math.hypot(n[0], n[1], n[2]) || 1; EXN.push(n[0] / l, n[1] / l, n[2] / l); exLab.push(vs.map((v) => lab[v]).find(Boolean) || null); return i;
+      vs.forEach((v) => { for (let k = 0; k < 3; k++) n[k] += gn(v, k); });
+      const l = Math.hypot(n[0], n[1], n[2]) || 1; EXN.push(n[0] / l, n[1] / l, n[2] / l); exLab.push(vs.map((v) => labOf(v)).find(Boolean) || null); return i;
     };
     const mid = (a, b) => { const key = a < b ? a + '_' + b : b + '_' + a; let i = emid.get(key); if (i === undefined) { i = addV([a, b]); emid.set(key, i); } return i; };
     const PAIR = (k) => k && BN[k] && (BN[k].n === 2 || k === 'front') && k !== 'conch';
@@ -184,6 +194,26 @@ function makeSkull() {
       const ac = mid(a, c), bc = mid(b, c);
       put(A, a, b, bc); put(A, a, bc, ac); put(C, ac, bc, c); seg(A, C, ac, bc);
     }
+    // заплатки: где сняты шейные позвонки, в основании остались вырезы — закрываем их «веером» цветом соседней кости
+    const dir = new Map(); Object.entries(tris).forEach(([k, arr]) => { if (k === 'mand') return;   // и суставные ямки: там скан сросся с нижней челюстью
+      for (let i = 0; i < arr.length; i += 3) for (let e = 0; e < 3; e++) dir.set(arr[i + e] + '_' + arr[i + (e + 1) % 3], k); });
+    const nextE = new Map(); dir.forEach((k, key) => { const [u, v] = key.split('_'); if (!dir.has(v + '_' + u)) nextE.set(+u, [+v, k]); });
+    const used = new Set(); let fm = null;
+    nextE.forEach((_, s0) => {
+      if (used.has(s0)) return; const loop = []; let u = s0;
+      while (!used.has(u) && nextE.has(u) && loop.length < 5000) { used.add(u); const [v, k] = nextE.get(u); loop.push([u, v, k]); u = v; }
+      if (loop.length < 3) return;
+      const cv = addV(loop.map((e) => e[0])); if (gz(cv) > 0.3) return;   // рот (место смыкания с нижней челюстью) не закрываем — там нёбо
+      loop.forEach(([u2, v2, k]) => put(k, v2, u2, cv));
+      if (Math.abs(gx(cv) - MX) < 0.08 && gz(cv) > -0.2 && gz(cv) < 0.2 && (!fm || loop.length > fm.n)) fm = { n: loop.length, y: Math.min(...loop.map((e) => gy(e[0]))) };
+    });
+    if (fm) {   // большое затылочное отверстие — ровный тёмный овал на заплатке
+      const eg = new THREE.CircleGeometry(1, 40), ec = [], pp = eg.attributes.position;
+      for (let i = 0; i < pp.count; i++) { const r = Math.hypot(pp.getX(i), pp.getY(i)); const c = new THREE.Color(0x0e0a08).lerp(new THREE.Color(0x4a3c30), r); ec.push(c.r, c.g, c.b); }
+      eg.setAttribute('color', new THREE.Float32BufferAttribute(ec, 3));
+      const fmMesh = new THREE.Mesh(eg, new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.DoubleSide }));
+      fmMesh.rotation.x = Math.PI / 2; fmMesh.scale.set(0.135, 0.17, 1); fmMesh.position.set(MX, fm.y - 0.006, 0.0); G.add(fmMesh); st.fmMesh = fmMesh;
+    }
     const tmp = V3(0, 0, 0);
     function subGeo(arr, colOf) {
       const map = new Map(), pos = [], bp = [], cl = [];
@@ -203,7 +233,7 @@ function makeSkull() {
     // изнанка (видна сквозь глазницы и дыры скана): обычно тёмная, в виде снизу — цветом соседней кости, чуть темнее
     const cream = new THREE.Color(0xf0e6d4), vc = new THREE.Color();
     const deep = new THREE.Color(0x4a4038);   // изнанка свода (видна сквозь большое затылочное отверстие) — приглушённая полость
-    const innerCol = (v) => { const k = labOf(v), y = gy(v), t = Math.min(1, Math.max(0, (y - 15.98) / 0.3)); return vc.set(k && BN[k] ? BN[k].col : '#cfc3b0').lerp(cream, 0.18).multiplyScalar(0.78).lerp(deep, t * t * (3 - 2 * t)); };
+    const innerCol = (v) => { const k = labOf(v), y = gy(v), t = Math.min(1, Math.max(0, (y - 15.98) / 0.3)) * Math.min(1, Math.max(0, (0.4 - gz(v)) / 0.2)); return vc.set(k && BN[k] ? BN[k].col : '#cfc3b0').lerp(cream, 0.18).multiplyScalar(0.78).lerp(deep, t * t * (3 - 2 * t)); };
     st.innerDark = new THREE.MeshBasicMaterial({ color: 0x2a211b, side: THREE.BackSide });
     st.innerLit = new THREE.MeshLambertMaterial({ vertexColors: true, side: THREE.BackSide });
     const inner = new THREE.Mesh(subGeo(allT, innerCol), st.innerDark); inner.morphTargetInfluences = [0]; G.add(inner); st.inner = inner;
@@ -234,7 +264,7 @@ function makeSkull() {
       f.mesh = []; pts.forEach((s) => {
         const p = V3(MX + s * f.X, f.y || 15.8, f.z);
         if (!f.y) { rc.set(V3(p.x, 15.2, p.z), V3(0, 1, 0)); const hit = rc.intersectObjects(skullOnly, false)[0]; p.y = hit && hit.point.y < 16.0 ? hit.point.y - 0.012 : f.yy || 15.8; f.yy = f.yy || p.y; }
-        const m = new THREE.Mesh(dotGeo, new THREE.MeshBasicMaterial({ color: f.col, transparent: true, opacity: 0.95, depthTest: false })); m.position.copy(p); m.renderOrder = 5; m.visible = false; forGroup.add(m); f.mesh.push(m);
+        const m = new THREE.Mesh(dotGeo, new THREE.MeshBasicMaterial({ color: f.col, transparent: true, opacity: 0.95, depthTest: false })); m.position.copy(p); m.renderOrder = 5; m.visible = false; m.userData.main = s === (f.L || (!DK && f.id === 'stylo') ? -1 : 1); forGroup.add(m); f.mesh.push(m);
         if (s === (f.L || (!DK && f.id === 'stylo') ? -1 : 1)) f.pos.copy(p);
       });
     });
@@ -252,21 +282,21 @@ function makeSkull() {
   function select(id) {
     st.sel = id === 'all' ? null : id;
     SK_BONES.forEach((b) => BN[b.id].mats.forEach((m) => { const on = !st.sel || st.sel === b.id; m.transparent = !on; m.opacity = on ? 1 : 0.14; m.depthWrite = on; m.emissive = new THREE.Color(b.col); m.emissiveIntensity = st.sel === b.id ? 0.22 : 0; m.needsUpdate = true; }));
-    if (st.inner) st.inner.visible = !st.sel;
+    if (st.inner) st.inner.visible = !st.sel; if (st.fmMesh) st.fmMesh.visible = !st.sel;
     refs.seg && refs.seg.sync(); refs.setInfo && refs.setInfo();
   }
   function setMode(m) {
     st.mode = m; if (m !== 'bones' && st.sel) select('all');
-    st.view = m === 'base' ? 'bottom' : m === 'baby' ? 'baby' : st.view === 'bottom' || st.view === 'baby' ? 'front' : st.view;
-    st.fly = VIEW[st.view]; applyMode(); refs.modeSeg && refs.modeSeg.sync(); refs.rebuild && refs.rebuild(); refs.setInfo && refs.setInfo();
+    st.view = m === 'base' ? 'bottom' : m === 'baby' ? 'front' : st.view === 'bottom' || st.view === 'baby' ? 'front' : st.view;
+    st.fly = m === 'baby' ? VIEW.babyFront : VIEW[st.view]; applyMode(); refs.modeSeg && refs.modeSeg.sync(); refs.rebuild && refs.rebuild(); refs.setInfo && refs.setInfo();
   }
   function applyMode() {
     const base = st.mode === 'base' || st.view === 'bottom';
     BN.mand.meshes.forEach((m) => { m.visible = !base; });
-    Object.values(FOR).forEach((f) => (f.mesh || []).forEach((m) => { m.visible = st.mode === 'base'; m.scale.setScalar(st.fsel === f.id ? 1.6 : 1); }));
+    Object.values(FOR).forEach((f) => (f.mesh || []).forEach((m) => { m.visible = st.mode === 'base' && (m.userData.main || st.fsel === f.id); m.scale.setScalar(st.fsel === f.id ? 1.6 : 1); }));
     refs.vs && refs.vs.sync();
   }
-  function setView(v) { if (st.mode === 'base' && v !== 'bottom') { st.mode = 'bones'; refs.modeSeg && refs.modeSeg.sync(); refs.rebuild && refs.rebuild(); refs.setInfo && refs.setInfo(); } st.view = v; st.fly = VIEW[v]; applyMode(); }
+  function setView(v) { if (st.mode === 'base' && v !== 'bottom') { st.mode = 'bones'; refs.modeSeg && refs.modeSeg.sync(); refs.rebuild && refs.rebuild(); refs.setInfo && refs.setInfo(); } st.view = v; st.fly = st.mode === 'baby' && v === 'front' ? VIEW.babyFront : VIEW[v]; applyMode(); }
   pickOn(() => self, camera, pick, (id) => { if (st.mode !== 'bones') setMode('bones'); select(st.sel === id ? 'all' : id); });
   function update(dt) {
     under.intensity += ((st.view === 'bottom' ? 1.5 : 0) - under.intensity) * Math.min(1, dt * 4); fill.intensity = st.view === 'bottom' ? 0.9 : 0.55;
@@ -314,7 +344,7 @@ function makeSkull() {
       } else if (st.mode === 'base') {
         box.append(h('div', { class: 'glabel' }, 'Отверстия'), h('div', { class: 'gctl' }, seg([{ id: 'all', label: 'Все' }, ...SK_FOR.map((f) => ({ id: f.id, label: f.name, color: f.col }))], () => st.fsel || 'all', (v) => { st.fsel = v === 'all' ? null : v; applyMode(); refs.setInfo(); })));
       } else {
-        box.append(h('div', { class: 'glabel' }, 'Роднички'), h('div', { class: 'gctl' }, seg([{ id: 'all', label: 'Все' }, ...SK_FONT.map((f) => ({ id: f.id, label: f.name, color: '#FFB8C8' }))], () => st.nsel || 'all', (v) => { st.nsel = v === 'all' ? null : v; st.view = 'baby'; st.fly = st.nsel === 'post' ? VIEW.babyPost : st.nsel === 'ant' ? VIEW.babyAnt : st.nsel === 'mast' ? VIEW.babyBack : VIEW.baby; refs.vs.sync(); refs.setInfo(); })));
+        box.append(h('div', { class: 'glabel' }, 'Роднички'), h('div', { class: 'gctl' }, seg([{ id: 'all', label: 'Все' }, ...SK_FONT.map((f) => ({ id: f.id, label: f.name, color: '#FFB8C8' }))], () => st.nsel || 'all', (v) => { st.nsel = v === 'all' ? null : v; st.view = st.nsel ? 'baby' : 'front'; st.fly = st.nsel === 'post' ? VIEW.babyPost : st.nsel === 'ant' ? VIEW.babyAnt : st.nsel === 'mast' ? VIEW.babyBack : st.nsel ? VIEW.baby : VIEW.babyFront; refs.vs.sync(); refs.setInfo(); })));
       }
     };
     refs.vs = seg([{ id: 'front', label: 'Спереди' }, { id: 'side', label: 'Сбоку' }, { id: 'top', label: 'Сверху' }, { id: 'bottom', label: 'Снизу' }], () => st.view, (v) => setView(v));
@@ -348,7 +378,7 @@ function makeSkull() {
         <h3>Швы</h3><p>Венечный (лобная–теменные), сагиттальный (между теменными), ламбдовидный (теменные–затылочная), чешуйчатый (височная–теменная). Место, где сходятся лобная, теменная, височная и клиновидная кости, — <b>птерион</b>: кость здесь тонкая, а под ней идёт средняя менингеальная артерия.</p>
         <h3>Основание</h3><p>Изнутри основание делится на переднюю, среднюю и заднюю черепные ямки (для лобных долей, височных долей, мозжечка и ствола). Кроме отверстий, видимых снизу, есть внутренние: зрительный канал (II нерв), верхняя глазничная щель (III, IV, V₁, VI), круглое отверстие (V₂), внутренний слуховой проход (VII, VIII).</p>
         <h3>Медицина</h3><p>Перелом основания черепа выдаёт себя «симптомом очков» и истечением прозрачной жидкости (ликвора) из носа или уха. Раннее зарастание швов у ребёнка (краниосиностоз) деформирует голову — его исправляют операцией. Удар в висок опасен разрывом средней менингеальной артерии.</p></div>
-      <div><h2>Условности</h2><ul><li>Кости раскрашены по настоящей 3D-модели скелета; границы между ними проведены по ориентирам и сглажены, поэтому швы показаны приблизительно. Ушные косточки и внутренние стенки черепных ямок модель не содержит.</li><li>Отверстия основания отмечены точками примерно в их местах; на модели сами отверстия видны не все. Решётчатая кость, сошник и раковины в глубине носа показаны упрощённо; нёбо и часть основания в модели тонкие или с просветами, поэтому снизу местами видна изнанка.</li><li>Череп новорождённого получен из взрослого: лицо и челюсти плавно уменьшены, роднички нарисованы поверх свода, швы — как у взрослого. На деле у младенца нет видимых зубов (они спрятаны в челюстях), нет сосцевидного отростка, а кости свода тоньше и разделены широкими перепонками.</li></ul></div>
+      <div><h2>Условности</h2><ul><li>Кости раскрашены по настоящей 3D-модели скелета; границы между ними проведены по ориентирам и сглажены, поэтому швы показаны приблизительно. Ушные косточки и внутренние стенки черепных ямок модель не содержит.</li><li>Отверстия основания отмечены точками примерно в их местах; на модели сами отверстия видны не все. Решётчатая кость, сошник и раковины в глубине носа показаны упрощённо; в скане череп сросся с шейными позвонками и нижней челюстью: где их отделили, основание закрыто гладкими заплатками, а большое затылочное отверстие нарисовано ровным овалом; в нёбе местами есть просвет.</li><li>Череп новорождённого получен из взрослого: лицо и челюсти плавно уменьшены, зубы сжаты в низкие валики, роднички нарисованы поверх свода. На деле зубы младенца спрятаны в челюстях, швы прямее, чем у взрослого, нет сосцевидного отростка, а кости свода тоньше и разделены широкими перепонками.</li></ul></div>
       <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>3</code> режим · <code>Esc</code> все кости</li><li><code>R</code> вращение · <code>S</code> швы · <code>N</code> подписи</li></ul></div>`,
   };
   return self;
