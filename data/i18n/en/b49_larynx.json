@@ -35,7 +35,6 @@
  "звуковая волна": "sound wave",
  " мышца": " muscle",
  "<b>Гортань</b> — хрящевая коробка в начале дыхательных путей: пропускает воздух, при глотании закрывает вход в трахею и делает голос. Каркас — три непарных хряща (щитовидный, перстневидный, надгортанник) и три парных (черпаловидные, рожковидные, клиновидные). Нажмите на хрящ или выберите его ниже.": "<b>The larynx</b> is a box of cartilage at the start of the airway: it lets air through, shuts the way into the trachea when you swallow, and makes the voice. Its frame is three unpaired cartilages (thyroid, cricoid, epiglottis) and three paired ones (arytenoid, corniculate, cuneiform). Click a cartilage or pick it below.",
- "<b>Высота голоса.</b> Перстнещитовидная мышца наклоняет щитовидный хрящ вперёд и вниз — он поворачивается в перстнещитовидном суставе. Складки удлиняются и натягиваются, колеблются чаще — голос выше. Голосовая мышца внутри складки, наоборот, укорачивает и расслабляет их. Громкость задаёт сила выдоха.": "<b>Pitch.</b> The cricothyroid muscle tips the thyroid cartilage forward and down — it rotates at the cricothyroid joint. The folds get longer and tighter and vibrate faster, so the voice goes up. The vocalis muscle inside the fold does the opposite: it shortens and relaxes them. Loudness comes from how hard you breathe out.",
  "Голосовая щель": "Glottis",
  "Высота голоса": "Pitch",
  "Положение складок": "Fold position",
@@ -60,5 +59,7 @@
  "Щель сзади": "Rear gap",
  "Частота тона": "Frequency",
  "Хрящи": "Cartilages",
- "видов: 3 непарных + 3 парных": "kinds: 3 unpaired + 3 paired"
+ "видов: 3 непарных + 3 парных": "kinds: 3 unpaired + 3 paired",
+ "<b>Высота голоса.</b> Перстнещитовидная мышца наклоняет щитовидный хрящ вперёд и вниз — он поворачивается в перстнещитовидном суставе. Складки удлиняются и натягиваются, колеблются чаще — голос выше. Голосовая мышца внутри складки, наоборот, укорачивает складку и меняет её жёсткость. Громкость задаёт сила выдоха.": "<b>Pitch.</b> The cricothyroid muscle tips the thyroid cartilage forward and down — it rotates at the cricothyroid joint. The folds get longer and tighter and vibrate faster, so the voice goes up. The vocalis muscle inside the fold does the opposite: it shortens the fold and changes its stiffness. Loudness comes from how hard you breathe out.",
+ "угол щитовидного хряща": "thyroid angle"
 }

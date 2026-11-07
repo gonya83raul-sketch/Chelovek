@@ -17,7 +17,7 @@ const LX_GL = [
   { id: 'deep', name: 'Вдох', ph: 0.72, sl: 0.15, vib: 0, mus: ['pca'], text: '<b>Глубокий вдох.</b> Задние перстнечерпаловидные мышцы — единственные, что открывают голосовую щель, — тянут мышечные отростки назад, и черпаловидные хрящи разворачивают голосовые отростки наружу. Щель — широкий треугольник, больше сантиметра у основания.' },
   { id: 'quiet', name: 'Спокойное дыхание', ph: 0.32, sl: 0.06, vib: 0, mus: [], text: '<b>Спокойное дыхание.</b> Мышцы почти не работают: щель приоткрыта узким треугольником, при выдохе чуть сужается.' },
   { id: 'voice', name: 'Голос', ph: 0, sl: 0, vib: 1, mus: ['lca', 'ia', 'ta'], text: '<b>Голос.</b> Латеральные перстнечерпаловидные и поперечная черпаловидная мышцы смыкают складки, голосовая мышца внутри складки придаёт им упругость. Выдыхаемый воздух раздвигает их, упругость и подсос быстрого потока снова смыкают — сотни раз в секунду. Каждое размыкание — толчок давления: это и есть звук (здесь колебания замедлены).' },
-  { id: 'whisper', name: 'Шёпот', ph: -0.25, sl: 0.18, vib: 0, mus: ['lca'], text: '<b>Шёпот.</b> Складки сомкнуты спереди, но между черпаловидными хрящами остаётся треугольная щель. Воздух проходит с шумом, складки не колеблются — получается звук без тона.' },
+  { id: 'whisper', name: 'Шёпот', ph: -0.36, sl: 0.18, vib: 0, mus: ['lca'], text: '<b>Шёпот.</b> Складки сомкнуты спереди, но между черпаловидными хрящами остаётся треугольная щель. Воздух проходит с шумом, складки не колеблются — получается звук без тона.' },
 ];
 const LX_MUS = { ct: ['перстнещитовидная', '#FF7A6A'], pca: ['задняя перстнечерпаловидная', '#FF5A7A'], lca: ['латеральная перстнечерпаловидная', '#FF9A5A'], ia: ['поперечная черпаловидная', '#FFB060'], ta: ['щиточерпаловидная (голосовая)', '#FF8A9A'], ct2: ['перстнещитовидная', '#E85F52'] };
 function makeLarynx() {
@@ -26,7 +26,7 @@ function makeLarynx() {
   labLights(scene, 0x9fc8ff);
   const DK = !matchMedia('(max-width:700px)').matches, OFF = DK ? 2.6 : 0;
   const VIEW = {
-    struct: flyTarget(V3(-OFF * 1.4, DK ? 0.4 : 0.4, 0), DK ? V3(-OFF * 1.4 + 9.8, 4.6, 15.8) : V3(8, 5.0, 11.5)),
+    struct: flyTarget(V3(-OFF * 1.4, DK ? 0.45 : 1.1, 0), DK ? V3(-OFF * 1.4 + 12, 4.2, 14.4) : V3(7.2, 5.0, 10)),
     glottis: flyTarget(V3(-(DK ? 1.9 : 0), 0.9, 0.1 + (DK ? 0 : -0.5)), V3(-(DK ? 1.9 : 0), 9.8, 1.3 + (DK ? 0 : -0.5))),
     pitch: flyTarget(V3(0, DK ? 0.8 : 1.6, DK ? 3.2 : 0.4), DK ? V3(19, 2.4, 4.0) : V3(15, 3.2, 1.2)),
   };
@@ -48,15 +48,18 @@ function makeLarynx() {
     const top = 2.45 - 0.85 * Math.exp(-((u / 0.14) ** 2)) - 0.25 * Math.sin(Math.PI * Math.min(1, u / 0.85)) * 0.6, bot = 0.15 + 0.35 * u - 0.25 * Math.sin(Math.PI * u);
     return V3(x, bot + (top - bot) * v, z);
   }, 24, 10);
-  const thyM = mat('thyroid', '#7FC8E8', { side: THREE.DoubleSide });
+  const thyM = mat('thyroid', '#7FC8E8', { side: THREE.DoubleSide, op: 0.72 }); thyM.userData.op = true;   // полупрозрачный: видно надгортанник и складки за ним
   [1, -1].forEach((s) => {
     add(lamina(s), thyM, 'thyroid', inThy);
     const hu = add(new THREE.CylinderGeometry(0.09, 0.16, 0.85, 10), thyM, 'thyroid', inThy); hu.position.set(s * 1.6, 2.8, -0.6); hu.rotation.x = -0.15;   // верхний рог
     const hl = add(new THREE.CylinderGeometry(0.16, 0.1, 0.75, 10), thyM, 'thyroid', inThy); hl.position.set(s * 1.5, -0.15, -0.55);   // нижний рог — к суставу с перстневидным
   });
+  // угол щитовидного хряща у передней спайки — виден в режиме щели, когда сам хрящ скрыт
+  const angG = new THREE.Group(); ID.add(angG); angG.visible = false;
+  [1, -1].forEach((s) => add(surf((u, v) => { const uu = 0.22 * u, x = s * (0.05 + 1.62 * Math.pow(uu, 0.9)), z = 1.05 - 1.72 * Math.pow(uu, 1.15); return V3(x, 0.5 + 0.75 * v, z); }, 6, 3), thyM, 'thyroid', angG));
   // надгортанник — лепесток, вогнутый назад
   const epiM = mat('epig', '#F09AB8', { side: THREE.DoubleSide });
-  UPPER.push(add(surf((u, v) => { const y = 1.2 + 3.0 * v, w = 0.12 + 0.8 * Math.sin(Math.PI * Math.min(1, 0.15 + v * 0.95)) * (v > 0.85 ? 1 - (v - 0.85) * 3 : 1), x = (u - 0.5) * 2 * w; return V3(x, y, 0.72 - 0.75 * v * v + 0.35 * (x * x)); }, 12, 16), epiM, 'epig', inThy)); UPPER[UPPER.length - 1].renderOrder = 2;
+  UPPER.push(add(surf((u, v) => { const y = 1.2 + 3.0 * v, w = 0.12 + 0.8 * Math.sin(Math.PI * Math.min(1, 0.15 + v * 0.95)) * (v > 0.85 ? 1 - (v - 0.85) * 3 : 1), x = (u - 0.5) * 2 * w; return V3(x, y, 0.72 - 0.75 * v * v + 0.35 * (x * x)); }, 12, 16), epiM, 'epig', inThy));
   // подъязычная кость — подкова
   const hyM = mat('hyoid', '#E8DCC0');
   const hyC = new THREE.CatmullRomCurve3([V3(-1.95, 3.35, -1.55), V3(-1.45, 3.25, -0.2), V3(-0.7, 3.15, 0.95), V3(0, 3.12, 1.2), V3(0.7, 3.15, 0.95), V3(1.45, 3.25, -0.2), V3(1.95, 3.35, -1.55)]);
@@ -125,7 +128,7 @@ function makeLarynx() {
     st.t += dt; controls.autoRotate = st.rot && !st.fly; controls.autoRotateSpeed = 0.6; flyStep(st, camera, controls, dt);
     const G = LX_GL.find((g) => g.id === st.gl), tgt = st.mode === 'glottis' ? G : st.mode === 'pitch' ? { ph: 0, sl: 0, vib: 1 } : { ph: 0.32, sl: 0.06, vib: 0 };
     const k = Math.min(1, dt * 3); st.ph += (tgt.ph - st.ph) * k; st.sl += (tgt.sl - st.sl) * k; st.vib += (tgt.vib - st.vib) * k;
-    UPPER.forEach((m) => { m.visible = st.mode !== 'glottis'; }); inThy.visible = st.mode !== 'glottis'; rest.visible = st.mode === 'pitch'; tw.visible = st.mode !== 'pitch'; arc.visible = st.mode === 'pitch' && st.tilt > 0.03;
+    UPPER.forEach((m) => { m.visible = st.mode !== 'glottis'; }); inThy.visible = st.mode !== 'glottis'; angG.visible = st.mode === 'glottis'; rest.visible = st.mode === 'pitch'; tw.visible = st.mode !== 'pitch'; arc.visible = st.mode === 'pitch' && st.tilt > 0.03;
     const t0 = st.tilt; st.tilt += ((st.mode === 'pitch' ? 0.25 * st.pitch : 0) - st.tilt) * k; thyG.rotation.x = st.tilt; if (Math.abs(st.tilt - t0) > 1e-5 || !mem.userData.ok) { thyG.updateMatrixWorld(true); memUpd(); mem.userData.ok = true; }
     AR.forEach((a) => { a.g.rotation.y = a.s * st.ph; a.g.position.x = a.s * (0.3 + st.sl); a.g.updateMatrixWorld(true); });
     thyG.updateMatrixWorld(true);
@@ -153,7 +156,7 @@ function makeLarynx() {
       else if (id === 'pca') span(mm, V3(s * 0.35, -0.55, -1.16), mp, 0.13);
       else if (id === 'lca') span(mm, V3(s * 1.0, -0.42, 0.25), mp, 0.1);
       else { const o = AR[1 - i].g.localToWorld(V3(AR[1 - i].s * 0.05, 0.25, -0.2)); span(mm, ar.g.localToWorld(V3(s * 0.05, 0.25, -0.2)), o, 0.1); }
-      const act = on(id), want = st.mode === 'struct' ? (st.sel ? 0 : 0.0) : act ? 1 : 0.25;
+      const act = on(id), want = st.mode === 'struct' || (st.mode === 'glottis' && (id === 'ct' || id === 'ct2')) ? 0 : act ? 1 : 0.25;
       mm.material.opacity += ((st.mode === 'struct' ? 0 : want) - mm.material.opacity) * k; mm.visible = mm.material.opacity > 0.02;
       mm.material.emissiveIntensity = act ? 0.35 + 0.25 * Math.sin(st.t * 5) : 0.1;
     }));
@@ -165,7 +168,7 @@ function makeLarynx() {
   // ---------- выбор частей ----------
   function select(id) {
     st.sel = id === 'all' ? null : id;
-    Object.entries(mats).forEach(([pid, arr]) => arr.forEach((m) => { const onp = !st.sel || st.sel === pid; m.transparent = !onp || m.userData.op; m.opacity = onp ? (pid === 'trach' && m.side === THREE.DoubleSide && m.userData.op ? 0.55 : 1) : 0.15; m.depthWrite = onp; m.emissiveIntensity = st.sel === pid ? 0.25 : 0.05; m.needsUpdate = true; }));
+    Object.entries(mats).forEach(([pid, arr]) => arr.forEach((m) => { const onp = !st.sel || st.sel === pid; m.transparent = !onp || m.userData.op; m.opacity = onp ? (pid === 'trach' && m.side === THREE.DoubleSide && m.userData.op ? 0.55 : pid === 'thyroid' && !st.sel ? 0.72 : 1) : 0.15; m.depthWrite = onp && !(pid === 'thyroid' && !st.sel); m.emissiveIntensity = st.sel === pid ? 0.25 : 0.05; m.needsUpdate = true; }));
     memM.opacity = st.sel ? 0.05 : 0.4;
     refs.seg && refs.seg.sync(); refs.setInfo && refs.setInfo();
   }
@@ -182,16 +185,19 @@ function makeLarynx() {
   const inT = (v) => () => inThy.localToWorld(v.clone());
   const labels = [
     lb('подъязычная кость', inT(V3(-1.3, 3.3, 0.35)), P('hyoid').col, () => st.mode === 'struct' && (!st.sel || st.sel === 'hyoid')),
-    lb('надгортанник', inT(V3(0.35, 3.75, 0.0)), P('epig').col, () => st.mode !== 'glottis' && (st.sel === 'epig' || (!st.sel && DK))),
+    lb('надгортанник', () => inThy.localToWorld(st.mode === 'pitch' ? V3(-0.2, 3.4, 0.2) : V3(0.35, 3.75, 0.0)), P('epig').col, () => st.mode !== 'glottis' && (st.sel === 'epig' || (!st.sel && DK))),
     lb('щитовидный хрящ', inT(V3(-1.2, 1.6, 0.4)), P('thyroid').col, () => st.mode !== 'glottis' && (!st.sel || st.sel === 'thyroid')),
     lb('кадык', inT(V3(0, 2.0, 1.2)), P('thyroid').col, () => st.mode === 'struct' && st.sel === 'thyroid', true),
     lb('перстневидный хрящ', () => st.mode === 'pitch' ? V3(1.0, -0.95, 1.1) : V3(-0.95, -0.7, 0.55), P('cricoid').col, () => st.mode !== 'glottis' && (!st.sel || st.sel === 'cricoid')),
-    lb('черпаловидные хрящи', () => AR[1].g.localToWorld(V3(0, 0.75, 0)), P('aryt').col, () => !st.sel || st.sel === 'aryt'),
+    lb('черпаловидные хрящи', () => AR[1].g.localToWorld(V3(0, 0.75, 0)), P('aryt').col, () => (!st.sel || st.sel === 'aryt') && (st.mode !== 'pitch' || DK)),
     lb('голосовая складка', () => AR[1].g.localToWorld(AR[1].tip.clone()).lerp(inThy.localToWorld(AC.clone()), 0.5).add(V3(-0.2, 0.05, 0)), '#FFE8E0', () => st.mode === 'glottis' || st.sel === 'folds', true),
     lb('голосовая щель', () => inThy.localToWorld(AC.clone()).lerp(V3(0, 0.75, -0.5), 0.6), '#FFFFFF', () => st.mode === 'glottis' && st.gl !== 'voice'),
     lb('трахея', V3(-1.0, -2.6, 0.45), P('trach').col, () => st.mode === 'struct' && (!st.sel || st.sel === 'trach')),
-    lb('перстнещитовидный сустав', () => V3(1.8, -0.5, -0.5), '#FFFFFF', () => st.mode === 'pitch' && DK),
+    lb('перстнещитовидный сустав', () => V3(1.7, -0.5, -0.5), '#FFFFFF', () => st.mode === 'pitch' && DK),
     lb('исходное положение', V3(1.67, 2.6, -0.3), '#FFFFFF', () => st.mode === 'pitch' && st.pitch > 0.3),
+    lb('угол щитовидного хряща', () => inThy.localToWorld(AC.clone()).add(V3(0, 0, 0.1)), P('thyroid').col, () => st.mode === 'glottis'),
+    lb('спереди', V3(0, 0.75, 1.45), '#9AA4B4', () => st.mode === 'glottis'),
+    lb('сзади', V3(0, 0.75, -1.45), '#9AA4B4', () => st.mode === 'glottis'),
     lb('межхрящевая щель', V3(0, 0.75, -1.05), '#FFFFFF', () => st.mode === 'glottis' && st.gl === 'whisper'),
     lb('перстнещитовидная мышца', () => MUS.ct[0].position.clone().lerp(MUS.ct2[0].position, 0.5).add(V3(0, 0.35, 0.3)), LX_MUS.ct[1], () => st.mode === 'pitch', true),
     lb('звуковая волна', V3(0, 4.55, 1.4), '#9FD8FF', () => st.mode === 'pitch'),
@@ -199,9 +205,10 @@ function makeLarynx() {
   ];
   labels.forEach((l) => { if (typeof l.pos === 'function') { const f = l.pos; Object.defineProperty(l, 'pos', { get: f }); } });
   Object.defineProperty(labels.find((l) => l.text === 'перстневидный хрящ'), 'left', { get: () => st.mode === 'pitch' });
+  Object.defineProperty(labels.find((l) => l.text === 'надгортанник'), 'left', { get: () => st.mode === 'pitch' });
   // ---------- панель ----------
   const INTRO = '<b>Гортань</b> — хрящевая коробка в начале дыхательных путей: пропускает воздух, при глотании закрывает вход в трахею и делает голос. Каркас — три непарных хряща (щитовидный, перстневидный, надгортанник) и три парных (черпаловидные, рожковидные, клиновидные). Нажмите на хрящ или выберите его ниже.';
-  const PITCH = '<b>Высота голоса.</b> Перстнещитовидная мышца наклоняет щитовидный хрящ вперёд и вниз — он поворачивается в перстнещитовидном суставе. Складки удлиняются и натягиваются, колеблются чаще — голос выше. Голосовая мышца внутри складки, наоборот, укорачивает и расслабляет их. Громкость задаёт сила выдоха.';
+  const PITCH = '<b>Высота голоса.</b> Перстнещитовидная мышца наклоняет щитовидный хрящ вперёд и вниз — он поворачивается в перстнещитовидном суставе. Складки удлиняются и натягиваются, колеблются чаще — голос выше. Голосовая мышца внутри складки, наоборот, укорачивает складку и меняет её жёсткость. Громкость задаёт сила выдоха.';
   const refs = {};
   function ui(el) {
     const ib = infoBox('1 1 440px');
