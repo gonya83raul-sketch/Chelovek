@@ -29,7 +29,7 @@ function makePharynx() {
   const sideL = new THREE.DirectionalLight(0xfff0e6, 0.0); sideL.position.set(9, 6, 4); scene.add(sideL);
   const DK = !matchMedia('(max-width:700px)').matches;
   const VIEW = {
-    sec: flyTarget(DK ? V3(0, -9.6, 3.7) : V3(0, -5.3, -0.2), DK ? V3(48, -8.6, 5.6) : V3(31, -4.9, 0.2)),
+    sec: flyTarget(DK ? V3(0, -9.6, 3.7) : V3(0, -5.3, -0.2), DK ? V3(48, -9.4, 5.6) : V3(31, -5.2, 0.2)),
     mus: flyTarget(DK ? V3(7.5, -7.6, -9.2) : V3(0, -6.8, -2.5), DK ? V3(-30.5, -2.1, -48.2) : V3(-30, -4.3, -31.6)),
     back: flyTarget(DK ? V3(8.6, -8.9, -2.5) : V3(0, -6.8, -2.5), DK ? V3(8.6, -4.7, -57.5) : V3(0, -4.1, -44)),
   };
@@ -237,7 +237,7 @@ function makePharynx() {
   surf((u, w) => { const ph = u * 2 * Math.PI; return V3(1.0 * Math.sin(ph), -14.85 - 3.75 * w, -1.0 + 1.0 * Math.cos(ph)); }, 32, 10, mphys('#C8D8E4', { r: 0.5, em: 0.08, side: THREE.DoubleSide, op: 0.85 }));
   for (let k = 0; k < 5; k++) { const tg = new THREE.TorusGeometry(1.03, 0.07, 6, 36, Math.PI * 1.6); tg.rotateZ(-0.3 * Math.PI); const tr = new THREE.Mesh(tg, carM); tr.rotation.x = Math.PI / 2; tr.position.set(0, -15.3 - 0.75 * k, -1.0); MUS.add(tr); }
   const esoM = mphys('#C85A64', { r: 0.55, em: 0.1, side: THREE.DoubleSide });
-  surf((u, w) => { const ph = u * 2 * Math.PI, y = -14.4 - 4.2 * w; return V3(1.0 * Math.sin(ph), y, -3.25 - 0.85 * Math.cos(ph)); }, 32, 10, esoM);
+  surf((u, w) => { const ph = u * 2 * Math.PI, y = -14.4 - 4.2 * w; return V3(0.85 * Math.sin(ph), y, -3.25 - 0.72 * Math.cos(ph)); }, 32, 10, esoM);
 
   // =================== загрузка скана ===================
   loadSkeletonStatic(new THREE.Group(), new THREE.MeshBasicMaterial()).then((out) => {
