@@ -160,8 +160,8 @@ function makeMenin() {
   const OPH = (s) => [...side(s, [[2.6, 3.0, 1.6], [2.0, 2.4, -1.4]]), CAVC(s).clone().add(V3(0, 0.25, 1.15))];
   const SINM = Object.fromEntries(MN_SIN.map((s) => [s.id, mphys(s.col, { r: 0.35, cc: 0.4, em: 0.22 })]));
   const SINCURVES = [];   // для потока: { c, id, r }
-  const cavFar = SINM.cav.clone();   // клиновидно-теменной синус и глазная вена правой стороны — при выборе пещеристого приглушены (тянутся под текст)
-  const sinus = (pts, r, id, mat) => { const c = cr3(pts); const m = new THREE.Mesh(taperTube(c, typeof r === 'function' ? r : () => r, 64, 10), mat || SINM[id]); m.userData.pick = 's:' + id; pick.push(m); SKG.add(m); SINCURVES.push({ c, id, len: c.getLength(), far: mat === cavFar }); return m; };
+  const FARM = [], cavFar = SINM.cav.clone();   // клиновидно-теменной синус и глазная вена правой стороны — при выборе пещеристого приглушены (тянутся под текст)
+  const sinus = (pts, r, id, mat) => { const c = cr3(pts); const m = new THREE.Mesh(taperTube(c, typeof r === 'function' ? r : () => r, 64, 10), mat || SINM[id]); m.userData.pick = 's:' + id; pick.push(m); SKG.add(m); if (mat === cavFar) FARM.push(m); SINCURVES.push({ c, id, len: c.getLength(), far: mat === cavFar }); return m; };
   sinus(SSSP, (u) => 0.22 + 0.3 * u, 'sss');
   sinus(ISSP, (u) => 0.12 + 0.08 * u, 'iss'); sinus(STR, 0.3, 'iss');
   const galv = sinus([V3(XM, 5.6, -7.9), V3(XM, 6.5, -9.4), GAL], 0.26, 'iss');
@@ -207,14 +207,17 @@ function makeMenin() {
   camera.position.copy(VIEW.lay.pos); controls.target.copy(VIEW.lay.target);
 
   // =================== подсветка ===================
+  const DIMC = new THREE.Color(0x3a3f4a);
+  const dimM = (m, on) => { if (!m.userData.c0) m.userData.c0 = m.color.clone(); m.color.copy(m.userData.c0); if (!on) m.color.lerp(DIMC, 0.7); m.emissiveIntensity = on ? m.userData.em0 : 0; };
   function colorAll() {
     const L = st.mode !== 'sin'; SLAB.visible = L; SKG.visible = !L;
-    Object.values(LM).forEach((m) => { const p = m.userData.part, on = st.mode !== 'lay' || !st.sel || st.sel === p; const base = m.userData.op0; setOp(m, on ? base : Math.min(base, 0.12)); m.emissiveIntensity = st.mode === 'lay' && st.sel === p ? 0.32 : m.userData.em0; });
-    const sOn = st.mode !== 'lay' || !st.sel || st.sel === 'sss'; setOp(sssM, sOn ? 1 : 0.15); setOp(veinM, sOn || st.sel === 'bone' || st.sel === 'scalp' ? 1 : 0.2);
-    setOp(granM, st.mode !== 'lay' || !st.sel || st.sel === 'arach' || st.sel === 'sss' ? 1 : 0.15); setOp(artM, st.mode !== 'lay' || !st.sel || ['dura', 'arach', 'pia'].includes(st.sel) ? 1 : 0.2);
+    Object.values(LM).forEach((m) => { const p = m.userData.part, on = st.mode !== 'lay' || !st.sel || st.sel === p; if (!m.userData.c0) m.userData.c0 = m.color.clone();   // невыбранные слои — серые, но непрозрачные (иначе срез просвечивает насквозь)
+      m.color.copy(m.userData.c0); if (!on) m.color.lerp(DIMC, 0.7); setOp(m, m.userData.op0); m.emissiveIntensity = st.mode === 'lay' && st.sel === p ? 0.32 : on ? m.userData.em0 : 0; });
+    const sOn = st.mode !== 'lay' || !st.sel || st.sel === 'sss'; dimM(sssM, sOn); dimM(veinM, sOn || st.sel === 'bone' || st.sel === 'scalp');
+    dimM(granM, st.mode !== 'lay' || !st.sel || st.sel === 'arach' || st.sel === 'sss'); dimM(artM, st.mode !== 'lay' || !st.sel || ['dura', 'arach', 'pia'].includes(st.sel));
     trabM.opacity = st.mode !== 'lay' || !st.sel || st.sel === 'arach' ? 0.7 : 0.1;
     MN_SIN.forEach((s) => { const m = SINM[s.id], on = !st.sin || st.sin === s.id; setOp(m, on ? 1 : st.sin === 'cav' ? (s.id === 'pet' ? 0.3 : 0.06) : 0.18); m.emissiveIntensity = st.sin === s.id ? 0.5 : 0.22; });
-    setOp(cavFar, st.sin === 'cav' ? 0.07 : !st.sin ? 1 : 0.18); cavFar.emissiveIntensity = 0.22;
+    setOp(cavFar, !st.sin ? 1 : 0.18); FARM.forEach((m) => { m.visible = st.sin !== 'cav'; }); cavFar.emissiveIntensity = 0.22;
     setOp(cavM, !st.sin || st.sin === 'cav' ? (st.sin === 'cav' ? 0.3 : 0.42) : 0.1); CAVN.forEach((m) => { m.visible = st.sin === 'cav' && !m.userData.far; }); SKS.visible = st.sin !== 'cav';
     setOp(durM, st.sin === 'cav' ? 0.04 : st.sin && st.sin !== 'sss' && st.sin !== 'iss' && st.sin !== 'tr' ? 0.1 : 0.26);
   }
