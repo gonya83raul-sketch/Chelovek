@@ -62,10 +62,10 @@ function makeMouth() {
   { const fl = new THREE.DirectionalLight(0xfff0ea, 1.3); fl.position.set(0, -8, 10); scene.add(fl); }   // подсветка снизу-спереди — видно нёбо
   const DK = !matchMedia('(max-width:700px)').matches;
   const VIEW = {
-    mouth: flyTarget(V3(DK ? -2.4 : 0, DK ? -1.6 : -0.6, -1.2), DK ? V3(-2.4, -5.2, 19.8) : V3(0, -3.6, 15.2)),
-    palate: flyTarget(V3(DK ? -2.4 : 0, DK ? -1.0 : -0.5, -1.2), DK ? V3(-2.4, -9.6, 22) : V3(0, -7.0, 14.5)),
+    mouth: flyTarget(V3(DK ? -1.95 : 0, DK ? -1.45 : -0.6, -1.2), DK ? V3(-1.95, -4.85, 18.6) : V3(0, -3.6, 15.2)),
+    palate: flyTarget(V3(DK ? -2.4 : 0, DK ? -1.0 : -0.5, -1.2), DK ? V3(-2.4, -9.4, 20) : V3(0, -7.0, 14.5)),
     tongue: flyTarget(V3(DK ? -2.8 : 0, DK ? -2.4 : -2.6, -1.4), DK ? V3(-2.8, 10, 17.8) : V3(0, 7.5, 14)),
-    teeth: flyTarget(V3(DK ? -4.0 : 0, 0, DK ? 0.9 : 0), DK ? V3(-4.0, 20, 6.0) : V3(0, 17.6, 3.6)),
+    teeth: flyTarget(V3(DK ? -4.0 : 0, 0, DK ? 0.9 : 0), DK ? V3(-4.0, 20, 6.0) : V3(0, 16.6, 3.4)),
     tooth: flyTarget(V3(DK ? -3.0 : 0, DK ? -1.7 : 0.8, 0), DK ? V3(-0.5, -0.7, 27.5) : V3(2, 1.8, 20)),
   };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 200); camera.position.copy(VIEW.mouth.pos);
@@ -240,7 +240,7 @@ function makeMouth() {
   // ---------- обновление ----------
   const ageWord = (a) => (a < 2 ? 'мес' : a % 10 >= 2 && a % 10 <= 4 && (a < 10 || a > 20) ? 'года' : a % 10 === 1 && a !== 11 ? 'год' : 'лет');
   const ageFmt = (v) => { const a = 25 * v * v; return a < 2 ? Math.round(a * 12) + ' ' + ageWord(a) : Math.floor(a) + ' ' + ageWord(Math.floor(a)); };
-  const grow = (a) => 0.76 + 0.24 * cl((a - 0.5) / 13.5) ** 0.8;
+  const grow = (a) => 0.82 + 0.18 * cl((a - 0.5) / 13.5) ** 0.8;
   const W = V3(0, 0, 0), q = new THREE.Quaternion(), qa = new THREE.Quaternion(), POSE = { u: V3(0, 0, 0), l: V3(0, 0, 0) };
   function rebuildArches() {
     LJ.updateMatrixWorld(true); UJ.updateMatrixWorld(true);
@@ -328,7 +328,7 @@ function makeMouth() {
     lb('шов нёба', uw(V3(0, 2.0, -0.9)), P('hard').col, () => sel('hard')),
     lb('мягкое нёбо', uw(V3(1.0, 1.75, -3.05)), P('soft').col, () => (none() && DK) || sel('soft')),
     lb('язычок', uw(V3(0, 0.35, -3.6)), P('soft').col, () => none() || sel('soft')),
-    lb('нёбная миндалина', () => ARCHES[1].tons.position.clone().add(V3(-0.2, -0.2, 0.2)), P('tons').col, () => (none() && DK) || sel('tons'), true),
+    lb('нёбная миндалина', () => ARCHES[1].tons.position.clone().add(V3(-0.35, -0.25, 0.25)), P('tons').col, () => (none() && DK) || sel('tons'), true),
     lb('нёбно-язычная дужка', () => ARCHES[0].pg.geometry.parameters ? ARCHES[0].pg.geometry.parameters.path.getPoint(0.55) : V3(), P('tons').col, () => sel('tons')),
     lb('нёбно-глоточная дужка', () => ARCHES[1].pp.geometry.parameters ? ARCHES[1].pp.geometry.parameters.path.getPoint(0.3) : V3(), P('tons').col, () => sel('tons'), true),
     lb('язык', tTop(0.45, 0.3), P('tongue').col, () => none()),
@@ -351,10 +351,10 @@ function makeMouth() {
     lb('подъязычная железа', lw(V3(-1.0, -1.95, 0.55)), P('glands').col, () => sel('glands'), true),
     lb('подъязычный сосочек', lw(V3(0.22, -1.38, 1.62)), '#F5DA8A', () => sel('glands')),
     // зубы и возраст
-    lb('верхние зубы', () => UA.localToWorld(V3(0, 0, -2.75)), '#C8D2E0', () => T2()),
-    lb('нижние зубы', () => LA.localToWorld(V3(0, 0, -2.7)), '#C8D2E0', () => T2()),
+    lb('верхние зубы', () => UA.localToWorld(V3(0, 0, DK ? -2.75 : -2.5)), '#C8D2E0', () => T2()),
+    lb('нижние зубы', () => LA.localToWorld(V3(0, 0, DK ? -2.7 : -2.45)), '#C8D2E0', () => T2()),
     lb('резцы', slotW('l', 1, 0, 0.35), MO_TYPES[0].col, () => Ttype('inc') && (anyT(0, false) || anyT(0, true))),
-    lb('клык', slotW('l', 1, 2, 0.8), MO_TYPES[1].col, () => Ttype('can') && (anyT(2, false) || anyT(2, true))),
+    lb('клык', slotW('l', -1, 2, -0.6), MO_TYPES[1].col, () => Ttype('can') && (anyT(2, false) || anyT(2, true))),
     lb('премоляры', slotW('l', -1, 3, -0.7), MO_TYPES[2].col, () => Ttype('pm') && anyT(3, false)),
     lb('молочные', slotW('l', -1, 4, -0.7), '#C8E4FF', () => Ttype('mol') && anyT(3, true)),
     lb('моляры', slotW('l', -1, 5, -0.75), MO_TYPES[3].col, () => Ttype('mol') && anyT(5, false)),
