@@ -36,7 +36,7 @@ function makeNose() {
   const VIEW = {
     cav: flyTarget(DK ? V3(0, 0.1, 7.6) : V3(0, 1.0, 0.9), DK ? V3(30.5, 1.4, 9.2) : V3(21, 1.6, 2.8)),
     sin: flyTarget(DK ? V3(-8.1, 4.0, 0.5) : V3(0, 1.8, 0.5), DK ? V3(-14.0, 6.7, 46) : V3(-5.5, 3.4, 33)),
-    sph: flyTarget(DK ? V3(0, 1.2, 6.5) : V3(0, 0.8, 0.5), DK ? V3(44, 5.0, 13) : V3(30, 6, 18)),
+    sph: flyTarget(DK ? V3(0, 1.5, 6.5) : V3(0, 0.8, 0.5), DK ? V3(44, 5.3, 13) : V3(30, 6, 18)),
     age: flyTarget(DK ? V3(-8.1, 4.0, 0.5) : V3(0, 1.8, 0.5), DK ? V3(-12.0, 6.7, 46.5) : V3(-4.5, 3.0, 33)),
   };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VIEW.cav.pos);
@@ -143,7 +143,7 @@ function makeNose() {
     for (let n = 0; n < p.count; n++) { const a = (n % 49) / 48, b = Math.floor(n / 49) / Math.round(18 * phi1), sf = Math.sin(Math.PI * phi1 * b); const c = a < 0.34 ? bone : a < 0.6 ? lat : sf > 0.42 ? alar : fat; cols.push(c.r, c.g, c.b); }
     g.setAttribute('color', new THREE.Float32BufferAttribute(cols, 3)); return g;
   };
-  const noseSkin = mat('ext', '#E8B49A', { side: THREE.DoubleSide, r: 0.7, k: 0.9 }), noseCart = mat('ext', '#FFFFFF', { side: THREE.DoubleSide, r: 0.45, cc: 0.4, k: 0.85, em: 0.04 }); noseCart.vertexColors = true; noseCart.emissive.set(0x000000);
+  const noseSkin = mat('ext', '#E8B49A', { side: THREE.DoubleSide, r: 0.7, k: 0.9 }), noseCart = mat('ext', '#FFFFFF', { side: THREE.DoubleSide, r: 0.75, cc: 0, k: 0.85, em: 0.04 }); noseCart.vertexColors = true; noseCart.emissive.set(0x000000);
   const nose = add(noseGeo(0.5), noseSkin, 'ext', C1);
   const noseL = add(noseGeo(1), noseCart, 'ext', C1);   // целый нос — только при выборе «Наружный нос»
   { const P = noseL.geometry.attributes.position, bot = []; let yb = 0; for (let n = 48; n < P.count; n += 49) { bot.push(new THREE.Vector2(P.getX(n), P.getZ(n))); yb += P.getY(n); } yb /= bot.length;
@@ -267,7 +267,7 @@ function makeNose() {
     if (st.mode === 'cav') dimAll((pid) => pid.startsWith('S:') || !st.sel || st.sel === pid || (pid === 'wall' && ['conch', 'meat', 'olf'].includes(st.sel)));
     else dimAll((pid) => (pid.startsWith('S:') ? !st.sin || pid === 'S:' + st.sin : pid === 'conch' ? false : true));
   }
-  const VSEL = { ext: [V3(-5.9, -1.0, 4.8), V3(-14.5, -9.5, 16.0)], olf: [V3(0, 0.8, 4.9), V3(33, 2.8, 5.7)], phar: [V3(0, -1.85, 3.5), V3(35, -0.9, 5.1)] };
+  const VSEL = { ext: [V3(-3.7, -1.0, 6.8), V3(-12.3, -9.5, 18.0)], olf: [V3(0, 0.62, 4.9), V3(33, 2.8, 5.7)], phar: [V3(0, -1.85, 3.5), V3(35, -0.9, 5.1)] };
   function select(id) {
     st.sel = id === 'all' ? null : id;
     if (st.mode === 'cav') { const v = DK && VSEL[st.sel]; st.fly = v ? flyTarget(v[0], v[1]) : VIEW.cav; }
@@ -290,6 +290,7 @@ function makeNose() {
   const lb = (text, pos, color, show, left) => ({ text, pos, color, left, show: () => st.labels && show() });
   const M1 = () => st.mode === 'cav', sel = (id) => M1() && st.sel === id, none = () => M1() && !st.sel;
   const M23 = () => st.mode !== 'cav', sinOn = (id) => M23() && (st.mode === 'age' ? growF(id) > 0.05 : !st.sin || st.sin === id);
+  const sinL = (id, i, off) => () => { const o = SIN[id].list[i]; return o.position.clone().addScaledVector(off, o.scale.x); };
   const labels = [
     lb('верхняя раковина', V3(-0.2, 1.3, -0.2), P('conch').col, () => none() || sel('conch')),
     lb('средняя раковина', V3(-0.3, 0.0, 0.6), P('conch').col, () => none() || sel('conch')),
@@ -317,7 +318,7 @@ function makeNose() {
     lb('зона Киссельбаха', V3(0.2, -2.1, 4.1), '#FF8A94', () => sel('sept')),
     lb('клиновидно-нёбная артерия', V3(0.2, -0.9, 1.2), '#FF8A94', () => sel('sept'), true),
     lb('передняя решётчатая артерия', V3(0.2, 0.4, 3.4), '#FF8A94', () => sel('sept')),
-    lb('полулунная щель', () => hiatC.getPoint(0.4), '#FFE27A', () => sel('meat')),
+    lb('полулунная щель', () => hiatC.getPoint(0.78), '#FFE27A', () => sel('meat')),
     lb('решётчатый пузырь', onWall(1.9, -0.05, 0.4), '#FFC8CC', () => sel('meat'), true),
     lb('устье верхнечелюстной', OPEN[3].p, SINC.max, () => sel('meat'), true),
     lb('лобно-носовой канал', OPEN[0].p.clone().add(V3(0, 0.45, 0)), SINC.fr, () => sel('meat')),
@@ -333,10 +334,10 @@ function makeNose() {
     lb('глоточная миндалина', V3(0.1, -1.9, -3.6), P('phar').col, () => sel('phar')),
     lb('мягкое нёбо', V3(0.1, -3.9, -2.2), '#E8A0AA', () => sel('phar')),
     // пазухи
-    lb('лобная', V3(-0.9, 6.3, 3.4), SINC.fr, () => sinOn('fr')),
-    lb('решётчатые', V3(-1.35, 2.4, 1.6), SINC.eth, () => sinOn('eth'), true),
-    lb('верхнечелюстная', V3(-3.6, -1.0, 1.9), SINC.max, () => sinOn('max'), true),
-    lb('клиновидная', V3(-1.2, 0.3, -2.3), SINC.sph, () => sinOn('sph') && (st.mode === 'age' || st.sin === 'sph' || DK), true),
+    lb('лобная', sinL('fr', 1, V3(-0.1, 1.3, 0)), SINC.fr, () => sinOn('fr')),
+    lb('решётчатые', sinL('eth', 0, V3(-1.35, 2.4, 1.6)), SINC.eth, () => sinOn('eth'), true),
+    lb('верхнечелюстная', sinL('max', 0, V3(-0.45, 0.15, 0.7)), SINC.max, () => sinOn('max'), true),
+    lb('клиновидная', sinL('sph', 1, V3(-0.45, 0.05, 0)), SINC.sph, () => sinOn('sph') && (st.mode === 'age' || st.sin === 'sph' || DK), true),
     lb('средний носовой ход', V3(-1.4, -0.4, 2.0), '#FFFFFF', () => st.mode === 'sin' && ['fr', 'max', 'eth'].includes(st.sin)),
     lb('верхний носовой ход', V3(-0.65, 0.72, 0.0), '#FFFFFF', () => st.mode === 'sin' && st.sin === 'eth', true),
     lb('глазница', V3(-3.4, 3.1, 2.6), '#C8D2E0', () => M23() && DK && !st.sin),
