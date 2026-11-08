@@ -24,7 +24,7 @@ const ME_OTO = [
   { id: 'aom', name: 'Острый отит', col: '#C84A3C', ud: -0.3, bul: -1.7, cone: 0, op: 0.98, text: '<b>Острый средний отит.</b> Гной в полости выпячивает перепонку наружу. Она красная и мутная, рукоятка молоточка и световой конус не видны. Боль, жар, снижение слуха; чаще у детей после простуды. Обычно проходит за несколько дней, при тяжёлом течении назначают антибиотики.' },
   { id: 'ome', name: 'Экссудат', col: '#C99A50', ud: 0.35, bul: 0.2, cone: 0.35, op: 0.88, text: '<b>Экссудативный отит.</b> За перепонкой жидкость без острого воспаления. Перепонка янтарная, сквозь неё видны уровень жидкости и пузырьки воздуха. Слух снижен, боли нет. Это частая причина тугоухости у детей; если жидкость держится месяцами, в перепонку ставят шунты.' },
   { id: 'retr', name: 'Втяжение', col: '#BDB6AE', ud: 1.25, bul: 0.55, cone: 0.25, op: 0.9, text: '<b>Втянутая перепонка.</b> Труба не открывается, воздух из полости постепенно всасывается слизистой, и давление в ней падает. Перепонка втягивается: рукоятка кажется короче и горизонтальнее, короткий отросток выступает, световой конус дробится или исчезает.' },
-  { id: 'perf', name: 'Перфорация', col: '#C9C4BC', ud: 0, bul: 0, cone: 0.6, op: 0.9, text: '<b>Перфорация</b> — отверстие в натянутой части после отита или травмы (удар по уху, перепад давления, ватная палочка). Сквозь него видна розовая медиальная стенка. Маленькие отверстия обычно зарастают сами за несколько недель, большие закрывают операцией (мирингопластика).' },
+  { id: 'perf', name: 'Перфорация', col: '#C9C4BC', ud: 0, bul: 0, cone: 0, op: 0.9, text: '<b>Перфорация</b> — отверстие в натянутой части после отита или травмы (удар по уху, перепад давления, ватная палочка). Сквозь него видна розовая медиальная стенка. Маленькие отверстия обычно зарастают сами за несколько недель, большие закрывают операцией (мирингопластика).' },
 ];
 function makeMidEar() {
   rnd = mulberry(2311);
@@ -67,8 +67,9 @@ function makeMidEar() {
   const cTens = new THREE.Color('#C9C4BC'), cFlac = new THREE.Color('#D6A49A'), cTmp = new THREE.Color(), cCond = new THREE.Color('#C9C4BC');
   // световой конус и квадранты
   const coneGeo = new THREE.BufferGeometry(), NC = 14; coneGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(NC * 2 * 3), 3));
+  coneGeo.setAttribute('color', new THREE.BufferAttribute(Float32Array.from({ length: NC * 2 * 3 }, (_, i) => { const k = Math.floor(i / 6); return Math.pow(1 - k / (NC - 1), 0.8) * (0.55 + 0.45 * Math.sin(Math.PI * Math.min(1, k / 3 + 0.2))); }), 3));
   { const ix = []; for (let k = 0; k < NC - 1; k++) { const a = 2 * k; ix.push(a, a + 2, a + 1, a + 1, a + 2, a + 3); } coneGeo.setIndex(ix); }
-  const coneM = new THREE.MeshBasicMaterial({ color: 0xfff8ea, transparent: true, opacity: 0.85, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide });
+  const coneM = new THREE.MeshBasicMaterial({ color: 0xfff8ea, vertexColors: true, transparent: true, opacity: 0.85, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide });
   const CONE = new THREE.Mesh(coneGeo, coneM); CONE.renderOrder = 5; ROOT.add(CONE);
   const quadGeo = new THREE.BufferGeometry(); quadGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(4 * 24 * 3), 3));
   const QUAD = new THREE.LineSegments(quadGeo, new THREE.LineBasicMaterial({ color: 0x9fe0ff, transparent: true, opacity: 0.9, depthTest: false })); QUAD.renderOrder = 6; ROOT.add(QUAD);
@@ -95,7 +96,7 @@ function makeMidEar() {
     dGeo.attributes.position.needsUpdate = true; dGeo.attributes.color.needsUpdate = true; dGeo.computeVertexNormals(); dGeo.computeBoundingSphere();
     // конус: сектор от пупка вперёд-вниз (у правого уха — на 5 часах)
     const cp = coneGeo.attributes.position.array, ph0 = -0.62;
-    for (let k = 0; k < NC; k++) { const r = 0.14 + 0.8 * k / (NC - 1), w = 0.05 + 0.2 * k / (NC - 1);
+    for (let k = 0; k < NC; k++) { const r = 0.14 + 0.58 * k / (NC - 1), w = 0.05 + 0.16 * k / (NC - 1);
       [ph0 - w, ph0 + w].forEach((ph, s) => { const [a, b] = abOf(r, ph); dPos(a, b, r, v).addScaledVector(nD, 0.04); cp.set([v.x, v.y, v.z], (2 * k + s) * 3); }); }
     coneGeo.attributes.position.needsUpdate = true; coneGeo.computeBoundingSphere();
     // квадранты: линия вдоль рукоятки и перпендикуляр через пупок
@@ -174,8 +175,8 @@ function makeMidEar() {
 
   // =================== мышцы ===================
   const musM = { tt: mphys('#E8505E', { r: 0.5, em: 0.1 }), sp: mphys('#E8505E', { r: 0.5, em: 0.1 }) }, tenM = mphys('#F2EAE0', { r: 0.4, em: 0.06 });
-  const mus = (g, m) => { const ms = new THREE.Mesh(g, m); ms.userData.pick = 'mus'; pick.push(ms); ROOT.add(ms); return ms; };
-  const TT0 = V3(7.6, 0.6, 15.5), TTS = cr3([TT0, V3(6.2, 1.7, 9.5), V3(5.0, 2.7, 4.6), CF.clone().add(V3(0.1, 0, 0.7))]);
+  const MUSL = [], mus = (g, m) => { const ms = new THREE.Mesh(g, m); ms.userData.pick = 'mus'; pick.push(ms); ROOT.add(ms); MUSL.push(ms); return ms; };
+  const TT0 = V3(6.6, 1.2, 11.5), TTS = cr3([TT0, V3(5.9, 2.0, 8.0), V3(5.0, 2.7, 4.6), CF.clone().add(V3(0.1, 0, 0.7))]);
   const TTM = mus(taperTube(TTS, (u) => 0.25 + 0.55 * Math.sin(Math.PI * Math.min(1, u * 1.1)), 40, 10), musM.tt);
   const MNk = HP[1].clone().lerp(MN, 0.5);
   mus(new THREE.TubeGeometry(cr3([CF.clone().add(V3(0.05, 0, 0.3)), CF.clone().add(V3(-0.3, 0.1, -0.15)), CF.clone().lerp(MNk, 0.5).add(V3(0, 0.2, -0.2)), MNk]), 20, 0.14, 6), tenM);
@@ -185,7 +186,7 @@ function makeMidEar() {
 
   // =================== нервы ===================
   const nvM = mphys('#F4C542', { r: 0.45, em: 0.18 }), nvM2 = mphys('#F4C542', { r: 0.45, em: 0.18 }), ixM = mphys('#E8D070', { r: 0.5, em: 0.14 });
-  const nv = (pts, r, m = nvM) => { const ms = new THREE.Mesh(new THREE.TubeGeometry(cr3(pts), 80, r, 8), m); ms.userData.pick = 'nrv'; pick.push(ms); ROOT.add(ms); return ms; };
+  const NM = [], nv = (pts, r, m = nvM) => { const ms = new THREE.Mesh(new THREE.TubeGeometry(cr3(pts), 80, r, 8), m); ms.userData.pick = 'nrv'; pick.push(ms); ROOT.add(ms); NM.push(ms); return ms; };
   const GG = V3(8.4, 5.6, 4.6), FCP = [GG, V3(6.2, 4.7, 2.8), V3(5.15, 4.3, 0.6), V3(5.0, 4.2, -2.4), V3(4.7, 3.9, -4.6), V3(4.2, 2.6, -6.6), V3(3.9, -1.5, -7.1), V3(3.6, -8, -7.2), V3(3.4, -14, -7.3)];
   nv(FCP, 0.42);
   const ggM = new THREE.Mesh(new THREE.SphereGeometry(0.75, 16, 12), nvM); ggM.position.copy(GG); ggM.userData.pick = 'nrv'; pick.push(ggM); ROOT.add(ggM);
@@ -198,9 +199,9 @@ function makeMidEar() {
 
   // =================== сосуды (ориентиры) ===================
   const vesM = (c) => mphys(c, { r: 0.45, em: 0.08 });
-  const ICA = new THREE.Mesh(new THREE.TubeGeometry(cr3([V3(5.5, -18, 8.6), V3(5.6, -8, 8.8), V3(6.0, -2.5, 9.4), V3(8.0, 0.2, 12.5), V3(10.5, 0.8, 14.5)]), 60, 2.0, 14), vesM('#C8343C')); ROOT.add(ICA);
-  const JUG = new THREE.Mesh(new THREE.SphereGeometry(3.6, 28, 18), vesM('#4A6FC8')); JUG.position.set(3.6, -10.6, -1.4); JUG.scale.set(1, 0.8, 1.1); ROOT.add(JUG);
-  const JUG2 = new THREE.Mesh(new THREE.TubeGeometry(cr3([V3(3.6, -11, -1.4), V3(3.8, -16, 0.2), V3(4.0, -22, 1.5)]), 24, 2.6, 12), JUG.material); ROOT.add(JUG2);
+  const ICA = new THREE.Mesh(new THREE.TubeGeometry(cr3([V3(5.5, -14, 8.6), V3(5.6, -8, 8.8), V3(6.0, -2.5, 9.4), V3(8.0, 0.2, 12.5), V3(10.5, 0.8, 14.5)]), 60, 2.0, 14), vesM('#C8343C')); ROOT.add(ICA);
+  const JUG = new THREE.Mesh(new THREE.SphereGeometry(3.6, 28, 18), vesM('#4A6FC8')); JUG.position.set(3.6, -9.9, -1.4); JUG.scale.set(0.9, 0.7, 1.0); ROOT.add(JUG);
+  const JUG2 = new THREE.Mesh(new THREE.TubeGeometry(cr3([V3(3.6, -11, -1.4), V3(3.8, -14, 0.2), V3(4.0, -17, 1.0)]), 24, 2.6, 12), JUG.material); ROOT.add(JUG2);
 
   // =================== слуховая труба, пещера, ячейки ===================
   const airM = mphys('#7FD6FF', { r: 0.3, cc: 0.4, em: 0.18, side: THREE.DoubleSide, op: 0.55 }), airS = mphys('#7FD6FF', { r: 0.3, em: 0.12, op: 0.3, side: THREE.DoubleSide });
@@ -250,10 +251,10 @@ function makeMidEar() {
 
   // =================== виды ===================
   const CC = V3(2.0, 1.6, 0);
-  const VP = DK ? { lat: [CC, V3(-1, 0.32, 0.38), 72, 8, -2], ant: [CC, V3(-0.3, 0.22, 1), 68, 7.6, -2], med: [CC, V3(1, 0.3, -0.35), 72, 8, -2],
-      snd: [V3(1.6, 3.4, 0), V3(-0.35, 0.2, 1), 44, 4.8, -1.2], oto: [V3(0, 0, 0), nD, 25, 2.8, -0.3], prs: [V3(9, -9, 12), V3(-0.85, 0.35, 0.6), 105, 11.5, -3.5] }
+  const VP = DK ? { lat: [CC, V3(-1, 0.32, 0.38), 76, 8.4, -0.2], ant: [CC, V3(-0.3, 0.22, 1), 72, 8, -0.2], med: [CC, V3(1, 0.3, -0.35), 76, 8.4, -0.2],
+      snd: [V3(1.6, 3.4, 0), V3(-0.35, 0.2, 1), 44, 4.8, -1.2], oto: [V3(0, 0, 0), nD, 25, 2.8, -0.3], prs: [V3(6, -5, 8), V3(-0.75, 0.75, 0.35), 76, 11.5, 0.5] }
     : { lat: [CC, V3(-1, 0.32, 0.38), 52, 0, -1.6], ant: [CC, V3(-0.3, 0.22, 1), 50, 0, -1.6], med: [CC, V3(1, 0.3, -0.35), 52, 0, -1.6],
-      snd: [V3(1.6, 3.4, 0), V3(-0.35, 0.2, 1), 34, 0, -0.8], oto: [V3(0, 0, 0), nD, 19, 0, -0.6], prs: [V3(7, -7, 10), V3(-0.85, 0.35, 0.6), 100, 0, -3] };
+      snd: [V3(1.6, 3.4, 0), V3(-0.35, 0.2, 1), 34, 0, -0.8], oto: [V3(0, 0, 0), nD, 27, 0, -0.6], prs: [V3(6, -6, 9), V3(-0.75, 0.75, 0.35), 90, 0, -1] };
   const VIEW = {}; Object.entries(VP).forEach(([k, a]) => { VIEW[k] = vw(...a); });
   const HIDE = { lat: [], ant: ['ant'], med: ['med'], snd: ['ant', 'roof', 'floor', 'post', 'lat'], oto: [], prs: [] };
   const curView = () => (st.mode === 'cav' ? st.view : st.mode === 'snd' ? 'snd' : st.mode === 'oto' ? 'oto' : 'prs');
@@ -272,7 +273,7 @@ function makeMidEar() {
     [musM.tt, musM.sp, tenM].forEach((m) => { setOp(m, pOn('mus') ? 1 : 0.15); m.emissiveIntensity = cav && st.sel === 'mus' ? 0.4 : m.userData.em0; });
     [nvM, nvM2, ixM].forEach((m) => { setOp(m, pOn('nrv') ? 1 : 0.15); m.emissiveIntensity = cav && st.sel === 'nrv' ? 0.45 : m.userData.em0; });
     setOp(airM, pOn('air') ? (prs ? 0.7 : 0.55) : 0.12); setOp(airS, pOn('air') ? 0.3 : 0.08); airM.emissiveIntensity = cav && st.sel === 'air' ? 0.4 : 0.18;
-    AIR.visible = !oto && (cav || prs); ICA.visible = JUG.visible = JUG2.visible = cav || prs; fcanal.visible = !oto;
+    AIR.visible = !oto && (cav || prs); ICA.visible = JUG.visible = JUG2.visible = cav || prs; fcanal.visible = !oto; [...NM, ...MUSL, ggM].forEach((m) => { m.visible = !oto; });
     [ostium, tvp].forEach((m) => { m.visible = prs || (cav && st.sel === 'air'); });
     cells.visible = cav && st.sel === 'air'; CANAL.visible = oto; otoL.intensity = oto ? 45 : 0;
     const showDrum = !(cav && !st.drum); DRUM.visible = ann.visible = showDrum;
@@ -280,14 +281,14 @@ function makeMidEar() {
     setOp(drumM, oto ? o.op : cav && st.wall === 'lat' ? 0.7 : cav && (st.sel || st.wall) ? 0.22 : st.mode === 'snd' ? 0.35 : 0.5);
     drumM.emissiveIntensity = cav && st.wall === 'lat' ? 0.3 : 0.05; drumM.emissive.set(cav && st.wall === 'lat' ? '#F0C8A8' : '#3a3430');
     cCond.set(oto ? o.col : '#C9C4BC'); const pf = oto && st.oto === 'perf'; if (pf !== perfOn) { perfOn = pf; dGeo.setIndex(pf ? IDX1 : IDX0); }
-    CONE.visible = oto; QUAD.visible = oto && st.quad; FLUID.visible = BUB.visible = oto && st.oto === 'ome';
+    CONE.visible = oto && o.cone > 0; coneM.opacity = 0.9 * o.cone; QUAD.visible = oto && st.quad; FLUID.visible = BUB.visible = oto && st.oto === 'ome';
     updateDrum(true);
   }
 
   // =================== анимация ===================
   const qC = new THREE.Quaternion(), qS = new THREE.Quaternion(), mtx = new THREE.Matrix4(), dum = new THREE.Object3D();
   const bubs = Array.from({ length: NB }, (_, i) => ({ u: i / NB, on: 0 }));
-  const DPMAX = 120, dP = () => DPMAX * st.desc - st.pMid;
+  const DPMAX = 150, dP = () => DPMAX * st.desc - st.pMid;
   function update(dt) {
     st.t += dt; controls.autoRotate = st.rot && !st.fly && st.mode !== 'oto'; controls.autoRotateSpeed = 0.6; flyStep(st, camera, controls, dt);
     const k = 1 - Math.exp(-dt * 3);
@@ -298,7 +299,7 @@ function makeMidEar() {
       if (st.openT > 0) { st.openT -= dt; st.pMid += (DPMAX * st.desc - st.pMid) * (1 - Math.exp(-dt * 7)); }
       else if (dP() < -18) { st.openT = 0.4; }   // при подъёме лишний воздух выходит сам
       st.open += ((st.openT > 0 ? 1 : 0) - st.open) * (1 - Math.exp(-dt * 10)); buildTube();
-      const d = dP(); ud = 0.02 * d; bul = 0.01 * d;
+      const d = dP(); ud = 0.026 * d; bul = 0.012 * d;
     } else if (st.open > 0.001) { st.open = 0; buildTube(); }
     st.ref += (ref - st.ref) * k;
     if (st.mode === 'snd') st.ud = ud; else st.ud += (ud - st.ud) * k;
@@ -340,7 +341,7 @@ function makeMidEar() {
   const wp = (p) => () => CH.localToWorld(rest(p));
   const labels = [
     lb('молоточек', wp(MH.clone().add(V3(-0.6, 0.9, 0.6))), '#F2E6C8', () => pOn('oss')() || snd()),
-    lb('наковальня', wp(IB.clone().add(V3(0, 1.1, -0.8))), '#F2E6C8', () => pOn('oss')() || snd(), true),
+    lb('наковальня', wp(IB.clone().add(V3(0.3, 0.6, -0.9))), '#F2E6C8', () => pOn('oss')() || snd(), true),
     lb('стремечко', () => STP.localToWorld(FP.clone().lerp(SH, 0.5).sub(SH).add(V3(0, 0.9, 0))), '#F2E6C8', () => pOn('oss')() || snd()),
     lb('рукоятка молоточка', wp(HP[5].clone().addScaledVector(nD, 0.3)), '#F2E6C8', () => (cav() && st.sel === 'oss') || (oto() && st.oto === 'norm'), true),
     lb('пупок перепонки', () => UMB.clone().addScaledVector(nD, 0.3).add(V3(0, -0.2, 0)), '#F2E6C8', () => oto() && (st.oto === 'norm' || st.oto === 'retr')),
@@ -350,8 +351,8 @@ function makeMidEar() {
     lb('световой конус', () => { const [a, b] = abOf(0.72, -0.62); return dPos(a, b, 0.72).addScaledVector(nD, 0.2); }, '#FFF4D8', () => oto() && st.oto === 'norm'),
     lb('уровень жидкости', () => dPos(2.8, -1.15, 0.8).addScaledVector(nD, 0.2), '#E8C890', () => oto() && st.oto === 'ome'),
     lb('пузырьки воздуха', () => dPos(-1.6, -2.4, 0.6).addScaledVector(nD, 0.2), '#E8C890', () => oto() && st.oto === 'ome', true),
-    lb('отверстие', () => dPos(PERF[0], PERF[1] - 0.6, 0.6).addScaledVector(nD, 0.2), '#E8A0A0', () => oto() && st.oto === 'perf'),
-    lb('мыс (медиальная стенка)', () => V3(MX(-1.4, 1.6), -1.4, 1.6), '#E8A0A0', () => oto() && st.oto === 'perf', true),
+    lb('отверстие', () => dPos(PERF[0] + 0.5, PERF[1] - 0.9, 0.7).addScaledVector(nD, 0.2), '#E8A0A0', () => oto() && st.oto === 'perf'),
+    lb('мыс (медиальная стенка)', () => V3(MX(-1.2, 1.0), -1.2, 1.0), '#E8A0A0', () => oto() && st.oto === 'perf', true),
     lb('передний квадрант', () => dPos(2.6, 0.4, 0.6).addScaledVector(nD, 0.2), '#9FE0FF', () => oto() && st.quad),
     lb('задний квадрант', () => dPos(-2.6, 0.4, 0.6).addScaledVector(nD, 0.2), '#9FE0FF', () => oto() && st.quad, true),
     lb('мышца, напрягающая перепонку', () => TTS.getPoint(0.45), '#F08A8A', () => (cav() && st.sel === 'mus' && !st.wall) || (snd() && DK)),
@@ -360,26 +361,25 @@ function makeMidEar() {
     lb('коленце', () => GG.clone(), '#F4C542', () => cav() && st.sel === 'nrv'),
     lb('барабанная струна', () => CHT[3].clone().add(V3(0, 0.2, 0)), '#F4C542', () => cav() && st.sel === 'nrv' && !st.wall, true),
     lb('барабанное сплетение (IX)', () => PRS(-2.4, 0.6), '#E8D070', () => cav() && st.sel === 'nrv'),
-    lb('слуховая труба', () => TUBC.getPoint(cav() ? 0.18 : 0.55), '#9FE0FF', () => pOn('air', true)() || prs()),
+    lb('слуховая труба', () => TUBC.getPoint(cav() ? 0.18 : 0.52), '#9FE0FF', () => pOn('air', true)() || prs()),
     lb('сосцевидная пещера', () => ANT.clone().add(V3(0, 2.2, 0)), '#9FE0FF', () => pOn('air', true)() || (prs() && DK), true),
     lb('ячейки сосцевидного отростка', () => V3(0, -3, -16), '#9FE0FF', () => cav() && st.sel === 'air', true),
-    lb('костная часть', () => TUBC.getPoint(0.15), '#9FE0FF', () => prs() && DK, true),
-    lb('перешеек', () => TUBC.getPoint(0.36), '#9FE0FF', () => prs()),
-    lb('хрящевая часть', () => TUBC.getPoint(0.72), '#9FE0FF', () => prs(), true),
+        lb('перешеек', () => TUBC.getPoint(0.36), '#9FE0FF', () => prs() && DK && !st.child, true),
+    lb('хрящевая часть', () => TUBC.getPoint(0.66), '#9FE0FF', () => prs() && DK && !st.child, true),
     lb('глоточное отверстие', () => TUBC.getPoint(1), '#E8A0A8', () => prs() || (cav() && st.sel === 'air')),
     lb('мышца, напрягающая нёбную занавеску', () => (tvp ? TUBC.getPoint(0.85).add(V3(-4.4, -6, 3)) : V3()), '#F08A8A', () => prs(), true),
     lb('барабанная перепонка', () => dPos(-2.6, -2.0, 0.6).addScaledVector(nD, 0.5), '#E8E2D8', () => (cav() && !st.sel && !st.wall && st.drum && DK) || prs() || snd(), true),
-    lb('внутренняя сонная артерия', () => V3(6.0, -6, 9.0), '#F08A8A', wOn('ant')),
-    lb('луковица яремной вены', () => V3(3.6, -12.4, 1.6), '#9CB8FF', wOn('floor')),
+    lb('внутренняя сонная артерия', () => V3(6.0, -6, 9.0), '#F08A8A', () => wOn('ant')() || (cav() && !st.sel && !st.wall && DK)),
+    lb('луковица яремной вены', () => V3(3.6, -12.4, 1.6), '#9CB8FF', () => wOn('floor')() || (cav() && !st.sel && !st.wall && DK), true),
     lb('мыс', () => V3(MX(-1.2, 0.6), -1.2, 0.6), '#E8A0A0', wOn('med')),
     lb('овальное окно', () => FP.clone().add(V3(0, 1.2, 0)), '#E8A0A0', wOn('med')),
     lb('круглое окно', () => RW.clone().add(V3(-0.2, -0.8, 0)), '#E8A0A0', wOn('med'), true),
-    lb('канал лицевого нерва', () => V3(5.0, 4.3, -2.4), '#F4C542', wOn('med')),
+    lb('канал лицевого нерва', () => V3(5.0, 4.6, -3.6), '#F4C542', wOn('med')),
     lb('выступ латерального канала', () => V3(MX(6.4, -3.2), 6.4, -3.2), '#E8A0A0', wOn('med'), true),
     lb('вход в пещеру', () => V3(0.4, 7.2, Z0), '#A8E0B0', wOn('post'), true),
     lb('пирамидальное возвышение', () => PYR.clone().add(V3(0, -0.6, 1)), '#A8E0B0', wOn('post')),
     lb('вход в трубу', () => TUB0.clone(), '#F08A8A', wOn('ant'), true),
-    lb('полуканал мышцы', () => V3(4.2, 1.9, Z1), '#F08A8A', wOn('ant')),
+    lb('полуканал мышцы-напрягателя', () => V3(4.2, 1.9, Z1), '#F08A8A', wOn('ant')),
     lb('средняя черепная ямка', () => V3(1.2, Y1 + 1.4, 0), '#C9B8F0', wOn('roof')),
     lb('надбарабанный карман', () => V3(-1.2, 7.4, 2.0), '#F0C8A8', wOn('lat'), true),
     lb('барабанная перепонка', () => dPos(-2.6, -2.0, 0.6).addScaledVector(nD, 0.5), '#F0C8A8', wOn('lat')),
@@ -423,9 +423,9 @@ function makeMidEar() {
         box.append(h('div', { class: 'glabel' }, 'Перепонка'), h('div', { class: 'gctl' }, refs.oseg));
         view.append(toggle('Квадранты', () => st.quad, (v) => { st.quad = v; colorAll(); }));
       } else {
-        box.append(h('div', { class: 'glabel' }, 'Снижение самолёта'), h('div', { class: 'gctl' }, range('meDesc', 0, 1, 0.01, () => st.desc, (v) => { st.desc = v; }, (v) => `${Math.round(2400 * (1 - v))} м`),
+        box.append(h('div', { class: 'glabel' }, 'Высота самолёта'), h('div', { class: 'gctl' }, range('meDesc', 0, 1, 0.01, () => st.desc, (v) => { st.desc = v; }, (v) => `${Math.round(2400 * (1 - v))} м`),
           button('Сглотнуть', () => swallow(false), true), button('Вальсальва', () => swallow(true))));
-        view.append(toggle('Ребёнок', () => st.child, (v) => { st.child = v; buildTubeAll(); colorAll(); refs.setInfo(); }), refs.rot);
+        view.append(toggle('Ребёнок', () => st.child, (v) => { st.child = v; st.msg = null; buildTubeAll(); colorAll(); refs.setInfo(); }), refs.rot);
       }
       view.append(refs.lab);
     };
@@ -451,7 +451,7 @@ function makeMidEar() {
     return [['Перепад', Math.round(Math.abs(dP())), 'мм рт. ст.'], ['Труба', st.open > 0.4 ? 'открыта' : 'сомкнута', '']];
   }
   const self = {
-    labelBg: true, mobZoom: 0.78, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null,
+    labelBg: true, mobZoom: 0.9, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null,
     get accent() { return st.mode === 'cav' ? (st.sel ? ME_PART.find((p) => p.id === st.sel).col : st.wall ? ME_WALL.find((w) => w.id === st.wall).col : '#F2E6C8') : st.mode === 'snd' ? '#9FE0FF' : st.mode === 'oto' ? '#E8B4A8' : '#7FD6FF'; },
     kicker: 'Тело · системы органов', title: 'Среднее ухо',
     lede: 'Три косточки размером с рисовое зерно не дают звуку отразиться от жидкости внутреннего уха, две крошечные мышцы гасят грохот, а слуховая труба выравнивает давление, когда мы глотаем.',
@@ -468,10 +468,9 @@ function makeMidEar() {
         <li><b>Отосклероз</b> — разрастание кости вокруг основания стремечка, которое перестаёт двигаться. Слух снижается постепенно; помогает операция — стремечко заменяют протезом.</li>
         <li><b>Холестеатома</b> — «карман» кожи, врастающий в полость, обычно из ненатянутой части перепонки. Он медленно разрушает косточки и стенки, поэтому его удаляют хирургически.</li>
         <li><b>Паралич лицевого нерва (Белла)</b>: нерв отекает в узком канале. Кроме лица страдают вкус (барабанная струна) и стременная мышца — звуки кажутся слишком громкими.</li></ul></div>
-      <div><h2>Условности</h2><ul><li>Полость увеличена ≈ в 5 раз, стенки показаны полупрозрачными пластинами без толщины; слизистая, связки косточек, складки и сосуды полости не показаны. Колебания косточек преувеличены во много тысяч раз (на деле — доли микрометра) и замедлены. Перепады давления в режиме «Давление» упрощены.</li></ul></div>
+      <div><h2>Условности</h2><ul><li>Полость увеличена ≈ в 5 раз, стенки показаны полупрозрачными пластинами без толщины; слизистая, связки косточек, складки и сосуды полости не показаны. Колебания косточек преувеличены во много тысяч раз (на деле — доли микрометра) и замедлены. Пропорции полости схематичны (на деле она уже), числа давления приблизительны.</li></ul></div>
       <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>4</code> режим · <code>Esc</code> сбросить выбор</li><li><code>V</code> вид · <code>R</code> вращение · <code>N</code> подписи · <code>G</code> сглотнуть</li></ul></div>`
   };
-  window.__me = { camera, controls, st, VIEW, VP, vw, scene, setView, setMode, CANAL, DRUM };
   colorAll(); updateDrum(true);
   return self;
 }

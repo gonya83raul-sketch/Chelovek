@@ -489,7 +489,6 @@ function makeOrbit() {
       <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>3</code> режим · <code>Esc</code> сбросить выбор</li><li><code>V</code> вид · <code>R</code> вращение · <code>N</code> подписи</li></ul></div>`,
   };
   geomUpdate(true); colorMus(); buildNerves(); buildCiliary();
-  window.__orb = { camera, controls, st, VIEW, VP, vw, scene, setView, setMode };
   setMode('mus'); st.fly = null; camera.position.copy(VIEW.obl.pos); controls.target.copy(VIEW.obl.target);
   return self;
 }
