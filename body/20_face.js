@@ -25,17 +25,17 @@ const FA_MUS = [
 const FA_EXP = [
   { id: 'rest', name: 'Покой', act: {} },
   { id: 'smile', name: 'Улыбка', act: { zmaj: 1, zmin: 0.5, ris: 0.45, oculi: 0.35, llab: 0.25 }, text: '<b>Улыбка.</b> Большая скуловая мышца тянет углы рта вверх и в стороны, малая скуловая и поднимающая верхнюю губу приподнимают губу, мышца смеха растягивает рот. В искренней улыбке включается и глазничная часть круговой мышцы глаза — у глаз собираются «гусиные лапки».' },
-  { id: 'surp', name: 'Удивление', act: { front: 1, oculi: -0.7 }, text: '<b>Удивление.</b> Лобные брюшка поднимают брови, лоб собирается в поперечные морщины. Глаза широко открываются: верхнее веко поднимает уже не мимическая мышца, а мышца глазницы (её иннервирует глазодвигательный нерв). Рот часто приоткрыт.' },
+  { id: 'surp', name: 'Удивление', act: { front: 1, oculi: -0.7 }, text: '<b>Удивление.</b> Лобные брюшка поднимают брови, лоб собирается в поперечные морщины. Глаза широко открываются: верхнее веко поднимает уже не мимическая мышца, а мышца, поднимающая верхнее веко (её иннервирует глазодвигательный нерв). Рот часто приоткрыт.' },
   { id: 'frown', name: 'Хмурость', act: { corr: 1, proc: 1, oculi: 0.3 }, text: '<b>Хмурость.</b> Мышцы, сморщивающие брови, сводят брови к середине и опускают их — появляются вертикальные складки, а мышца гордецов опускает кожу межбровья — на переносице появляются поперечные. Глазничная часть круговой мышцы прищуривает глаза.' },
   { id: 'sad', name: 'Грусть', act: { dao: 1, ment: 0.6, corr: 0.5, front: 0.35, dli: 0.3 }, text: '<b>Грусть.</b> Мышцы, опускающие углы рта, тянут их вниз; подбородочная поднимает кожу подбородка и выпячивает нижнюю губу. Внутренние концы бровей поднимаются (медиальные волокна лобного брюшка) и сдвигаются к середине (мышцы, сморщивающие брови).' },
   { id: 'squeeze', name: 'Зажмуриться', act: { oculi: 1, corr: 0.7, proc: 0.7, nasal: 0.7, llab: 0.5, zmaj: 0.2 }, text: '<b>Зажмуривание.</b> Круговые мышцы глаз сокращаются целиком, вместе с глазничной частью: веки плотно смыкаются, брови опускаются, кожа вокруг глаз собирается в складки. С ними работают мышцы, сморщивающие брови, мышца гордецов, носовая и поднимающая верхнюю губу.' },
   { id: 'pucker', name: '«Трубочка»', act: { oris: 1, ment: 0.4, bucc: 0.5 }, text: '<b>«Трубочка».</b> Круговая мышца рта сжимает губы и вытягивает их вперёд — для свиста, поцелуя, питья через соломинку. Щёчные мышцы прижимают щёки к зубам, подбородочная поднимает кожу подбородка.' },
 ];
 const FA_MAS = [
-  { id: 'temp', name: 'Височная', col: '#F0A050', text: '<b>Височная мышца</b> веером начинается в височной ямке и от височной фасции; её сухожилие проходит под скуловой дугой к венечному отростку. Передние волокна поднимают челюсть, задние, почти горизонтальные, оттягивают её назад. Когда стискиваешь зубы, она напрягается на виске.' },
+  { id: 'temp', name: 'Височная мышца', col: '#F0A050', text: '<b>Височная мышца</b> веером начинается в височной ямке и от височной фасции; её сухожилие проходит под скуловой дугой к венечному отростку. Передние волокна поднимают челюсть, задние, почти горизонтальные, оттягивают её назад. Когда стискиваешь зубы, она напрягается на виске.' },
   { id: 'mass', name: 'Жевательная', col: '#E8505E', text: '<b>Жевательная мышца</b> — самая сильная из четырёх: от скуловой дуги к наружной поверхности ветви и угла челюсти. Поверхностная часть идёт косо назад, глубокая — почти вертикально. Мощно поднимает челюсть; её легко нащупать на щеке, стиснув зубы.' },
   { id: 'medp', name: 'Медиальная крыловидная', col: '#B87BE0', text: '<b>Медиальная крыловидная мышца</b> — от ямки между пластинками крыловидного отростка и от бугра верхней челюсти к внутренней поверхности угла челюсти. Поднимает челюсть, помогает выдвигать её и сдвигать в противоположную сторону. С жевательной образует петлю вокруг угла.' },
-  { id: 'latp', name: 'Латеральная крыловидная', col: '#45C4B0', text: '<b>Латеральная крыловидная мышца</b> идёт почти горизонтально: верхняя головка — от большого крыла клиновидной кости к суставному диску и капсуле, нижняя — от крыловидного отростка к шейке мыщелка. Выдвигает челюсть, начинает открывание рта, сдвигает челюсть в сторону.' },
+  { id: 'latp', name: 'Латеральная крыловидная', col: '#45C4B0', text: '<b>Латеральная крыловидная мышца</b> идёт почти горизонтально: верхняя головка — от большого крыла клиновидной кости к суставному диску и капсуле, нижняя — от крыловидного отростка к шейке мыщелка. Выдвигает челюсть, начинает открывание рта; сокращаясь с одной стороны, сдвигает челюсть в противоположную.' },
 ];
 const FA_MOVE = [
   { id: 'close', name: 'Сомкнуть', text: '<b>Смыкание.</b> Челюсть поднимают височные, жевательные и медиальные крыловидные мышцы. Жевательная и медиальная крыловидная охватывают угол челюсти с двух сторон, как петля. Сила смыкания на коренных зубах у взрослого — обычно 40–80 кг.' },
@@ -56,12 +56,12 @@ function makeFace() {
   const sideL = new THREE.DirectionalLight(0xfff0e6, 0.0); sideL.position.set(-7, 9, 7); scene.add(sideL);   // подсветка сбоку — для режимов 2–3
   const DK = !matchMedia('(max-width:700px)').matches;
   const VIEW = {
-    mim: flyTarget(DK ? V3(-12, -3.4, 2) : V3(0, -2.2, 1.5), DK ? V3(-31, 3.1, 55) : V3(-11, 1.8, 47)),
-    front: flyTarget(DK ? V3(-9.5, -2.4, 2) : V3(0, -3, 1.5), DK ? V3(-17, 4.1, 67) : V3(-4, 1, 58)),   // анфас — для паралича
+    mim: flyTarget(DK ? V3(-12, -3.0, 2) : V3(0, -1.4, 1.5), DK ? V3(-31, 3.1, 55) : V3(-11, 1.8, 47)),
+    front: flyTarget(DK ? V3(-9.5, -1.9, 2) : V3(0, -3, 1.5), DK ? V3(-17, 4.1, 67) : V3(-4, 1, 58)),   // анфас — для паралича
     chew: flyTarget(DK ? V3(-5, -0.6, -10.0) : V3(-5, -1.9, -2.0), DK ? V3(-66, 0.6, 2) : V3(-55, 1.6, 12)),
     chewF: flyTarget(DK ? V3(-8, -1.8, 0) : V3(0, -3, 0), DK ? V3(-16, 0.5, 64) : V3(-5, -1, 60)),   // анфас — сдвиг в сторону
-    ptg: flyTarget(DK ? V3(-4, -2.8, -11.5) : V3(-4, -4, -2.0), DK ? V3(-56, -9, 7) : V3(-50, -6, 15)),
-    tmj: flyTarget(DK ? V3(0, -2.5, -6.6) : V3(0, -0.45, 0.75), DK ? V3(-48, -1.5, -6.6) : V3(-34, -0.45, 0.75)),
+    ptg: flyTarget(DK ? V3(-4, -1.1, -12.0) : V3(-4, -4, -2.0), DK ? V3(-61, -8.5, 8.5) : V3(-50, -6, 15)),
+    tmj: flyTarget(DK ? V3(0, -2.55, -6.5) : V3(0, -0.5, 0.9), DK ? V3(-48, -1.55, -6.5) : V3(-40, -0.5, 0.9)),
   };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.mim.pos);
   const controls = makeControls(camera, VIEW.mim.target); controls.minDistance = 8; controls.maxDistance = 90;
@@ -117,11 +117,11 @@ function makeFace() {
     zmaj: { E: [[D(5.4, -0.9, 2.2), D(6.0, -1.4, 1.6)], [D(2.5, -5.05, 4.3), D(2.7, -5.5, 4.1)]], off: [0.42, 1.0], t: 0.15, k: 0.2, nu: 6, nv: 18 },
     ris: { E: [[D(6.9, -5.0, -1.5), D(6.9, -6.4, -1.6)], [D(2.75, -5.35, 4.0), D(2.8, -5.75, 4.0)]], off: [1.2, 0.98], t: 0.07, k: 0.18, nu: 5, nv: 16 },
     oris: { ring: { c: [0, -5.82], zin: 5, zout: 5, ri: [2.35, 0.13, 0.13], ro: [3.35, 1.75, 1.85], cri: [0.95, 0.36, 0.36], cro: [2.35, 1.5, 1.55], whole: true }, off: [0.85, 0.5], offc: [1.7, 0.85], t: 0.15, nu: 56, nv: 6 },
-    dao: { E: [[D(2.5, -10.45, 3.8), D(3.6, -10.3, 3.0), D(4.6, -9.8, 2.2)], [D(2.75, -5.95, 4.1), D(2.8, -6.05, 4.1), D(2.85, -6.15, 4.1)]], off: [0.42, 0.98], t: 0.12, k: 0.16, nu: 7, nv: 16 },
-    dli: { E: [[D(0.7, -9.4, 4.4), D(2.3, -9.5, 4.0)], [D(0.5, -6.6, 4.8), D(1.8, -6.5, 4.6)]], off: [0.26, 0.9], t: 0.1, k: 0.18, nu: 6, nv: 12 },
-    ment: { E: [[D(0.22, -7.4, 5), D(0.9, -7.6, 5)], [D(0.18, -9.9, 5), D(1.15, -10.2, 4.6)]], off: [0.3, 1.0], t: 0.14, k: 0.22, nu: 5, nv: 12 },
+    dao: { E: [[D(2.5, -10.45, 3.8), D(3.6, -10.3, 3.0), D(4.6, -9.8, 2.2)], [D(2.75, -5.95, 4.1), D(2.8, -6.05, 4.1), D(2.85, -6.15, 4.1)]], off: [0.42, 0.98], t: 0.12, k: 0.16, nu: 10, nv: 16 },
+    dli: { E: [[D(0.7, -9.4, 4.4), D(2.3, -9.5, 4.0)], [D(0.5, -6.6, 4.8), D(1.8, -6.5, 4.6)]], off: [0.26, 0.9], t: 0.1, k: 0.18, nu: 9, nv: 12 },
+    ment: { E: [[D(0.22, -7.4, 5), D(0.9, -7.6, 5)], [D(0.18, -9.9, 5), D(1.15, -10.2, 4.6)]], off: [0.3, 1.0], t: 0.14, k: 0.22, nu: 8, nv: 12 },
     bucc: { E: [[D(4.4, -3.6, 0.2), D(4.6, -5.6, -0.2), D(4.4, -7.4, 0.2)], [D(2.95, -5.05, 3.6), D(3.0, -5.6, 3.7), D(2.95, -6.1, 3.6)]], off: [0.3, 0.62], t: 0.12, k: 0.12, nu: 7, nv: 14 },
-    plat: { E: [[D(1.6, -14.2, 3.6), D(4.0, -14.2, 3.0), D(6.4, -14.0, -0.4)], [D(1.6, -10.9, 3.9), D(3.6, -10.6, 2.6), D(5.5, -10.2, -1.8)], [D(1.8, -8.0, 4.4), D(2.9, -6.7, 4.0), D(5.8, -8.2, -0.8)]], off: [0.6, 0.45, 0.62], free: [1, 0, 0], t: 0.06, k: 0.06, nu: 8, nv: 18 },
+    plat: { E: [[D(1.6, -14.2, 3.6), D(4.0, -14.2, 3.0), D(6.4, -14.0, -0.4)], [D(1.6, -10.9, 3.9), D(3.6, -10.6, 2.6), D(5.5, -10.2, -1.8)], [D(1.8, -8.0, 4.4), D(2.9, -6.7, 4.0), D(5.8, -8.2, -0.8)]], off: [0.6, 0.45, 0.62], free: [1, 0, 0], t: 0.06, k: 0.06, nu: 12, nv: 18 },
   };
   const MUS = {};   // id → { meshes, mats, anchor }
   const MCOL = ['#D9564C', '#C9484C', '#E06A5A'];
@@ -150,7 +150,7 @@ function makeFace() {
     const { G, nu, nv, ring } = gr, idx = (u, v) => v * nu + ((u % nu) + nu) % nu;
     let P = G.map((p, i) => { const sp = snap(p, gr.OFF[i]); return sp ? p.clone().lerp(sp, gr.W[i]) : p.clone(); });
     for (let it = 0; it < 2; it++) { const Q = P.map((p) => p.clone()); for (let v = 1; v < nv - 1; v++) for (let u = ring ? 0 : 1; u < (ring ? nu : nu - 1); u++) { const q = Q[idx(u, v)].multiplyScalar(0.5); [idx(u - 1, v), idx(u + 1, v), idx(u, v - 1), idx(u, v + 1)].forEach((j) => q.addScaledVector(P[j], 0.125)); } P = Q; }
-    P = P.map((p, i) => { if (gr.W[i] < 0.5) return p; const sp = snap(p, gr.OFF[i]); return sp && sp.clone().sub(V3(0, sp.y, AXZ)).length() > p.clone().sub(V3(0, p.y, AXZ)).length() ? sp : p; });   // сглаживание стягивает ленту внутрь — вытолкнуть обратно на поверхность
+    P = P.map((p, i) => { const sp = snap(p, gr.OFF[i]); if (!sp) return p; const rl = (q) => Math.hypot(q.x, q.z - AXZ), rp = rl(p), rs = rl(sp); return rp < rs ? sp : rp > rs + 0.3 ? snap(p, gr.OFF[i] + 0.3) : p; });   // сглаживание стягивает ленту внутрь — вытолкнуть обратно на поверхность
     return slabPos(P, gr.T, nu, nv, ring);
   }
   function gridNormals(P, nu, nv, ring) {
@@ -298,7 +298,7 @@ function makeFace() {
   }
 
   // ---------- разрез сустава (режим 3): плоские пластины в плоскости zy, ×3 ----------
-  const TJ = new THREE.Group(); scene.add(TJ); TJ.scale.setScalar(3);
+  const TJK = 3.5, TJ = new THREE.Group(); scene.add(TJ); TJ.scale.setScalar(TJK);
   const ring2 = (pts, sharp, n = 120) => (sharp ? pts.map(([z, y]) => new THREE.Vector2(z, y)) : new THREE.CatmullRomCurve3(pts.map(([z, y]) => V3(z, y, 0)), true, 'centripetal').getSpacedPoints(n).slice(0, -1).map((p) => new THREE.Vector2(p.x, p.y)));
   const sag = (pts, x0, x1, m, parent, o = {}) => { const sh = new THREE.Shape(ring2(pts, o.sharp, o.n)); (o.holes || []).forEach((hp) => sh.holes.push(new THREE.Path(ring2(hp, false, 60)))); const g = new THREE.ExtrudeGeometry(sh, { depth: x1 - x0, bevelEnabled: false, curveSegments: 6 }); g.rotateY(-Math.PI / 2); g.translate(x1, 0, 0); const ms = new THREE.Mesh(g, m); parent.add(ms); return ms; };
   const dense = (pts, n) => new THREE.CatmullRomCurve3(pts.map(([z, y]) => V3(z, y, 0)), false, 'centripetal').getSpacedPoints(n).map((p) => [p.x, p.y]);   // гладкий контур + острые углы окна
@@ -309,7 +309,7 @@ function makeFace() {
   sag(dense([[-1.7, 1.5], [-1.3, 1.08], [-0.6, 1.02], [0.2, 1.06], [0.9, 0.86], [1.6, 0.8], [2.4, 0.98], [3.8, 1.05]], 60).concat([[3.8, 2.2], [-1.7, 2.2]]), -0.13, -0.11, mphys('#8A7C8C', { r: 0.9, k: 0.8, em: 0.05 }), TJ, { sharp: true });   // средняя черепная ямка (мозг)
   const JS = new THREE.Group(); TJ.add(JS);
   sag(dense([[-0.72, -2.9], [-0.6, -2.0], [-0.5, -1.3], [-0.5, -0.7], [-0.5, -0.2], [-0.38, 0.3], [-0.12, 0.53], [0.15, 0.54], [0.38, 0.38], [0.5, 0.05], [0.47, -0.4], [0.45, -0.75], [0.62, -1.1], [1.0, -1.32], [1.45, -1.38], [1.85, -1.18], [2.2, -0.75], [2.45, -0.25], [2.62, 0.05], [2.78, -0.1], [2.82, -0.7], [2.72, -1.6], [2.6, -2.9]], 180).concat([[1.5, -2.95], [0.4, -2.95]]), -0.1, 0.1, tJawM, JS, { sharp: true });   // мыщелок, вырезка и венечный отросток
-  tJawM.clippingPlanes = [new THREE.Plane(V3(0, 1, 0), 2.5 * 3)];   // ветвь обрезана по нижнему краю «окна» разреза
+  tJawM.clippingPlanes = [new THREE.Plane(V3(0, 1, 0), 2.5 * TJK)];   // ветвь обрезана по нижнему краю «окна» разреза
   const ellR = (a) => 1 / Math.sqrt((Math.cos(a) / 0.5) ** 2 + (Math.sin(a) / 0.55) ** 2);
   const DTH = [[8, 0.1], [20, 0.2], [35, 0.17], [55, 0.09], [75, 0.15], [100, 0.3], [125, 0.27], [150, 0.13]];
   const discLoc = (deg, outer) => { const a = deg * Math.PI / 180, r = ellR(a) + 0.03 + (outer ? lerpT(DTH, deg) : 0); return [r * Math.cos(a), r * Math.sin(a)]; };
@@ -324,7 +324,7 @@ function makeFace() {
   const capsM = mphys('#9FD0F0', { side: THREE.DoubleSide, r: 0.5, em: 0.3, op: 0.85 }), lptM = mphys('#45C4B0', { side: THREE.DoubleSide, r: 0.55, em: 0.15 }), retM = mphys('#E89AA8', { side: THREE.DoubleSide, r: 0.6, em: 0.12, op: 0.92 });
   const RIB = { capP: ribbon(capsM), capA: ribbon(capsM), lpS: ribbon(lptM), lpI: ribbon(lptM), ret: ribbon(retM, 10) };
   const sec = { th: 0, f: 0, dc: [0, 0], beta: 0 };
-  { const WIN = [new THREE.Plane(V3(0, 0, -1), 3.8 * 3), new THREE.Plane(V3(0, 0, 1), 3.3 * 3), new THREE.Plane(V3(0, 1, 0), 2.5 * 3)]; const seen = new Set(); TJ.traverse((o) => { if (o.material && !seen.has(o.material)) { seen.add(o.material); o.material.clippingPlanes = WIN; } }); }   // всё в разрезе — только внутри «окна»
+  { const WIN = [new THREE.Plane(V3(0, 0, -1), 3.8 * TJK), new THREE.Plane(V3(0, 0, 1), 3.3 * TJK), new THREE.Plane(V3(0, 1, 0), 2.5 * TJK)]; const seen = new Set(); TJ.traverse((o) => { if (o.material && !seen.has(o.material)) { seen.add(o.material); o.material.clippingPlanes = WIN; } }); }   // всё в разрезе — только внутри «окна»
   const rotZY = ([z, y], a) => [y * Math.sin(a) + z * Math.cos(a), y * Math.cos(a) - z * Math.sin(a)];   // поворот вокруг оси x на угол a
   const jawPt = (p) => { const [z, y] = rotZY(p, sec.th); return [z + sec.dc[0], y + sec.dc[1]]; };
   const discPt = (deg, outer, k = 0.5) => { const pi = discLoc(deg, false), po = discLoc(deg, true), p = outer === 'mid' ? [pi[0] + (po[0] - pi[0]) * k, pi[1] + (po[1] - pi[1]) * k] : outer ? po : pi; const [z, y] = rotZY(p, sec.beta); return [z + sec.dc[0], y + sec.dc[1]]; };
@@ -333,8 +333,8 @@ function makeFace() {
     JS.position.set(0, sec.dc[1], sec.dc[0]); JS.rotation.x = sec.th; DS.position.set(0, sec.dc[1], sec.dc[0]); DS.rotation.x = sec.beta;
     setRib(RIB.capP, -0.16, [-0.98, -0.32], jawPt([-0.55, -0.95]), 0.06, 0.06, -0.12);
     setRib(RIB.capA, -0.16, [2.45, 0.42], jawPt([0.52, -1.0]), 0.06, 0.06, -0.1);
-    setRib(RIB.lpS, -0.15, [3.7, 0.15], discPt(10, 'mid'), 0.36, 0.12, 0.04);
-    setRib(RIB.lpI, -0.15, [3.7, -0.78], jawPt([0.5, -0.62]), 0.55, 0.2, -0.05);
+    setRib(RIB.lpS, -0.15, [3.7, -0.22], discPt(10, 'mid'), 0.32, 0.12, -0.1);
+    setRib(RIB.lpI, -0.15, [3.7, -1.02], jawPt([0.5, -0.62]), 0.55, 0.2, -0.05);
     setFill(RIB.ret, -0.05, discPt(146, true), [-0.8, 0.48], discPt(146, false), jawPt([-0.5, -0.3]));
   }
 
@@ -390,7 +390,7 @@ function makeFace() {
   function update(dt) {
     st.t += dt; controls.autoRotate = st.rot && !st.fly; controls.autoRotateSpeed = 0.6; flyStep(st, camera, controls, dt);
     const M1 = st.mode === 'mim', M2 = st.mode === 'chew', M3 = st.mode === 'tmj', k = 1 - Math.exp(-dt * 5);
-    SKULL.visible = JAW.visible = !M3; MIM.visible = EYES.visible = NOSE.visible = M1; NERVE.visible = M1 && st.nerve; MAS.visible = M2; TJ.visible = M3; sideL.intensity = M1 ? 0 : 0.9;
+    SKULL.visible = JAW.visible = !M3; MIM.visible = EYES.visible = NOSE.visible = M1; NERVE.visible = M1 && st.nerve; MAS.visible = M1 || M2; TJ.visible = M3; sideL.intensity = M1 ? 0 : 0.9;
     // челюсть
     let tg = { o: 0, fR: 0, fL: 0 }, act = {};
     if (M2) {
@@ -398,11 +398,12 @@ function makeFace() {
     }
     const P0 = st.pose, kk = M2 && st.move === 'chew' ? 1 - Math.exp(-dt * 14) : 1 - Math.exp(-dt * 3.2);
     P0.o += (tg.o - P0.o) * kk; P0.fR += (tg.fR - P0.fR) * kk; P0.fL += (tg.fL - P0.fL) * kk;
-    jawMatrix(P0.o, P0.fR, P0.fL, JAW.matrix); JAW.matrixWorldNeedsUpdate = true; st.mm = Math.round(INC.distanceTo(INC.clone().applyMatrix4(JAW.matrix)) * 10);
+    jawMatrix(P0.o, P0.fR, P0.fL, JAW.matrix); JAW.matrixWorldNeedsUpdate = true; st.mm = openMM(P0.o); { const q = INC.clone().applyMatrix4(JAW.matrix); st.fwd = Math.round(Math.max(0, q.z - INC.z) * 10); st.lat = Math.round(Math.abs(q.x - INC.x) * 10); }
     // активность мышц
     if (M1) {
       const e = curExp();
       FA_MUS.forEach((mu) => { const M = MUS[mu.id]; if (!M) return; M.meshes.forEach((ms, i) => { const s = ms.userData.side, key = mu.id + s, tgt = st.bell && s === 1 && mu.id !== 'oris' ? 0 : (e.act[mu.id] || 0) * (st.bell && mu.id === 'oris' ? 0.6 : 1); const a = st.act[key] = (st.act[key] || 0) + (tgt - (st.act[key] || 0)) * k; ms.morphTargetInfluences[0] = a; const m = M.mats[i]; m.emissiveIntensity = m.userData.em0 + 0.6 * Math.max(0, a); { const on = st.exp === 'rest' ? 1 : Math.min(1, Math.max(0, a) * 1.6); m.color.copy(m.userData.col0).multiplyScalar(1 + 0.35 * Math.max(0, a)).lerp(DIMC, 0.85 * (1 - on)); m.emissiveIntensity *= 0.3 + 0.7 * on; m.sheen = 0.25 * on; m.clearcoat = 0.25 * on; } if (st.bell && s === 1 && mu.id !== 'oris') m.color.lerp(new THREE.Color(0x8a7a78), 0.5); }); });
+      MS.forEach((o) => { o.mesh.visible = o.part === 'mass' || o.part === 'temp'; o.mat.color.copy(o.mat.userData.col0).lerp(DIMC, 0.7); o.mat.emissiveIntensity = o.mat.userData.em0; setOp(o.mat, 1); }); if (st.loaded) MS.forEach(updMast);   // жевательные — тусклый фон под мимическими
       nervMats.forEach((m, i) => { const off = st.bell && i === 1; m.color.set(off ? 0x6a665e : 0xf2d45a).multiplyScalar(0.85); m.emissiveIntensity = off ? 0.0 : 0.35; });
     } else if (M2) {
       MS.forEach((o) => { const key = o.part + o.s, sd = o.s < 0 ? 0 : 1, tgt = act[o.part] ? act[o.part][sd] : 0; st.act[key] = (st.act[key] || 0) + (tgt - (st.act[key] || 0)) * (st.move === 'chew' ? 1 - Math.exp(-dt * 12) : k); o.mat.emissiveIntensity = o.mat.userData.em0 + 0.3 * st.act[key]; o.mat.color.copy(o.mat.userData.col0).multiplyScalar(1 + 0.3 * st.act[key]); });
@@ -414,8 +415,8 @@ function makeFace() {
   function refreshDim() {
     FA_MUS.forEach((mu) => { const M = MUS[mu.id]; if (!M) return; M.mats.forEach((m) => setOp(m, !st.sel || st.sel === mu.id ? 1 : 0.22)); });
     const pt = st.msel === 'medp' || st.msel === 'latp';
-    MS.forEach((o) => { const p2 = o.part === 'medp' || o.part === 'latp'; o.mesh.visible = !pt || p2; setOp(o.mat, !st.msel || st.msel === o.part ? 1 : pt ? 0.5 : 0.12); });
-    setOp(jawM, pt ? 0.2 : 1); setOp(jawCapM, pt ? 0.2 : 1); setOp(boneM, pt ? 0.55 : 1); setOp(capM, pt ? 0.55 : 1);
+    MS.forEach((o) => { const p2 = o.part === 'medp' || o.part === 'latp'; o.mesh.visible = !pt || p2; setOp(o.mat, st.msel === 'mass' && o.id.startsWith('mass') && !o.id.startsWith('massD') ? 0.5 : !st.msel || st.msel === o.part ? 1 : pt ? 0.5 : 0.12); });   // жевательная: поверхностная часть полупрозрачна — видна глубокая
+    setOp(jawM, pt ? 0.5 : 1); setOp(jawCapM, pt ? 0.5 : 1); setOp(boneM, pt ? 0.4 : 1); setOp(capM, pt ? 0.4 : 1);
   }
   function select(id) { st.sel = id === 'all' || st.sel === id ? null : id; refreshDim(); refs.setInfo && refs.setInfo(); }
   function selMas(id) { st.msel = id === 'all' ? null : id; st.fly = st.mode === 'chew' ? (st.msel === 'medp' || st.msel === 'latp' ? VIEW.ptg : VIEW.chew) : st.fly; refreshDim(); refs.mseg && refs.mseg.sync(); refs.setInfo && refs.setInfo(); }
@@ -436,7 +437,7 @@ function makeFace() {
   const musShow = (id) => () => { if (!mim()) return false; if (st.sel) return st.sel === id; if (st.nerve) return false; if (st.exp === 'rest') return DK; return (curExp().act[id] || 0) > 0.15; };
   const jawW = (x, y, z) => () => V3(x, y, z).applyMatrix4(JAW.matrix);
   const msMid = (key, s = -1) => () => { const o = MS.find((q) => q.id === key && q.s === s); return o && o.mid ? o.mid : V3(0, 0, 0); };
-  const tw = (z, y) => V3(-0.2 * 3, y * 3, z * 3);
+  const tw = (z, y) => V3(-0.2 * TJK, y * TJK, z * TJK);
   const LEFTM = { front: 1, oculi: 1, corr: 0, proc: 0, nasal: 0, llab: 0, zmin: 1, zmaj: 1, ris: 1, oris: 0, dao: 1, dli: 0, ment: 0, bucc: 1, plat: 1 };
   const nb0 = (k, i, off = 0.7) => () => { const d = NBR[k][i]; return snap(V3(-d[0], d[1], d[2]), off) || V3(-d[0], d[1], d[2]); };
   const labels = [
@@ -449,7 +450,7 @@ function makeFace() {
     lb('щёчные ветви', nb0('bucc', 3, 0.8), '#F2D45A', () => mim() && st.nerve && !st.sel, false),
     lb('краевая ветвь', nb0('mand', 3, 1.0), '#F2D45A', () => mim() && st.nerve && !st.sel, true),
     lb('шейная ветвь', V3(-6.2, -13.6, -3.6), '#F2D45A', () => mim() && st.nerve && !st.sel, true),
-    lb('паралич', V3(5.2, -6.5, 3.2), '#B8B0A8', () => mim() && st.bell && !st.sel),
+    lb('паралич', V3(5.2, -6.5, 3.2), '#E8DCC8', () => mim() && st.bell && !st.sel),
     // режим 2
     lb('височная', () => { const o = MS.find((q) => q.id === 'temp' && q.s === -1); return o ? o.guides[2].S[0] : V3(0, 0, 0); }, '#F0A050', () => chew() && (!st.msel || st.msel === 'temp')),
     lb('жевательная', msMid('mass'), '#FF8A94', () => chew() && (!st.msel || st.msel === 'mass')),
@@ -457,15 +458,15 @@ function makeFace() {
     lb('медиальная крыловидная', msMid('medp'), '#D8A8F0', () => chew() && (st.msel === 'medp' || st.msel === 'latp'), true),
     lb('латеральная крыловидная', msMid('latp'), '#7FE0D0', () => chew() && (st.msel === 'medp' || st.msel === 'latp')),
     lb('скуловая дуга', V3(-8.3, 0.4, -1.6), '#E8DCC8', () => chew() && DK && !st.msel),
-    lb('мыщелок', jawW(-6.4, -1.2, -5.1), '#E8DCC8', () => chew() && (DK || st.msel === 'latp'), true),
+    lb('мыщелок', jawW(-6.9, -1.2, -5.1), '#E8DCC8', () => chew() && (DK || st.msel === 'latp'), true),
     lb('венечный отросток', jawW(-6.8, -1.6, -2.3), '#E8DCC8', () => chew() && st.msel === 'temp'),
     lb('угол челюсти', jawW(-5.6, -10.3, -3.6), '#E8DCC8', () => chew() && DK && st.msel === 'medp', true),
     // режим 3
     lb('суставная ямка', tw(0.1, 0.88), '#E8DCC8', () => tmj()),
-    lb('суставной бугорок', tw(1.7, 0.1), '#E8DCC8', () => tmj()),
-    lb('диск', () => { const p = discPt(80, true); return tw(p[0], p[1]); }, '#9CC8F0', () => tmj(), true),
-    lb('головка нижней челюсти', () => { const p = jawPt([0.05, -0.15]); return tw(p[0], p[1]); }, '#F2E8D2', () => tmj(), true),
-    lb('капсула', () => { const a = jawPt([-0.55, -0.95]); return tw((a[0] - 0.98) / 2 - 0.1, (a[1] - 0.32) / 2); }, '#9FD0F0', () => tmj(), true),
+    lb('суставной бугорок', tw(2.3, 0.45), '#E8DCC8', () => tmj()),
+    lb('диск', () => { const p = discPt(118, true); return tw(p[0], p[1]); }, '#9CC8F0', () => tmj(), true),
+    lb('головка нижней челюсти', () => { const p = jawPt([0.0, -0.7]); return tw(p[0], p[1]); }, '#F2E8D2', () => tmj(), true),
+    lb('капсула', () => { const a = jawPt([0.52, -1.0]); return tw((a[0] + 2.45) / 2 + 0.05, (a[1] + 0.42) / 2); }, '#9FD0F0', () => tmj() && DK),
     lb('латеральная крыловидная', () => { const a = jawPt([0.5, -0.62]); return tw((a[0] + 3.7) / 2 + 0.4, (a[1] - 0.78) / 2 - 0.05); }, '#7FE0D0', () => tmj()),
     lb('ретродискальная ткань', () => { const a = discPt(146, true); return tw((a[0] - 0.8) / 2, (a[1] + 0.48) / 2 - 0.25); }, '#F2B0BC', () => tmj() && DK, true),
     lb('наружный слуховой проход', tw(-2.1, -0.32), '#E8DCC8', () => tmj() && DK, true),
@@ -522,7 +523,7 @@ function makeFace() {
   const musWord = (n) => (n % 10 === 1 && n !== 11 ? 'мышца' : n % 10 >= 2 && n % 10 <= 4 && (n < 10 || n > 20) ? 'мышцы' : 'мышц');
   function stats() {
     if (st.mode === 'tmj') { const o = st.open; return [['Открывание', openMM(o), 'мм'], ['Фаза', o < 0.03 ? 'покой' : o < 0.4 ? 'вращение' : 'скольжение', '']]; }
-    if (st.mode === 'chew') return [['Открывание', st.mm, 'мм'], ['Сила смыкания', '40–80', 'кг']];
+    if (st.mode === 'chew') return [['Открывание', st.mm, 'мм'], st.move === 'prot' ? ['Выдвижение', st.fwd, 'мм'] : st.move === 'side' ? ['Сдвиг вбок', st.lat, 'мм'] : ['Сила смыкания', '40–80', 'кг']];
     if (st.bell) return [['Левая сторона', 'паралич', ''], ['Черепной нерв', 'VII', '']];
     const e = curExp(); if (st.exp === 'rest') return [['Мимических мышц', '≈ 20', 'пар'], ['Черепной нерв', 'VII', '']];
     const n = Object.values(e.act).filter((a) => a > 0.15).length; return [['Работают', n, musWord(n)], ['Черепной нерв', 'VII', '']];
@@ -546,7 +547,7 @@ function makeFace() {
         <li><b>Вывих нижней челюсти</b>: при широком зевке головка проскакивает вперёд за суставной бугорок, и рот не закрывается; врач вправляет её, надавливая на коренные зубы вниз и назад.</li>
         <li><b>Тризм</b> — спазм жевательных мышц, рот не открывается: при воспалении у зуба мудрости, при столбняке.</li>
         <li><b>Ботулотоксин</b> на несколько месяцев выключает мимические мышцы — на этом основаны инъекции против морщин.</li></ul></div>
-      <div><h2>Условности</h2><ul><li>Мышцы показаны лентами на скане черепа взрослого; кожа, жировая клетчатка и фасции убраны, формы мышц упрощены. Нос — условная хрящевая оболочка, глазные яблоки — шары.</li><li>Сокращение показано укорочением и свечением мышц; кожа лица не деформируется, морщины не показаны. В каждом выражении на деле работает больше мышц.</li><li>Нижняя челюсть отделена от скана по условной границе (зубы и суставы в скане срослись, срезы закрыты заплатками); путь мыщелка и углы открывания — средние. Разрез сустава схематичен и увеличен в 3 раза.</li></ul></div>
+      <div><h2>Условности</h2><ul><li>Мышцы показаны лентами на скане черепа взрослого; кожа, жировая клетчатка и фасции убраны, формы мышц упрощены. Нос — условная хрящевая оболочка, глазные яблоки — шары.</li><li>Сокращение показано укорочением и свечением мышц; кожа лица не деформируется, морщины не показаны. В каждом выражении на деле работает больше мышц.</li><li>Нижняя челюсть отделена от скана по условной границе (зубы и суставы в скане срослись, срезы закрыты заплатками); путь мыщелка и углы открывания — средние. Разрез сустава схематичен и увеличен в 3,5 раза.</li></ul></div>
       <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>3</code> режим · <code>Esc</code> сбросить выбор</li><li><code>F</code> лицевой нерв · <code>R</code> вращение · <code>N</code> подписи</li></ul></div>`,
   };
   window.__face = { camera, controls, st, VIEW, scene };   // DEBUG
