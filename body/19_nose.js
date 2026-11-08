@@ -6,7 +6,7 @@
    Начало координат — точка скана черепа (MX, 16.0, 0.6), 1 ед. скана ≈ 12,5 см.
    ========================================================= */
 const NO_PARTS = [
-  { id: 'ext', name: 'Наружный нос', col: '#E8B49A', text: '<b>Наружный нос.</b> Верхнюю треть спинки держат парные носовые кости, ниже — каркас из хрящей: боковые (продолжения хряща перегородки) и большие крыльные, ножки которых образуют кончик носа и края ноздрей. Крылья носа — плотная жировая ткань без хряща. За ноздрёй — преддверие с жёсткими волосками, которые задерживают крупную пыль.' },
+  { id: 'ext', name: 'Наружный нос', col: '#E8B49A', text: '<b>Наружный нос.</b> Верхнюю треть спинки держат носовые кости, ниже — хрящи: боковые (продолжения хряща перегородки) и большие крыльные, ножки которых образуют кончик носа и края ноздрей. В крыле — жировая ткань и мелкие добавочные хрящи. За ноздрёй — преддверие с жёсткими волосками, задерживающими пыль.' },
   { id: 'sept', name: 'Перегородка', col: '#8FB8F0', text: '<b>Носовая перегородка</b> делит полость на две половины. Спереди она хрящевая, сзади костная: сверху перпендикулярная пластинка решётчатой кости, снизу сошник. Почти у всех взрослых она хоть немного искривлена. Спереди внизу — зона Киссельбаха: здесь сходятся ветви четырёх артерий, отсюда идёт большинство носовых кровотечений.' },
   { id: 'conch', name: 'Раковины', col: '#E87A8A', text: '<b>Носовые раковины</b> — три костных завитка на боковой стенке, покрытых слизистой. Верхняя и средняя — части решётчатой кости, нижняя — отдельная кость. Они в несколько раз увеличивают поверхность слизистой и закручивают поток воздуха. В слизистой нижней раковины — венозные сплетения: набухая, они сужают просвет носа.' },
   { id: 'meat', name: 'Ходы и отверстия', col: '#F2C84E', text: '<b>Носовые ходы</b> — щели под раковинами. В средний ход через полулунную щель открываются лобная и верхнечелюстная пазухи и передние решётчатые ячейки, в верхний — задние ячейки, над верхней раковиной — клиновидная пазуха. В нижний ход открывается слёзно-носовой канал — поэтому, когда плачешь, течёт из носа.' },
@@ -20,9 +20,9 @@ const NO_SIN = [
   { id: 'sph', name: 'Клиновидная', col: '#8FD88A', vol: '≈ 7', out: 'над верхней раковиной', text: '<b>Клиновидная пазуха</b> — в теле клиновидной кости, в самой глубине, позади полости носа; перегородка делит её на две неравные части. Открывается над верхней раковиной. Над ней — турецкое седло с гипофизом, по бокам — зрительные нервы и внутренние сонные артерии. Через неё хирурги через нос удаляют опухоли гипофиза.' },
 ];
 const NO_AGE = [
-  [1, '<b>Новорождённый.</b> Пазухи только закладываются: есть несколько маленьких решётчатых ячеек и крошечные верхнечелюстные пазухи — узкие щели в боковой стенке носа. Лобных и клиновидной ещё нет. Лицо младенца невысокое: под глазницами почти сразу лежат зачатки зубов.'],
+  [1, '<b>Младенец.</b> Пазухи только закладываются: есть несколько маленьких решётчатых ячеек и крошечные верхнечелюстные пазухи — узкие щели в боковой стенке носа. Лобных и клиновидной ещё нет. Белая сетка — размер пазух у взрослого.'],
   [4, '<b>Первые годы.</b> Верхнечелюстные пазухи растут вместе с верхней челюстью и раздвигаются в стороны под глазницами. Около 2–3 лет воздух начинает проникать в тело клиновидной кости — закладывается клиновидная пазуха. Решётчатых ячеек становится больше.'],
-  [8, '<b>Дошкольный возраст.</b> Из одной из передних решётчатых ячеек вверх, в лобную кость, прорастает лобная пазуха; на рентгеновском снимке её обычно видно к 7–8 годам. Клиновидная пазуха увеличивается и уходит назад, под турецкое седло.'],
+  [8, '<b>Раннее детство.</b> Из одной из передних решётчатых ячеек вверх, в лобную кость, прорастает лобная пазуха; на рентгеновском снимке её обычно видно к 7–8 годам. Клиновидная пазуха увеличивается и уходит назад, под турецкое седло.'],
   [13, '<b>Школьные годы.</b> Зубы сменяются, и освободившееся в верхней челюсти место занимает пазуха: к 8–12 годам её дно опускается до уровня дна носа. Решётчатый лабиринт почти достигает взрослых размеров.'],
   [19, '<b>Подростки.</b> В период полового созревания особенно быстро растут лобные пазухи — вместе с надбровными дугами, у юношей сильнее. Дно верхнечелюстной пазухи уходит ниже дна носа, к корням зубов.'],
   [99, '<b>Взрослый.</b> Рост пазух заканчивается к 18–20 годам; их размер и форма у разных людей очень различаются. В старости, после потери зубов, верхнечелюстная пазуха может расширяться дальше, в альвеолярный отросток.'],
@@ -34,10 +34,10 @@ function makeNose() {
   { const fl = new THREE.DirectionalLight(0xfff0ea, 1.0); fl.position.set(10, 2, 6); scene.add(fl); }   // подсветка со стороны камеры режима 1
   const DK = !matchMedia('(max-width:700px)').matches;
   const VIEW = {
-    cav: flyTarget(DK ? V3(0, 0.3, 7.2) : V3(0, 0.6, 0.9), DK ? V3(30, 1.4, 9.0) : V3(24, 1.6, 2.8)),
-    sin: flyTarget(DK ? V3(-7.6, 0.2, 0.5) : V3(0, 0.8, 0.5), DK ? V3(-13.5, 3.3, 35) : V3(-6.5, 3.6, 40)),
-    sph: flyTarget(DK ? V3(0, -0.2, 8.0) : V3(0, 0.8, 0.5), DK ? V3(31, 3.5, 15) : V3(30, 6, 18)),
-    age: flyTarget(DK ? V3(-7.6, 0.2, 0.5) : V3(0, 0.8, 0.5), DK ? V3(-11.5, 3.3, 35.5) : V3(-5, 3.2, 40)),
+    cav: flyTarget(DK ? V3(0, 0.1, 7.6) : V3(0, 1.0, 0.9), DK ? V3(27.5, 1.4, 9.2) : V3(21, 1.6, 2.8)),
+    sin: flyTarget(DK ? V3(-7.6, 1.6, 0.5) : V3(0, 1.5, 0.5), DK ? V3(-13.5, 4.0, 37) : V3(-5.5, 3.4, 33)),
+    sph: flyTarget(DK ? V3(0, 1.2, 6.5) : V3(0, 0.8, 0.5), DK ? V3(44, 5.0, 13) : V3(30, 6, 18)),
+    age: flyTarget(DK ? V3(-7.6, 1.6, 0.5) : V3(0, 1.5, 0.5), DK ? V3(-11.5, 4.0, 37.5) : V3(-4.5, 3.0, 33)),
   };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VIEW.cav.pos);
   const controls = makeControls(camera, VIEW.cav.target); controls.minDistance = 6; controls.maxDistance = 60;
@@ -65,9 +65,9 @@ function makeNose() {
   const SIDE = new THREE.Group(); scene.add(SIDE);    // правая сторона: раковины, отверстия, пазухи (зеркалится влево)
   const wallM = mat('wall', '#E58C96', { side: THREE.DoubleSide, r: 0.62, k: 0.86, em: 0.12 });
   const agger = (y, z) => 0.22 * Math.exp(-(((z - 3.3) / 0.7) ** 2) - (((y - 0.9) / 0.5) ** 2));
-  add(surf((a, b) => { const y = -2.95 + 5.3 * b, z0 = zb(y), z1 = zf(y), z = z0 + (z1 - z0) * a; return V3(-W(y) - 0.05 + agger(y, z) + 0.25 * sm((z - 4.0) / 1.5) * sm((y + 2.9) / 1.2), y, z); }, 70, 50), wallM, null, C1);
+  const WALLS = []; WALLS.push(add(surf((a, b) => { const y = -2.95 + 5.3 * b, z0 = zb(y), z1 = zf(y), z = z0 + (z1 - z0) * a; return V3(-W(y) - 0.05 + agger(y, z) + 0.25 * sm((z - 4.0) / 1.5) * sm((y + 2.9) / 1.2), y, z); }, 70, 50), wallM, null, C1));
   // дно полости и крыша — полосы, загибающиеся к перегородке
-  add(surf((a, b) => { const z = -1.3 + 7.3 * a, y = -2.95 + 0.1 * Math.sin(Math.PI * b) - 0.25 * sm((z - 4) / 2) * 0; return V3(-W(-2.95) * (1 - b) - 0.05 * (1 - b), y + (z > 4.6 ? 0.3 * sm((z - 4.6) / 1.4) : 0), z); }, 50, 6), wallM, null, C1);
+  WALLS.push(add(surf((a, b) => { const z = -1.3 + 7.3 * a, y = -2.95 + 0.1 * Math.sin(Math.PI * b); return V3(-W(-2.95) * (1 - b) - 0.05 * (1 - b), y + (z > 4.6 ? 0.3 * sm((z - 4.6) / 1.4) : 0), z); }, 50, 6), wallM, null, C1));
   // раковины: «валики», прикреплённые к стенке и свисающие в полость
   const conchM = mat('conch', '#E87A8A', { r: 0.6, k: 0.9, em: 0.1 });
   const CONCH = [
@@ -80,7 +80,7 @@ function makeNose() {
     for (let i = 0; i < p.count; i++) {
       const x = p.getX(i), y = p.getY(i), z = p.getZ(i), Z = zc + z * L, tap = Math.sqrt(1 - Math.min(0.97, z * z) * 0.75);
       const Y = c.yc + y * c.hh * tap - c.dz * z + (y > 0.55 ? 0.12 * (y - 0.55) : 0), wy = W(c.yc + 0.45 * c.hh);
-      const X = -wy + c.ht + (x > 0 ? x * c.ht * tap : x * c.ht * 0.35) - 0.08 * (y < -0.3 ? (y + 0.3) * 0.6 : 0);
+      const X = -wy + c.ht + (x > 0 ? x * c.ht * tap : x * c.ht * 0.6) + (y < -0.3 ? 0.15 * (y + 0.3) : 0);
       p.setXYZ(i, X, Y, Z);
     }
     g.computeVertexNormals(); c.ms = add(g, conchM, 'conch', SIDE);
@@ -108,15 +108,16 @@ function makeNose() {
   { const cv = document.createElement('canvas'); cv.width = 64; cv.height = 32; const cx = cv.getContext('2d'), gr = cx.createRadialGradient(32, 16, 2, 32, 16, 30); gr.addColorStop(0, '#fff'); gr.addColorStop(0.7, '#ddd'); gr.addColorStop(1, '#000'); cx.setTransform(1, 0, 0, 0.5, 0, 8); cx.fillStyle = gr; cx.fillRect(0, 0, 64, 64); olfM.alphaMap = new THREE.CanvasTexture(cv); }
   const olfPatch = add(surf((a, b) => { const y = 1.15 + 1.12 * b, z = -0.9 + 3.2 * a; return V3(-W(y) - 0.05 + agger(y, z) + 0.03, y, z); }, 30, 10), olfM, 'olf', C1);
   const bulbM = mat('olf', '#F2D45A', { r: 0.5, em: 0.4 }), nervM = mat('olf', '#F5E08A', { r: 0.5, em: 0.25 });
-  const bulb = blob(1, bulbM, 'olf', C1, [0.3, 0.28, 0.75]); bulb.position.set(-0.45, 2.66, 1.7);
-  tube([V3(-0.45, 2.7, 0.9), V3(-0.55, 2.85, 0.0), V3(-0.7, 3.1, -1.1), V3(-0.85, 3.25, -2.0)], 0.12, bulbM, 'olf', C1);   // обонятельный тракт
-  for (let i = 0; i < 11; i++) { const z = 1.05 + 1.35 * (i / 10), y1 = 1.2 + 0.5 * rnd(); tube([V3(-0.45, 2.5, z), V3(-0.42, 2.25, z + 0.05), V3(-W(y1) * 0.9, y1 + 0.3, z - 0.1), V3(-W(y1) - 0.02, y1, z - 0.15)], 0.025, nervM, 'olf', C1, 12); }
+  const OLFG = new THREE.Group(); C1.add(OLFG);
+  const bulb = blob(1, bulbM, 'olf', OLFG, [0.3, 0.28, 0.75]); bulb.position.set(-0.45, 2.66, 1.7);
+  tube([V3(-0.45, 2.7, 0.9), V3(-0.55, 2.85, 0.0), V3(-0.7, 3.1, -1.1), V3(-0.85, 3.25, -2.0)], 0.12, bulbM, 'olf', OLFG);   // обонятельный тракт
+  for (let i = 0; i < 11; i++) { const z = 1.05 + 1.35 * (i / 10), y1 = 1.2 + 0.5 * rnd(); tube([V3(-0.45, 2.5, z), V3(-0.42, 2.25, z + 0.05), V3(-W(y1) * 0.9, y1 + 0.3, z - 0.1), V3(-W(y1) - 0.02, y1, z - 0.15)], 0.025, nervM, 'olf', OLFG, 12); }
   // ---------- срезы костей и мягких тканей по средней линии (контекст, как на табл. 43) ----------
   const boneM = mat(null, '#E8DCC8', { r: 0.8, k: 0.92, em: 0.08 }), softM = mat(null, '#D98A92', { r: 0.7, k: 0.85, em: 0.1 }), skinM = mat('ext', '#E8B49A', { r: 0.7, k: 0.9, em: 0.08 });
   const brainM = mat(null, '#6E6470', { r: 0.95, k: 0.6, em: 0.03 }), hypoM = mat(null, '#E890B8', { r: 0.5, em: 0.2 });
   const SEC = new THREE.Group(); C1.add(SEC); const X0 = -0.04, X1 = 0.04;
   const holeFr = [[3.0, 4.1], [3.65, 4.25], [3.75, 5.2], [3.6, 6.2], [3.25, 6.35], [2.95, 5.4]], holeSph = [[-1.55, -0.85], [-1.55, 1.55], [-2.2, 1.7], [-3.05, 1.4], [-3.25, 0.3], [-2.9, -0.85]];
-  sag([[3.55, 3.35], [3.95, 4.3], [4.15, 5.4], [4.05, 6.6], [3.95, 6.6], [2.7, 6.6], [2.75, 6.4], [2.7, 4.6], [2.4, 3.5], [2.6, 2.65], [3.2, 2.55]], X0, X1, boneM, null, SEC, { holes: [holeFr] });   // лобная кость с пазухой
+  sag([[3.55, 3.35], [3.95, 4.3], [4.15, 5.4], [4.05, 6.3], [3.95, 6.3], [2.7, 6.3], [2.75, 6.2], [2.7, 4.6], [2.4, 3.5], [2.6, 2.65], [3.2, 2.55]], X0, X1, boneM, null, SEC, { holes: [holeFr] });   // лобная кость с пазухой
   sag([[3.45, 3.3], [4.55, 2.6], [5.55, 1.62], [5.45, 1.45], [4.4, 2.25], [3.35, 2.8]], X0, X1, boneM, null, SEC, { sharp: true });   // носовая кость
   sag([[3.3, 2.32], [-0.6, 2.32], [-0.6, 2.47], [1.6, 2.5], [2.0, 3.25], [2.35, 2.5], [3.3, 2.5]], X0, X1, boneM, null, SEC, { sharp: true });   // решётчатая пластинка и петушиный гребень
   sag([[-0.55, 2.3], [-1.35, 2.3], [-1.32, -0.25], [-1.55, -0.9], [-2.3, -1.15], [-3.4, -1.35], [-4.5, -1.75], [-5.5, -2.6], [-6.1, -2.4], [-5.2, 0.2], [-4.1, 2.2], [-3.75, 2.95], [-3.45, 2.95], [-3.2, 2.15], [-2.7, 1.9], [-2.3, 2.1], [-2.0, 2.6], [-1.0, 2.6]], X0, X1, boneM, null, SEC, { holes: [holeSph] });   // клиновидная кость и скат
@@ -124,9 +125,10 @@ function makeNose() {
   sag([[4.2, -3.3], [4.65, -3.9], [4.7, -4.6], [3.6, -4.65], [3.2, -3.5]], X0, X1, boneM, null, SEC);   // альвеолярный отросток
   { const t = sag([[4.25, -4.4], [4.75, -4.5], [4.95, -5.4], [4.7, -6.1], [4.45, -6.05], [4.2, -5.2]], X0 - 0.02, X1 + 0.02, mat(null, '#F3EEDF', { r: 0.3, cc: 0.7 }), null, SEC); t.renderOrder = 1; }   // верхний резец
   sag([[-1.0, -3.0], [-2.0, -3.3], [-3.1, -4.1], [-3.45, -4.9], [-3.15, -5.0], [-2.6, -4.4], [-1.6, -3.85], [-1.0, -3.42]], X0, X1, softM, 'phar', SEC);   // мягкое нёбо
-  sag([[-4.55, -1.85], [-5.55, -2.75], [-5.75, -4.5], [-5.65, -5.6], [-4.7, -5.6], [-4.6, -4.5], [-4.4, -2.6], [-3.6, -1.6]], X0, X1, softM, 'phar', SEC);   // задняя стенка глотки
-  sag([[2.6, 2.75], [2.7, 4.5], [2.65, 6.0], [-1.0, 6.2], [-3.4, 5.6], [-3.7, 3.6], [-2.0, 2.75], [-0.6, 2.6]], -1.9, -1.86, brainM, null, SEC);   // лобная доля (фон, позади луковицы)
-  sag(holeFr, -0.9, -0.86, mat(null, '#8A7A3A', { r: 0.9, k: 0.7, em: 0.05 }), null, SEC); sag(holeSph, -1.1, -1.06, mat(null, '#4E7A4A', { r: 0.9, k: 0.7, em: 0.05 }), null, SEC);   // дно пазух в срезе
+  sag([[-4.55, -1.85], [-5.55, -2.75], [-5.75, -4.5], [-5.65, -5.1], [-4.7, -5.1], [-4.6, -4.5], [-4.4, -2.6], [-3.6, -1.6]], X0, X1, softM, 'phar', SEC);   // задняя стенка глотки
+  sag([[2.6, 2.75], [2.7, 4.5], [2.65, 5.5], [-1.0, 5.6], [-3.3, 5.1], [-3.7, 3.6], [-2.0, 2.75], [-0.6, 2.6]], -1.9, -1.86, brainM, null, SEC);   // лобная доля (фон, позади луковицы)
+  const grow = (h, k) => { const c = h.reduce((a, [z, y]) => [a[0] + z / h.length, a[1] + y / h.length], [0, 0]); return h.map(([z, y]) => [c[0] + (z - c[0]) * k, c[1] + (y - c[1]) * k]); };
+  sag(grow(holeFr, 1.3), -0.9, -0.86, mat(null, '#8A7A3A', { r: 0.9, k: 0.7, em: 0.05 }), null, SEC); sag(grow(holeSph, 1.3), -1.1, -1.06, mat(null, '#4E7A4A', { r: 0.9, k: 0.7, em: 0.05 }), null, SEC);   // дно пазух в срезе
   const hypo = blob(1, hypoM, null, SEC, [0.32, 0.3, 0.42]); hypo.position.set(0, 2.18, -2.65);
   // кожа и хрящ спинки носа, губа (срез)
   sag([[3.55, 3.5], [4.3, 3.62], [5.05, 2.75], [6.05, 1.5], [6.95, 0.1], [7.45, -1.25], [7.3, -2.05], [6.55, -2.55], [5.45, -2.75], [5.55, -3.5], [5.75, -4.3], [5.55, -4.5], [4.75, -4.4], [4.45, -3.35], [4.5, -2.75], [5.0, -2.5], [6.1, -2.25], [6.85, -1.75], [6.95, -1.05], [6.55, -0.05], [5.65, 1.4], [5.2, 1.95]], X0 - 0.02, X1, skinM, 'ext', SEC, { sharp: true });
@@ -145,10 +147,11 @@ function makeNose() {
   const nose = add(noseGeo(0.5), noseSkin, 'ext', C1);
   const noseL = add(noseGeo(1), noseCart, 'ext', C1);   // целый нос — только при выборе «Наружный нос»
   // порог носа и волоски преддверия
-  tube([V3(-1.45, -2.5, 4.55), V3(-1.25, -1.2, 4.75), V3(-0.95, 0.1, 4.75)], 0.07, meatM, 'ext', C1);
-  { const hm = new THREE.MeshBasicMaterial({ color: 0x5a4030 }); for (let i = 0; i < 18; i++) { const z = 5.0 + rnd() * 1.6, y = -2.7 + rnd() * 0.9, h0 = onWall(Math.min(z, 6.0), y, 0); const hr = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.012, 0.35, 4), hm); hr.position.copy(h0).add(V3(0.15, 0, 0)); hr.rotation.set(0.3, 0, 1.2 + rnd() * 0.4); C1.add(hr); } }
+  const VEST = new THREE.Group(); C1.add(VEST);
+  tube([V3(-1.45, -2.5, 4.55), V3(-1.25, -1.2, 4.75), V3(-0.95, 0.1, 4.75)], 0.07, meatM, 'ext', VEST);
+  { const hm = new THREE.MeshBasicMaterial({ color: 0x5a4030 }); for (let i = 0; i < 18; i++) { const z = 5.0 + rnd() * 1.6, y = -2.7 + rnd() * 0.9, h0 = onWall(Math.min(z, 6.0), y, 0); const hr = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.012, 0.35, 4), hm); hr.position.copy(h0).add(V3(0.15, 0, 0)); hr.rotation.set(0.3, 0, 1.2 + rnd() * 0.4); VEST.add(hr); } }
   // носоглотка: боковая стенка, трубный валик, устье трубы, глоточная миндалина
-  add(surf((a, b) => { const z = -1.3 - 3.4 * a, y = -4.2 + 3.9 * b; return V3(-1.75 - 0.25 * sm(a) + 0.15 * Math.sin(Math.PI * b), y - 0.9 * sm((a - 0.6) / 0.4) * b * 0, z); }, 24, 20), wallM, null, C1);
+  WALLS.push(add(surf((a, b) => { const z = -1.2 - 3.5 * a, y = -4.2 + 3.9 * b; return V3(-1.72 - 0.28 * sm(a) + 0.15 * Math.sin(Math.PI * b), y, z); }, 24, 20), mat('phar', '#E08A96', { side: THREE.DoubleSide, r: 0.62, k: 0.86, em: 0.12 }), null, C1));
   const pharM = mat('phar', '#C9707E', { r: 0.6, em: 0.12 });
   const torus = add(new THREE.TorusGeometry(0.42, 0.17, 10, 28, Math.PI * 1.35), mat('phar', '#E8A8B8', { r: 0.5, em: 0.15 }), 'phar', C1); torus.position.set(-1.42, -1.75, -2.45); torus.rotation.set(0, Math.PI / 2, Math.PI * 0.32);
   const tubeO = new THREE.Mesh(new THREE.CircleGeometry(0.3, 20), slitM); tubeO.position.set(-1.4, -1.8, -2.4); tubeO.rotation.y = Math.PI / 2; tubeO.scale.set(0.8, 1, 1); C1.add(tubeO);
@@ -156,14 +159,14 @@ function makeNose() {
     const ad = add(g, pharM, 'phar', C1); ad.scale.set(0.75, 0.95, 0.42); ad.position.set(-0.25, -1.95, -3.6); ad.rotation.x = -0.7; }   // глоточная миндалина на своде и задней стенке
   // перегородка (показывается при выборе): хрящ, перпендикулярная пластинка, сошник, зона Киссельбаха, артерии
   const SEPT = new THREE.Group(); scene.add(SEPT);
-  const sCart = mat('sept', '#8FB8F0', { r: 0.4, cc: 0.5 }), sBone = mat('sept', '#E8DCC8', { r: 0.75, k: 0.95 }), sVom = mat('sept', '#D8C8A8', { r: 0.75, k: 0.95 });
+  const sCart = mat('sept', '#8FB8F0', { r: 0.4, cc: 0.5 }), sBone = mat('sept', '#F2E8D2', { r: 0.75, k: 0.95 }), sVom = mat('sept', '#C8AE86', { r: 0.75, k: 0.95 });
   sag([[4.55, 2.3], [5.45, 1.5], [4.6, -2.75], [2.6, -2.88], [1.5, -0.55], [3.5, 1.3]], -0.12, 0.12, sCart, 'sept', SEPT, { sharp: true });
   sag([[3.3, 2.32], [-0.6, 2.32], [-1.3, 1.1], [-0.4, 0.1], [1.5, -0.55], [3.5, 1.3], [4.55, 2.3], [3.9, 2.55]], -0.1, 0.1, sBone, 'sept', SEPT, { sharp: true });
   sag([[-1.3, 1.1], [-1.25, -0.2], [-1.05, -2.95], [2.6, -2.88], [1.5, -0.55], [-0.4, 0.1]], -0.1, 0.1, sVom, 'sept', SEPT, { sharp: true });
   const kissM = mat('sept', '#FF5060', { r: 0.4, em: 0.35, op: 0.75 });
   const kiss = blob(1, kissM, 'sept', SEPT, [0.05, 0.62, 0.78]); kiss.position.set(0.12, -1.85, 3.85);
   const artM = new THREE.MeshBasicMaterial({ color: 0xff3a48 });
-  [[V3(0.15, 2.2, 2.6), V3(0.15, 0.4, 3.4), V3(0.15, -1.6, 3.85)], [V3(0.15, 0.4, -1.1), V3(0.15, -0.9, 1.2), V3(0.15, -1.9, 3.6)], [V3(0.15, -2.85, 3.3), V3(0.15, -2.45, 3.6), V3(0.15, -2.0, 3.85)], [V3(0.15, -2.75, 5.0), V3(0.15, -2.35, 4.4), V3(0.15, -1.9, 4.0)]].forEach((pts) => SEPT.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 20, 0.035, 6), artM)));
+  [[V3(0.15, 2.2, 2.6), V3(0.15, 0.4, 3.4), V3(0.15, -1.6, 3.85)], [V3(0.15, 0.4, -1.1), V3(0.15, -0.9, 1.2), V3(0.15, -1.9, 3.6)], [V3(0.15, -2.85, 3.3), V3(0.15, -2.45, 3.6), V3(0.15, -2.0, 3.85)], [V3(0.15, -2.75, 5.0), V3(0.15, -2.35, 4.4), V3(0.15, -1.9, 4.0)]].forEach((pts) => SEPT.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 20, 0.05, 6), artM)));
 
   // ---------- пазухи (правая сторона; лобная и клиновидная — общие, несимметричные) ----------
   const SINM = Object.fromEntries(NO_SIN.map((s) => [s.id, mat('S:' + s.id, s.col, { r: 0.45, cc: 0.4, em: 0.22, op: 0.86, side: THREE.DoubleSide })]));
@@ -202,11 +205,11 @@ function makeNose() {
   const DR = {
     fr: [[V3(-0.75, 4.1, 3.2), V3(-0.95, 2.9, 3.1), V3(-1.25, 1.2, 3.05), V3(-1.45, 0.14, 2.95)]],
     eth: [[V3(-1.05, 1.0, 2.1), V3(-1.25, 0.2, 2.15), V3(-1.4, -0.24, 2.2)], [V3(-0.95, 1.9, 0.3), V3(-0.75, 1.1, 0.1), V3(-0.62, 0.72, 0.0)]],
-    max: [[V3(-3.1, -2.7, 1.2), V3(-2.3, -1.4, 1.3), V3(-2.0, -0.05, 1.32), V3(-1.62, -0.5, 1.25)]],
+    max: [[V3(-3.1, -2.2, 1.6), V3(-2.3, -1.2, 1.4), V3(-2.0, -0.05, 1.32), V3(-1.4, -0.5, 1.25)]],
     sph: [[V3(-0.75, -0.6, -2.4), V3(-0.65, 0.8, -1.95), V3(-0.45, 1.8, -1.4), V3(-0.4, 1.85, -0.9)]],
   };
-  const DOTS = new THREE.Group(); scene.add(DOTS); const dotM = new THREE.MeshBasicMaterial({ color: 0xffffff, depthTest: false }), dotG = new THREE.SphereGeometry(0.11, 10, 8);
-  const drains = []; Object.entries(DR).forEach(([id, arr]) => arr.forEach((pts) => [1, -1].forEach((sx) => { const c = new THREE.CatmullRomCurve3(pts.map((p) => V3(p.x * sx, p.y, p.z)));const ds = []; for (let i = 0; i < 6; i++) { const d = new THREE.Mesh(dotG, dotM); DOTS.add(d); ds.push(d); } const ln = new THREE.Mesh(new THREE.TubeGeometry(c, 30, 0.035, 6), new THREE.MeshBasicMaterial({ color: new THREE.Color(SINC[id]).lerp(new THREE.Color(0xffffff), 0.5), transparent: true, opacity: 0.75, depthTest: false })); ln.renderOrder = 5; DOTS.add(ln); ds.forEach((d) => { d.renderOrder = 6; }); drains.push({ id, c, ds, ln }); })));
+  const DOTS = new THREE.Group(); scene.add(DOTS); const dotM = new THREE.MeshBasicMaterial({ color: 0xffffff, depthTest: false }), dotG = new THREE.SphereGeometry(0.16, 10, 8);
+  const drains = []; Object.entries(DR).forEach(([id, arr]) => arr.forEach((pts) => [1, -1].forEach((sx) => { const c = new THREE.CatmullRomCurve3(pts.map((p) => V3(p.x * sx, p.y, p.z)));const ds = []; for (let i = 0; i < 6; i++) { const d = new THREE.Mesh(dotG, dotM); DOTS.add(d); ds.push(d); } const ln = new THREE.Mesh(new THREE.TubeGeometry(c, 30, 0.05, 6), new THREE.MeshBasicMaterial({ color: new THREE.Color(SINC[id]).lerp(new THREE.Color(0xffffff), 0.5), transparent: true, opacity: 0.9, depthTest: false })); ln.renderOrder = 5; DOTS.add(ln); ds.forEach((d) => { d.renderOrder = 6; }); drains.push({ id, c, ds, ln }); })));
   // ---------- скан черепа (полупрозрачный) ----------
   const SK = new THREE.Group(); scene.add(SK); const KS = 12.5; SK.scale.setScalar(KS); SK.position.set(-0.11 * KS, -16.0 * KS, -0.6 * KS);
   const skM = new THREE.MeshPhysicalMaterial({ color: 0xe8dcc8, roughness: 0.7, transparent: true, opacity: 0.09, depthWrite: false, side: THREE.FrontSide, emissive: 0xe8dcc8, emissiveIntensity: 0.05 });
@@ -224,10 +227,10 @@ function makeNose() {
     [V3(-0.45, -2.6, 6.3), V3(-0.5, -1.5, 5.4), V3(-0.38, -0.3, 4.0), V3(-0.36, 0.55, 2.6), V3(-0.34, 0.6, 1.0), V3(-0.4, -0.2, -0.6), V3(-0.55, -1.0, -2.1), V3(-0.6, -2.5, -3.3), V3(-0.6, -5.0, -3.6)],
     [V3(-0.4, -2.55, 6.3), V3(-0.42, -1.2, 5.5), V3(-0.3, 0.6, 4.1), V3(-0.25, 1.75, 2.6), V3(-0.25, 1.9, 1.2), V3(-0.3, 1.3, 0.0), V3(-0.45, 0.0, -1.0), V3(-0.55, -1.2, -2.2), V3(-0.6, -2.6, -3.3), V3(-0.6, -5.0, -3.6)],
   ].map((p) => new THREE.CatmullRomCurve3(p));
-  const NP = 150, PW = [0.34, 0.3, 0.26, 0.1];
-  const airM = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.9, depthWrite: false }); const air = new THREE.InstancedMesh(new THREE.SphereGeometry(0.075, 8, 6), airM, NP); air.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(NP * 3), 3); scene.add(air);
+  const NP = 260, PW = [0.34, 0.3, 0.26, 0.1];
+  const airM = new THREE.MeshBasicMaterial({ color: 0xffffff, depthWrite: false, depthTest: false }); const air = new THREE.InstancedMesh(new THREE.SphereGeometry(0.1, 8, 6), airM, NP); air.renderOrder = 4; air.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(NP * 3), 3); scene.add(air);
   const AP = []; for (let i = 0; i < NP; i++) { let r = rnd(), k = 0; while (k < 3 && r > PW[k]) { r -= PW[k]; k++; } AP.push({ k, u: rnd(), sp: 0.075 + 0.03 * rnd(), j: V3(rnd() - 0.5, rnd() - 0.5, rnd() - 0.5).multiplyScalar(0.28) }); }
-  const cold = new THREE.Color('#7FC8FF'), warm = new THREE.Color('#FF9A5A'), tmpC = new THREE.Color(), tmpM = new THREE.Matrix4();
+  const cold = new THREE.Color('#9FE0FF'), warm = new THREE.Color('#FF9A5A'), tmpC = new THREE.Color(), tmpM = new THREE.Matrix4();
 
   // ---------- обновление ----------
   const ageWord = (a) => (a < 2 ? 'мес' : a % 10 >= 2 && a % 10 <= 4 && (a < 10 || a > 20) ? 'года' : a % 10 === 1 && a !== 11 ? 'год' : 'лет');
@@ -236,33 +239,31 @@ function makeNose() {
   const growF = (id) => (st.mode === 'age' ? lerpT(GROW[id], st.age) : 1);
   function update(dt) {
     st.t += dt; controls.autoRotate = st.rot && !st.fly; controls.autoRotateSpeed = 0.6; flyStep(st, camera, controls, dt);
-    const M1 = st.mode === 'cav', k = Math.min(1, dt * 4);
+    const M1 = st.mode === 'cav';
     const tA = st.mode === 'age' ? 25 * st.ageV * st.ageV : 25; st.age += (tA - st.age) * Math.min(1, dt * 5); if (Math.abs(st.age - tA) < 0.01) st.age = tA;
-    C1.visible = M1; SEPT.visible = M1 && st.sel === 'sept'; SIDEL.visible = !M1; MID.visible = !M1 || false; GH.visible = st.mode === 'age'; SK.visible = !M1 && st.skull;
-    const EX = M1 && st.sel === 'ext'; nose.visible = !EX; noseL.visible = EX; SEC.visible = !EX;
+    C1.visible = M1; SEPT.visible = M1 && st.sel === 'sept'; SIDEL.visible = !M1; MID.visible = !M1; GH.visible = st.mode === 'age' && st.age < 17.5; ghostM.opacity = 0.07 * (1 - sm((st.age - 14) / 4)); SK.visible = !M1 && st.skull;
+    const EX = M1 && st.sel === 'ext'; C1.children.forEach((c) => { c.visible = EX ? c === noseL : c !== noseL; }); SIDE.visible = !EX;
     OPN.visible = M1 ? st.sel === 'meat' : st.mode === 'sin' && !!st.sin; OPNL.visible = !M1 && OPN.visible;
     OPEN.forEach((o) => { const sh = M1 || o.s === st.sin; o.ms.visible = o.dk.visible = o.msL.visible = o.dkL.visible = sh; });
     // пазухи: в режиме 1 скрыты; в режимах 2–3 видны и растут с возрастом вокруг точки роста A
     Object.entries(SIN).forEach(([id, S]) => { const f = growF(id); S.list.forEach((o, i) => { o.visible = !M1 && f > 0.02; o.scale.setScalar(Math.max(0.02, f)); o.position.copy(S.A).lerp(S.C[o.parent === MID ? i : 0], f); }); });
+    if (st.mode === 'age') { const nE = 6 + 13 * sm(st.age / 12); SIN.eth.list.forEach((E) => E.children.forEach((b, i) => { b.visible = i < nE; })); } else SIN.eth.list.forEach((E) => E.children.forEach((b) => { b.visible = true; }));
     // отток
     DOTS.visible = st.mode === 'sin' && !!st.sin;
     drains.forEach((d) => { const on = DOTS.visible && d.id === st.sin; d.ln.visible = on; d.ds.forEach((m, i) => { m.visible = on; if (on) { m.position.copy(d.c.getPointAt((st.t * 0.22 + i / d.ds.length) % 1)); } }); });
-    // раковины в режимах 2–3 — полупрозрачные
     // поток воздуха
     air.visible = M1 && st.flow && !st.sel;
     if (air.visible) { AP.forEach((p, i) => { p.u += dt * p.sp * (p.k === 3 ? 0.8 : 1); if (p.u > 1) { p.u -= 1; } const pt = FLOW[p.k].getPointAt(p.u).add(p.j); tmpM.makeTranslation(pt.x, pt.y, pt.z); air.setMatrixAt(i, tmpM); tmpC.copy(cold).lerp(warm, sm(p.u / 0.6)); air.setColorAt(i, tmpC); }); air.instanceMatrix.needsUpdate = true; air.instanceColor.needsUpdate = true; }
-    // мягкое мерцание выбранного
-    void k;
   }
   // ---------- выбор ----------
   function dimAll(on) {
     Object.entries(mats).forEach(([pid, arr]) => arr.forEach((m) => { const o = on(pid); m.transparent = !o || m.userData.op0 < 1; m.opacity = o ? m.userData.op0 : pid.startsWith('S:') ? 0.12 : pid === 'conch' && st.sel === 'meat' ? 0.3 : 0.14; m.depthWrite = o && m.userData.op0 >= 1; m.emissiveIntensity = m.userData.em0 + (o && (st.sel === pid || 'S:' + st.sin === pid) ? 0.2 : 0); m.needsUpdate = true; }));
   }
   function refreshDim() {
-    if (st.mode === 'cav') dimAll((pid) => (pid === 'wall' && st.sel !== 'ext') || pid.startsWith('S:') || !st.sel || st.sel === pid || (st.sel === 'meat' && pid === 'wall') || !NO_PARTS.find((p) => p.id === pid));
+    if (st.mode === 'cav') dimAll((pid) => pid.startsWith('S:') || !st.sel || st.sel === pid || (pid === 'wall' && ['conch', 'meat', 'olf'].includes(st.sel)));
     else dimAll((pid) => (pid.startsWith('S:') ? !st.sin || pid === 'S:' + st.sin : pid === 'conch' ? false : true));
   }
-  const VSEL = { ext: [V3(-5.6, -0.6, 3.4), V3(-20.6, 2.6, 19.8)], olf: [V3(0, 0.9, 4.2), V3(24, 3.0, 5.0)], phar: [V3(0, -2.4, 1.8), V3(26, -1.4, 3.4)] };
+  const VSEL = { ext: [V3(-5.6, -0.6, 3.4), V3(-20.6, 2.6, 19.8)], olf: [V3(0, 0.9, 4.8), V3(30, 2.8, 5.6)], phar: [V3(0, -1.8, 3.2), V3(32, -1.0, 4.8)] };
   function select(id) {
     st.sel = id === 'all' ? null : id;
     if (st.mode === 'cav') { const v = DK && VSEL[st.sel]; st.fly = v ? flyTarget(v[0], v[1]) : VIEW.cav; }
@@ -298,6 +299,9 @@ function makeNose() {
     lb('гипофиз', V3(0.1, 2.25, -2.75), '#F2A8C8', () => none() && DK, true),
     lb('твёрдое нёбо', V3(0.1, -3.2, 1.0), '#E8DCC8', () => none() && DK),
     lb('хоана', V3(-0.4, -1.9, -1.35), P('phar').col, () => none() && DK, true),
+    lb('мягкое нёбо', V3(0.1, -3.9, -2.2), '#E8A0AA', () => none() && DK),
+    lb('глотка', V3(0.1, -4.6, -5.1), '#E8A0AA', () => none() && DK),
+    lb('кожа', V3(0.1, -0.7, 6.35), '#E8B49A', () => none() && DK),
     lb('носовая кость', V3(-0.3, 2.4, 4.75), '#E8DCC8', () => sel('ext')),
     lb('боковой хрящ', V3(-0.7, 0.8, 5.6), '#9CC8E8', () => sel('ext')),
     lb('большой крыльный хрящ', V3(-0.6, -1.2, 6.9), '#7AB0E8', () => sel('ext')),
@@ -307,12 +311,14 @@ function makeNose() {
     lb('перпендикулярная пластинка', V3(0.2, 1.6, 1.0), '#E8DCC8', () => sel('sept')),
     lb('сошник', V3(0.2, -1.8, 0.4), '#D8C8A8', () => sel('sept')),
     lb('зона Киссельбаха', V3(0.2, -2.1, 4.1), '#FF8A94', () => sel('sept')),
+    lb('клиновидно-нёбная артерия', V3(0.2, -0.9, 1.2), '#FF8A94', () => sel('sept'), true),
+    lb('передняя решётчатая артерия', V3(0.2, 0.4, 3.4), '#FF8A94', () => sel('sept')),
     lb('полулунная щель', () => hiatC.getPoint(0.4), '#FFE27A', () => sel('meat')),
-    lb('решётчатый пузырь', onWall(1.75, 0.45, 0.3), '#FFC8CC', () => sel('meat'), true),
+    lb('решётчатый пузырь', onWall(1.9, -0.05, 0.4), '#FFC8CC', () => sel('meat'), true),
     lb('устье верхнечелюстной', OPEN[3].p, SINC.max, () => sel('meat'), true),
     lb('лобно-носовой канал', OPEN[0].p, SINC.fr, () => sel('meat')),
     lb('задние решётчатые ячейки', OPEN[4].p, SINC.eth, () => sel('meat'), true),
-    lb('устье клиновидной', OPEN[5].p, SINC.sph, () => sel('meat'), true),
+    lb('устье клиновидной', OPEN[5].p.clone().add(V3(0, 0.35, 0)), SINC.sph, () => sel('meat'), true),
     lb('слёзно-носовой канал', OPEN[6].p, '#7FD8E0', () => sel('meat')),
     lb('обонятельная луковица', V3(-0.4, 2.95, 1.9), '#F2D45A', () => sel('olf')),
     lb('решётчатая пластинка', V3(0.05, 2.4, 0.0), '#E8DCC8', () => sel('olf'), true),
@@ -330,7 +336,7 @@ function makeNose() {
     lb('средний носовой ход', V3(-1.4, -0.4, 2.0), '#FFFFFF', () => st.mode === 'sin' && ['fr', 'max', 'eth'].includes(st.sin)),
     lb('верхний носовой ход', V3(-0.65, 0.72, 0.0), '#FFFFFF', () => st.mode === 'sin' && st.sin === 'eth', true),
     lb('глазница', V3(-3.4, 3.1, 2.6), '#C8D2E0', () => M23() && DK && !st.sin),
-    lb('сетка — пазуха взрослого', V3(4.4, -2.6, 1.6), '#E8E8E8', () => st.mode === 'age' && st.age < 17),
+    lb('сетка — пазуха взрослого', V3(4.4, -2.6, 1.6), '#E8E8E8', () => st.mode === 'age' && st.age < 17 && DK),
   ];
   labels.forEach((l) => { if (typeof l.pos === 'function') { const f = l.pos; Object.defineProperty(l, 'pos', { get: f }); } });
   // ---------- панель ----------
