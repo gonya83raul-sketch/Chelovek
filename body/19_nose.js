@@ -334,7 +334,7 @@ function makeNose() {
     lb('глоточная миндалина', V3(0.1, -1.9, -3.6), P('phar').col, () => sel('phar')),
     lb('мягкое нёбо', V3(0.1, -3.9, -2.2), '#E8A0AA', () => sel('phar')),
     // пазухи
-    lb('лобная', sinL('fr', 1, V3(-0.1, 1.3, 0)), SINC.fr, () => sinOn('fr')),
+    lb('лобная', sinL('fr', 1, V3(-0.1, 1.75, 0)), SINC.fr, () => sinOn('fr')),
     lb('решётчатые', sinL('eth', 0, V3(-1.35, 2.4, 1.6)), SINC.eth, () => sinOn('eth'), true),
     lb('верхнечелюстная', sinL('max', 0, V3(-0.45, 0.15, 0.7)), SINC.max, () => sinOn('max'), true),
     lb('клиновидная', sinL('sph', 1, V3(-0.45, 0.05, 0)), SINC.sph, () => sinOn('sph') && (st.mode === 'age' || st.sin === 'sph' || DK), true),
