@@ -34,7 +34,7 @@ function makeNose() {
   { const fl = new THREE.DirectionalLight(0xfff0ea, 1.0); fl.position.set(10, 2, 6); scene.add(fl); }   // подсветка со стороны камеры режима 1
   const DK = !matchMedia('(max-width:700px)').matches;
   const VIEW = {
-    cav: flyTarget(DK ? V3(0, 0.1, 7.6) : V3(0, 1.0, 0.9), DK ? V3(30.5, 1.4, 9.2) : V3(21, 1.6, 2.8)),
+    cav: flyTarget(DK ? V3(0, -0.15, 7.6) : V3(0, 1.4, 0.9), DK ? V3(30.5, 1.15, 9.2) : V3(21.5, 2.0, 2.4)),
     sin: flyTarget(DK ? V3(-8.1, 4.0, 0.5) : V3(0, 1.8, 0.5), DK ? V3(-14.0, 6.7, 46) : V3(-5.5, 3.4, 33)),
     sph: flyTarget(DK ? V3(0, 3.0, 8.0) : V3(0, 0.8, 0.5), DK ? V3(52, 6.0, 14.5) : V3(30, 6, 18)),
     age: flyTarget(DK ? V3(-8.1, 4.0, 0.5) : V3(0, 1.8, 0.5), DK ? V3(-12.0, 6.7, 46.5) : V3(-4.5, 3.0, 33)),
@@ -140,7 +140,7 @@ function makeNose() {
     const g = surf((a, b) => { const d = DOR.getPoint(a), f = Math.PI * phi1 * b, hw = 0.55 + 1.05 * sm(a / 0.8) + 0.3 * sm((a - 0.62) / 0.25), zb = 3.95 + 1.05 * a, sf = Math.sin(f);
       return V3(-hw * Math.cos(f) * (1 - 0.25 * sf * sm((a - 0.7) / 0.2)), d.y - 0.25 * sm((a - 0.7) / 0.3) * (1 - sf), zb + (d.z - zb) * Math.pow(sf, 0.75)); }, 96, Math.round(18 * phi1));
     const cols = [], p = g.attributes.position, bone = new THREE.Color('#E8DCC8'), lat = new THREE.Color('#9CC8E8'), alar = new THREE.Color('#6FA6E8'), fat = new THREE.Color('#E8C8A0');
-    for (let n = 0; n < p.count; n++) { const a = (n % 97) / 96, b = Math.floor(n / 97) / Math.round(18 * phi1), sf = Math.sin(Math.PI * phi1 * b); const c = a < 0.34 ? bone : a < 0.6 ? lat : sf > 0.42 ? alar : fat; cols.push(c.r, c.g, c.b); }
+    for (let n = 0; n < p.count; n++) { const a = (n % 97) / 96, b = Math.floor(n / 97) / Math.round(18 * phi1), sf = Math.sin(Math.PI * phi1 * b); const c = (a < 0.34 ? bone : a < 0.6 ? lat : sf > 0.42 ? alar : fat).clone(); if (Math.abs(a - 0.34) < 0.012 || Math.abs(a - 0.6) < 0.012 || (a > 0.6 && Math.abs(sf - 0.42) < 0.03)) c.multiplyScalar(0.45); cols.push(c.r, c.g, c.b); }
     g.setAttribute('color', new THREE.Float32BufferAttribute(cols, 3)); return g;
   };
   const noseSkin = mat('ext', '#E8B49A', { side: THREE.DoubleSide, r: 0.7, k: 0.9 }), noseCart = mat('ext', '#FFFFFF', { side: THREE.DoubleSide, r: 0.75, cc: 0, k: 0.85, em: 0.04 }); noseCart.vertexColors = true; noseCart.emissive.set(0x000000);
@@ -267,7 +267,7 @@ function makeNose() {
     if (st.mode === 'cav') dimAll((pid) => pid.startsWith('S:') || !st.sel || st.sel === pid || (pid === 'wall' && ['conch', 'meat', 'olf'].includes(st.sel)));
     else dimAll((pid) => (pid.startsWith('S:') ? !st.sin || pid === 'S:' + st.sin : pid === 'conch' ? false : true));
   }
-  const VSEL = { ext: [V3(-3.7, -1.8, 6.8), V3(-13.0, -10.6, 18.8)], olf: [V3(0, 0.62, 4.9), V3(33, 2.8, 5.7)], phar: [V3(0, -1.85, 3.5), V3(35, -0.9, 5.1)] };
+  const VSEL = { ext: [V3(-3.7, -1.8, 6.8), V3(-13.0, -10.6, 18.8)], olf: [V3(0, 0.45, 4.9), V3(33, 2.8, 5.7)], phar: [V3(0, -1.85, 3.5), V3(35, -0.9, 5.1)] };
   function select(id) {
     st.sel = id === 'all' ? null : id;
     if (st.mode === 'cav') { const v = DK && VSEL[st.sel]; st.fly = v ? flyTarget(v[0], v[1]) : VIEW.cav; }
@@ -341,7 +341,7 @@ function makeNose() {
     lb('средний носовой ход', V3(-1.4, -0.4, 2.0), '#FFFFFF', () => st.mode === 'sin' && ['fr', 'max', 'eth'].includes(st.sin)),
     lb('верхний носовой ход', V3(-0.65, 0.72, 0.0), '#FFFFFF', () => st.mode === 'sin' && st.sin === 'eth', true),
     lb('глазница', V3(-3.4, 3.1, 2.6), '#C8D2E0', () => M23() && DK && !st.sin),
-    lb('сетка — пазуха взрослого', V3(4.4, -2.6, 1.6), '#E8E8E8', () => st.mode === 'age' && st.age < 17 && DK),
+    lb('сетка — пазуха взрослого', V3(3.6, -2.7, 1.8), '#E8E8E8', () => st.mode === 'age' && st.age < 17 && DK),
   ];
   labels.forEach((l) => { if (typeof l.pos === 'function') { const f = l.pos; Object.defineProperty(l, 'pos', { get: f }); } });
   // ---------- панель ----------
