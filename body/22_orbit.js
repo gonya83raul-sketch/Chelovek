@@ -242,7 +242,7 @@ function makeOrbit() {
     nerve('V', [V3(-2.05, 2.75, -1.0), CG.clone().add(V3(0.02, 0.06, -0.08))], 0.022);
     nerve('V', [V3(-2.45, 0.8, -3.55), V3(-2.45, 0.55, -2.4), V3(-2.65, 0.55, -0.8), V3(-2.85, 0.58, 0.6), V3(-2.92, 0.42, 1.8), V3(-2.95, 0.02, 2.6), V3(-2.95, -0.38, 3.05)], 0.085);   // подглазничный (V2)
     nerve('V', [V3(-2.4, 0.85, -3.75), V3(-2.5, 0.1, -3.7)], 0.1);   // V3 — обрыв
-    LBP.lac = V3(-3.6, 3.4, 0.2); LBP.fr = V3(-2.45, 3.82, 0.3); LBP.nc = NC3.clone(); LBP.v2 = V3(-2.85, 0.58, 0.6); LBP.v1 = V3(-2.28, 1.9, -2.8); LBP.tg = TG.position.clone(); LBP.s3 = V3(-2.3, 2.7, -0.9); LBP.i3 = V3(-2.6, 1.55, 0.2); LBP.t3 = V3(-1.5, 2.1, -2.8); LBP.iv = V3(-1.7, 3.0, -2.7); LBP.vi = V3(-1.35, 1.9, -2.7);
+    LBP.lac = V3(-3.6, 3.4, 0.2); LBP.fr = V3(-2.45, 3.82, 0.3); LBP.nc = NC3.clone(); LBP.v2 = V3(-2.85, 0.58, 0.6); LBP.v1 = V3(-2.28, 1.9, -2.8); LBP.tg = TG.position.clone(); LBP.s3 = V3(-2.3, 2.7, -0.9); LBP.i3 = V3(-2.6, 1.55, 0.2); LBP.t3 = V3(-1.5, 2.1, -2.8); LBP.iv = V3(-1.7, 3.0, -2.7); LBP.vi = V3(-1.15, 1.9, -2.7);
     // ресничные нервы (концы на глазу)
     for (let k = 0; k < 6; k++) { const a = (k / 6) * 2 * Math.PI; DYNN.push({ id: 'III', from: CG, dl: ONL.clone().add(V3(0.2 * Math.cos(a), 0.2 * Math.sin(a), 0)), r: 0.018 }); }
     DYNN.push({ id: 'V', from: NC1, dl: ONL.clone().add(V3(0.26, 0.12, 0)), r: 0.02 }, { id: 'V', from: NC1, dl: ONL.clone().add(V3(0.05, 0.27, 0)), r: 0.02 });
@@ -308,7 +308,7 @@ function makeOrbit() {
   function target() {
     let yaw = 0, pitch = 0, ptos = 0, pup = 0.17;
     if (st.mode === 'mus') { const g = gz(); yaw = g.yaw; pitch = g.pitch; }
-    if (st.mode === 'nrv' && st.palsy) { if (st.nsel === 'III') { yaw = -0.36; pitch = -0.2; ptos = 0.5; pup = 0.31; } else if (st.nsel === 'IV') { yaw = 0.05; pitch = 0.24; } else if (st.nsel === 'VI') { yaw = 0.5; } }
+    if (st.mode === 'nrv' && st.palsy) { if (st.nsel === 'III') { yaw = -0.36; pitch = -0.2; ptos = 0.5; pup = 0.31; } else if (st.nsel === 'IV') { yaw = 0.05; pitch = 0.3; } else if (st.nsel === 'VI') { yaw = 0.5; } }
     return { yaw, pitch, ptos, pup };
   }
   function update(dt) {
