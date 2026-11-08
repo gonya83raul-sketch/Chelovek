@@ -35,9 +35,9 @@ function makeNose() {
   const DK = !matchMedia('(max-width:700px)').matches;
   const VIEW = {
     cav: flyTarget(DK ? V3(0, 0.1, 7.6) : V3(0, 1.0, 0.9), DK ? V3(30.5, 1.4, 9.2) : V3(21, 1.6, 2.8)),
-    sin: flyTarget(DK ? V3(-7.1, 2.1, 0.5) : V3(0, 1.5, 0.5), DK ? V3(-13.0, 4.5, 40.5) : V3(-5.5, 3.4, 33)),
+    sin: flyTarget(DK ? V3(-8.1, 4.0, 0.5) : V3(0, 1.8, 0.5), DK ? V3(-14.0, 6.7, 46) : V3(-5.5, 3.4, 33)),
     sph: flyTarget(DK ? V3(0, 1.2, 6.5) : V3(0, 0.8, 0.5), DK ? V3(44, 5.0, 13) : V3(30, 6, 18)),
-    age: flyTarget(DK ? V3(-7.1, 2.1, 0.5) : V3(0, 1.5, 0.5), DK ? V3(-11.0, 4.5, 41) : V3(-4.5, 3.0, 33)),
+    age: flyTarget(DK ? V3(-8.1, 4.0, 0.5) : V3(0, 1.8, 0.5), DK ? V3(-12.0, 6.7, 46.5) : V3(-4.5, 3.0, 33)),
   };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 300); camera.position.copy(VIEW.cav.pos);
   const controls = makeControls(camera, VIEW.cav.target); controls.minDistance = 6; controls.maxDistance = 60;
@@ -146,7 +146,10 @@ function makeNose() {
   const noseSkin = mat('ext', '#E8B49A', { side: THREE.DoubleSide, r: 0.7, k: 0.9 }), noseCart = mat('ext', '#FFFFFF', { side: THREE.DoubleSide, r: 0.45, cc: 0.4, k: 0.85, em: 0.04 }); noseCart.vertexColors = true; noseCart.emissive.set(0x000000);
   const nose = add(noseGeo(0.5), noseSkin, 'ext', C1);
   const noseL = add(noseGeo(1), noseCart, 'ext', C1);   // целый нос — только при выборе «Наружный нос»
-  [1, -1].forEach((s) => { const nm = new THREE.Mesh(new THREE.CircleGeometry(0.42, 20), slitM); nm.scale.set(0.62, 1.15, 1); nm.rotation.x = Math.PI / 2; nm.position.set(s * 0.62, -2.6, 6.3); noseL.add(nm); });   // ноздри на подошве носа
+  { const P = noseL.geometry.attributes.position, bot = []; let yb = 0; for (let n = 48; n < P.count; n += 49) { bot.push(new THREE.Vector2(P.getX(n), P.getZ(n))); yb += P.getY(n); } yb /= bot.length;
+    const sg = new THREE.ShapeGeometry(new THREE.Shape(bot), 2); sg.rotateX(Math.PI / 2); sg.translate(0, yb, 0); noseL.add(new THREE.Mesh(sg, mat('ext', '#E8C8A0', { side: THREE.DoubleSide, r: 0.7, k: 0.9 })));   // подошва носа по краю оболочки
+    const nosM = new THREE.MeshBasicMaterial({ color: 0x2a0c12, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4 });
+    [1, -1].forEach((s) => { const nm = new THREE.Mesh(new THREE.CircleGeometry(0.42, 24), nosM); nm.scale.set(0.62, 1.2, 1); nm.rotation.set(Math.PI / 2, 0, s * 0.25); nm.position.set(s * 0.55, yb - 0.02, 5.95); noseL.add(nm); }); }   // ноздри
   // порог носа и волоски преддверия
   const VEST = new THREE.Group(); C1.add(VEST);
   tube([V3(-1.45, -2.5, 4.55), V3(-1.25, -1.2, 4.75), V3(-0.95, 0.1, 4.75)], 0.07, meatM, 'ext', VEST);
@@ -264,7 +267,7 @@ function makeNose() {
     if (st.mode === 'cav') dimAll((pid) => pid.startsWith('S:') || !st.sel || st.sel === pid || (pid === 'wall' && ['conch', 'meat', 'olf'].includes(st.sel)));
     else dimAll((pid) => (pid.startsWith('S:') ? !st.sin || pid === 'S:' + st.sin : pid === 'conch' ? false : true));
   }
-  const VSEL = { ext: [V3(-5.9, -0.4, 4.8), V3(-15.5, -4.3, 17.5)], olf: [V3(0, 0.8, 4.9), V3(33, 2.8, 5.7)], phar: [V3(0, -1.85, 3.5), V3(35, -0.9, 5.1)] };
+  const VSEL = { ext: [V3(-5.9, -1.0, 4.8), V3(-14.5, -9.5, 16.0)], olf: [V3(0, 0.8, 4.9), V3(33, 2.8, 5.7)], phar: [V3(0, -1.85, 3.5), V3(35, -0.9, 5.1)] };
   function select(id) {
     st.sel = id === 'all' ? null : id;
     if (st.mode === 'cav') { const v = DK && VSEL[st.sel]; st.fly = v ? flyTarget(v[0], v[1]) : VIEW.cav; }
@@ -307,7 +310,7 @@ function makeNose() {
     lb('боковой хрящ', V3(-0.7, 0.8, 5.6), '#9CC8E8', () => sel('ext')),
     lb('большой крыльный хрящ', V3(-0.6, -1.2, 6.9), '#7AB0E8', () => sel('ext')),
     lb('крыло носа', V3(-1.85, -1.95, 5.5), '#E8C8A0', () => sel('ext'), true),
-    lb('ноздря', V3(-0.62, -2.62, 6.3), '#FFC8CC', () => sel('ext')),
+    lb('ноздря', V3(-0.55, -2.72, 5.95), '#FFC8CC', () => sel('ext')),
     lb('хрящ перегородки', V3(0.2, 0.2, 3.9), '#BFD8FF', () => sel('sept')),
     lb('перпендикулярная пластинка', V3(0.2, 1.6, 1.0), '#E8DCC8', () => sel('sept')),
     lb('сошник', V3(0.2, -1.8, 0.4), '#D8C8A8', () => sel('sept')),
@@ -317,7 +320,7 @@ function makeNose() {
     lb('полулунная щель', () => hiatC.getPoint(0.4), '#FFE27A', () => sel('meat')),
     lb('решётчатый пузырь', onWall(1.9, -0.05, 0.4), '#FFC8CC', () => sel('meat'), true),
     lb('устье верхнечелюстной', OPEN[3].p, SINC.max, () => sel('meat'), true),
-    lb('лобно-носовой канал', OPEN[0].p, SINC.fr, () => sel('meat')),
+    lb('лобно-носовой канал', OPEN[0].p.clone().add(V3(0, 0.45, 0)), SINC.fr, () => sel('meat')),
     lb('задние решётчатые ячейки', OPEN[4].p, SINC.eth, () => sel('meat'), true),
     lb('устье клиновидной', OPEN[5].p.clone().add(V3(0, 0.35, 0)), SINC.sph, () => sel('meat'), true),
     lb('слёзно-носовой канал', OPEN[6].p, '#7FD8E0', () => sel('meat')),
@@ -381,7 +384,7 @@ function makeNose() {
   }
   function stats() {
     if (st.mode === 'age') { const a = st.age, f = growF('fr') > 0.02, s = growF('sph') > 0.02; return [['Возраст', a < 2 ? Math.round(a * 12) : Math.floor(a), ageWord(a < 2 ? a : Math.floor(a))], ['Лобные', f ? 'есть' : 'нет', ''], ['Клиновидная', s ? 'есть' : 'нет', '']]; }
-    if (st.mode === 'sin') { if (!st.sin) return [['Пазух', 4, 'пары'], ['Самая крупная', '≈ 15', 'мл']]; const s = S(st.sin); return st.sin === 'eth' ? [['Ячеек', s.vol, 'на сторону'], ['Отток', s.out, '']] : [['Объём', s.vol, 'мл'], ['Отток', s.out, st.sin === 'sph' ? '' : 'носовой ход']]; }
+    if (st.mode === 'sin') { if (!st.sin) return [['Пазух', 4, 'пары'], ['Самая крупная', '≈ 15', 'мл']]; const s = S(st.sin); return st.sin === 'eth' ? [['Ячеек', s.vol, 'на сторону'], ['Отток', s.out, '']] : [['Объём', s.vol, 'мл'], ['Отток', s.out, st.sin === 'sph' || !DK ? '' : 'носовой ход']]; }
     if (st.flow && !st.sel) return [['На входе', '≈ 20', '°C'], ['В носоглотке', '≈ 34', '°C']];
     return [['Воздух', '10–12', 'тыс. л в сутки'], ['Слизистая', '≈ 150', 'см²']];
   }
