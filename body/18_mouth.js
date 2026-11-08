@@ -65,7 +65,7 @@ function makeMouth() {
     mouth: flyTarget(V3(DK ? -3.0 : 0, DK ? -1.5 : -0.4, -1.2), DK ? V3(-3.0, -5.5, 21) : V3(0, -4.0, 18.5)),
     palate: flyTarget(V3(DK ? -3.0 : 0, DK ? -0.5 : -0.2, -1.2), DK ? V3(-3.0, -9.8, 20.5) : V3(0, -7.5, 16.5)),
     tongue: flyTarget(V3(DK ? -3.2 : 0, DK ? -2.2 : -2.4, -1.4), DK ? V3(-3.2, 9.5, 17.5) : V3(0, 8.5, 16.5)),
-    teeth: flyTarget(V3(DK ? -2.2 : 0, 0, DK ? 0.6 : 0), DK ? V3(-2.2, 20, 6.0) : V3(0, 21, 4.2)),
+    teeth: flyTarget(V3(DK ? -3.7 : 0, 0, DK ? 0.9 : 0), DK ? V3(-3.7, 24, 7.0) : V3(0, 21, 4.2)),
     tooth: flyTarget(V3(DK ? -3.0 : 0, DK ? -1.2 : 0.8, 0), DK ? V3(-0.5, -0.2, 26) : V3(2, 1.8, 20)),
   };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 200); camera.position.copy(VIEW.mouth.pos);
@@ -256,7 +256,7 @@ function makeMouth() {
     const k = Math.min(1, dt * 3), T2 = st.mode === 'teeth';
     st.age += ((T2 ? 25 * st.ageV * st.ageV : 25) - st.age) * Math.min(1, dt * 5); if (Math.abs(st.age - (T2 ? 25 * st.ageV * st.ageV : 25)) < 0.01) st.age = T2 ? 25 * st.ageV * st.ageV : 25;
     // позы челюстей
-    const sep = DK ? 3.1 : 0, sepz = DK ? 0 : 3.35;
+    const sep = DK ? 3.45 : 0, sepz = DK ? 0 : 3.35;
     POSE.u.set(T2 ? -sep : 0, 0, T2 ? -sepz : 0); POSE.l.copy(HINGE).add(V3(T2 ? sep : 0, 0, T2 ? sepz + 0.15 : 0));
     UJ.position.lerp(POSE.u, k); LJ.position.lerp(POSE.l, k);
     UJ.rotation.z += ((T2 ? Math.PI : 0) - UJ.rotation.z) * k; st.open += ((T2 ? 0 : 0.6) - st.open) * k; LJ.rotation.x = st.open;
