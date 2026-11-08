@@ -9,14 +9,14 @@
 const MN_LAY = [
   { id: 'scalp', name: 'Скальп', col: '#E8B8A0', text: '<b>Мягкие ткани свода</b> — пять слоёв: кожа с волосами, плотная клетчатка с сосудами, сухожильный шлем (апоневроз), рыхлая клетчатка и надкостница. Сосуды плотного слоя не спадаются, поэтому раны головы сильно кровоточат. По рыхлому слою скальп легко сдвигается, и в нём растекаются гематомы.' },
   { id: 'bone', name: 'Кость', col: '#F2E6C8', text: '<b>Кости свода</b> — наружная и внутренняя компактные пластинки, а между ними губчатое диплоэ с красным костным мозгом и диплоическими венами. Внутренняя пластинка тоньше и хрупче. Выпускники соединяют вены скальпа с синусами через кость — путь, по которому инфекция может проникнуть внутрь черепа.' },
-  { id: 'dura', name: 'Твёрдая', col: '#9FC2E8', text: '<b>Твёрдая мозговая оболочка</b> — плотная двухслойная пластинка. Наружный (надкостничный) слой прирастает к кости, внутренний (менингеальный) образует складки — серп мозга между полушариями и намёт мозжечка. Где слои расходятся, между ними лежат венозные синусы. В оболочке идут менингеальные артерии и нервы — она чувствительна к боли, в отличие от самого мозга.' },
+  { id: 'dura', name: 'Твёрдая', col: '#9FC2E8', text: '<b>Твёрдая мозговая оболочка</b> — плотная двухслойная пластинка. Наружный слой прирастает к кости, внутренний образует складки — серп мозга между полушариями и намёт мозжечка. Где слои расходятся, лежат венозные синусы. В оболочке идут менингеальные артерии и нервы — она чувствительна к боли, в отличие от самого мозга.' },
   { id: 'arach', name: 'Паутинная', col: '#C8D8E8', text: '<b>Паутинная оболочка</b> — тонкая прозрачная плёнка под твёрдой. От неё к мягкой оболочке тянутся нити-трабекулы, а между ними — <b>подпаутинное пространство</b> с ликвором и крупными сосудами мозга. Ворсинки паутинной оболочки (пахионовы грануляции) вдаются в синусы и возвращают ликвор в кровь.' },
   { id: 'pia', name: 'Мягкая', col: '#E890A8', text: '<b>Мягкая оболочка</b> — самая тонкая, она плотно облегает мозг и заходит во все борозды. На ней лежат мелкие сосуды; входя в мозг, они уводят за собой мягкую оболочку, вокруг них остаются щели, по которым ликвор омывает ткань.' },
   { id: 'sss', name: 'Синус', col: '#6F8FE8', text: '<b>Верхний сагиттальный синус</b> — треугольный канал в твёрдой оболочке вдоль верхнего края серпа. Его стенки не сжимаются и не имеют клапанов. В него впадают вены мозга — мостовые вены пересекают подпаутинное пространство и паутинную оболочку — и через грануляции возвращается ликвор.' },
 ];
 const MN_BLEED = [
   { id: 'none', name: 'Нет', text: '' },
-  { id: 'epi', name: 'Эпидуральная', col: '#C83040', text: '<b>Эпидуральная гематома</b> — кровь между костью и твёрдой оболочкой. Обычно это разрыв средней менингеальной артерии при переломе височной кости. Артериальная кровь отслаивает оболочку линзой, но не переходит за швы, где оболочка приросла. Типичен «светлый промежуток»: после удара человек приходит в себя, а через часы теряет сознание. Нужна срочная операция.' },
+  { id: 'epi', name: 'Эпидуральная', col: '#C83040', text: '<b>Эпидуральная гематома</b> — кровь между костью и твёрдой оболочкой, обычно из средней менингеальной артерии при переломе височной кости. Кровь отслаивает оболочку линзой, но не переходит за швы, где оболочка приросла. Типичен «светлый промежуток»: человек приходит в себя, а через часы теряет сознание. Нужна срочная операция.' },
   { id: 'sub', name: 'Субдуральная', col: '#8A2C3C', text: '<b>Субдуральная гематома</b> — кровь между твёрдой и паутинной оболочками от разрыва мостовых вен. Она растекается полумесяцем по поверхности полушария и переходит через швы. У пожилых и при алкоголизме мозг уменьшается, вены натягиваются и рвутся даже от лёгкой травмы; хроническая гематома нарастает неделями.' },
   { id: 'sah', name: 'Субарахноидальная', col: '#B03848', text: '<b>Субарахноидальное кровоизлияние</b> — кровь в подпаутинном пространстве, где она смешивается с ликвором и заполняет борозды. Без травмы чаще всего это разрыв аневризмы артерии основания мозга: внезапная «самая сильная головная боль в жизни», рвота, ригидность шеи. Опасно повторным разрывом и спазмом сосудов.' },
 ];
@@ -47,19 +47,19 @@ function makeMenin() {
   // =================== режимы 1–2: срез свода (своя система координат, вынесена в сторону) ===================
   const SLAB = new THREE.Group(); SLAB.position.set(80, 0, 0); scene.add(SLAB);
   const TH = 0.78, DZ = 5, ZF = DZ / 2;
-  const P2 = (th, r) => new THREE.Vector2(r * Math.sin(th), -6 + r * Math.cos(th));
+  const KA = 0.45, P2 = (th, r) => new THREE.Vector2(r * Math.sin(KA * th), -6 + r * Math.cos(KA * th));   // th — условный угол, сжат в KA раз
   const SUL = [-0.6, -0.4, -0.2, 0.21, 0.4, 0.61];
-  const Rc0 = (th) => 9.0 + 0.06 * Math.cos(th * 30) - SUL.reduce((s, k) => s + 0.95 * Math.exp(-(((th - k) / 0.022) ** 2)), 0);
+  const Rc0 = (th) => 8.85 + 0.06 * Math.cos(th * 30) - SUL.reduce((s, k) => s + 0.8 * Math.exp(-(((th - k) / 0.03) ** 2)), 0);
   // смещения при кровоизлияниях: d — насколько отжаты внутрь слои под гематомой
   const shiftEpi = (th) => { const u = (th - 0.48) / 0.19; return Math.abs(u) < 1 ? 0.95 * Math.pow(1 - u * u, 0.9) : 0; };
-  const shiftSub = (th) => (th > 0.08 && th < TH ? 0.42 * Math.sin(Math.PI * cl((th - 0.08) / (TH - 0.06))) ** 0.7 : 0);
+  const shiftSub = (th) => (th > 0.15 && th < TH ? 0.42 * Math.sin(Math.PI * cl((th - 0.15) / (TH - 0.13))) ** 0.7 : 0);
   const dEpi = (th) => (st.bleed === 'epi' ? st.g * shiftEpi(th) : 0), dSub = (th) => (st.bleed === 'sub' ? st.g * shiftSub(th) : 0);
   const dIn = (th) => dEpi(th) + dSub(th);
   const R = {   // радиусы границ слоёв (от центра дуги)
     skin1: () => 11.2, skin0: () => 10.98, dense0: () => 10.72, apo0: () => 10.62, loose0: () => 10.44, peri0: () => 10.4,
-    ot0: () => 10.22, dip0: () => 9.82, it0: () => 9.64,
-    dp0: (th) => 9.5 - dEpi(th), dm0: (th) => 9.36 - dEpi(th), ar1: (th) => 9.36 - dIn(th), ar0: (th) => 9.3 - dIn(th),
-    pia1: (th) => Rc0(th) + 0.05 - dIn(th) * 0.85, cx: (th) => Rc0(th) - dIn(th) * 0.85, wm: (th) => Rc0(th) - 0.6 - dIn(th) * 0.7,
+    ot0: () => 10.26, dip0: () => 9.98, it0: () => 9.84,
+    dp0: (th) => 9.64 - dEpi(th), dm0: (th) => 9.44 - dEpi(th), ar1: (th) => 9.44 - dIn(th), ar0: (th) => 9.34 - dIn(th),
+    pia1: (th) => Rc0(th) + 0.08 - dIn(th) * 0.85, cx: (th) => Rc0(th) - dIn(th) * 0.85, wm: (th) => Rc0(th) - 0.6 - dIn(th) * 0.7,
   };
   function band(th0, th1, rOut, rIn, n = 90) {
     const s = new THREE.Shape(); for (let i = 0; i <= n; i++) { const th = th0 + (th1 - th0) * i / n, p = P2(th, rOut(th)); i ? s.lineTo(p.x, p.y) : s.moveTo(p.x, p.y); }
@@ -71,13 +71,13 @@ function makeMenin() {
   lay('skin', 'scalp', '#D9A08C', -TH, TH, R.skin1, R.skin0); lay('dense', 'scalp', '#E8C4A8', -TH, TH, R.skin0, R.dense0); lay('apo', 'scalp', '#F0EEE8', -TH, TH, R.dense0, R.apo0);
   lay('loose', 'scalp', '#F4E2C8', -TH, TH, R.apo0, R.loose0); lay('peri', 'scalp', '#E8E0D0', -TH, TH, R.loose0, R.peri0);
   lay('ot', 'bone', '#F2E6C8', -TH, TH, R.peri0, R.ot0); lay('dip', 'bone', '#D8B890', -TH, TH, R.ot0, R.dip0); lay('it', 'bone', '#F2E6C8', -TH, TH, R.dip0, R.it0);
-  lay('dp', 'dura', '#9FC2E8', -TH, TH, () => 9.64, R.dp0);
-  half('dm', 'dura', '#86AEDC', R.dp0, R.dm0, 0.07);
-  half('ar', 'arach', '#D8E4F0', R.ar1, R.ar0, 0.075);
+  lay('dp', 'dura', '#9FC2E8', -TH, TH, (th) => 9.84 - dEpi(th), R.dp0);
+  half('dm', 'dura', '#86AEDC', R.dp0, R.dm0, 0.13);
+  half('ar', 'arach', '#D8E4F0', R.ar1, R.ar0, 0.12);
   half('sas', 'arach', '#5FA8E0', R.ar0, R.pia1, 0.045, { op: 0.35 });
   half('pia', 'pia', '#E890A8', R.pia1, R.cx, 0.035);
   half('gm', 'pia', '#B8A0A8', R.cx, R.wm, 0.035, { m: { em: 0.04 } });
-  half('wm', 'pia', '#EDE6E0', R.wm, () => 6.2, 0.035, { m: { em: 0.04 } });
+  half('wm', 'pia', '#EDE6E0', R.wm, () => 7.8, 0.035, { m: { em: 0.04 } });
   function buildLayers() {
     LAYDEF.forEach((d) => {
       const g = new THREE.ExtrudeGeometry(band(d.th0, d.th1, d.rOut, d.rIn, d.n), { depth: DZ, bevelEnabled: false, curveSegments: 1, steps: 1 }); g.translate(0, 0, -ZF);
@@ -87,11 +87,10 @@ function makeMenin() {
   buildLayers();
   // синус и серп
   const sssM = mphys('#3A4C8C', { r: 0.4, em: 0.2, emc: '#6F8FE8' });
-  const sssS = new THREE.Shape(); [P2(-0.075, 9.5), P2(0.075, 9.5), P2(0, 8.72)].forEach((p, i) => (i ? sssS.lineTo(p.x, p.y) : sssS.moveTo(p.x, p.y)));
+  const sssS = new THREE.Shape(); [P2(-0.16, 9.64), P2(0.16, 9.64), P2(0, 8.8)].forEach((p, i) => (i ? sssS.lineTo(p.x, p.y) : sssS.moveTo(p.x, p.y)));
   const sssG = new THREE.ExtrudeGeometry(sssS, { depth: DZ + 0.02, bevelEnabled: false }); sssG.translate(0, 0, -ZF - 0.01);
   const SSSm = new THREE.Mesh(sssG, sssM); SSSm.userData.pick = 'sss'; pick.push(SSSm); SLAB.add(SSSm);
-  const sssWall = new THREE.Mesh(new THREE.ExtrudeGeometry(band(-0.075, 0.075, () => 9.5, () => 9.36, 8), { depth: DZ, bevelEnabled: false }), LM.dp); sssWall.geometry.translate(0, 0, -ZF);
-  const falxS = new THREE.Shape(); { const a = P2(0, 8.72); falxS.moveTo(a.x - 0.03, a.y); falxS.lineTo(-0.1, a.y - 0.4); falxS.lineTo(-0.1, 0.25); falxS.lineTo(0.1, 0.25); falxS.lineTo(0.1, a.y - 0.4); falxS.lineTo(a.x + 0.03, a.y); }
+  const falxS = new THREE.Shape(); { const a = P2(0, 8.8); falxS.moveTo(a.x - 0.03, a.y); falxS.lineTo(-0.1, a.y - 0.4); falxS.lineTo(-0.1, 1.85); falxS.lineTo(0.1, 1.85); falxS.lineTo(0.1, a.y - 0.4); falxS.lineTo(a.x + 0.03, a.y); }
   const falxG = new THREE.ExtrudeGeometry(falxS, { depth: DZ, bevelEnabled: false }); falxG.translate(0, 0, -ZF);
   const FALX = new THREE.Mesh(falxG, LM.dmL); FALX.userData.pick = 'dura'; pick.push(FALX); SLAB.add(FALX);
   // мелкие детали на срезе (на передней грани, z = ZF)
@@ -99,9 +98,9 @@ function makeMenin() {
   const onFace = (g, m, z = 0.02) => { const ms = new THREE.Mesh(g, m); ms.position.z = ZF + z; FACE.add(ms); return ms; };
   const disc = (th, r, rad, m, part) => { const g = new THREE.CylinderGeometry(rad, rad, DZ + 0.06, 18); g.rotateX(Math.PI / 2); const ms = new THREE.Mesh(g, m); const p = P2(th, r); ms.position.set(p.x, p.y, 0); ms.userData.th = th; ms.userData.r = r; if (part) { ms.userData.pick = part; pick.push(ms); } SLAB.add(ms); return ms; };
   const artM = mphys('#D8404A', { r: 0.4, em: 0.18 }), veinM = mphys('#4A68C8', { r: 0.4, em: 0.18 }), granM = mphys('#E8EEF4', { r: 0.4, em: 0.15 });
-  const MMA = disc(0.47, 9.57, 0.1, artM);   // средняя менингеальная артерия — в борозде кости, в наружном слое
+  const MMA = disc(0.47, 9.74, 0.1, artM);   // средняя менингеальная артерия — в борозде кости, в наружном слое
   const CORT = [-0.7, -0.5, -0.3, -0.11, 0.12, 0.31, 0.5, 0.7].map((th) => disc(th, Rc0(th) + 0.14, 0.08, (th * 10) % 2 > 0.5 ? veinM : artM));
-  const DIP = [-0.55, -0.3, 0.05, 0.35, 0.62].map((th) => disc(th, 10.02, 0.08, veinM));
+  const DIP = [-0.55, -0.3, 0.05, 0.35, 0.62].map((th) => disc(th, 10.12, 0.08, veinM));
   const SCV = [-0.65, -0.25, 0.15, 0.5].map((th) => disc(th, 10.85, 0.06, veinM));
   // трабекулы
   const trabM = new THREE.LineBasicMaterial({ color: 0xdfe8f0, transparent: true, opacity: 0.7 }), trabG = new THREE.BufferGeometry();
@@ -112,14 +111,14 @@ function makeMenin() {
   function buildFace() {
     const tp = []; for (let k = 0; k < 70; k++) { const th = (k % 2 ? 1 : -1) * (0.06 + (TH - 0.08) * (Math.floor(k / 2) / 35) + 0.008 * rnd()); const a = R.pia1(th) + 0.01, b = R.ar0(th) - 0.01; if (b - a < 0.06) continue; const p = P2(th, a), q = P2(th + 0.01 * (rnd() - 0.5), b); tp.push(p.x, p.y, 0, q.x, q.y, 0); }
     trabG.setAttribute('position', new THREE.Float32BufferAttribute(tp, 3));
-    gran.forEach((g) => { const s = g.userData.s, a = P2(0.1 * s, R.ar0(0.1 * s) + 0.02), b = P2(0.045 * s, 9.05); g.userData.stalk.position.set((a.x + b.x) / 2, (a.y + b.y) / 2, 0); g.userData.stalk.lookAt(V3(b.x, b.y, 0)); g.userData.stalk.rotateX(Math.PI / 2); g.userData.stalk.scale.y = Math.hypot(a.x - b.x, a.y - b.y) / 0.35; g.userData.head.position.set(b.x, b.y, 0); });
-    [MMA, ...CORT].forEach((d) => { const th = d.userData.th, r = d === MMA ? 9.57 - dEpi(th) * 0 : d.userData.r - dIn(th) * 0.85; const p = P2(th, d === MMA ? r : Rc0(th) + 0.14 - dIn(th) * 0.85); d.position.set(p.x, p.y, 0); });
+    gran.forEach((g) => { const s = g.userData.s, a = P2(0.17 * s, R.ar0(0.17 * s) + 0.02), b = P2(0.06 * s, 9.15); g.userData.stalk.position.set((a.x + b.x) / 2, (a.y + b.y) / 2, 0); g.userData.stalk.lookAt(V3(b.x, b.y, 0)); g.userData.stalk.rotateX(Math.PI / 2); g.userData.stalk.scale.y = Math.hypot(a.x - b.x, a.y - b.y) / 0.35; g.userData.head.position.set(b.x, b.y, 0); });
+    [MMA, ...CORT].forEach((d) => { const th = d.userData.th, r = d === MMA ? 9.74 - dEpi(th) * 0 : d.userData.r - dIn(th) * 0.85; const p = P2(th, d === MMA ? r : Rc0(th) + 0.14 - dIn(th) * 0.85); d.position.set(p.x, p.y, 0); });
     const tb = st.bleed === 'sub' && st.g > 0.2;   // мостовая вена рвётся при субдуральной
-    const bp = [P2(0.14, R.cx(0.14) + 0.02), P2(0.12, R.ar0(0.12) + 0.05), P2(0.095, 9.3 - dIn(0.095)), P2(0.06, 9.12)].map((p) => V3(p.x, p.y, ZF + 0.06));
+    const bp = [P2(0.24, R.cx(0.24) + 0.02), P2(0.21, R.ar0(0.21) + 0.05), P2(0.16, 9.34 - dIn(0.16)), P2(0.08, 9.2)].map((p) => V3(p.x, p.y, ZF + 0.06));
     if (tb) bp.splice(2, 0, bp[1].clone().lerp(bp[2], 0.4));
     if (bridge) { SLAB.remove(bridge); bridge.geometry.dispose(); }
     bridge = new THREE.Mesh(new THREE.TubeGeometry(cr3(tb ? bp.slice(0, 3) : bp), 30, 0.055, 8), veinM); SLAB.add(bridge); bridge.userData.pick = 'sss';
-    if (!emiss) { emiss = new THREE.Mesh(new THREE.TubeGeometry(cr3([P2(-0.03, 9.5), P2(-0.06, 9.9), P2(-0.1, 10.3), P2(-0.14, 10.8)].map((p) => V3(p.x, p.y, ZF + 0.06))), 20, 0.05, 8), veinM); SLAB.add(emiss); }
+    if (!emiss) { emiss = new THREE.Mesh(new THREE.TubeGeometry(cr3([P2(-0.03, 9.64), P2(-0.06, 9.95), P2(-0.1, 10.3), P2(-0.14, 10.8)].map((p) => V3(p.x, p.y, ZF + 0.06))), 20, 0.05, 8), veinM); SLAB.add(emiss); }
   }
   // гематомы: лента между слоями на всю глубину среза
   const bloodM = mphys('#8A1C28', { r: 0.35, cc: 0.5, em: 0.25, emc: '#C83040' }), sahM = mphys('#B03040', { r: 0.4, em: 0.2, op: 0.75 });
@@ -128,8 +127,8 @@ function makeMenin() {
     if (HEM) { SLAB.remove(HEM); HEM.geometry.dispose(); HEM = null; }
     LM.sasR.color.set(st.bleed === 'sah' ? '#B03848' : '#5FA8E0').multiplyScalar(0.9); LM.sasL.color.copy(LM.sasR.color);
     const op = st.bleed === 'sah' ? 0.35 + 0.5 * st.g : 0.35; setOp(LM.sasR, op); setOp(LM.sasL, op);
-    if (st.bleed === 'epi' && st.g > 0.01) HEM = new THREE.Mesh(new THREE.ExtrudeGeometry(band(0.29, 0.67, () => 9.64, (th) => 9.64 - dEpi(th) - 0.001, 60), { depth: DZ * 0.98, bevelEnabled: false }), bloodM);
-    if (st.bleed === 'sub' && st.g > 0.01) HEM = new THREE.Mesh(new THREE.ExtrudeGeometry(band(0.08, TH, (th) => 9.36 - dEpi(th), (th) => 9.36 - dIn(th) - 0.001, 80), { depth: DZ * 0.98, bevelEnabled: false }), bloodM);
+    if (st.bleed === 'epi' && st.g > 0.01) HEM = new THREE.Mesh(new THREE.ExtrudeGeometry(band(0.29, 0.67, () => 9.84, (th) => 9.84 - dEpi(th) - 0.001, 60), { depth: DZ * 0.98, bevelEnabled: false }), bloodM);
+    if (st.bleed === 'sub' && st.g > 0.01) HEM = new THREE.Mesh(new THREE.ExtrudeGeometry(band(0.15, TH, (th) => 9.44 - dEpi(th), (th) => 9.44 - dIn(th) - 0.001, 80), { depth: DZ * 0.98, bevelEnabled: false }), bloodM);
     if (HEM) { HEM.geometry.translate(0, 0, -ZF * 0.98); SLAB.add(HEM); }
   }
   buildFace(); buildBleed();
@@ -143,7 +142,7 @@ function makeMenin() {
     const g = head.geometry, P = g.attributes.position, IX = g.index.array, keep = [];
     const ok = (i) => (P.getY(i) - 16) * KS > -6.5;
     for (let t = 0; t < IX.length; t += 3) if (ok(IX[t]) && ok(IX[t + 1]) && ok(IX[t + 2])) keep.push(IX[t], IX[t + 1], IX[t + 2]);
-    g.setIndex(keep); g.computeVertexNormals(); const ms = new THREE.Mesh(g, skM); ms.renderOrder = 2; SKS.add(ms);
+    g.setIndex(keep); g.computeVertexNormals(); const ms = new THREE.Mesh(g, skM); ms.renderOrder = 2; SKS.add(ms); SKS.visible = st.sin !== 'cav';
     out.forEach((m) => { if (m !== head) m.geometry.dispose(); });
   }).catch(() => {});
   const XM = -0.5;
@@ -161,20 +160,23 @@ function makeMenin() {
   const OPH = (s) => [...side(s, [[2.6, 3.0, 1.6], [2.0, 2.4, -1.4]]), CAVC(s).clone().add(V3(0, 0.25, 1.15))];
   const SINM = Object.fromEntries(MN_SIN.map((s) => [s.id, mphys(s.col, { r: 0.35, cc: 0.4, em: 0.22 })]));
   const SINCURVES = [];   // для потока: { c, id, r }
-  const sinus = (pts, r, id) => { const c = cr3(pts); const m = new THREE.Mesh(taperTube(c, typeof r === 'function' ? r : () => r, 64, 10), SINM[id]); m.userData.pick = 's:' + id; pick.push(m); SKG.add(m); SINCURVES.push({ c, id, len: c.getLength() }); return m; };
+  const cavFar = SINM.cav.clone();   // клиновидно-теменной синус и глазная вена правой стороны — при выборе пещеристого приглушены (тянутся под текст)
+  const sinus = (pts, r, id, mat) => { const c = cr3(pts); const m = new THREE.Mesh(taperTube(c, typeof r === 'function' ? r : () => r, 64, 10), mat || SINM[id]); m.userData.pick = 's:' + id; pick.push(m); SKG.add(m); SINCURVES.push({ c, id, len: c.getLength(), far: mat === cavFar }); return m; };
   sinus(SSSP, (u) => 0.22 + 0.3 * u, 'sss');
   sinus(ISSP, (u) => 0.12 + 0.08 * u, 'iss'); sinus(STR, 0.3, 'iss');
   const galv = sinus([V3(XM, 5.6, -7.9), V3(XM, 6.5, -9.4), GAL], 0.26, 'iss');
-  [-1, 1].forEach((s) => { sinus(TRS(s), s < 0 ? 0.5 : 0.42, 'tr'); sinus(SIG(s), (u) => (s < 0 ? 0.5 : 0.42) + 0.15 * u, 'tr'); sinus(SPS(s), 0.12, 'pet'); sinus(IPS(s), 0.13, 'pet'); sinus(SPH(s), 0.11, 'cav'); sinus(OPH(s), 0.12, 'cav'); });
+  [-1, 1].forEach((s) => { sinus(TRS(s), s < 0 ? 0.5 : 0.42, 'tr'); sinus(SIG(s), (u) => (s < 0 ? 0.5 : 0.42) + 0.15 * u, 'tr'); sinus(SPS(s), 0.12, 'pet'); sinus(IPS(s), 0.13, 'pet'); sinus(SPH(s), 0.11, 'cav', s < 0 ? cavFar : null); sinus(OPH(s), 0.12, 'cav', s < 0 ? cavFar : null); });
   const confM = new THREE.Mesh(new THREE.SphereGeometry(0.62, 20, 14), SINM.sss); confM.position.copy(CONF); confM.userData.pick = 's:sss'; pick.push(confM); SKG.add(confM);
   // пещеристые синусы: губчатые объёмы с сонной артерией и нервами
   const CAVG = new THREE.Group(); SKG.add(CAVG);
+  const CAVN = [], CAV_N = [[0.55, 0.6, 'III'], [0.63, 0.28, 'IV'], [0.66, -0.06, 'V₁'], [0.6, -0.42, 'V₂'], [0.2, -0.3, 'VI']];   // нервы и ВСА видны при выборе пещеристого
+  const nEnd = (k) => CAVC(1).add(V3(CAV_N[k][0] * 0.9, CAV_N[k][1] + 0.1, 1.9));
   const cavM = mphys('#E8A050', { r: 0.4, em: 0.18, op: 0.42, side: THREE.DoubleSide });
   const icaM = mphys('#D8404A', { r: 0.4, em: 0.2 }), nM = mphys('#F4C542', { r: 0.45, em: 0.22 });
   [-1, 1].forEach((s) => {
     const c = CAVC(s), sp = new THREE.Mesh(ell3(0.75, 0.85, 1.55, c, 24), cavM); sp.userData.pick = 's:cav'; pick.push(sp); CAVG.add(sp);
-    CAVG.add(new THREE.Mesh(new THREE.TubeGeometry(cr3([c.clone().add(V3(s * 0.2, -2.6, -1.6)), c.clone().add(V3(s * 0.05, -0.6, -1.3)), c.clone().add(V3(0, -0.2, 0.4)), c.clone().add(V3(0, 0.3, 1.2)), c.clone().add(V3(-s * 0.1, 0.9, 0.8)), c.clone().add(V3(-s * 0.3, 1.5, 0.2))]), 48, 0.22, 10), icaM));
-    [[0.55, 0.55, 'III'], [0.62, 0.3, 'IV'], [0.66, -0.05, 'V₁'], [0.62, -0.42, 'V₂'], [0.18, -0.25, 'VI']].forEach(([dx, dy]) => CAVG.add(new THREE.Mesh(new THREE.TubeGeometry(cr3([c.clone().add(V3(s * dx, dy, -2.0)), c.clone().add(V3(s * dx, dy, 0)), c.clone().add(V3(s * dx * 0.9, dy + 0.1, 1.9))]), 16, 0.07, 6), nM)));
+    const ica = new THREE.Mesh(new THREE.TubeGeometry(cr3([c.clone().add(V3(s * 0.2, -2.6, -1.6)), c.clone().add(V3(s * 0.05, -0.6, -1.3)), c.clone().add(V3(0, -0.2, 0.4)), c.clone().add(V3(0, 0.3, 1.2)), c.clone().add(V3(-s * 0.1, 0.9, 0.8)), c.clone().add(V3(-s * 0.3, 1.5, 0.2))]), 48, 0.22, 10), icaM); CAVG.add(ica); CAVN.push(ica);
+    CAV_N.forEach(([dx, dy]) => { const m = new THREE.Mesh(new THREE.TubeGeometry(cr3([c.clone().add(V3(s * dx, dy, -2.0)), c.clone().add(V3(s * dx, dy, 0)), c.clone().add(V3(s * dx * 0.9, dy + 0.1, 1.9))]), 16, 0.07, 6), nM); CAVG.add(m); CAVN.push(m); if (s < 0) m.userData.far = true; });
   });
   const ICS = new THREE.Mesh(new THREE.TorusGeometry(1.35, 0.1, 8, 32), SINM.pet); ICS.position.set(XM, 1.05, -4.8); ICS.rotation.x = Math.PI / 2; ICS.scale.set(1, 0.75, 1); SKG.add(ICS);
   const PIT = new THREE.Mesh(new THREE.SphereGeometry(0.55, 16, 12), mphys('#E8B0C8', { r: 0.5, em: 0.12 })); PIT.position.set(XM, 0.9, -4.8); SKG.add(PIT);
@@ -197,8 +199,8 @@ function makeMenin() {
   const dum = new THREE.Object3D();
 
   // =================== виды ===================
-  const VP = DK ? { lay: [V3(80, 3.3, 0), V3(0.32, 0.22, 1), 21, 3.4, -0.8], sin: [V3(-0.5, 4.5, -6.5), V3(0.95, 0.42, 0.42), 46, 6.5, -1.5], cav: [V3(-0.5, 1.2, -4.8), V3(0.25, 0.75, 0.75), 14, 2.2, -0.4] }
-    : { lay: [V3(80, 3.0, 0), V3(0.32, 0.22, 1), 26, 0, -0.6], sin: [V3(-0.5, 4.5, -6.5), V3(0.95, 0.42, 0.42), 50, 0, -1.5], cav: [V3(-0.5, 1.2, -4.8), V3(0.25, 0.75, 0.75), 17, 0, -0.4] };
+  const VP = DK ? { lay: [V3(80, 3.4, 2.5), V3(0.2, 0.14, 1), 13, 2, -0.2], sin: [V3(-0.5, 4.5, -6.5), V3(0.95, 0.42, 0.42), 50, 7, 0.3], cav: [V3(0.2, 1.0, -4.8), V3(0.45, 0.4, 1), 11, 2.6, 0] }
+    : { lay: [V3(80, 3.4, 2.5), V3(0.2, 0.14, 1), 10.5, 0.3, -0.2], sin: [V3(-0.5, 4.5, -6.5), V3(0.95, 0.42, 0.42), 44, 0, -0.5], cav: [V3(0.2, 1.0, -4.8), V3(0.45, 0.4, 1), 17, 0, 0] };
   const VIEW = {}; Object.entries(VP).forEach(([k, a]) => { VIEW[k] = vw(...a); });
   const curView = () => (st.mode === 'sin' ? (st.sin === 'cav' ? 'cav' : 'sin') : 'lay');
   function applyView() { st.fly = VIEW[curView()]; }
@@ -211,9 +213,10 @@ function makeMenin() {
     const sOn = st.mode !== 'lay' || !st.sel || st.sel === 'sss'; setOp(sssM, sOn ? 1 : 0.15); setOp(veinM, sOn || st.sel === 'bone' || st.sel === 'scalp' ? 1 : 0.2);
     setOp(granM, st.mode !== 'lay' || !st.sel || st.sel === 'arach' || st.sel === 'sss' ? 1 : 0.15); setOp(artM, st.mode !== 'lay' || !st.sel || ['dura', 'arach', 'pia'].includes(st.sel) ? 1 : 0.2);
     trabM.opacity = st.mode !== 'lay' || !st.sel || st.sel === 'arach' ? 0.7 : 0.1;
-    MN_SIN.forEach((s) => { const m = SINM[s.id], on = !st.sin || st.sin === s.id; setOp(m, on ? 1 : 0.18); m.emissiveIntensity = st.sin === s.id ? 0.5 : 0.22; });
-    setOp(cavM, !st.sin || st.sin === 'cav' ? 0.42 : 0.1); CAVG.visible = true; [icaM, nM].forEach((m) => setOp(m, !st.sin || st.sin === 'cav' ? 1 : 0.15));
-    setOp(durM, st.sin && st.sin !== 'sss' && st.sin !== 'iss' && st.sin !== 'tr' ? 0.1 : 0.26);
+    MN_SIN.forEach((s) => { const m = SINM[s.id], on = !st.sin || st.sin === s.id; setOp(m, on ? 1 : st.sin === 'cav' ? (s.id === 'pet' ? 0.3 : 0.06) : 0.18); m.emissiveIntensity = st.sin === s.id ? 0.5 : 0.22; });
+    setOp(cavFar, st.sin === 'cav' ? 0.07 : !st.sin ? 1 : 0.18); cavFar.emissiveIntensity = 0.22;
+    setOp(cavM, !st.sin || st.sin === 'cav' ? (st.sin === 'cav' ? 0.3 : 0.42) : 0.1); CAVN.forEach((m) => { m.visible = st.sin === 'cav' && !m.userData.far; }); SKS.visible = st.sin !== 'cav';
+    setOp(durM, st.sin === 'cav' ? 0.04 : st.sin && st.sin !== 'sss' && st.sin !== 'iss' && st.sin !== 'tr' ? 0.1 : 0.26);
   }
 
   // =================== анимация ===================
@@ -223,7 +226,7 @@ function makeMenin() {
     if (st.mode === 'bleed' && st.bleed !== 'none' && st.g < 1) st.g = Math.min(1, st.g + dt / 2.6);
     const gq = Math.round(st.g * 40) / 40; if (gq !== lastG) { lastG = gq; buildLayers(); buildFace(); buildBleed(); }
     if (st.mode === 'sin') {
-      let n = 0; parts.forEach((p) => { const c = SINCURVES[p.ci]; if (st.flow) { p.u += dt * p.sp * 2.2 / c.len; if (p.u > 1) p.u -= 1; } const on = !st.sin || st.sin === c.id; dum.position.copy(c.c.getPointAt(p.u)); dum.scale.setScalar(on ? 1 : 0.001); dum.updateMatrix(); PF.setMatrixAt(n++, dum.matrix); });
+      let n = 0; parts.forEach((p) => { const c = SINCURVES[p.ci]; if (st.flow) { p.u += dt * p.sp * 2.2 / c.len; if (p.u > 1) p.u -= 1; } const on = (!st.sin || st.sin === c.id) && !(c.far && st.sin === 'cav'); dum.position.copy(c.c.getPointAt(p.u)); dum.scale.setScalar(on ? 1 : 0.001); dum.updateMatrix(); PF.setMatrixAt(n++, dum.matrix); });
       PF.instanceMatrix.needsUpdate = true; PF.visible = st.flow;
     }
   }
@@ -248,43 +251,42 @@ function makeMenin() {
     lb('сухожильный шлем', S(-0.5, 10.67), '#F0EEE8', () => lay1() && st.sel === 'scalp', true),
     lb('рыхлая клетчатка', S(-0.36, 10.53), '#F4E2C8', () => lay1() && st.sel === 'scalp', true),
     lb('надкостница', S(-0.22, 10.42), '#E8E0D0', () => lay1() && st.sel === 'scalp', true),
-    lb('кость', S(-0.7, 10.0), '#F2E6C8', lOn('bone'), true),
-    lb('диплоэ', S(0.62, 10.02), '#D8B890', () => lay1() && st.sel === 'bone'),
-    lb('диплоическая вена', S(0.35, 10.02), '#9CB8FF', () => lay1() && st.sel === 'bone'),
+    lb('кость', S(-0.7, 10.1), '#F2E6C8', lOn('bone'), true),
+    lb('диплоэ', S(0.62, 10.12), '#D8B890', () => lay1() && st.sel === 'bone'),
+    lb('диплоическая вена', S(0.35, 10.12), '#9CB8FF', () => lay1() && st.sel === 'bone'),
     lb('выпускник', S(-0.12, 10.6, ZF + 0.06), '#9CB8FF', () => lay1() && (st.sel === 'bone' || st.sel === 'sss'), true),
-    lb('твёрдая оболочка', S(0.7, 9.5), '#9FC2E8', lOn('dura')),
-    lb('серп мозга', () => SLAB.localToWorld(V3(0, 1.6, ZF)), '#9FC2E8', () => lay1() && (!st.sel || st.sel === 'dura')),
+    lb('твёрдая оболочка', S(0.45, 9.6), '#9FC2E8', lOn('dura')),
+    lb('серп мозга', () => SLAB.localToWorld(V3(0, 2.6, ZF)), '#9FC2E8', () => lay1() && (!st.sel || st.sel === 'dura'), true),
     lb('средняя менингеальная артерия', () => SLAB.localToWorld(MMA.position.clone().setZ(ZF)), '#F08A8A', () => (lay1() && st.sel === 'dura') || (bl() && st.bleed === 'epi')),
-    lb('паутинная оболочка', S(-0.52, (th) => R.ar1(th)), '#D8E4F0', lOn('arach'), true),
-    lb('подпаутинное пространство', S(0.5, (th) => (R.ar0(th) + R.pia1(th)) / 2), '#7FC0F0', () => lOn('arach', true)() || (bl() && st.bleed === 'sah')),
+    lb('паутинная оболочка', S(0.55, (th) => R.ar1(th) - 0.04), '#D8E4F0', lOn('arach')),
+    lb('подпаутинное пространство', S(0.65, (th) => (R.ar0(th) + R.pia1(th)) / 2), '#7FC0F0', () => lOn('arach', true)() || (bl() && st.bleed === 'sah')),
     lb('грануляции', () => SLAB.localToWorld(gran[1].userData.head.position.clone().setZ(ZF + 0.05)), '#E8EEF4', () => lay1() && (st.sel === 'arach' || st.sel === 'sss')),
-    lb('мягкая оболочка', S(-0.31, (th) => R.pia1(th)), '#E890A8', lOn('pia'), true),
-    lb('кора', S(0.3, (th) => R.cx(th) - 0.3), '#C8B0B8', () => lay1() && (!st.sel || st.sel === 'pia')),
-    lb('верхний сагиттальный синус', S(0, 9.25), '#9CB0FF', () => lay1() || bl()),
-    lb('мостовая вена', S(0.13, (th) => R.ar0(th) - 0.05, ZF + 0.06), '#9CB8FF', () => (lay1() && (st.sel === 'sss' || !st.sel) && DK) || (bl() && st.bleed === 'sub')),
-    lb('гематома', S(0.48, (th) => 9.64 - dEpi(th) / 2), '#FF8A8A', () => bl() && st.bleed === 'epi' && st.g > 0.5),
-    lb('гематома', S(0.42, (th) => 9.36 - dEpi(th) - dSub(th) / 2), '#FF8A8A', () => bl() && st.bleed === 'sub' && st.g > 0.5),
+    lb('мягкая оболочка', S(0.75, (th) => R.pia1(th) - 0.03), '#E890A8', lOn('pia')),
+    lb('кора', S(0.5, (th) => R.cx(th) - 0.35), '#C8B0B8', () => lay1() && st.sel === 'pia'),
+    lb('верхний сагиттальный синус', S(0, 9.3), '#9CB0FF', () => lay1() || bl(), true),
+    lb('мостовая вена', S(0.22, (th) => R.ar0(th) - 0.05, ZF + 0.06), '#9CB8FF', () => (lay1() && st.sel === 'sss') || (bl() && st.bleed === 'sub')),
+    lb('гематома', S(0.48, (th) => 9.84 - dEpi(th) / 2), '#FF8A8A', () => bl() && st.bleed === 'epi' && st.g > 0.5),
+    lb('гематома', S(0.42, (th) => 9.44 - dEpi(th) - dSub(th) / 2), '#FF8A8A', () => bl() && st.bleed === 'sub' && st.g > 0.5),
     lb('кровь в бороздах', S(0.2, (th) => R.cx(th) - 0.4), '#FF8A8A', () => bl() && st.bleed === 'sah' && st.g > 0.5),
-    lb('кость', S(-0.6, 10.0), '#F2E6C8', bl, true),
-    lb('твёрдая', S(-0.42, 9.43), '#9FC2E8', bl, true),
+    lb('кость', S(-0.6, 10.1), '#F2E6C8', bl, true),
+    lb('твёрдая', S(-0.42, 9.6), '#9FC2E8', bl, true),
     lb('паутинная', S(-0.3, (th) => R.ar1(th)), '#D8E4F0', () => bl() && DK, true),
     lb('верхний сагиттальный синус', () => SSSP[3].clone(), '#9CB0FF', sOn('sss')),
     lb('сток синусов', () => CONF.clone(), '#9CB0FF', sOn('sss', true), true),
     lb('нижний сагиттальный', () => ISSP[2].clone(), '#C8B0FF', sOn('iss', true)),
     lb('большая мозговая вена', () => galv.geometry ? V3(XM, 6.3, -9.0) : V3(), '#C8B0FF', () => sinM() && st.sin === 'iss'),
     lb('прямой синус', () => STR[1].clone(), '#C8B0FF', sOn('iss')),
-    lb('поперечный синус', () => TRS(-1)[2].clone(), '#8FD8F0', sOn('tr'), true),
-    lb('сигмовидный синус', () => SIG(-1)[2].clone(), '#8FD8F0', sOn('tr'), true),
-    lb('внутренняя яремная вена', () => SIG(-1)[6].clone(), '#8FD8F0', sOn('tr', true), true),
+    lb('поперечный синус', () => TRS(1)[2].clone(), '#8FD8F0', sOn('tr'), true),
+    lb('сигмовидный синус', () => SIG(1)[2].clone(), '#8FD8F0', sOn('tr'), true),
+    lb('внутренняя яремная вена', () => SIG(1)[6].clone(), '#8FD8F0', sOn('tr', true), true),
     lb('серп мозга', () => sCurve.getPointAt(0.35).lerp(lCurve.getPointAt(0.35), 0.5), '#B8D4F0', () => sinM() && !st.sin && DK),
     lb('намёт мозжечка', () => TRS(1)[2].clone().lerp(V3(XM, 5.0, -10), 0.5), '#B8D4F0', () => sinM() && (!st.sin || st.sin === 'tr') && DK),
     lb('пещеристый синус', () => CAVC(1).clone().add(V3(0.4, 0.9, 0)), '#F0C080', () => sinM() && (st.sin === 'cav' || (!st.sin && DK))),
     lb('верхний каменистый', () => SPS(1)[1].clone(), '#A8E8C8', () => sinM() && st.sin === 'pet'),
     lb('нижний каменистый', () => IPS(1)[2].clone(), '#A8E8C8', () => sinM() && st.sin === 'pet'),
-    lb('внутренняя сонная артерия', () => CAVC(-1).clone().add(V3(0.3, 1.5, 0.2)), '#F08A8A', () => sinM() && st.sin === 'cav', true),
+    lb('внутренняя сонная артерия', () => CAVC(1).add(V3(-0.3, 1.5, 0.2)), '#F08A8A', () => sinM() && st.sin === 'cav', true),
     lb('гипофиз', () => PIT.position.clone().add(V3(0, -0.5, 0)), '#F0B8D0', () => sinM() && st.sin === 'cav'),
-    lb('III, IV, V₁, V₂', () => CAVC(1).clone().add(V3(0.65, 0.2, 1.4)), '#F4D06A', () => sinM() && st.sin === 'cav'),
-    lb('VI', () => CAVC(-1).clone().add(V3(-0.2, -0.3, 1.6)), '#F4D06A', () => sinM() && st.sin === 'cav', true),
+    ...CAV_N.map((n, k) => lb(n[2], () => nEnd(k), '#F4D06A', () => sinM() && st.sin === 'cav', k === 4)),
     lb('глазная вена', () => OPH(1)[1].clone(), '#F0C080', () => sinM() && st.sin === 'cav'),
   ];
   labels.forEach((l) => { if (typeof l.pos === 'function') { const f = l.pos; Object.defineProperty(l, 'pos', { get: f }); } });
@@ -348,14 +350,14 @@ function makeMenin() {
         <p>Ликвор (≈ 150 мл) вырабатывают сосудистые сплетения желудочков — около 500 мл в сутки, то есть он обновляется 3–4 раза. Из желудочков он выходит в подпаутинное пространство, омывает мозг и спинной мозг и всасывается в венозные синусы через грануляции паутинной оболочки. В ликворе мозг весит не 1,4 кг, а около 50 г.</p></div>
       <div><h2>Медицина</h2><ul>
         <li><b>Менингит</b> — воспаление мягкой и паутинной оболочек: головная боль, жар, ригидность мышц шеи. Бактериальный менингит смертельно опасен; от основных возбудителей есть прививки.</li>
-        <li><b>Эпидуральная, субдуральная и субарахноидальная гематомы</b> различают на КТ по форме: линза, полумесяц, кровь в бороздах и цистернах.</li>
+        <li><b>Эпидуральную и субдуральную гематомы и субарахноидальное кровоизлияние</b> различают на КТ по форме: линза, полумесяц, кровь в бороздах и цистернах.</li>
         <li><b>Тромбоз венозных синусов</b> — редкая причина инсульта у молодых: при беременности, приёме гормональных контрацептивов, обезвоживании.</li>
-        <li><b>Люмбальная пункция</b> — ликвор берут иглой ниже конца спинного мозга, между III и IV поясничными позвонками.</li>
+        <li><b>Люмбальная пункция</b> — ликвор берут иглой ниже конца спинного мозга — между III и IV или IV и V поясничными позвонками.</li>
         <li><b>Головная боль</b> часто исходит от оболочек и их сосудов: сам мозг боли не чувствует.</li></ul></div>
       <div><h2>Условности</h2><ul><li>На срезе толщины слоёв изменены: оболочки и подпаутинное пространство показаны толще, чем на самом деле. Синусы — гладкие трубки одного сечения; серп и намёт — полупрозрачные листы, сосудистые сплетения и вены мозга, кроме мостовой и большой мозговой, не показаны. Ток крови ускорен.</li></ul></div>
       <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>3</code> режим · <code>Esc</code> сбросить выбор</li><li><code>R</code> вращение · <code>N</code> подписи</li></ul></div>`
   };
-  window.__mn = { camera, controls, st, VIEW, VP, vw, scene, setMode };
+  window.__mn = { camera, controls, st, VIEW, VP, vw, scene, setMode, V3, applyView };
   colorAll();
   return self;
 }
