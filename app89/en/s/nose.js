@@ -305,7 +305,7 @@ function makeNose() {
     lb('inferior meatus', V3(-0.4, -2.55, 0.6), '#FFC8CC', () => sel('conch'), true),
     lb('vestibule', V3(-0.4, -2.0, 5.4), P('ext').col, () => none() && DK),
     lb('frontal sinus', V3(0.1, 5.25, 3.35), SINC.fr, () => none()),
-    lb('sphenoidal sinus', V3(0.1, 0.35, -2.4), SINC.sph, () => none() && DK),
+    lb('sphenoid sinus', V3(0.1, 0.35, -2.4), SINC.sph, () => none() && DK),
     lb('pituitary gland', V3(0.1, 2.25, -2.75), '#F2A8C8', () => none() && DK, true),
     lb('hard palate', V3(0.1, -3.2, 1.0), '#E8DCC8', () => none() && DK),
     lb('choana', V3(-0.4, -1.9, -1.35), P('phar').col, () => none() && DK, true),
