@@ -48,8 +48,10 @@ function makeOrbit() {
   const E = V3(-3.3, 2.4, 2.2), R = 1.2, EL = V3(3.3, 2.4, 2.2);
   const OC = V3(-2.55, 2.55, 0.7);   // середина глазницы
   const vw = (C, dir, dist, sx, sy) => { const d = dir.clone().normalize(), f = d.clone().negate(), r = f.clone().cross(V3(0, 1, 0)).normalize(), u = r.clone().cross(f), S = r.multiplyScalar(-sx).addScaledVector(u, -sy); return flyTarget(C.clone().add(S), C.clone().addScaledVector(d, dist).add(S)); };
-  const VP = DK ? { obl: [OC, V3(-0.62, 0.55, 0.56), 11.5, 1.9, 0.7], top: [V3(-2.5, 2.6, 1.0), V3(0, 1, -0.22), 17, 1.3, -0.6], side: [V3(-2.9, 2.4, 0.6), V3(-1, 0.18, 0.12), 12, 2.3, 0.8], front: [E, V3(0.05, 0.06, 1), 12, 2.0, 0.8], pal: [V3(0, 2.4, 2.2), V3(0, 0.04, 1), 19, 2.6, 1.6], tear: [V3(-2.6, 1.9, 2.5), V3(-0.12, 0.08, 1), 15.5, 1.9, -0.1] }
-    : { obl: [OC, V3(-0.62, 0.55, 0.56), 14, 0, 0.6], top: [V3(-2.5, 2.6, 0.4), V3(0, 1, -0.22), 13.5, 0, 0.6], side: [V3(-2.9, 2.4, 0.6), V3(-1, 0.18, 0.12), 14, 0, 0.6], front: [E, V3(0.05, 0.06, 1), 14, 0, 0.6], pal: [V3(0, 2.3, 2.2), V3(0, 0.04, 1), 26, 0, 1.0], tear: [V3(-2.6, 1.9, 2.5), V3(-0.12, 0.08, 1), 13, 0, 0.6] };
+  const VP = DK ? { obl: [OC, V3(-0.62, 0.55, 0.56), 11.5, 1.9, 0.7], top: [V3(-2.5, 2.6, 1.0), V3(0, 1, -0.22), 17, 1.3, -0.6], side: [V3(-2.9, 2.4, 0.6), V3(-1, 0.18, 0.12), 12, 2.3, 0.8], front: [E, V3(0.05, 0.06, 1), 12, 2.0, 0.8], pal: [V3(0, 2.4, 2.2), V3(0, 0.04, 1), 17, 2.4, 1.4], tear: [V3(-2.6, 1.9, 2.5), V3(-0.12, 0.08, 1), 15.5, 1.9, -0.1],
+      nobl: [V3(-2.5, 2.4, 0.3), V3(-0.62, 0.55, 0.56), 14.5, 1.4, 0.9], ntop: [V3(-2.3, 2.6, 0.4), V3(0, 1, -0.22), 16, 1.3, 0.4], nside: [V3(-2.5, 2.2, -0.2), V3(-1, 0.18, 0.12), 14.5, 1.6, 0.7] }
+    : { obl: [OC, V3(-0.62, 0.55, 0.56), 11, 0, 0.5], top: [V3(-2.5, 2.6, 0.4), V3(0, 1, -0.22), 13.5, 0, 0.6], side: [V3(-2.9, 2.4, 0.6), V3(-1, 0.18, 0.12), 11.5, 0, 0.5], front: [E, V3(0.05, 0.06, 1), 10.5, 0, 0.5], pal: [V3(0, 2.3, 2.2), V3(0, 0.04, 1), 24, 0, 1.0], tear: [V3(-2.6, 1.9, 2.5), V3(-0.12, 0.08, 1), 12, 0, 0.5],
+      nobl: [V3(-2.3, 2.4, -0.3), V3(-0.62, 0.55, 0.56), 13, 0, 0.5], ntop: [V3(-2.3, 2.6, 0.0), V3(0, 1, -0.22), 14, 0, 0.6], nside: [V3(-2.5, 2.2, -0.2), V3(-1, 0.18, 0.12), 13, 0, 0.5] };
   const VIEW = {}; Object.entries(VP).forEach(([k, a]) => { VIEW[k] = vw(...a); });
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.obl.pos);
   const controls = makeControls(camera, VIEW.obl.target); controls.minDistance = 6; controls.maxDistance = 80;
@@ -213,7 +215,7 @@ function makeOrbit() {
     const sr = muscPt('sr', 0.33, 0), lps = muscPt('lps', 0.36, 0), mr = muscPt('mr', 0.34, 0), ir = muscPt('ir', 0.32, 0), io = muscPt('io', 0.42, 0.5), so = muscPt('so', 0.32, 1.05), lr = muscPt('lr', 0.3, 0.2);
     // III
     const B3 = V3(-2.0, 2.25, -1.2), Bi = V3(-2.1, 1.85, -0.55);
-    nerve('III', [V3(-1.15, 2.0, -4.4), V3(-1.45, 2.1, -3.0), V3(-1.8, 2.2, -1.9), B3], 0.09);
+    nerve('III', [V3(-1.3, 2.05, -3.4), V3(-1.5, 2.1, -2.8), V3(-1.8, 2.2, -1.9), B3], 0.09);
     nerve('III', [B3, V3(-2.3, 2.7, -0.9), V3(-2.15, 3.0, -0.5), sr], 0.06); nerve('III', [V3(-2.15, 3.0, -0.5), lps], 0.04);
     nerve('III', [B3, V3(-2.1, 1.95, -0.85), Bi], 0.065);
     nerve('III', [Bi, V3(-1.75, 1.95, -0.25), mr], 0.045); nerve('III', [Bi, ir], 0.045);
@@ -223,13 +225,13 @@ function makeOrbit() {
     const cgm = new THREE.Mesh(new THREE.SphereGeometry(1, 14, 10), NM.III); cgm.scale.set(0.13, 0.09, 0.15); cgm.position.copy(CG); NRV.add(cgm); NG.III.push(cgm);
     nerve('III', [Bi.clone().lerp(B3, 0.3), CG.clone().add(V3(0, -0.05, -0.1))], 0.025);
     // IV
-    nerve('IV', [V3(-1.45, 2.75, -4.4), V3(-1.7, 3.0, -2.7), V3(-1.85, 3.3, -1.5), V3(-1.55, 3.4, -0.9), so], 0.045);
+    nerve('IV', [V3(-1.55, 2.85, -3.4), V3(-1.7, 3.0, -2.7), V3(-1.85, 3.3, -1.5), V3(-1.55, 3.4, -0.9), so], 0.045);
     // VI
-    nerve('VI', [V3(-1.0, 1.6, -4.4), V3(-1.6, 1.9, -2.7), V3(-2.1, 2.15, -1.4), V3(-2.55, 2.3, -0.9), lr], 0.065);
+    nerve('VI', [V3(-1.25, 1.7, -3.4), V3(-1.6, 1.9, -2.7), V3(-2.1, 2.15, -1.4), V3(-2.55, 2.3, -0.9), lr], 0.065);
     // V: тройничный узел, V1 и его ветви, V2
-    const TG = new THREE.Mesh(new THREE.SphereGeometry(1, 20, 14), NM.V); TG.scale.set(0.75, 0.28, 0.42); TG.position.set(-2.6, 0.9, -4.5); TG.rotation.y = -0.5; NRV.add(TG); NG.V.push(TG);
+    const TG = new THREE.Mesh(new THREE.SphereGeometry(1, 20, 14), NM.V); TG.scale.set(0.75, 0.28, 0.42); TG.position.set(-2.55, 1.0, -3.75); TG.rotation.y = -0.5; NRV.add(TG); NG.V.push(TG);
     const BV = V3(-2.15, 2.55, -1.95);
-    nerve('V', [V3(-2.3, 1.05, -4.3), V3(-2.3, 1.7, -3.2), V3(-2.2, 2.3, -2.4), BV], 0.1);
+    nerve('V', [V3(-2.3, 1.15, -3.5), V3(-2.3, 1.7, -3.0), V3(-2.2, 2.3, -2.4), BV], 0.1);
     nerve('V', [BV, V3(-2.5, 2.95, -1.4), V3(-3.2, 3.25, -0.4), V3(-3.9, 3.5, 0.6), V3(-4.25, 3.7, 1.2)], 0.045);   // слёзный
     const BF = V3(-2.65, 4.0, 1.4);
     nerve('V', [BV, V3(-2.05, 3.3, -1.4), V3(-2.3, 3.62, -0.4), V3(-2.6, 3.95, 0.8), BF], 0.07);   // лобный
@@ -238,9 +240,9 @@ function makeOrbit() {
     nerve('V', [BV, V3(-2.0, 2.65, -1.4), NC1, NC2, NC3, V3(-1.38, 3.32, 1.6), V3(-1.6, 3.6, 2.55)], 0.05);   // носоресничный → подблоковый
     nerve('V', [NC2, V3(-1.15, 3.15, -0.3)], 0.03); nerve('V', [NC3, V3(-1.05, 3.3, 0.7)], 0.03);
     nerve('V', [V3(-2.05, 2.75, -1.0), CG.clone().add(V3(0.02, 0.06, -0.08))], 0.022);
-    nerve('V', [V3(-2.45, 0.75, -4.2), V3(-2.45, 0.55, -2.4), V3(-2.65, 0.55, -0.8), V3(-2.85, 0.58, 0.6), V3(-2.92, 0.42, 1.8), V3(-2.95, 0.02, 2.6), V3(-2.95, -0.38, 3.05)], 0.085);   // подглазничный (V2)
-    nerve('V', [V3(-2.3, 0.6, -4.3), V3(-2.4, -0.4, -4.1)], 0.1);   // V3 — обрыв
-    LBP.lac = V3(-3.6, 3.4, 0.2); LBP.fr = V3(-2.45, 3.82, 0.3); LBP.nc = NC3.clone(); LBP.v2 = V3(-2.85, 0.58, 0.6); LBP.v1 = V3(-2.25, 2.0, -2.9); LBP.tg = TG.position.clone(); LBP.s3 = V3(-2.3, 2.7, -0.9); LBP.i3 = V3(-2.6, 1.55, 0.2); LBP.t3 = V3(-1.45, 2.1, -3.0); LBP.iv = V3(-1.7, 3.0, -2.7); LBP.vi = V3(-1.6, 1.9, -2.7);
+    nerve('V', [V3(-2.45, 0.8, -3.55), V3(-2.45, 0.55, -2.4), V3(-2.65, 0.55, -0.8), V3(-2.85, 0.58, 0.6), V3(-2.92, 0.42, 1.8), V3(-2.95, 0.02, 2.6), V3(-2.95, -0.38, 3.05)], 0.085);   // подглазничный (V2)
+    nerve('V', [V3(-2.4, 0.85, -3.75), V3(-2.5, 0.1, -3.7)], 0.1);   // V3 — обрыв
+    LBP.lac = V3(-3.6, 3.4, 0.2); LBP.fr = V3(-2.45, 3.82, 0.3); LBP.nc = NC3.clone(); LBP.v2 = V3(-2.85, 0.58, 0.6); LBP.v1 = V3(-2.28, 1.9, -2.8); LBP.tg = TG.position.clone(); LBP.s3 = V3(-2.3, 2.7, -0.9); LBP.i3 = V3(-2.6, 1.55, 0.2); LBP.t3 = V3(-1.5, 2.1, -2.8); LBP.iv = V3(-1.7, 3.0, -2.7); LBP.vi = V3(-1.6, 1.9, -2.7);
     // ресничные нервы (концы на глазу)
     for (let k = 0; k < 6; k++) { const a = (k / 6) * 2 * Math.PI; DYNN.push({ id: 'III', from: CG, dl: ONL.clone().add(V3(0.2 * Math.cos(a), 0.2 * Math.sin(a), 0)), r: 0.018 }); }
     DYNN.push({ id: 'V', from: NC1, dl: ONL.clone().add(V3(0.26, 0.12, 0)), r: 0.02 }, { id: 'V', from: NC1, dl: ONL.clone().add(V3(0.05, 0.27, 0)), r: 0.02 });
@@ -334,7 +336,7 @@ function makeOrbit() {
     NRV.visible = M2 && !PAL; RING.visible = TRO.visible = !M3 && !PAL; ONm.visible = !PAL; TEAR.visible = M3; PM.visible = M3 && st.flow;
     OR_MUS.forEach((m) => { const M = MM[m.id]; M.ms.visible = !M3 && !PAL;
       let op = 1, em = M.mat.userData.em0;
-      if (M1) { op = !st.msel || st.msel === m.id ? 1 : 0.16; em += 0.55 * M.act * (0.75 + 0.25 * Math.sin(st.t * 6)) + (st.msel === m.id ? 0.2 : 0); }
+      if (M1) { op = !st.msel || st.msel === m.id ? 1 : 0.16; em += 0.55 * M.act * (0.75 + 0.25 * Math.sin(st.t * 6)) + (st.msel === m.id ? 0.45 : 0); }
       if (M2) op = !st.nsel ? 0.45 : st.nsel === m.nv ? 0.7 : 0.12;
       setOp(M.mat, op); M.mat.emissiveIntensity = em; });
     setOp(onM, M2 && st.nsel && st.nsel !== 'II' ? 0.2 : 1);
@@ -349,9 +351,9 @@ function makeOrbit() {
       PM.instanceMatrix.needsUpdate = true;
     }
   }
-  function applyView() { const v = st.mode === 'tear' ? 'tear' : st.mode === 'nrv' && st.palsy ? 'pal' : st.view; skM.clippingPlanes = CUT[v] || []; skM.needsUpdate = true; st.fly = VIEW[v]; }
+  function applyView() { const v = st.mode === 'tear' ? 'tear' : st.mode === 'nrv' && st.palsy ? 'pal' : st.view; skM.clippingPlanes = CUT[v] || []; skM.needsUpdate = true; st.fly = VIEW[st.mode === 'nrv' && VIEW['n' + v] ? 'n' + v : v]; }
   function setMode(m) {
-    st.mode = m; if (m === 'mus' && st.view === 'top' && !st.vUser) st.view = 'obl'; if (m === 'nrv' && !st.vUser) st.view = 'top';
+    st.mode = m; if (m === 'mus' && st.view === 'top' && !st.vUser) st.view = 'obl'; if (m === 'nrv' && !st.vUser) st.view = DK ? 'side' : 'top';
     if (m !== 'nrv') st.palsy = false; colorMus(); applyView();
     refs.modeSeg && refs.modeSeg.sync(); refs.rebuild && refs.rebuild(); refs.setInfo && refs.setInfo();
   }
