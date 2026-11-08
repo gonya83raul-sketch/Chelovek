@@ -31,7 +31,7 @@ const MO_SLOT = [
   { t: 'mol', wu: 0.85, wl: 1.0, du: 1.02, dl: 0.98, hu: 0.68, hl: 0.7, eu: 19, el: 19 },
 ];
 const MO_AGE = [
-  [0.5, '<b>Новорождённый.</b> Зубов во рту ещё нет, но в челюстях уже лежат зачатки всех 20 молочных зубов, а коронки первых постоянных моляров начинают обызвествляться.'],
+  [0.5, '<b>Первые месяцы.</b> Зубов во рту ещё нет, но в челюстях уже лежат зачатки всех 20 молочных зубов, а коронки первых постоянных моляров начинают обызвествляться.'],
   [2.6, '<b>Прорезываются молочные зубы.</b> Первыми обычно появляются нижние центральные резцы (около 6–10 месяцев), последними — вторые молочные моляры (к 2–3 годам). Сроки у разных детей сдвигаются на несколько месяцев — это норма.'],
   [6, '<b>Молочный прикус:</b> 20 зубов, по 5 в каждой четверти — 2 резца, клык и 2 моляра (формула 2-1-0-2). Молочные зубы меньше и белее, эмаль у них тоньше — кариес развивается быстрее. Они держат место для постоянных: если молочный зуб рано удалить, соседние сдвигаются.'],
   [12.4, '<b>Сменный прикус.</b> Около 6 лет позади молочных зубов прорезаются первые постоянные моляры — без смены, на свободное место. Потом корни молочных зубов рассасываются, они выпадают, и на их место встают постоянные: резцы, клыки, а вместо молочных моляров — премоляры.'],
@@ -62,11 +62,11 @@ function makeMouth() {
   { const fl = new THREE.DirectionalLight(0xfff0ea, 1.3); fl.position.set(0, -8, 10); scene.add(fl); }   // подсветка снизу-спереди — видно нёбо
   const DK = !matchMedia('(max-width:700px)').matches;
   const VIEW = {
-    mouth: flyTarget(V3(DK ? -3.0 : 0, DK ? -1.5 : -0.4, -1.2), DK ? V3(-3.0, -5.5, 21) : V3(0, -4.0, 18.5)),
-    palate: flyTarget(V3(DK ? -3.0 : 0, DK ? -0.5 : -0.2, -1.2), DK ? V3(-3.0, -9.8, 20.5) : V3(0, -7.5, 16.5)),
-    tongue: flyTarget(V3(DK ? -3.2 : 0, DK ? -2.2 : -2.4, -1.4), DK ? V3(-3.2, 9.5, 17.5) : V3(0, 8.5, 16.5)),
-    teeth: flyTarget(V3(DK ? -3.7 : 0, 0, DK ? 0.9 : 0), DK ? V3(-3.7, 24, 7.0) : V3(0, 21, 4.2)),
-    tooth: flyTarget(V3(DK ? -3.0 : 0, DK ? -1.2 : 0.8, 0), DK ? V3(-0.5, -0.2, 26) : V3(2, 1.8, 20)),
+    mouth: flyTarget(V3(DK ? -2.4 : 0, DK ? -1.8 : -0.6, -1.2), DK ? V3(-2.4, -5.4, 21.5) : V3(0, -3.6, 15.2)),
+    palate: flyTarget(V3(DK ? -2.4 : 0, DK ? -1.0 : -0.5, -1.2), DK ? V3(-2.4, -9.6, 22) : V3(0, -7.0, 14.5)),
+    tongue: flyTarget(V3(DK ? -2.8 : 0, DK ? -2.4 : -2.6, -1.4), DK ? V3(-2.8, 10, 17.8) : V3(0, 7.5, 14)),
+    teeth: flyTarget(V3(DK ? -3.7 : 0, 0, DK ? 0.9 : 0), DK ? V3(-3.7, 24, 7.0) : V3(0, 18.5, 3.8)),
+    tooth: flyTarget(V3(DK ? -3.0 : 0, DK ? -2.0 : 0.8, 0), DK ? V3(-0.5, -1.0, 26) : V3(2, 1.8, 20)),
   };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 200); camera.position.copy(VIEW.mouth.pos);
   const controls = makeControls(camera, VIEW.mouth.target); controls.minDistance = 3; controls.maxDistance = 34;
@@ -139,13 +139,13 @@ function makeMouth() {
   }, 120, 14), hardM, 'hard', UA));
   PALF.push(blob(0.13, hardM, 'hard', UA, [1, 0.6, 1.3])); PALF[1].position.set(0, vault(0, 1.95) - 0.05, 1.95);   // резцовый сосочек
   // мягкое нёбо, язычок
-  const softM = mat('soft', '#E8828F', { side: THREE.DoubleSide, r: 0.55, k: 1.0, em: 0.15 });
+  const softM = mat('soft', '#EC8A96', { side: THREE.DoubleSide, r: 0.55, k: 1.0, em: 0.4 });
   const ZH = -2.38;   // задний край твёрдого нёба
   const softP = (a, b) => { const hw = 2.25 - 0.45 * b, x = a * hw, y0 = vault(x, ZH), y1 = 1.55 - 0.95 * a * a; return V3(x, y0 + (y1 - y0) * b - 0.12 * Math.sin(Math.PI * b), ZH - 1.45 * b); };
   add(surf((a, b) => softP(2 * a - 1, b), 30, 10), softM, 'soft', SOFT);
   const uvula = add(new THREE.CapsuleGeometry(0.2, 0.7, 6, 12), softM, 'soft', SOFT); uvula.position.set(0, 1.18, -3.8); uvula.rotation.x = 0.18;
   // задняя стенка глотки — тёмный фон за зевом
-  const phM = mat(null, '#9A3A48', { side: THREE.DoubleSide, r: 0.8, k: 0.9 });
+  const phM = mat(null, '#B04A58', { side: THREE.DoubleSide, r: 0.8, k: 1.0, em: 0.35 });
   { const cv = document.createElement('canvas'); cv.width = cv.height = 64; const cx = cv.getContext('2d'), gr = cx.createRadialGradient(32, 32, 4, 32, 32, 32); gr.addColorStop(0, '#fff'); gr.addColorStop(0.55, '#bbb'); gr.addColorStop(1, '#000'); cx.fillStyle = gr; cx.fillRect(0, 0, 64, 64);
     phM.alphaMap = new THREE.CanvasTexture(cv); phM.transparent = true; phM.depthWrite = false; phM.userData.op0 = 0.999;
     add(surf((a, b) => { const x = (a - 0.5) * 4.4, y = -3.6 + 5.4 * b; return V3(x, y, -4.5 - 0.8 * (x / 2.2) ** 2); }, 16, 12), phM, null, SOFT); }
@@ -259,7 +259,7 @@ function makeMouth() {
     const sep = DK ? 3.45 : 0, sepz = DK ? 0 : 3.35;
     POSE.u.set(T2 ? -sep : 0, 0, T2 ? -sepz : 0); POSE.l.copy(HINGE).add(V3(T2 ? sep : 0, 0, T2 ? sepz + 0.15 : 0));
     UJ.position.lerp(POSE.u, k); LJ.position.lerp(POSE.l, k);
-    UJ.rotation.z += ((T2 ? Math.PI : 0) - UJ.rotation.z) * k; st.open += ((T2 ? 0 : 0.6) - st.open) * k; LJ.rotation.x = st.open;
+    UJ.rotation.z += ((T2 ? Math.PI : 0) - UJ.rotation.z) * k; st.open += ((T2 ? 0 : 0.52) - st.open) * k; LJ.rotation.x = st.open;
     const g = T2 ? grow(st.age) : 1; UA.scale.setScalar(UA.scale.x + (g - UA.scale.x) * k); LA.scale.copy(UA.scale);
     SOFT.visible = LSOFT.visible = !T2 && st.mode === 'mouth'; UJ.visible = LJ.visible = st.mode !== 'tooth'; TS.visible = st.mode === 'tooth';
     ARCHES.forEach((A) => { A.pg.visible = A.pp.visible = A.pgc.visible = A.ppc.visible = A.tons.visible = SOFT.visible; }); GLU.visible = GLL.visible = st.sel === 'glands'; PALF.forEach((m) => { m.visible = !T2; });
@@ -269,8 +269,8 @@ function makeMouth() {
     TEETH.forEach((t) => {
       let e;
       if (!T2) e = t.dec ? 0 : 1;
-      else if (t.dec) e = cl((st.age - t.erupt) / 0.45) * (1 - cl((st.age - t.shed) / 0.25));
-      else e = cl((st.age - t.erupt) / 0.7);
+      else if (t.dec) e = cl((st.age - t.erupt) / 0.15) * (1 - cl((st.age - t.shed) / 0.25));
+      else e = cl((st.age - t.erupt) / 0.4);
       t.e = e; t.ms.visible = e > 0.01; placeTooth(t);
       const tc = MO_TYPES.find((x) => x.id === (t.dec && t.i >= 3 ? 'mol' : t.ty));
       const col = T2 ? (t.dec ? new THREE.Color(tc.col).lerp(new THREE.Color(0xffffff), 0.6) : new THREE.Color(tc.col)) : new THREE.Color(0xf3eedf);
@@ -345,7 +345,7 @@ function makeMouth() {
     lb('моляры', slotW('u', 1, 5, 0.7, 0.2), MO_TYPES[3].col, () => sel('teeth')),
     lb('зубы', slotW('u', -1, 2, 0.7, 0.3), P('teeth').col, () => none() && DK, true),
     lb('околоушная железа', uw(V3(3.9, 2.5, -3.6)), P('glands').col, () => sel('glands')),
-    lb('проток околоушной железы', () => UA.localToWorld(PAP[1].clone()), '#F5DA8A', () => sel('glands'), true),
+    lb('проток околоушной железы', uw(V3(-3.55, 1.05, -1.95)), '#F5DA8A', () => sel('glands'), true),
     lb('поднижнечелюстная железа', lw(V3(2.6, -3.1, -1.4)), P('glands').col, () => sel('glands')),
     lb('подъязычная железа', lw(V3(-1.0, -1.95, 0.55)), P('glands').col, () => sel('glands'), true),
     lb('подъязычный сосочек', lw(V3(0.22, -1.38, 1.62)), '#F5DA8A', () => sel('glands')),
@@ -355,7 +355,7 @@ function makeMouth() {
     lb('резцы', slotW('l', 1, 0, 0.8), MO_TYPES[0].col, () => Ttype('inc') && (anyT(0, false) || anyT(0, true))),
     lb('клык', slotW('l', 1, 2, 0.8), MO_TYPES[1].col, () => Ttype('can') && (anyT(2, false) || anyT(2, true))),
     lb('премоляры', slotW('l', 1, 3, 0.8), MO_TYPES[2].col, () => Ttype('pm') && anyT(3, false)),
-    lb('молочные моляры', slotW('l', 1, 3, 1.35), '#C8E4FF', () => Ttype('mol') && anyT(3, true)),
+    lb('молочные моляры', slotW('l', 1, 3, 1.9), '#C8E4FF', () => Ttype('mol') && anyT(3, true)),
     lb('моляры', slotW('l', 1, 5, 0.9), MO_TYPES[3].col, () => Ttype('mol') && anyT(5, false)),
     lb('зуб мудрости', slotW('l', 1, 7, 0.9), MO_TYPES[3].col, () => Ttype('mol') && anyT(7, false)),
     // разрез зуба
@@ -440,7 +440,7 @@ function makeMouth() {
         <li><b>Паротит</b> («свинка») — вирусное воспаление околоушных желёз; от него прививают.</li>
         <li><b>Камни слюнных желёз</b> чаще всего образуются в поднижнечелюстной: её проток идёт вверх, а слюна гуще. Признак — припухлость под челюстью во время еды.</li>
         <li><b>Ангина</b> (острый тонзиллит) — воспаление нёбных миндалин; бактериальную (стрептококковую) лечат антибиотиком, чтобы избежать осложнений на сердце и почки.</li></ul></div>
-      <div><h2>Условности</h2><ul><li>Формы схематичны и построены по атласу: губы, щёки, мышцы дна рта, кости челюстей, сосуды и нервы не показаны; рот открыт шире обычного, а слюнные железы видны сквозь ткани.</li><li>В режиме «Зубы и возраст» сроки прорезывания средние, челюсти растут упрощённо (равномерным масштабом), а зачатки постоянных зубов в кости не показаны. Молочные зубы окрашены бледными оттенками тех же цветов, что и постоянные.</li><li>Разрез зуба показан крупным планом; периодонтальная щель и цемент нарисованы толще, чем на деле. Кариес изображён в одной фиссуре, стадии на деле переходят друг в друга годами.</li></ul></div>
+      <div><h2>Условности</h2><ul><li>Формы схематичны и построены по атласу; язык, нёбо, дужки и миндалины упрощены; губы, щёки, мышцы дна рта, кости челюстей, сосуды и нервы не показаны; рот открыт шире обычного, а слюнные железы видны сквозь ткани.</li><li>В режиме «Зубы и возраст» сроки прорезывания средние, челюсти растут упрощённо (равномерным масштабом), а зачатки постоянных зубов в кости не показаны. Молочные зубы окрашены бледными оттенками тех же цветов, что и постоянные; молочные моляры стоят на местах будущих премоляров.</li><li>Разрез зуба показан крупным планом; периодонтальная щель и цемент нарисованы толще, чем на деле. Кариес изображён в одной фиссуре, стадии на деле переходят друг в друга годами.</li></ul></div>
       <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>3</code> режим · <code>Esc</code> сбросить выбор</li><li><code>R</code> вращение · <code>N</code> подписи</li></ul></div>`,
   };
   setMode('mouth'); st.fly = null; camera.position.copy(VIEW.mouth.pos); controls.target.copy(VIEW.mouth.target);
