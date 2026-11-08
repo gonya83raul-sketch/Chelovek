@@ -62,10 +62,10 @@ function makeMouth() {
   { const fl = new THREE.DirectionalLight(0xfff0ea, 1.3); fl.position.set(0, -8, 10); scene.add(fl); }   // подсветка снизу-спереди — видно нёбо
   const DK = !matchMedia('(max-width:700px)').matches;
   const VIEW = {
-    mouth: flyTarget(V3(DK ? -2.4 : 0, DK ? -1.8 : -0.6, -1.2), DK ? V3(-2.4, -5.2, 20) : V3(0, -3.6, 15.2)),
+    mouth: flyTarget(V3(DK ? -2.4 : 0, DK ? -1.6 : -0.6, -1.2), DK ? V3(-2.4, -5.2, 19.8) : V3(0, -3.6, 15.2)),
     palate: flyTarget(V3(DK ? -2.4 : 0, DK ? -1.0 : -0.5, -1.2), DK ? V3(-2.4, -9.6, 22) : V3(0, -7.0, 14.5)),
     tongue: flyTarget(V3(DK ? -2.8 : 0, DK ? -2.4 : -2.6, -1.4), DK ? V3(-2.8, 10, 17.8) : V3(0, 7.5, 14)),
-    teeth: flyTarget(V3(DK ? -3.7 : 0, 0, DK ? 0.9 : 0), DK ? V3(-3.7, 21.5, 6.4) : V3(0, 18.5, 3.8)),
+    teeth: flyTarget(V3(DK ? -4.0 : 0, 0, DK ? 0.9 : 0), DK ? V3(-4.0, 20, 6.0) : V3(0, 17.6, 3.6)),
     tooth: flyTarget(V3(DK ? -3.0 : 0, DK ? -1.7 : 0.8, 0), DK ? V3(-0.5, -0.7, 27.5) : V3(2, 1.8, 20)),
   };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 200); camera.position.copy(VIEW.mouth.pos);
@@ -139,11 +139,12 @@ function makeMouth() {
   }, 120, 14), hardM, 'hard', UA));
   PALF.push(blob(0.13, hardM, 'hard', UA, [1, 0.6, 1.3])); PALF[1].position.set(0, vault(0, 1.95) - 0.05, 1.95);   // резцовый сосочек
   // мягкое нёбо, язычок
-  const softM = mat('soft', '#EC8A96', { side: THREE.DoubleSide, r: 0.55, k: 1.0, em: 0.4 });
+  const softM = mat('soft', '#F094A0', { side: THREE.DoubleSide, r: 0.55, k: 1.0, em: 0.55 });
   const ZH = -2.38;   // задний край твёрдого нёба
   const softP = (a, b) => { const hw = 2.25 - 0.45 * b, x = a * hw, y0 = vault(x, ZH), y1 = 0.95 - 0.55 * a * a; return V3(x, y0 + (y1 - y0) * b - 0.1 * Math.sin(Math.PI * b), ZH - 1.2 * b); };
   add(surf((a, b) => softP(2 * a - 1, b), 30, 10), softM, 'soft', SOFT);
-  const uvula = add(new THREE.CapsuleGeometry(0.2, 0.7, 6, 12), softM, 'soft', SOFT); uvula.position.set(0, 0.5, -3.56); uvula.rotation.x = 0.12;
+  const uvula = add(new THREE.CapsuleGeometry(0.22, 0.68, 6, 12), softM, 'soft', SOFT); uvula.position.set(0, 0.5, -3.56); uvula.rotation.x = 0.12;
+  blob(0.42, softM, 'soft', SOFT, [1, 0.45, 0.8]).position.set(0, 0.92, -3.55);   // основание язычка
   // задняя стенка глотки — тёмный фон за зевом
   const phM = mat(null, '#B04A58', { side: THREE.DoubleSide, r: 0.8, k: 1.0, em: 0.35 });
   { const cv = document.createElement('canvas'); cv.width = cv.height = 64; const cx = cv.getContext('2d'), gr = cx.createRadialGradient(32, 32, 4, 32, 32, 32); gr.addColorStop(0, '#fff'); gr.addColorStop(0.55, '#bbb'); gr.addColorStop(1, '#000'); cx.fillStyle = gr; cx.fillRect(0, 0, 64, 64);
@@ -256,7 +257,7 @@ function makeMouth() {
     const k = Math.min(1, dt * 3), T2 = st.mode === 'teeth';
     st.age += ((T2 ? 25 * st.ageV * st.ageV : 25) - st.age) * Math.min(1, dt * 5); if (Math.abs(st.age - (T2 ? 25 * st.ageV * st.ageV : 25)) < 0.01) st.age = T2 ? 25 * st.ageV * st.ageV : 25;
     // позы челюстей
-    const sep = DK ? 3.45 : 0, sepz = DK ? 0 : 3.35;
+    const sep = DK ? 3.45 : 0, sepz = DK ? 0 : 2.95;
     POSE.u.set(T2 ? -sep : 0, 0, T2 ? -sepz : 0); POSE.l.copy(HINGE).add(V3(T2 ? sep : 0, 0, T2 ? sepz + 0.15 : 0));
     UJ.position.lerp(POSE.u, k); LJ.position.lerp(POSE.l, k);
     UJ.rotation.z += ((T2 ? Math.PI : 0) - UJ.rotation.z) * k; st.open += ((T2 ? 0 : 0.52) - st.open) * k; LJ.rotation.x = st.open;
@@ -326,8 +327,8 @@ function makeMouth() {
     lb('резцовый сосочек', uw(V3(0, 1.45, 1.95)), P('hard').col, () => sel('hard')),
     lb('шов нёба', uw(V3(0, 2.0, -0.9)), P('hard').col, () => sel('hard')),
     lb('мягкое нёбо', uw(V3(1.0, 1.75, -3.05)), P('soft').col, () => (none() && DK) || sel('soft')),
-    lb('язычок', uw(V3(0, 0.75, -3.8)), P('soft').col, () => none() || sel('soft')),
-    lb('нёбная миндалина', () => ARCHES[1].tons.position.clone().add(V3(-0.2, -0.2, 0.2)), P('tons').col, () => none() || sel('tons'), true),
+    lb('язычок', uw(V3(0, 0.35, -3.6)), P('soft').col, () => none() || sel('soft')),
+    lb('нёбная миндалина', () => ARCHES[1].tons.position.clone().add(V3(-0.2, -0.2, 0.2)), P('tons').col, () => (none() && DK) || sel('tons'), true),
     lb('нёбно-язычная дужка', () => ARCHES[0].pg.geometry.parameters ? ARCHES[0].pg.geometry.parameters.path.getPoint(0.55) : V3(), P('tons').col, () => sel('tons')),
     lb('нёбно-глоточная дужка', () => ARCHES[1].pp.geometry.parameters ? ARCHES[1].pp.geometry.parameters.path.getPoint(0.3) : V3(), P('tons').col, () => sel('tons'), true),
     lb('язык', tTop(0.45, 0.3), P('tongue').col, () => none()),
@@ -352,7 +353,7 @@ function makeMouth() {
     // зубы и возраст
     lb('верхние зубы', () => UA.localToWorld(V3(0, 0, -2.75)), '#C8D2E0', () => T2()),
     lb('нижние зубы', () => LA.localToWorld(V3(0, 0, -2.7)), '#C8D2E0', () => T2()),
-    lb('резцы', slotW('l', 1, 0, 0.8), MO_TYPES[0].col, () => Ttype('inc') && (anyT(0, false) || anyT(0, true))),
+    lb('резцы', slotW('l', 1, 0, 0.35), MO_TYPES[0].col, () => Ttype('inc') && (anyT(0, false) || anyT(0, true))),
     lb('клык', slotW('l', 1, 2, 0.8), MO_TYPES[1].col, () => Ttype('can') && (anyT(2, false) || anyT(2, true))),
     lb('премоляры', slotW('l', -1, 3, -0.7), MO_TYPES[2].col, () => Ttype('pm') && anyT(3, false)),
     lb('молочные', slotW('l', -1, 4, -0.7), '#C8E4FF', () => Ttype('mol') && anyT(3, true)),
