@@ -29,7 +29,7 @@ const OR_GAZE = [   // взгляд правого глаза: yaw > 0 — к н
 const OR_NERVE = [
   { id: 'II', name: 'II', col: '#F2E6A0', text: '<b>Зрительный нерв (II)</b> — пучок ≈ 1,2 млн аксонов клеток сетчатки. Из глазницы он уходит через зрительный канал вместе с глазной артерией. В глазнице нерв длиннее, чем расстояние до канала, и лежит S-образно — это запас, чтобы глаз мог поворачиваться. Его путь дальше — в теме «Зрение».' },
   { id: 'III', name: 'III', col: '#F0A04B', text: '<b>Глазодвигательный нерв (III)</b> входит через верхнюю глазничную щель внутри общего кольца. Верхняя ветвь идёт к верхней прямой и мышце, поднимающей веко, нижняя — к медиальной и нижней прямым и нижней косой. От нижней ветви к ресничному узлу идут волокна, которые суживают зрачок и настраивают хрусталик.', palsy: '<b>Паралич III нерва.</b> Работают только латеральная прямая (VI) и верхняя косая (IV), и глаз отведён наружу и вниз. Веко опущено (птоз), зрачок широкий и не сужается на свет. Если нерв сдавлен аневризмой, первым расширяется зрачок — это повод для срочной помощи.' },
-  { id: 'IV', name: 'IV', col: '#7FD39A', text: '<b>Блоковый нерв (IV)</b> — самый тонкий черепной нерв и единственный, который выходит из ствола мозга сзади. Он входит в глазницу через верхнюю глазничную щель над общим кольцом, проходит над мышцей, поднимающей веко, и вступает в верхнюю косую мышцу.', palsy: '<b>Паралич IV нерва.</b> Без верхней косой глаз стоит чуть выше другого и повёрнут наружу. Двоение по вертикали сильнее при взгляде вниз и к носу — при чтении и на лестнице. Чтобы убрать его, человек наклоняет голову к здоровому плечу.' },
+  { id: 'IV', name: 'IV', col: '#7FD39A', text: '<b>Блоковый нерв (IV)</b> — самый тонкий черепной нерв и единственный, который выходит из ствола мозга сзади. Он входит в глазницу через верхнюю глазничную щель над общим кольцом, проходит над мышцей, поднимающей веко, и вступает в верхнюю косую мышцу.', palsy: '<b>Паралич IV нерва.</b> Без верхней косой глаз стоит чуть выше другого, а его верхний край наклонён к виску. Двоение по вертикали сильнее при взгляде вниз и к носу — при чтении и на лестнице. Чтобы убрать его, человек наклоняет голову к здоровому плечу.' },
   { id: 'VI', name: 'VI', col: '#6FB7F0', text: '<b>Отводящий нерв (VI)</b> проходит через общее кольцо и вступает во внутреннюю поверхность латеральной прямой мышцы. Внутри черепа у него самый длинный путь, поэтому он часто страдает при повышении внутричерепного давления.', palsy: '<b>Паралич VI нерва.</b> Латеральная прямая не работает, а медиальная тянет без противовеса — глаз косит к носу и не отводится к виску. Двоение по горизонтали, сильнее при взгляде вдаль и в сторону поражения.' },
   { id: 'V', name: 'V', col: '#C79BF0', text: '<b>Глазной нерв (V₁)</b> — чувствительная ветвь тройничного. Перед щелью он делится на слёзный, лобный и носоресничный нервы — они несут чувствительность глаза, роговицы, век, лба и носа. По дну глазницы идёт подглазничный нерв (V₂) к коже щеки. Роговичный рефлекс: касание роговицы (V₁) — моргание (VII).' },
 ];
@@ -48,9 +48,9 @@ function makeOrbit() {
   const E = V3(-3.3, 2.4, 2.2), R = 1.2, EL = V3(3.3, 2.4, 2.2);
   const OC = V3(-2.55, 2.55, 0.7);   // середина глазницы
   const vw = (C, dir, dist, sx, sy) => { const d = dir.clone().normalize(), f = d.clone().negate(), r = f.clone().cross(V3(0, 1, 0)).normalize(), u = r.clone().cross(f), S = r.multiplyScalar(-sx).addScaledVector(u, -sy); return flyTarget(C.clone().add(S), C.clone().addScaledVector(d, dist).add(S)); };
-  const VP = DK ? { obl: [OC, V3(-0.62, 0.55, 0.56), 11.5, 1.9, 0.7], top: [V3(-2.5, 2.6, 1.0), V3(0, 1, -0.22), 17, 1.3, -0.6], side: [V3(-2.9, 2.4, 0.6), V3(-1, 0.18, 0.12), 12, 2.3, 0.8], front: [E, V3(0.05, 0.06, 1), 12, 2.0, 0.8], pal: [V3(0, 2.4, 2.2), V3(0, 0.04, 1), 17, 2.4, 1.4], tear: [V3(-2.6, 1.9, 2.5), V3(-0.12, 0.08, 1), 15.5, 1.9, -0.1],
-      nobl: [V3(-2.5, 2.4, 0.3), V3(-0.62, 0.55, 0.56), 14.5, 1.4, 0.9], ntop: [V3(-2.3, 2.6, 0.4), V3(0, 1, -0.22), 16, 1.3, 0.4], nside: [V3(-2.5, 2.2, -0.2), V3(-1, 0.18, 0.12), 14.5, 1.6, 0.7] }
-    : { obl: [OC, V3(-0.62, 0.55, 0.56), 11, 0, 0.5], top: [V3(-2.5, 2.6, 0.4), V3(0, 1, -0.22), 13.5, 0, 0.6], side: [V3(-2.9, 2.4, 0.6), V3(-1, 0.18, 0.12), 11.5, 0, 0.5], front: [E, V3(0.05, 0.06, 1), 10.5, 0, 0.5], pal: [V3(0, 2.3, 2.2), V3(0, 0.04, 1), 24, 0, 1.0], tear: [V3(-2.6, 1.9, 2.5), V3(-0.12, 0.08, 1), 12, 0, 0.5],
+  const VP = DK ? { obl: [OC, V3(-0.62, 0.55, 0.56), 11.5, 1.9, 0.15], top: [V3(-2.5, 2.6, 0.7), V3(0, 1, -0.22), 17, 1.3, -0.6], side: [V3(-2.9, 2.4, 0.6), V3(-1, 0.18, 0.12), 12, 2.3, -0.2], front: [E, V3(0.05, 0.06, 1), 12.5, 2.0, -0.2], pal: [V3(0, 2.4, 2.2), V3(0, 0.04, 1), 17.5, 3.0, 1.2], tear: [V3(-2.6, 1.9, 2.5), V3(-0.12, 0.08, 1), 15.5, 1.9, -0.1], tcan: [V3(-1.9, 2.35, 2.7), V3(-0.3, 0.1, 1), 10, 2.2, 0],
+      nobl: [V3(-2.5, 2.4, 0.3), V3(-0.62, 0.55, 0.56), 14.5, 1.4, 0.9], ntop: [V3(-2.3, 2.6, -1.2), V3(0, 1, -0.22), 19, 1.3, 0.4], nside: [V3(-2.5, 2.2, -0.2), V3(-1, 0.18, 0.12), 14.5, 1.6, 0.7] }
+    : { obl: [OC, V3(-0.62, 0.55, 0.56), 11, 0, 0.5], top: [V3(-2.5, 2.6, 0.4), V3(0, 1, -0.22), 13.5, 0, 0.6], side: [V3(-2.9, 2.4, 0.6), V3(-1, 0.18, 0.12), 11.5, 0, 0.5], front: [E, V3(0.05, 0.06, 1), 10.5, 0, 0.5], pal: [V3(0, 2.3, 2.2), V3(0, 0.04, 1), 24, 0, 1.0], tear: [V3(-2.6, 1.9, 2.5), V3(-0.12, 0.08, 1), 12, 0, 0.5], tcan: [V3(-1.9, 2.35, 2.7), V3(-0.3, 0.1, 1), 7, 0, 0.4],
       nobl: [V3(-2.3, 2.4, -0.3), V3(-0.62, 0.55, 0.56), 13, 0, 0.5], ntop: [V3(-2.3, 2.6, 0.0), V3(0, 1, -0.22), 14, 0, 0.6], nside: [V3(-2.5, 2.2, -0.2), V3(-1, 0.18, 0.12), 13, 0, 0.5] };
   const VIEW = {}; Object.entries(VP).forEach(([k, a]) => { VIEW[k] = vw(...a); });
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.obl.pos);
@@ -136,7 +136,7 @@ function makeOrbit() {
     ir: { O: V3(-1.95, 1.95, -1.35), ins: [274, 60], w: [0.24, 0.8, 0.95], th: 0.3, tend: 0.55 },
     so: { O: V3(-1.45, 2.98, -1.3), via: TR, ins: [128, 106], w: [0.2, 0.26, 0.85], th: 0.24, tend: 0 },
     io: { O: V3(-2.0, 1.15, 2.55), ins: [205, 116], w: [0.24, 0.62, 0.9], th: 0.26, tend: 0.15, lift: (s) => 0.34 * sm(s / 0.2) * (1 - sm((s - 0.62) / 0.36)) },
-    lps: { O: V3(-1.72, 3.08, -1.38), lid: true, w: [0.3, 0.65, 1.0], th: 0.16, tend: 0.9, lift: (s) => 0.44 * sm(s / 0.3) - 0.3 * sm((s - 0.82) / 0.18) },
+    lps: { O: V3(-1.72, 3.08, -1.38), lid: true, w: [0.26, 0.5, 0.8], th: 0.16, tend: 0.9, lift: (s) => 0.44 * sm(s / 0.3) - 0.3 * sm((s - 0.82) / 0.18) },
   };
   const NS = 46, NK = 10, MM = {}, pick = [];
   const MCOL = {}; OR_MUS.forEach((m) => { MCOL[m.id] = new THREE.Color(m.col); });
@@ -242,7 +242,7 @@ function makeOrbit() {
     nerve('V', [V3(-2.05, 2.75, -1.0), CG.clone().add(V3(0.02, 0.06, -0.08))], 0.022);
     nerve('V', [V3(-2.45, 0.8, -3.55), V3(-2.45, 0.55, -2.4), V3(-2.65, 0.55, -0.8), V3(-2.85, 0.58, 0.6), V3(-2.92, 0.42, 1.8), V3(-2.95, 0.02, 2.6), V3(-2.95, -0.38, 3.05)], 0.085);   // подглазничный (V2)
     nerve('V', [V3(-2.4, 0.85, -3.75), V3(-2.5, 0.1, -3.7)], 0.1);   // V3 — обрыв
-    LBP.lac = V3(-3.6, 3.4, 0.2); LBP.fr = V3(-2.45, 3.82, 0.3); LBP.nc = NC3.clone(); LBP.v2 = V3(-2.85, 0.58, 0.6); LBP.v1 = V3(-2.28, 1.9, -2.8); LBP.tg = TG.position.clone(); LBP.s3 = V3(-2.3, 2.7, -0.9); LBP.i3 = V3(-2.6, 1.55, 0.2); LBP.t3 = V3(-1.5, 2.1, -2.8); LBP.iv = V3(-1.7, 3.0, -2.7); LBP.vi = V3(-1.6, 1.9, -2.7);
+    LBP.lac = V3(-3.6, 3.4, 0.2); LBP.fr = V3(-2.45, 3.82, 0.3); LBP.nc = NC3.clone(); LBP.v2 = V3(-2.85, 0.58, 0.6); LBP.v1 = V3(-2.28, 1.9, -2.8); LBP.tg = TG.position.clone(); LBP.s3 = V3(-2.3, 2.7, -0.9); LBP.i3 = V3(-2.6, 1.55, 0.2); LBP.t3 = V3(-1.5, 2.1, -2.8); LBP.iv = V3(-1.7, 3.0, -2.7); LBP.vi = V3(-1.35, 1.9, -2.7);
     // ресничные нервы (концы на глазу)
     for (let k = 0; k < 6; k++) { const a = (k / 6) * 2 * Math.PI; DYNN.push({ id: 'III', from: CG, dl: ONL.clone().add(V3(0.2 * Math.cos(a), 0.2 * Math.sin(a), 0)), r: 0.018 }); }
     DYNN.push({ id: 'V', from: NC1, dl: ONL.clone().add(V3(0.26, 0.12, 0)), r: 0.02 }, { id: 'V', from: NC1, dl: ONL.clone().add(V3(0.05, 0.27, 0)), r: 0.02 });
@@ -261,8 +261,8 @@ function makeOrbit() {
   const SAC0 = V3(-1.55, 2.85, 2.6), SAC1 = V3(-1.55, 1.7, 2.62), DUCT1 = V3(-1.32, -0.15, 2.55);
   const CC = V3(-1.75, 2.38, 2.68);   // общий каналец у мешка
   const CANU = [PU.up, PU.up.clone().add(V3(0, 0.2, -0.04)), V3(-2.0, 2.62, 2.75), CC], CANL = [PU.lo, PU.lo.clone().add(V3(0, -0.2, -0.04)), V3(-2.0, 2.18, 2.75), CC];
-  const canU = tubeOf(CANU, 0.035, ductM, TEAR, 24), canL = tubeOf(CANL, 0.035, ductM, TEAR, 24); canU.userData.pick = canL.userData.pick = 'canal';
-  [PU.up, PU.lo].forEach((p) => { const d = new THREE.Mesh(new THREE.SphereGeometry(0.045, 10, 8), new THREE.MeshBasicMaterial({ color: 0x1a0c0c })); d.position.copy(p); TEAR.add(d); });
+  const canU = tubeOf(CANU, 0.055, ductM, TEAR, 24), canL = tubeOf(CANL, 0.055, ductM, TEAR, 24); canU.userData.pick = canL.userData.pick = 'canal';
+  [PU.up, PU.lo].forEach((p) => { const d = new THREE.Mesh(new THREE.SphereGeometry(0.07, 10, 8), new THREE.MeshBasicMaterial({ color: 0x1a0c0c })); d.position.copy(p); TEAR.add(d); });
   const sacG = new THREE.CapsuleGeometry(0.24, SAC0.y - SAC1.y, 8, 16); const SAC = new THREE.Mesh(sacG, sacM); SAC.position.copy(SAC0).lerp(SAC1, 0.5); SAC.scale.set(0.85, 1, 1); TEAR.add(SAC); SAC.userData.pick = 'sac';
   const DUCTC = cr3([SAC1, V3(-1.48, 0.9, 2.6), V3(-1.4, 0.3, 2.58), DUCT1]);
   const DUCT = new THREE.Mesh(taperTube(DUCTC, (u) => 0.17 - 0.05 * u + 0.05 * sm((u - 0.85) / 0.15), 30, 12), sacM); TEAR.add(DUCT); DUCT.userData.pick = 'sac';
@@ -308,7 +308,7 @@ function makeOrbit() {
   function target() {
     let yaw = 0, pitch = 0, ptos = 0, pup = 0.17;
     if (st.mode === 'mus') { const g = gz(); yaw = g.yaw; pitch = g.pitch; }
-    if (st.mode === 'nrv' && st.palsy) { if (st.nsel === 'III') { yaw = -0.36; pitch = -0.2; ptos = 0.72; pup = 0.31; } else if (st.nsel === 'IV') { yaw = 0.05; pitch = 0.13; } else if (st.nsel === 'VI') { yaw = 0.38; } }
+    if (st.mode === 'nrv' && st.palsy) { if (st.nsel === 'III') { yaw = -0.36; pitch = -0.2; ptos = 0.5; pup = 0.31; } else if (st.nsel === 'IV') { yaw = 0.05; pitch = 0.24; } else if (st.nsel === 'VI') { yaw = 0.5; } }
     return { yaw, pitch, ptos, pup };
   }
   function update(dt) {
@@ -351,7 +351,7 @@ function makeOrbit() {
       PM.instanceMatrix.needsUpdate = true;
     }
   }
-  function applyView() { const v = st.mode === 'tear' ? 'tear' : st.mode === 'nrv' && st.palsy ? 'pal' : st.view; skM.clippingPlanes = CUT[v] || []; skM.needsUpdate = true; st.fly = VIEW[st.mode === 'nrv' && VIEW['n' + v] ? 'n' + v : v]; }
+  function applyView() { const v = st.mode === 'tear' ? 'tear' : st.mode === 'nrv' && st.palsy ? 'pal' : st.view; skM.clippingPlanes = CUT[v] || []; skM.needsUpdate = true; st.fly = VIEW[st.mode === 'tear' && st.tsel === 'canal' ? 'tcan' : st.mode === 'nrv' && VIEW['n' + v] ? 'n' + v : v]; }
   function setMode(m) {
     st.mode = m; if (m === 'mus' && st.view === 'top' && !st.vUser) st.view = 'obl'; if (m === 'nrv' && !st.vUser) st.view = DK ? 'side' : 'top';
     if (m !== 'nrv') st.palsy = false; colorMus(); applyView();
@@ -361,7 +361,7 @@ function makeOrbit() {
   function setMus(id) { st.msel = id === 'all' || st.msel === id ? null : id; if (st.msel) st.gaze = 'c'; refs.mseg && refs.mseg.sync(); refs.gseg && refs.gseg.sync(); refs.setInfo && refs.setInfo(); }
   function setGaze(id) { st.gaze = id; st.msel = null; refs.mseg && refs.mseg.sync(); refs.gseg && refs.gseg.sync(); refs.setInfo && refs.setInfo(); }
   function setNerve(id) { st.nsel = id === 'all' || st.nsel === id ? null : id; if (!OR_NERVE.find((n) => n.id === st.nsel && n.palsy)) { if (st.palsy) { st.palsy = false; applyView(); } } refs.nseg && refs.nseg.sync(); refs.rebuild && refs.rebuild(); refs.setInfo && refs.setInfo(); }
-  function setTear(id) { st.tsel = id === 'all' || st.tsel === id ? null : id; refs.tseg && refs.tseg.sync(); refs.setInfo && refs.setInfo(); }
+  function setTear(id) { st.tsel = id === 'all' || st.tsel === id ? null : id; refs.tseg && refs.tseg.sync(); refs.setInfo && refs.setInfo(); applyView(); }
   pickOn(() => self, camera, () => pick, (id) => {
     if (st.mode === 'mus' && MM[id]) setMus(id);
     else if (st.mode === 'nrv' && NG[id]) setNerve(id);
@@ -474,7 +474,7 @@ function makeOrbit() {
     lede: 'Шесть мышц поворачивают глаз так точно, что оба глаза всегда смотрят в одну точку. Ими управляют три нерва, а слёзы непрерывно омывают глаз и уходят в нос. Посмотрите, какая мышца работает при каждом взгляде и что бывает при параличе нерва.',
     notes: `
       <div><h2>Устройство</h2>
-        <p>Глазница — четырёхгранная пирамида из семи костей: лобной, клиновидной, решётчатой, слёзной, скуловой, верхнечелюстной и нёбной. Внутренние стенки обеих глазниц параллельны, а оси расходятся под углом ≈ 45°. Глаз занимает лишь пятую часть её объёма (≈ 30 мл); остальное — мышцы, жировое тело, сосуды и нервы.</p>
+        <p>Глазница — четырёхгранная пирамида из семи костей: лобной, клиновидной, решётчатой, слёзной, скуловой, верхнечелюстной и нёбной. Внутренние стенки обеих глазниц параллельны, а оси расходятся под углом ≈ 45°. Объём глазницы ≈ 30 мл, глаз занимает лишь его пятую часть; остальное — мышцы, жировое тело, сосуды и нервы.</p>
         <p>Прямые мышцы начинаются от общего сухожильного кольца вокруг зрительного канала, косые подходят к глазу спереди-снизу и (через блок) спереди-сверху и крепятся позади экватора. Оптика глаза и путь зрительного сигнала — в теме «Зрение».</p></div>
       <div><h2>Как это работает</h2>
         <p>Глаза движутся содружественно: центр взора в стволе мозга посылает одну команду мышцам обоих глаз, например латеральной прямой правого и медиальной прямой левого. Изображение попадает на одинаковые места сетчаток, и мы видим одно, а не два.</p>
