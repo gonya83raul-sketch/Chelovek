@@ -72,6 +72,8 @@
 - [Полость рта и зубы](https://gonya83raul-sketch.github.io/Chelovek/mouth.html): Здесь начинается пищеварение: 32 зуба режут и перетирают пищу, язык перемешивает её со слюной, нёбо и миндалины охраняют вход в глотку.
 - [Нос и околоносовые пазухи](https://gonya83raul-sketch.github.io/Chelovek/nose.html): Нос — не просто вход для воздуха: раковины закручивают поток, слизистая согревает и увлажняет его, реснички уносят пыль, а под самой крышей живут обонятельные нейроны.
 - [Глотка и глотание](https://gonya83raul-sketch.github.io/Chelovek/pharynx.html): Глотка — перекрёсток: через неё идут и воздух, и пища. За секунду глотания мягкое нёбо закрывает нос, надгортанник — гортань, дыхание замирает, а три мышцы-констриктора волной проталкивают комок в…
+- [Глазница и глаз](https://gonya83raul-sketch.github.io/Chelovek/orbit.html): Шесть мышц поворачивают глаз так точно, что оба глаза всегда смотрят в одну точку. Ими управляют три нерва, а слёзы непрерывно омывают глаз и уходят в нос.
+- [Среднее ухо](https://gonya83raul-sketch.github.io/Chelovek/midear.html): Три косточки размером с рисовое зерно не дают звуку отразиться от жидкости внутреннего уха, две крошечные мышцы гасят грохот, а слуховая труба выравнивает давление, когда мы глотаем.
 
 ## Мозг
 - [Строение нейрона](https://gonya83raul-sketch.github.io/Chelovek/soma.html): Тело нейрона в разрезе: ядро, субстанция Ниссля, аппарат Гольджи, митохондрии и нити цитоскелета. Сигналы с синапсов сходятся к аксонному холмику, где решается, будет ли импульс.
@@ -169,6 +171,8 @@
 - [Mouth and teeth](https://gonya83raul-sketch.github.io/Chelovek/mouth.en.html): Digestion starts here: 32 teeth cut and grind food, the tongue mixes it with saliva, and the palate and tonsils guard the entrance to the throat.
 - [Nose and paranasal sinuses](https://gonya83raul-sketch.github.io/Chelovek/nose.en.html): The nose is more than an air intake: the conchae swirl the flow, the mucosa warms and humidifies it, cilia carry dust away, and right under the roof live the olfactory neurons.
 - [Pharynx and Swallowing](https://gonya83raul-sketch.github.io/Chelovek/pharynx.en.html): The pharynx is a crossroads: both air and food pass through it. In the second or so that a swallow lasts, the soft palate seals off the nose, the epiglottis covers the larynx, breathing stops, and…
+- [Orbit and Eye](https://gonya83raul-sketch.github.io/Chelovek/orbit.en.html): Six muscles turn the eye so precisely that both eyes always point at the same spot. Three nerves control them, while tears constantly wash the eye and drain into the nose.
+- [Middle ear](https://gonya83raul-sketch.github.io/Chelovek/midear.en.html): Three ossicles the size of a grain of rice keep sound from bouncing off the fluid of the inner ear, two tiny muscles damp loud noise, and the auditory tube equalizes pressure when we swallow.
 
 ### Brain
 - [Neuron structure](https://gonya83raul-sketch.github.io/Chelovek/soma.en.html): The neuron cell body in section: nucleus, Nissl substance, Golgi apparatus, mitochondria and cytoskeletal filaments.
