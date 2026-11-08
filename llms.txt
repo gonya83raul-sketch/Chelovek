@@ -68,6 +68,8 @@
 - [Цикл полового ответа](https://gonya83raul-sketch.github.io/Chelovek/sresp.html): Как мозг, вегетативная нервная система, сосуды и гормоны согласованно проводят тело через четыре фазы полового ответа — от возбуждения до разрешения.
 - [Грудная клетка и молочная железа](https://gonya83raul-sketch.github.io/Chelovek/chest.html): Костный каркас, который защищает сердце и лёгкие и помогает дышать, и устройство молочной железы — от долек до протоков и гормонов кормления.
 - [Гортань и голос](https://gonya83raul-sketch.github.io/Chelovek/larynx.html): Хрящевая коробка размером с грецкий орех: открывает путь воздуху, захлопывается при глотании и превращает выдох в голос — две складки слизистой колеблются сотни раз в секунду.
+- [Полость рта и зубы](https://gonya83raul-sketch.github.io/Chelovek/mouth.html): Здесь начинается пищеварение: 32 зуба режут и перетирают пищу, язык перемешивает её со слюной, нёбо и миндалины охраняют вход в глотку.
+- [Нос и околоносовые пазухи](https://gonya83raul-sketch.github.io/Chelovek/nose.html): Нос — не просто вход для воздуха: раковины закручивают поток, слизистая согревает и увлажняет его, реснички уносят пыль, а под самой крышей живут обонятельные нейроны.
 
 ## Мозг
 - [Строение нейрона](https://gonya83raul-sketch.github.io/Chelovek/soma.html): Тело нейрона в разрезе: ядро, субстанция Ниссля, аппарат Гольджи, митохондрии и нити цитоскелета. Сигналы с синапсов сходятся к аксонному холмику, где решается, будет ли импульс.
@@ -161,6 +163,8 @@
 - [Sexual response cycle](https://gonya83raul-sketch.github.io/Chelovek/sresp.en.html): How the brain, the autonomic nervous system, blood vessels and hormones work together to carry the body through the four phases of the sexual response — from excitement to resolution.
 - [Chest and breast](https://gonya83raul-sketch.github.io/Chelovek/chest.en.html): The bony frame that protects the heart and lungs and helps us breathe, and how the breast is built — from lobules to ducts and the hormones of breastfeeding.
 - [Larynx and voice](https://gonya83raul-sketch.github.io/Chelovek/larynx.en.html): A box of cartilage the size of a walnut: it opens the way for air, snaps shut when you swallow, and turns your breath into a voice — two folds of mucosa vibrating hundreds of times a second.
+- [Mouth and teeth](https://gonya83raul-sketch.github.io/Chelovek/mouth.en.html): Digestion starts here: 32 teeth cut and grind food, the tongue mixes it with saliva, and the palate and tonsils guard the entrance to the throat.
+- [Nose and paranasal sinuses](https://gonya83raul-sketch.github.io/Chelovek/nose.en.html): The nose is more than an air intake: the conchae swirl the flow, the mucosa warms and humidifies it, cilia carry dust away, and right under the roof live the olfactory neurons.
 
 ### Brain
 - [Neuron structure](https://gonya83raul-sketch.github.io/Chelovek/soma.en.html): The neuron cell body in section: nucleus, Nissl substance, Golgi apparatus, mitochondria and cytoskeletal filaments.
