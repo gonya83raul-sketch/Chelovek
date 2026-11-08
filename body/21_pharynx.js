@@ -29,7 +29,7 @@ function makePharynx() {
   const sideL = new THREE.DirectionalLight(0xfff0e6, 0.0); sideL.position.set(9, 6, 4); scene.add(sideL);
   const DK = !matchMedia('(max-width:700px)').matches;
   const VIEW = {
-    sec: flyTarget(DK ? V3(0, -9.6, 4.2) : V3(0, -4.9, -0.2), DK ? V3(48, -8.6, 6.1) : V3(31, -4.5, 0.2)),
+    sec: flyTarget(DK ? V3(0, -9.6, 3.7) : V3(0, -5.3, -0.2), DK ? V3(48, -8.6, 5.6) : V3(31, -4.9, 0.2)),
     mus: flyTarget(DK ? V3(7.5, -7.6, -9.2) : V3(0, -6.8, -2.5), DK ? V3(-30.5, -2.1, -48.2) : V3(-30, -4.3, -31.6)),
     back: flyTarget(DK ? V3(8.6, -8.9, -2.5) : V3(0, -6.8, -2.5), DK ? V3(8.6, -4.7, -57.5) : V3(0, -4.1, -44)),
   };
@@ -130,7 +130,7 @@ function makePharynx() {
   const DOR0 = [[4.75, -5.75], [4.3, -5.05], [3.4, -4.35], [2.4, -3.9], [1.2, -3.72], [0.0, -3.78], [-1.0, -4.1], [-1.8, -4.75], [-2.3, -5.6], [-2.55, -6.6], [-2.55, -7.6], [-2.35, -8.3]];
   const DOR1 = [[4.75, -5.75], [4.3, -4.6], [3.6, -3.75], [2.4, -4.2], [1.2, -4.25], [0.0, -4.05], [-1.0, -4.05], [-1.9, -4.6], [-2.5, -5.5], [-2.8, -6.5], [-2.8, -7.6], [-2.4, -8.3]];
   const DOR2 = [[4.75, -5.75], [4.3, -4.6], [3.6, -3.72], [2.4, -3.6], [1.2, -3.58], [0.0, -3.64], [-1.1, -3.92], [-2.1, -4.5], [-3.0, -5.4], [-3.45, -6.5], [-3.3, -7.7], [-2.5, -8.4]];
-  const dorsum = () => DOR0.map((p, i) => { const a = [p[0] + (DOR1[i][0] - p[0]) * SW.t1, p[1] + (DOR1[i][1] - p[1]) * SW.t1]; const z = a[0] + (DOR2[i][0] - a[0]) * SW.t2; return [z, a[1] + (DOR2[i][1] - a[1]) * SW.t2 - (i > 0 ? 0.42 * SW.grv * 1.3 * Math.exp(-((z - SW.bz) ** 2) / 1.2) : 0)]; });
+  const dorsum = () => DOR0.map((p, i) => { const a = [p[0] + (DOR1[i][0] - p[0]) * SW.t1, p[1] + (DOR1[i][1] - p[1]) * SW.t1]; const z = a[0] + (DOR2[i][0] - a[0]) * SW.t2; return [z, a[1] + (DOR2[i][1] - a[1]) * SW.t2 - (i > 0 ? 0.42 * SW.grv * 1.55 * Math.exp(-((z - SW.bz) ** 2) / 1.2) : 0)]; });
   const TONd = dyn(() => { const [hz, hy] = hyOff(); return curvePts(dorsum(), 50).concat([[-1.6, -8.9], [-0.9 + hz, -9.7 + hy], [0.6 + hz, -9.6 + hy], [2.0, -9.3], [3.0, -8.6], [3.6, -7.6], [4.2, -6.8]]); }, -0.3, 0, M.tongue);
   const ggM = mphys('#A8404C', { r: 0.6, em: 0.08 });
   [2, 4, 6, 8, 9, 10].forEach((k) => dyn(() => { const D = dorsum(), [hz, hy] = hyOff(), O = [3.3, -8.75], E = D[k], T = [O[0] + (E[0] - O[0]) * 0.86, O[1] + (E[1] - O[1]) * 0.86]; return ribPoly(curvePts([O, [O[0] + (T[0] - O[0]) * 0.5 - 0.25, O[1] + (T[1] - O[1]) * 0.5], T], 16), 0.1, 0.2); }, -0.29, 0.004, ggM));   // волокна подбородочно-язычной мышцы
@@ -180,7 +180,7 @@ function makePharynx() {
   const MUS = new THREE.Group(); scene.add(MUS);
   const KS = 12.5, MX = 0.11;
   const SK = new THREE.Group(); SK.scale.setScalar(KS); SK.position.set(-MX * KS, -16 * KS, -0.6 * KS); MUS.add(SK);
-  const skM = new THREE.MeshPhysicalMaterial({ clippingPlanes: [new THREE.Plane(V3(0, -1, 0), 1.6), new THREE.Plane(V3(-1, 0, 0), 6.6)], color: 0xE8DCC8, roughness: 0.65, clearcoat: 0.1, emissive: 0x4a4236, transparent: true, opacity: 0.4, depthWrite: false, side: THREE.FrontSide });
+  const skM = new THREE.MeshPhysicalMaterial({ clippingPlanes: [new THREE.Plane(V3(0, -1, 0), 0.8), new THREE.Plane(V3(-1, 0, 0), 6.8), new THREE.Plane(V3(1, 0, 0), 6.8)], color: 0xE8DCC8, roughness: 0.65, clearcoat: 0.1, emissive: 0x4a4236, transparent: true, opacity: 0.4, depthWrite: false, side: THREE.FrontSide });
   const PWO = (y) => pwZ(y) - 0.45;
   const AW = [[0, 1.4], [-1.5, 1.7], [-4, 1.9], [-8, 2.0], [-10, 2.15], [-12, 2.0], [-13.2, 1.78], [-14.2, 1.38], [-15.2, 1.08], [-16, 1.0], [-19.6, 1.0]];
   const BW = [[0, 1.2], [-3, 1.5], [-12, 1.5], [-14.2, 1.3], [-15.2, 1.0], [-16, 0.9], [-19.6, 0.9]];
@@ -297,12 +297,12 @@ function makePharynx() {
     lb('щитовидный хрящ', lp(0.35, -12.4), '#CFE3F0', () => sec() && (!st.reg || st.reg === 'laryngo') && DK, true),
     lb('голосовая складка', lp(-1.0, -12.62), '#F2EEE6', () => sec() && ((!st.reg && DK) || st.reg === 'laryngo')),
     lb('перстневидный хрящ', lp(-2.4, -14.1), '#CFE3F0', () => sec() && (!st.reg || st.reg === 'laryngo') && DK),
-    lb('трахея', sp(-1.0, -18.2), '#CFE3F0', () => sec() && !st.reg, true),
-    lb('пищевод', sp(-2.75, -18.0), '#F0A0A8', () => (sec() && !st.reg) || sw()),
+    lb('трахея', sp(-1.0, -17.6), '#CFE3F0', () => sec() && !st.reg, true),
+    lb('пищевод', sp(-2.75, -18.0), '#F0A0A8', () => (sec() && !st.reg) || (sw() && (st.s < 0.66 || st.s > 0.95))),
     lb('позвонок C2', sp(-6.0, -5.3), '#E8DCC8', () => sec() && !st.reg && DK),
     lb('позвонок C6', sp(-5.9, -15.1), '#E8DCC8', () => sec() && !st.reg && DK),
     lb('верхний пищеводный сфинктер', () => V3(0.25, -14.7, pwZ(-14.7) - 0.3), '#F09080', () => (sw() && DK) || (sec() && st.reg === 'laryngo')),
-    lb('комок пищи', () => V3(0.3, SW.by, SW.bz), '#FFD08A', () => sw() && SW.bOn > 0 && st.s > 0.2 && st.s < 0.7),
+    lb('комок пищи', () => V3(0.3, SW.by - 0.25, SW.bz), '#FFD08A', () => sw() && SW.bOn > 0 && st.s > 0.2 && st.s < 0.7),
     lb('верхний констриктор', () => tubeP(-3.6, 0.7, -1, 0.1), '#F08890', mOn('sup')),
     lb('средний констриктор', () => tubeP(-8.0, 0.8, -1, 0.25), '#F8B080', mOn('mid')),
     lb('нижний констриктор', () => tubeP(-12.0, 0.75, -1, 0.4), '#F0D880', mOn('inf')),
