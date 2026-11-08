@@ -56,10 +56,12 @@ function makeFace() {
   const sideL = new THREE.DirectionalLight(0xfff0e6, 0.0); sideL.position.set(-7, 9, 7); scene.add(sideL);   // подсветка сбоку — для режимов 2–3
   const DK = !matchMedia('(max-width:700px)').matches;
   const VIEW = {
-    mim: flyTarget(DK ? V3(-12, -4.0, 2) : V3(0, -3, 1.5), DK ? V3(-34, 3.5, 63) : V3(-14, 1, 58)),
-    chew: flyTarget(DK ? V3(-5, -5.0, -14) : V3(-5, -3.5, -2.0), DK ? V3(-58, -1, 0) : V3(-55, 0, 12)),
-    ptg: flyTarget(DK ? V3(-4, -6.0, -12.5) : V3(-4, -4, -2.0), DK ? V3(-50, -6.5, 6.5) : V3(-50, -6, 15)),
-    tmj: flyTarget(DK ? V3(0, -4.2, -8.0) : V3(0, -0.6, 0.9), DK ? V3(-44, -3.2, -8.0) : V3(-50, -0.6, 0.9)),
+    mim: flyTarget(DK ? V3(-12, -3.4, 2) : V3(0, -2.2, 1.5), DK ? V3(-31, 3.1, 55) : V3(-11, 1.8, 47)),
+    front: flyTarget(DK ? V3(-9.5, -2.4, 2) : V3(0, -3, 1.5), DK ? V3(-17, 4.1, 67) : V3(-4, 1, 58)),   // анфас — для паралича
+    chew: flyTarget(DK ? V3(-5, -0.6, -10.0) : V3(-5, -1.9, -2.0), DK ? V3(-66, 0.6, 2) : V3(-55, 1.6, 12)),
+    chewF: flyTarget(DK ? V3(-8, -1.8, 0) : V3(0, -3, 0), DK ? V3(-16, 0.5, 64) : V3(-5, -1, 60)),   // анфас — сдвиг в сторону
+    ptg: flyTarget(DK ? V3(-4, -2.8, -11.5) : V3(-4, -4, -2.0), DK ? V3(-56, -9, 7) : V3(-50, -6, 15)),
+    tmj: flyTarget(DK ? V3(0, -2.5, -6.6) : V3(0, -0.45, 0.75), DK ? V3(-48, -1.5, -6.6) : V3(-34, -0.45, 0.75)),
   };
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 400); camera.position.copy(VIEW.mim.pos);
   const controls = makeControls(camera, VIEW.mim.target); controls.minDistance = 8; controls.maxDistance = 90;
@@ -69,6 +71,7 @@ function makeFace() {
   const sm = (x) => { const t = cl(x); return t * t * (3 - 2 * t); };
   const lerpT = (tab, x) => { if (x <= tab[0][0]) return tab[0][1]; for (let i = 1; i < tab.length; i++) if (x <= tab[i][0]) { const [a, va] = tab[i - 1], [b, vb] = tab[i]; return va + (vb - va) * (x - a) / (b - a); } return tab[tab.length - 1][1]; };
   const mphys = (col, o = {}) => { const m = new THREE.MeshPhysicalMaterial({ color: new THREE.Color(col).multiplyScalar(o.k ?? 0.85), roughness: o.r ?? 0.55, clearcoat: o.cc ?? 0.25, sheen: 0.25, sheenColor: new THREE.Color(0xffffff), emissive: new THREE.Color(o.emc ?? col), emissiveIntensity: o.em ?? 0.06, side: o.side ?? THREE.FrontSide, transparent: o.op !== undefined, opacity: o.op ?? 1, depthWrite: o.op === undefined }); m.userData.op0 = o.op ?? 1; m.userData.em0 = o.em ?? 0.06; m.userData.col0 = m.color.clone(); return m; };
+  const DIMC = new THREE.Color(0x3a2e2e);   // неработающая мышца в выражении — тусклая
   const setOp = (m, op) => { const t = op < 0.999 || m.userData.op0 < 1; if (m.transparent !== t) { m.transparent = t; m.needsUpdate = true; } m.opacity = op; m.depthWrite = op >= 0.999; };
 
   // ---------- скан черепа: неподвижная часть и нижняя челюсть ----------
@@ -118,7 +121,7 @@ function makeFace() {
     dli: { E: [[D(0.7, -9.4, 4.4), D(2.3, -9.5, 4.0)], [D(0.5, -6.6, 4.8), D(1.8, -6.5, 4.6)]], off: [0.26, 0.9], t: 0.1, k: 0.18, nu: 6, nv: 12 },
     ment: { E: [[D(0.22, -7.4, 5), D(0.9, -7.6, 5)], [D(0.18, -9.9, 5), D(1.15, -10.2, 4.6)]], off: [0.3, 1.0], t: 0.14, k: 0.22, nu: 5, nv: 12 },
     bucc: { E: [[D(4.4, -3.6, 0.2), D(4.6, -5.6, -0.2), D(4.4, -7.4, 0.2)], [D(2.95, -5.05, 3.6), D(3.0, -5.6, 3.7), D(2.95, -6.1, 3.6)]], off: [0.3, 0.62], t: 0.12, k: 0.12, nu: 7, nv: 14 },
-    plat: { E: [[D(1.4, -16, 3.6), D(4.0, -16, 3.0), D(6.6, -15.8, -0.2)], [D(1.6, -10.9, 3.9), D(3.6, -10.6, 2.6), D(5.5, -10.2, -1.8)], [D(1.8, -8.0, 4.4), D(2.9, -6.7, 4.0), D(5.8, -8.2, -0.8)]], off: [0.6, 0.45, 0.62], free: [1, 0, 0], t: 0.06, k: 0.06, nu: 8, nv: 18 },
+    plat: { E: [[D(1.6, -14.2, 3.6), D(4.0, -14.2, 3.0), D(6.4, -14.0, -0.4)], [D(1.6, -10.9, 3.9), D(3.6, -10.6, 2.6), D(5.5, -10.2, -1.8)], [D(1.8, -8.0, 4.4), D(2.9, -6.7, 4.0), D(5.8, -8.2, -0.8)]], off: [0.6, 0.45, 0.62], free: [1, 0, 0], t: 0.06, k: 0.06, nu: 8, nv: 18 },
   };
   const MUS = {};   // id → { meshes, mats, anchor }
   const MCOL = ['#D9564C', '#C9484C', '#E06A5A'];
@@ -178,7 +181,7 @@ function makeFace() {
         const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(r0.pos, 3)); g.setIndex(slabIndex(r0.nLines, r0.L, r0.wrap)); g.computeVertexNormals(); g.setAttribute('color', stripes(r0.nLines, r0.L, r0.wrap));
         const g1 = new THREE.BufferGeometry(); g1.setAttribute('position', new THREE.Float32BufferAttribute(r1.pos, 3)); g1.setIndex(g.index); g1.computeVertexNormals();
         g.morphAttributes.position = [g1.attributes.position]; g.morphAttributes.normal = [g1.attributes.normal];
-        const m = mphys(MCOL[mi % 3], { side: THREE.DoubleSide, r: 0.5, cc: 0.35, em: 0.08, emc: '#FF5A3A', op: mu.id === 'plat' ? 0.72 : undefined }); m.vertexColors = true;
+        const m = mphys(MCOL[mi % 3], { side: THREE.DoubleSide, r: 0.5, cc: 0.35, em: 0.08, emc: '#FF5A3A', op: mu.id === 'plat' ? 0.6 : undefined }); m.vertexColors = true;
         const ms = new THREE.Mesh(g, m); ms.morphTargetInfluences = [0]; ms.userData.pick = mu.id; ms.userData.side = s; MIM.add(ms); pick.push(ms); M.meshes.push(ms); M.mats.push(m);
         if (s === -1 || sides.length === 1) { const P = r0.P, nu = def.nu, nv = def.nv, c = def.ring ? P[Math.round(nv * 0.55) * nu + Math.round(nu * 0.5)] : P[Math.floor(nv / 2) * nu + Math.floor(nu / 2)]; M.anchor.copy(c).addScaledVector(radial(c), 0.25); }
       });
@@ -225,7 +228,7 @@ function makeFace() {
       { O: D(7.3, -1.3, 0.2), I: D(5.95, -10.2, -1.4) },
       { O: D(7.85, -1.15, -1.1), I: D(5.85, -10.5, -2.5) },
       { O: D(8.05, -1.05, -2.3), I: D(5.55, -10.25, -3.5) },
-      { O: D(8.1, -0.95, -3.3), I: D(5.75, -8.9, -4.15) } ], t: 0.6, bulge: 0.95, nu: 16, nv: 16 },
+      { O: D(8.1, -0.95, -3.3), I: D(5.75, -8.9, -4.15) } ], t: 0.85, bulge: 0.9, nu: 16, nv: 16 },
     massD: { g: [
       { O: D(7.4, -0.65, -2.2), I: D(6.75, -4.2, -1.9) },
       { O: D(7.65, -0.45, -3.4), I: D(6.95, -3.5, -3.2) },
@@ -298,13 +301,14 @@ function makeFace() {
   const TJ = new THREE.Group(); scene.add(TJ); TJ.scale.setScalar(3);
   const ring2 = (pts, sharp, n = 120) => (sharp ? pts.map(([z, y]) => new THREE.Vector2(z, y)) : new THREE.CatmullRomCurve3(pts.map(([z, y]) => V3(z, y, 0)), true, 'centripetal').getSpacedPoints(n).slice(0, -1).map((p) => new THREE.Vector2(p.x, p.y)));
   const sag = (pts, x0, x1, m, parent, o = {}) => { const sh = new THREE.Shape(ring2(pts, o.sharp, o.n)); (o.holes || []).forEach((hp) => sh.holes.push(new THREE.Path(ring2(hp, false, 60)))); const g = new THREE.ExtrudeGeometry(sh, { depth: x1 - x0, bevelEnabled: false, curveSegments: 6 }); g.rotateY(-Math.PI / 2); g.translate(x1, 0, 0); const ms = new THREE.Mesh(g, m); parent.add(ms); return ms; };
+  const dense = (pts, n) => new THREE.CatmullRomCurve3(pts.map(([z, y]) => V3(z, y, 0)), false, 'centripetal').getSpacedPoints(n).map((p) => [p.x, p.y]);   // гладкий контур + острые углы окна
   const ell = (cx, cy, rx, ry, n = 24) => Array.from({ length: n }, (_, i) => [cx + rx * Math.cos((i / n) * 2 * Math.PI), cy + ry * Math.sin((i / n) * 2 * Math.PI)]);
   const tBoneM = mphys('#E8DCC8', { r: 0.75, k: 0.92, em: 0.1 }), tJawM = mphys('#EADFC9', { r: 0.7, k: 0.95, em: 0.1 }), discM = mphys('#6FA8E8', { r: 0.4, cc: 0.5, em: 0.2 });
-  sag([[-3.3, -2.5], [3.8, -2.5], [3.8, 2.2], [-3.3, 2.2]], 0.3, 0.32, new THREE.MeshBasicMaterial({ color: 0x241b1e }), TJ, { sharp: true });   // фон: мягкие ткани
-  sag([[3.6, 0.62], [2.7, 0.48], [2.15, 0.22], [1.7, 0.1], [1.25, 0.22], [0.85, 0.5], [0.45, 0.78], [0.1, 0.88], [-0.3, 0.83], [-0.62, 0.58], [-0.82, 0.15], [-0.93, -0.32], [-1.08, -0.42], [-1.25, -0.28], [-1.45, -0.62], [-2.0, -0.82], [-2.7, -0.8], [-3.2, -0.6], [-3.2, 2.0], [3.6, 2.0]], -0.1, 0.1, tBoneM, TJ, { holes: [ell(-2.1, 0.12, 0.5, 0.42)], n: 160 });   // височная кость
-  sag([[-1.3, 1.08], [-0.6, 1.02], [0.2, 1.06], [0.9, 0.86], [1.6, 0.8], [2.4, 0.98], [3.6, 1.05], [3.6, 2.0], [-1.6, 2.0], [-1.6, 1.4]], -0.13, -0.11, mphys('#8A7C8C', { r: 0.9, k: 0.8, em: 0.05 }), TJ, { n: 90 });   // средняя черепная ямка (мозг)
+  sag([[-3.3, -2.5], [3.8, -2.5], [3.8, 2.2], [-3.3, 2.2]], 0.3, 0.32, new THREE.MeshBasicMaterial({ color: 0x3a2a30 }), TJ, { sharp: true });   // фон: мягкие ткани
+  sag(dense([[3.8, 0.66], [3.6, 0.62], [2.7, 0.48], [2.15, 0.22], [1.7, 0.1], [1.25, 0.22], [0.85, 0.5], [0.45, 0.78], [0.1, 0.88], [-0.3, 0.83], [-0.62, 0.58], [-0.82, 0.15], [-0.93, -0.32], [-1.08, -0.42], [-1.25, -0.28], [-1.45, -0.62], [-2.0, -0.82], [-2.7, -0.8], [-3.3, -0.6]], 140).concat([[-3.3, 2.2], [3.8, 2.2]]), -0.1, 0.1, tBoneM, TJ, { holes: [ell(-2.1, 0.12, 0.5, 0.42)], sharp: true });   // височная кость
+  sag(dense([[-1.7, 1.5], [-1.3, 1.08], [-0.6, 1.02], [0.2, 1.06], [0.9, 0.86], [1.6, 0.8], [2.4, 0.98], [3.8, 1.05]], 60).concat([[3.8, 2.2], [-1.7, 2.2]]), -0.13, -0.11, mphys('#8A7C8C', { r: 0.9, k: 0.8, em: 0.05 }), TJ, { sharp: true });   // средняя черепная ямка (мозг)
   const JS = new THREE.Group(); TJ.add(JS);
-  sag([[-0.72, -2.9], [-0.6, -2.0], [-0.5, -1.3], [-0.5, -0.7], [-0.5, -0.2], [-0.38, 0.3], [-0.12, 0.53], [0.15, 0.54], [0.38, 0.38], [0.5, 0.05], [0.47, -0.4], [0.45, -0.75], [0.62, -1.1], [1.0, -1.32], [1.45, -1.38], [1.85, -1.18], [2.2, -0.75], [2.45, -0.25], [2.62, 0.05], [2.78, -0.1], [2.82, -0.7], [2.72, -1.6], [2.6, -2.9], [1.5, -2.95], [0.4, -2.95]], -0.1, 0.1, tJawM, JS, { n: 180 });   // мыщелок, вырезка и венечный отросток
+  sag(dense([[-0.72, -2.9], [-0.6, -2.0], [-0.5, -1.3], [-0.5, -0.7], [-0.5, -0.2], [-0.38, 0.3], [-0.12, 0.53], [0.15, 0.54], [0.38, 0.38], [0.5, 0.05], [0.47, -0.4], [0.45, -0.75], [0.62, -1.1], [1.0, -1.32], [1.45, -1.38], [1.85, -1.18], [2.2, -0.75], [2.45, -0.25], [2.62, 0.05], [2.78, -0.1], [2.82, -0.7], [2.72, -1.6], [2.6, -2.9]], 180).concat([[1.5, -2.95], [0.4, -2.95]]), -0.1, 0.1, tJawM, JS, { sharp: true });   // мыщелок, вырезка и венечный отросток
   tJawM.clippingPlanes = [new THREE.Plane(V3(0, 1, 0), 2.5 * 3)];   // ветвь обрезана по нижнему краю «окна» разреза
   const ellR = (a) => 1 / Math.sqrt((Math.cos(a) / 0.5) ** 2 + (Math.sin(a) / 0.55) ** 2);
   const DTH = [[8, 0.1], [20, 0.2], [35, 0.17], [55, 0.09], [75, 0.15], [100, 0.3], [125, 0.27], [150, 0.13]];
@@ -320,6 +324,7 @@ function makeFace() {
   const capsM = mphys('#9FD0F0', { side: THREE.DoubleSide, r: 0.5, em: 0.3, op: 0.85 }), lptM = mphys('#45C4B0', { side: THREE.DoubleSide, r: 0.55, em: 0.15 }), retM = mphys('#E89AA8', { side: THREE.DoubleSide, r: 0.6, em: 0.12, op: 0.92 });
   const RIB = { capP: ribbon(capsM), capA: ribbon(capsM), lpS: ribbon(lptM), lpI: ribbon(lptM), ret: ribbon(retM, 10) };
   const sec = { th: 0, f: 0, dc: [0, 0], beta: 0 };
+  { const WIN = [new THREE.Plane(V3(0, 0, -1), 3.8 * 3), new THREE.Plane(V3(0, 0, 1), 3.3 * 3), new THREE.Plane(V3(0, 1, 0), 2.5 * 3)]; const seen = new Set(); TJ.traverse((o) => { if (o.material && !seen.has(o.material)) { seen.add(o.material); o.material.clippingPlanes = WIN; } }); }   // всё в разрезе — только внутри «окна»
   const rotZY = ([z, y], a) => [y * Math.sin(a) + z * Math.cos(a), y * Math.cos(a) - z * Math.sin(a)];   // поворот вокруг оси x на угол a
   const jawPt = (p) => { const [z, y] = rotZY(p, sec.th); return [z + sec.dc[0], y + sec.dc[1]]; };
   const discPt = (deg, outer, k = 0.5) => { const pi = discLoc(deg, false), po = discLoc(deg, true), p = outer === 'mid' ? [pi[0] + (po[0] - pi[0]) * k, pi[1] + (po[1] - pi[1]) * k] : outer ? po : pi; const [z, y] = rotZY(p, sec.beta); return [z + sec.dc[0], y + sec.dc[1]]; };
@@ -397,10 +402,10 @@ function makeFace() {
     // активность мышц
     if (M1) {
       const e = curExp();
-      FA_MUS.forEach((mu) => { const M = MUS[mu.id]; if (!M) return; M.meshes.forEach((ms, i) => { const s = ms.userData.side, key = mu.id + s, tgt = st.bell && s === 1 && mu.id !== 'oris' ? 0 : (e.act[mu.id] || 0) * (st.bell && mu.id === 'oris' ? 0.6 : 1); const a = st.act[key] = (st.act[key] || 0) + (tgt - (st.act[key] || 0)) * k; ms.morphTargetInfluences[0] = a; const m = M.mats[i]; m.emissiveIntensity = m.userData.em0 + 0.85 * Math.max(0, a); m.color.copy(m.userData.col0).multiplyScalar(1 + 0.35 * Math.max(0, a)); if (st.bell && s === 1 && mu.id !== 'oris') m.color.lerp(new THREE.Color(0x8a7a78), 0.5); }); });
+      FA_MUS.forEach((mu) => { const M = MUS[mu.id]; if (!M) return; M.meshes.forEach((ms, i) => { const s = ms.userData.side, key = mu.id + s, tgt = st.bell && s === 1 && mu.id !== 'oris' ? 0 : (e.act[mu.id] || 0) * (st.bell && mu.id === 'oris' ? 0.6 : 1); const a = st.act[key] = (st.act[key] || 0) + (tgt - (st.act[key] || 0)) * k; ms.morphTargetInfluences[0] = a; const m = M.mats[i]; m.emissiveIntensity = m.userData.em0 + 0.6 * Math.max(0, a); { const on = st.exp === 'rest' ? 1 : Math.min(1, Math.max(0, a) * 1.6); m.color.copy(m.userData.col0).multiplyScalar(1 + 0.35 * Math.max(0, a)).lerp(DIMC, 0.85 * (1 - on)); m.emissiveIntensity *= 0.3 + 0.7 * on; m.sheen = 0.25 * on; m.clearcoat = 0.25 * on; } if (st.bell && s === 1 && mu.id !== 'oris') m.color.lerp(new THREE.Color(0x8a7a78), 0.5); }); });
       nervMats.forEach((m, i) => { const off = st.bell && i === 1; m.color.set(off ? 0x6a665e : 0xf2d45a).multiplyScalar(0.85); m.emissiveIntensity = off ? 0.0 : 0.35; });
     } else if (M2) {
-      MS.forEach((o) => { const key = o.part + o.s, sd = o.s < 0 ? 0 : 1, tgt = act[o.part] ? act[o.part][sd] : 0; st.act[key] = (st.act[key] || 0) + (tgt - (st.act[key] || 0)) * (st.move === 'chew' ? 1 - Math.exp(-dt * 12) : k); o.mat.emissiveIntensity = o.mat.userData.em0 + 0.8 * st.act[key]; o.mat.color.copy(o.mat.userData.col0).multiplyScalar(1 + 0.3 * st.act[key]); });
+      MS.forEach((o) => { const key = o.part + o.s, sd = o.s < 0 ? 0 : 1, tgt = act[o.part] ? act[o.part][sd] : 0; st.act[key] = (st.act[key] || 0) + (tgt - (st.act[key] || 0)) * (st.move === 'chew' ? 1 - Math.exp(-dt * 12) : k); o.mat.emissiveIntensity = o.mat.userData.em0 + 0.3 * st.act[key]; o.mat.color.copy(o.mat.userData.col0).multiplyScalar(1 + 0.3 * st.act[key]); });
       if (st.loaded) MS.forEach(updMast);
     }
     if (M3) { updSection(st.open); }
@@ -409,15 +414,15 @@ function makeFace() {
   function refreshDim() {
     FA_MUS.forEach((mu) => { const M = MUS[mu.id]; if (!M) return; M.mats.forEach((m) => setOp(m, !st.sel || st.sel === mu.id ? 1 : 0.22)); });
     const pt = st.msel === 'medp' || st.msel === 'latp';
-    MS.forEach((o) => setOp(o.mat, !st.msel || st.msel === o.part ? 1 : pt && (o.part === 'medp' || o.part === 'latp') ? 0.55 : 0.12));
-    setOp(jawM, pt ? 0.28 : 1); setOp(jawCapM, pt ? 0.28 : 1);
+    MS.forEach((o) => { const p2 = o.part === 'medp' || o.part === 'latp'; o.mesh.visible = !pt || p2; setOp(o.mat, !st.msel || st.msel === o.part ? 1 : pt ? 0.5 : 0.12); });
+    setOp(jawM, pt ? 0.2 : 1); setOp(jawCapM, pt ? 0.2 : 1); setOp(boneM, pt ? 0.55 : 1); setOp(capM, pt ? 0.55 : 1);
   }
   function select(id) { st.sel = id === 'all' || st.sel === id ? null : id; refreshDim(); refs.setInfo && refs.setInfo(); }
   function selMas(id) { st.msel = id === 'all' ? null : id; st.fly = st.mode === 'chew' ? (st.msel === 'medp' || st.msel === 'latp' ? VIEW.ptg : VIEW.chew) : st.fly; refreshDim(); refs.mseg && refs.mseg.sync(); refs.setInfo && refs.setInfo(); }
   function setExp(id) { st.exp = id; st.sel = null; refreshDim(); refs.eseg && refs.eseg.sync(); refs.setInfo && refs.setInfo(); }
-  function setMove(id) { st.move = id; if (id === 'chew') st.chew = 0; refs.vseg && refs.vseg.sync(); refs.setInfo && refs.setInfo(); }
+  function setMove(id) { const pt = st.msel === 'medp' || st.msel === 'latp'; if (st.mode === 'chew' && (id === 'side' || st.move === 'side')) st.fly = id === 'side' ? VIEW.chewF : pt ? VIEW.ptg : VIEW.chew; st.move = id; if (id === 'chew') st.chew = 0; refs.vseg && refs.vseg.sync(); refs.setInfo && refs.setInfo(); }
   function setMode(m) {
-    st.mode = m; st.sel = null; if (m !== 'chew') st.msel = null; st.fly = VIEW[m]; refreshDim();
+    st.mode = m; st.sel = null; if (m !== 'chew') st.msel = null; st.fly = m === 'mim' && st.bell ? VIEW.front : VIEW[m]; refreshDim();
     refs.modeSeg && refs.modeSeg.sync(); refs.rebuild && refs.rebuild(); refs.setInfo && refs.setInfo();
   }
   pickOn(() => self, camera, () => pick, (id) => {
@@ -490,7 +495,7 @@ function makeFace() {
         refs.eseg = seg(FA_EXP.map((e) => ({ id: e.id, label: e.name })), () => st.exp, (v) => setExp(v));
         box.append(h('div', { class: 'glabel' }, 'Выражение', h('kbd', {}, 'клик — мышца')), h('div', { class: 'gctl' }, refs.eseg));
         refs.nervT = toggle('Лицевой нерв', () => st.nerve, (v) => { st.nerve = v; if (!v && st.bell) { st.bell = false; refs.bellT.sync(); } refs.setInfo(); });
-        refs.bellT = toggle('Паралич слева', () => st.bell, (v) => { st.bell = v; if (v && !st.nerve) { st.nerve = true; refs.nervT.sync(); } st.sel = null; refreshDim(); refs.setInfo(); });
+        refs.bellT = toggle('Паралич слева', () => st.bell, (v) => { st.bell = v; if (v && !st.nerve) { st.nerve = true; refs.nervT.sync(); } st.sel = null; st.fly = v ? VIEW.front : VIEW.mim; refreshDim(); refs.setInfo(); });
         view.append(refs.nervT, refs.bellT);
       } else if (st.mode === 'chew') {
         refs.vseg = seg(FA_MOVE.map((m) => ({ id: m.id, label: m.name })), () => st.move, (v) => setMove(v));
@@ -518,9 +523,9 @@ function makeFace() {
   function stats() {
     if (st.mode === 'tmj') { const o = st.open; return [['Открывание', openMM(o), 'мм'], ['Фаза', o < 0.03 ? 'покой' : o < 0.4 ? 'вращение' : 'скольжение', '']]; }
     if (st.mode === 'chew') return [['Открывание', st.mm, 'мм'], ['Сила смыкания', '40–80', 'кг']];
-    if (st.bell) return [['Левая сторона', 'паралич', ''], ['Нерв', 'VII', 'пара']];
-    const e = curExp(); if (st.exp === 'rest') return [['Мимических мышц', '≈ 20', 'пар'], ['Нерв', 'VII', 'пара']];
-    const n = Object.values(e.act).filter((a) => a > 0.15).length; return [['Работают', n, musWord(n)], ['Нерв', 'VII', 'пара']];
+    if (st.bell) return [['Левая сторона', 'паралич', ''], ['Черепной нерв', 'VII', '']];
+    const e = curExp(); if (st.exp === 'rest') return [['Мимических мышц', '≈ 20', 'пар'], ['Черепной нерв', 'VII', '']];
+    const n = Object.values(e.act).filter((a) => a > 0.15).length; return [['Работают', n, musWord(n)], ['Черепной нерв', 'VII', '']];
   }
   const self = {
     labelBg: true, mobZoom: 0.8, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null,
@@ -544,7 +549,7 @@ function makeFace() {
       <div><h2>Условности</h2><ul><li>Мышцы показаны лентами на скане черепа взрослого; кожа, жировая клетчатка и фасции убраны, формы мышц упрощены. Нос — условная хрящевая оболочка, глазные яблоки — шары.</li><li>Сокращение показано укорочением и свечением мышц; кожа лица не деформируется, морщины не показаны. В каждом выражении на деле работает больше мышц.</li><li>Нижняя челюсть отделена от скана по условной границе (зубы и суставы в скане срослись, срезы закрыты заплатками); путь мыщелка и углы открывания — средние. Разрез сустава схематичен и увеличен в 3 раза.</li></ul></div>
       <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>3</code> режим · <code>Esc</code> сбросить выбор</li><li><code>F</code> лицевой нерв · <code>R</code> вращение · <code>N</code> подписи</li></ul></div>`,
   };
-  window.__face = { camera, controls, st, VIEW };   // DEBUG
+  window.__face = { camera, controls, st, VIEW, scene };   // DEBUG
   setMode('mim'); st.fly = null; camera.position.copy(VIEW.mim.pos); controls.target.copy(VIEW.mim.target);
   updSection(0);
   return self;
