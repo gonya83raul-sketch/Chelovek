@@ -56,7 +56,7 @@ function makeFace() {
   const sideL = new THREE.DirectionalLight(0xfff0e6, 0.0); sideL.position.set(-7, 9, 7); scene.add(sideL);   // подсветка сбоку — для режимов 2–3
   const DK = !matchMedia('(max-width:700px)').matches;
   const VIEW = {
-    mim: flyTarget(DK ? V3(-12, -3.0, 2) : V3(0, -1.4, 1.5), DK ? V3(-31, 3.1, 55) : V3(-11, 1.8, 47)),
+    mim: flyTarget(DK ? V3(-12, -3.0, 2) : V3(0, -1.4, 1.5), DK ? V3(-22, 3.7, 62.5) : V3(-11, 1.8, 47)),
     front: flyTarget(DK ? V3(-9.5, -1.9, 2) : V3(0, -3, 1.5), DK ? V3(-17, 4.1, 67) : V3(-4, 1, 58)),   // анфас — для паралича
     chew: flyTarget(DK ? V3(-5, -0.6, -10.0) : V3(-5, -1.9, -2.0), DK ? V3(-66, 0.6, 2) : V3(-55, 1.6, 12)),
     chewF: flyTarget(DK ? V3(-8, -1.8, 0) : V3(0, -3, 0), DK ? V3(-16, 0.5, 64) : V3(-5, -1, 60)),   // анфас — сдвиг в сторону
@@ -121,7 +121,7 @@ function makeFace() {
     dli: { E: [[D(0.7, -9.4, 4.4), D(2.3, -9.5, 4.0)], [D(0.5, -6.6, 4.8), D(1.8, -6.5, 4.6)]], off: [0.26, 0.9], t: 0.1, k: 0.18, nu: 9, nv: 12 },
     ment: { E: [[D(0.22, -7.4, 5), D(0.9, -7.6, 5)], [D(0.18, -9.9, 5), D(1.15, -10.2, 4.6)]], off: [0.3, 1.0], t: 0.14, k: 0.22, nu: 8, nv: 12 },
     bucc: { E: [[D(4.4, -3.6, 0.2), D(4.6, -5.6, -0.2), D(4.4, -7.4, 0.2)], [D(2.95, -5.05, 3.6), D(3.0, -5.6, 3.7), D(2.95, -6.1, 3.6)]], off: [0.3, 0.62], t: 0.12, k: 0.12, nu: 7, nv: 14 },
-    plat: { E: [[D(1.6, -14.2, 3.6), D(4.0, -14.2, 3.0), D(6.4, -14.0, -0.4)], [D(1.6, -10.9, 3.9), D(3.6, -10.6, 2.6), D(5.5, -10.2, -1.8)], [D(1.8, -8.0, 4.4), D(2.9, -6.7, 4.0), D(5.8, -8.2, -0.8)]], off: [0.6, 0.45, 0.62], free: [1, 0, 0], t: 0.06, k: 0.06, nu: 12, nv: 18 },
+    plat: { E: [[D(2.0, -14.8, 3.5), D(4.4, -14.4, 2.9), D(6.9, -13.3, -0.3)], [D(1.8, -11.2, 3.9), D(3.8, -10.8, 2.7), D(5.9, -10.3, -1.5)], [D(1.8, -8.0, 4.4), D(2.9, -6.7, 4.0), D(5.8, -8.2, -0.8)]], off: [0.6, 0.45, 0.62], free: [1, 0, 0], t: 0.06, k: 0.06, nu: 12, nv: 18 },
   };
   const MUS = {};   // id → { meshes, mats, anchor }
   const MCOL = ['#D9564C', '#C9484C', '#E06A5A'];
@@ -207,7 +207,9 @@ function makeFace() {
       const nm = s < 0 ? nervM : nervM.clone(); nervMats.push(nm);
       const P = (d, off, free) => { const p = V3(s * d[0], d[1], d[2]); const q = free ? null : snap(p, off); return q || p; };
       NERVE.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(NTR.map((d) => V3(s * d[0], d[1], d[2]))), 16, 0.13, 8), nm));
-      Object.values(NBR).forEach((arr) => { const pts = arr.map((d, i) => (i === 0 ? V3(s * d[0], d[1], d[2]) : P(d, d[0] > 5.8 && d[1] < -1 ? 1.25 : 0.62, d[1] < -11))); NERVE.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts, false, 'centripetal'), 40, 0.075, 6), nm)); });
+      Object.values(NBR).forEach((arr) => { const pts = arr.map((d, i) => (i === 0 ? V3(s * d[0], d[1], d[2]) : P(d, d[0] > 5.8 && d[1] < -1 ? 1.25 : 0.62, d[1] < -11)));
+        const dense = new THREE.CatmullRomCurve3(pts, false, 'centripetal').getSpacedPoints(36).map((q, i) => { if (i < 2 || q.y < -11) return q; const ax = Math.abs(q.x), off = ax > 5.5 && q.y < -1 ? 1.25 : ax > 5.2 && q.y > -1.5 ? 1.0 : 0.62, sp = snap(q, off); return sp || q; });   // ветвь лежит на поверхности по всей длине
+        NERVE.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(dense, false, 'centripetal'), 60, 0.075, 6), nm)); });
       { const g = new THREE.SphereGeometry(1, 30, 22), p = g.attributes.position; for (let i = 0; i < p.count; i++) { const x = p.getX(i), y = p.getY(i), z = p.getZ(i), k = 1 + 0.07 * Math.sin(9 * x + 2) * Math.sin(8 * y) + 0.05 * Math.sin(11 * z + y); p.setXYZ(i, x * k, y * k, z * k); } g.computeVertexNormals(); const pg = new THREE.Mesh(g, parM); pg.scale.set(1.15, 3.0, 1.9); pg.position.set(s * 7.0, -4.6, -4.9); NERVE.add(pg); }
       const duct = [D(7.6, -2.7, -3.3), D(7.6, -2.8, -1.4), D(7.1, -2.9, 0.4), D(5.2, -3.2, 2.1)].map((d, i) => P(d, i < 3 ? 1.3 : 0.45));
       NERVE.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(duct), 24, 0.09, 6), ductM));
