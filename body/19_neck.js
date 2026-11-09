@@ -32,7 +32,7 @@ const NK_VN = [
   { id: 'cerv', name: 'Шейное сплетение', col: '#F7C9A0', text: '<b>Кожные ветви шейного сплетения</b> (C2–C4) выходят из-под заднего края грудино-ключично-сосцевидной мышцы почти в одной точке — нервной точке, около середины мышцы: большой ушной, малый затылочный, поперечный нерв шеи и надключичные. Сюда вводят анестетик.' },
 ];
 const NK_SEC = [
-  { id: 'inv', name: 'Поверхностная пластинка', col: '#F2D16B', text: '<b>Поверхностная пластинка</b> шейной фасции охватывает всю шею под подкожной мышцей и расщепляется вокруг грудино-ключично-сосцевидной и трапециевидной мышц (у нижней челюсти — вокруг поднижнечелюстной и околоушной желёз). Вверху крепится к нижней челюсти и затылку, внизу — к ключицам и грудине.' },
+  { id: 'inv', name: 'Поверхностная пластинка', col: '#F2D16B', text: '<b>Поверхностная пластинка</b> шейной фасции охватывает всю шею под подкожной мышцей и расщепляется вокруг грудино-ключично-сосцевидной и трапециевидной мышц (выше этого разреза, у нижней челюсти, — ещё и вокруг поднижнечелюстной и околоушной желёз). Вверху крепится к нижней челюсти и затылку, внизу — к ключицам и грудине.' },
   { id: 'pre', name: 'Предтрахеальная пластинка', col: '#6FB4F5', text: '<b>Предтрахеальная пластинка</b> — мышечный листок вокруг подподъязычных мышц и висцеральный: капсула щитовидной железы и футляр трахеи и пищевода (сзади — щёчно-глоточная фасция). Железа связана с гортанью, поэтому её узлы поднимаются при глотании.' },
   { id: 'carsh', name: 'Сонное влагалище', col: '#5CD6A0', text: '<b>Сонное влагалище</b> — фасциальная трубка по бокам от органов шеи. Внутри общая сонная артерия (ближе к середине), внутренняя яремная вена (снаружи) и блуждающий нерв (позади, между ними). Спереди по влагалищу спускается шейная петля, позади лежит симпатический ствол.' },
   { id: 'prev', name: 'Предпозвоночная пластинка', col: '#F29A5C', text: '<b>Предпозвоночная пластинка</b> охватывает позвоночник с его мышцами: длинные мышцы шеи, лестничные, глубокие мышцы спины. Под ней — диафрагмальный нерв и корни плечевого сплетения, на ней — симпатический ствол. Сплетение и подключичная артерия уносят её к руке как влагалище.' },
@@ -48,15 +48,11 @@ function makeNeck() {
   const vw = (tg, pos, shift = 0) => { const d = tg.clone().sub(pos).normalize(), r = d.clone().cross(V3(0, 1, 0)).normalize().multiplyScalar(-shift); return flyTarget(tg.clone().add(r), pos.clone().add(r)); };
   const vd = (tg, dir, D, shift = 0) => vw(tg, tg.clone().add(dir.clone().normalize().multiplyScalar(D)), shift);
   const VIEW = {
-    mus: DK ? vd(V3(-0.5, 5.3, 0), V3(-0.62, 0.2, 0.76), 48.5, 5.8) : vd(V3(-0.5, 7.0, 0), V3(-0.62, 0.2, 0.76), 42, 2.6),
-    tri: DK ? vd(V3(-1.2, 6.3, 0.5), V3(-0.72, 0.16, 0.68), 45.5, 5.8) : vd(V3(-1.2, 7.4, 0.5), V3(-0.72, 0.16, 0.68), 38, 2.4),
-    vn: DK ? vd(V3(-1.0, 6.3, 0.5), V3(-0.6, 0.18, 0.78), 50.5, 5.8) : vd(V3(-1.0, 7.3, 0.5), V3(-0.6, 0.18, 0.78), 41, 2.6),
-    sec: DK ? vd(V3(0, 4.6, 0), V3(0, 0.05, 1), 33, 4.6) : vd(V3(0, 6.0, 0), V3(0, 0.05, 1), 28),
+    mus: DK ? vd(V3(-0.5, 5.62, 0), V3(-0.62, 0.2, 0.76), 49.1, 7.5) : vd(V3(-0.5, 7.0, 0), V3(-0.62, 0.2, 0.76), 42, 2.6),
+    tri: DK ? vd(V3(-1.2, 6.01, 0.5), V3(-0.72, 0.16, 0.68), 47.5, 7.5) : vd(V3(-1.2, 7.4, 0.5), V3(-0.72, 0.16, 0.68), 38, 2.4),
+    vn: DK ? vd(V3(-1.0, 5.86, 0.5), V3(-0.6, 0.18, 0.78), 49.0, 7.5) : vd(V3(-1.0, 7.3, 0.5), V3(-0.6, 0.18, 0.78), 41, 2.6),
+    sec: DK ? vd(V3(0, 4.9, 0), V3(0, 0.05, 1), 31, 5.7) : vd(V3(0, 6.0, 0), V3(0, 0.05, 1), 28),
   };
-
-
-
-
   const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 250); camera.position.copy(VIEW.mus.pos);
   const controls = makeControls(camera, VIEW.mus.target); controls.minDistance = 8; controls.maxDistance = 110;
   const st = { t: 0, mode: 'mus', sel: null, labels: true, rot: false, fly: null };
@@ -179,6 +175,7 @@ function makeNeck() {
   add(surfG((u, v) => { const a = u * Math.PI * 2, y = -3.2 + 16.3 * v, top = cl((y - 4.6) / 8), rx = 0.8 + 1.1 * top, rz = 0.5 + 0.4 * top; return V3(Math.sin(a) * rx + 0.25 * (1 - top), y, -0.05 - 0.3 * top + Math.cos(a) * rz); }, 28, 20), esoM, null, N3);
   // ---------- мышцы ----------
   const MM = Object.fromEntries(NK_MUS.map((p) => [p.id, mat(p.id, p.col, p.id === 'plat' ? { k: 0.72, em: 0.1, cc: 0, r: 0.85 } : { k: 0.72, em: 0.08 })]));
+  const scalP = mat('scal', '#B0628E', { k: 0.72, em: 0.08 });   // задняя лестничная — темнее
   const omoM = mat('infra', NK_MUS[2].col, { k: 0.72, em: 0.08 }), digM = mat('supra', NK_MUS[3].col, { k: 0.72, em: 0.08 });
   omoM.userData.border = true; digM.userData.border = true;
   const yr = (y0, y1) => (u) => y0 + (y1 - y0) * u;
@@ -205,7 +202,7 @@ function makeNeck() {
     // лестничные
     ttube([V3(s * 2.45, 9.2, -1.6), V3(s * 2.75, 7.0, -1.1), V3(s * 3.3, 4.5, -0.5), V3(s * 4.55, 0.45, 0.75)], (u) => 0.42 + 0.28 * Math.sin(Math.PI * u), MM.scal, m('scal'), N3, 48, 10, 0.35);
     ttube([V3(s * 2.9, 11.3, -2.55), V3(s * 3.4, 8.5, -2.5), V3(s * 4.0, 5.5, -2.2), V3(s * 5.1, 0.9, -1.3)], (u) => 0.46 + 0.38 * Math.sin(Math.PI * u), MM.scal, m('scal'), N3, 48, 10, 0.35);
-    ttube([V3(s * 3.15, 8.0, -3.1), V3(s * 4.0, 5.0, -3.3), V3(s * 5.0, 2.2, -3.2), V3(s * 6.0, 0.1, -2.9)], (u) => 0.4 + 0.26 * Math.sin(Math.PI * u), MM.scal, m('scal'), N3, 48, 10, 0.35);
+    ttube([V3(s * 3.15, 8.0, -3.1), V3(s * 4.0, 5.0, -3.3), V3(s * 5.0, 2.2, -3.2), V3(s * 6.0, 0.1, -2.9)], (u) => 0.4 + 0.26 * Math.sin(Math.PI * u), scalP, m('scal'), N3, 48, 10, 0.35);
     // ременная головы и поднимающая лопатку
     ttube([V3(s * 3.4, 12.3, -2.6), V3(s * 3.9, 9.0, -3.6), V3(s * 4.4, 5.5, -4.4), V3(s * 5.4, 2.4, -5.4), V3(s * 6.8, 0.2, -6.4)], (u) => 0.5 + 0.32 * Math.sin(Math.PI * u), MM.deep, m('deep'), N3, 48, 10, 0.5);
     ttube([V3(s * 0.5, 1.6, -6.6), V3(s * 1.5, 5.0, -6.1), V3(s * 2.8, 9.0, -5.4), V3(s * 3.9, 12.0, -4.4), V3(s * 4.6, 13.2, -3.0)], (u) => 0.75 + 0.35 * Math.sin(Math.PI * u), MM.deep, m('deep'), N3, 48, 10, 0.4);
@@ -288,9 +285,9 @@ function makeNeck() {
   const C = { skin: '#E8B8A0', fat: '#6A5038', ct: '#4A3438', mus: '#B85A52', bone: BONE, art: '#E8434F', vein: '#4F6FE0', nerve: '#F2D16B', lum: '#120E14' };
   const sk = elp(0, -0.8, 6.35, 6.25, 0, 96, 2.35);
   fill(sk, secMat('s:skin', C.skin, { k: 0.75 }), 0); fill(elp(0, -0.8, 6.1, 6.0, 0, 96, 2.35), secMat('s:fat', C.fat, { k: 0.7, em: 0.05 }), 0.01);
-  fill(elp(0, -0.8, 5.75, 5.85, 0, 96, 2.35), secMat('s:ct', C.ct, { k: 0.9, em: 0.05 }), 0.02);
+  fill(elp(0, -0.8, 5.58, 5.78, 0, 96, 2.35), secMat('s:ct', C.ct, { k: 0.9, em: 0.05 }), 0.02);
   const sMus = secMat('s:mus', C.mus, { k: 0.75 }), sBone = secMat('s:bone', C.bone, { k: 0.78 }), sArt = secMat('s:art', C.art, { em: 0.2 }), sVein = secMat('s:vein', C.vein, { em: 0.2 }), sNerve = secMat('s:nerve', C.nerve, { em: 0.35 }), sLum = secMat('s:lum', C.lum, { k: 1, em: 0 });
-  const sPlat = secMat('s:plat', '#D88070', { k: 0.6 }), sStrap = secMat('s:mus', '#D88A6A', { k: 0.75 }), sScm = sMus, sTrap = sMus, sScal = secMat('s:mus', '#A04E5C', { k: 0.75 }), sDeep = sScal;
+  const sPlat = secMat('s:plat', '#D88070', { k: 0.6 }), sStrap = secMat('s:mus', '#D88A6A', { k: 0.75 }), sScm = secMat('s:mus', '#C8605A', { k: 0.75 }), sTrap = secMat('s:mus', '#A8586E', { k: 0.75 }), sScal = secMat('s:mus', '#A04E5C', { k: 0.75 }), sDeep = sScal;
   const sThy = secMat('s:thy', '#C0608E'), sEso = secMat('s:eso', '#D99098', { k: 0.75 }), sTra = secMat('s:tra', '#9CC8E2', { k: 0.8 }), sCord = secMat('s:cord', '#F2E8D0', { k: 0.85 });
   // подкожная мышца — серпы спереди и сбоку
   const skX = (t, r) => r * 6.35 * Math.pow(Math.sin(t), 2 / 2.35), skY = (t, r) => -0.8 + r * 6.25 * Math.pow(Math.cos(t), 2 / 2.35);   // t от 0 (спереди) к π/2 (сбоку)
@@ -336,7 +333,7 @@ function makeNeck() {
   const opFor = (m) => {
     const pid = m.userData.pid, sel = st.sel, mo = st.mode;
     if (mo === 'sec') { if (pid.startsWith('sec:')) { const id = pid.slice(4); return !sel || sel === id ? 1 : 0.15; } return 0; }
-    if (pid === 'plat') return mo === 'mus' && sel === 'plat' ? 0.6 : 0;
+    if (pid === 'plat') return mo === 'mus' && sel === 'plat' ? 0.38 : 0;
     if (MUSIDS.has(pid)) {
       if (mo === 'mus') return !sel || sel === pid ? 1 : 0.12;
       if (mo === 'tri') return pid === 'scm' || pid === 'trap' || m.userData.border ? (sel ? 0.5 : 0.9) : 0.14;
@@ -344,7 +341,7 @@ function makeNeck() {
     }
     if (pid.startsWith('tri:')) { if (mo !== 'tri') return 0; const id = pid.slice(4); if (m.userData.edge) return !sel || sel === id ? 0.95 : 0.15; return !sel ? 0.62 : sel === id ? 0.85 : 0.1; }
     if (pid.startsWith('vn:')) { if (mo !== 'vn') return 0; const id = pid.slice(3); return !sel || sel === id ? 1 : 0.07; }
-    if (pid === 'boneg') return mo === 'vn' ? 0.18 : 0.3;
+    if (pid === 'boneg') return mo === 'vn' ? 0.16 : 0.22;
     if (pid === 'lar' && m.userData.base < 1) return 0.35;
     return mo === 'mus' && sel ? 0.4 : mo === 'vn' ? 0.85 : 1;
   };
@@ -358,8 +355,8 @@ function makeNeck() {
   }
   const zoomTo = (id) => {   // подъезд к правой половине выбранного сосуда или нерва
     const bb = new THREE.Box3(), b1 = new THREE.Box3(); PICK.vn.forEach((ms) => { if (ms.userData.pick !== id) return; ms.geometry.computeBoundingBox(); b1.copy(ms.geometry.boundingBox).applyMatrix4(ms.matrixWorld); if (b1.max.x < 0.5) bb.union(b1); });
-    const c = bb.getCenter(V3(0, 0, 0)), sz = bb.getSize(V3(0, 0, 0)), D = Math.min(1, Math.max(0.7, Math.max(sz.y, sz.x * 0.8) / 15)) * (DK ? 50.5 : 41);
-    c.y = Math.max(DK ? 7.4 : 7.2, Math.min(8.6, c.y + 2.2)); return vd(c, V3(-0.6, 0.18, 0.78), D, DK ? 5.8 * D / 50.5 : 2.6 * D / 41); };
+    const c = bb.getCenter(V3(0, 0, 0)), sz = bb.getSize(V3(0, 0, 0)), D = Math.min(1, Math.max(0.7, Math.max(sz.y, sz.x * 0.8) / 15)) * (DK ? 49 : 41);
+    c.y = DK ? Math.max(7.6, Math.min(9.0, c.y + 2.4)) : Math.max(7.2, Math.min(8.6, c.y + 2.2)); return vd(c, V3(-0.6, 0.18, 0.78), D, DK ? 7.5 * D / 49 : 2.6 * D / 41); };
   function select(id) { st.sel = id === 'all' ? null : id; applyVis(); if (st.mode === 'vn') st.fly = st.sel ? zoomTo(st.sel) : VIEW.vn; refs.seg && refs.seg.sync(); refs.setInfo && refs.setInfo(); }
   function setMode(m) { st.mode = m; st.sel = null; st.fly = VIEW[m]; applyVis(); refs.modeSeg && refs.modeSeg.sync(); refs.rebuild && refs.rebuild(); refs.setInfo && refs.setInfo(); }
   pickOn(() => self, camera, () => PICK[st.mode], (id) => select(st.sel === id ? 'all' : id));
@@ -376,7 +373,7 @@ function makeNeck() {
   const secP = (x, y) => () => SEC.localToWorld(V3(x, y, 0.3));
   const triC = (id) => { const pts = TRP[id]; let tx = 0, ty = 0; pts.forEach(([t, y]) => { tx += t; ty += y; }); return [tx / pts.length, ty / pts.length]; };
   const labels = [
-    L('грудино-ключично-сосцевидная', sp(R1 * 0.95, 6.2, 0), M('scm').col, inMus('scm')),
+    L('грудино-ключично-сосцевидная', sp(R1 * 0.95, 6.2, 0), M('scm').col, inMus('scm', DK)),
     L('трапециевидная', sp(R1 * 2.0, 6.8, 0), M('trap').col, inMus('trap')),
     L('подподъязычные', sp(R1 * 0.2, 5.6, 0.6), M('infra').col, inMus('infra')),
     L('лопаточно-подъязычная', sp(R1 * 1.27, 1.8, 0.5), M('infra').col, () => st.mode === 'mus' && st.sel === 'infra'),
@@ -387,7 +384,7 @@ function makeNeck() {
     L('ременная головы', V3(-3.2, 10.2, -5.0), M('deep').col, () => st.mode === 'mus' && st.sel === 'deep'),
     L('подкожная мышца шеи', sp(R1 * 1.0, 3.0, -0.12), M('plat').col, () => st.mode === 'mus' && st.sel === 'plat'),
     L('подъязычная кость', sp(R1 * 0.4, HY + 0.1, 1.0), BONE, () => st.mode === 'mus' && !st.sel && DK),
-    L('щитовидный хрящ', V3(-0.9, 7.4, 3.9), '#9CC8E2', () => st.mode === 'mus' && !st.sel),
+    L('щитовидный хрящ', V3(-0.9, 7.4, 3.9), '#9CC8E2', () => st.mode === 'mus' && !st.sel && DK),
     L('щитовидная железа', V3(-1.7, 3.6, 2.6), '#E890B8', () => st.mode === 'mus' && !st.sel && DK),
     L('ключица', V3(-7.5, 1.1, 1.6), BONE, () => st.mode === 'mus' && !st.sel && DK),
     L('нижняя челюсть', sp(R1 * 0.9, 13.6, -0.3), BONE, () => st.mode === 'mus' && !st.sel),
@@ -432,8 +429,8 @@ function makeNeck() {
     L('лестничные мышцы', secP(3.6, -1.35), M('scal').col, () => st.mode === 'sec' && st.sel === 'prev'),
     L('симпатический ствол', secP(1.9, 0.12), C.nerve, () => st.mode === 'sec' && (st.sel === 'carsh' || st.sel === 'prev'), true),
     L('диафрагмальный нерв', secP(2.78, 0.62), C.nerve, () => st.mode === 'sec' && st.sel === 'prev'),
-    L('грудино-ключично-сосцевидная', secP(3.95, 2.35), M('scm').col, () => st.mode === 'sec' && (st.sel === 'inv' || (!st.sel && DK))),
-    L('трапециевидная', secP(-3.25, -4.85), M('trap').col, () => st.mode === 'sec' && (st.sel === 'inv' || (!st.sel && DK)), true),
+    L('грудино-ключично-сосцевидная', secP(3.95, 2.35), M('scm').col, () => st.mode === 'sec' && st.sel === 'inv'),
+    L('трапециевидная', secP(-3.25, -4.85), M('trap').col, () => st.mode === 'sec' && st.sel === 'inv', true),
     L('подподъязычные мышцы', secP(-1.0, 4.6), M('infra').col, () => st.mode === 'sec' && st.sel === 'pre', true),
     L('спереди', secP(0, 5.6), '#9AA4B4', () => st.mode === 'sec' && DK, true),
     L('правая сторона', secP(6.6, -0.8), '#9AA4B4', () => st.mode === 'sec' && DK && !st.sel),
@@ -443,7 +440,7 @@ function makeNeck() {
   const INTRO = {
     mus: '<b>Шея</b> соединяет голову с туловищем: в ней проходят дыхательные пути, пищевод, сосуды мозга и нервы к рукам и диафрагме. Каркас — семь шейных позвонков, подъязычная кость и гортань. Мышцы лежат слоями: подкожная, грудино-ключично-сосцевидная и трапециевидная, ленты спереди, лестничные в глубине.',
     tri: '<b>Треугольники шеи</b> — карта для врача. Грудино-ключично-сосцевидная мышца делит каждую сторону на передний треугольник (срединная линия, нижняя челюсть, мышца) и задний (мышца, трапециевидная, ключица). Двубрюшная и лопаточно-подъязычная мышцы делят их на меньшие, у каждого своё содержимое.',
-    vn: '<b>Сосуды и нервы шеи.</b> Главный пучок — общая сонная артерия, внутренняя яремная вена и блуждающий нерв в одной фасциальной трубке, сонном влагалище, под грудино-ключично-сосцевидной мышцей (здесь она прозрачная). Глубже, на лестничных мышцах, лежат диафрагмальный нерв и плечевое сплетение.',
+    vn: '<b>Сосуды и нервы шеи.</b> Главный пучок — общая сонная артерия, внутренняя яремная вена и блуждающий нерв в одной фасциальной трубке, сонном влагалище, под грудино-ключично-сосцевидной мышцей (здесь она приглушена). Глубже, на лестничных мышцах, лежат диафрагмальный нерв и плечевое сплетение.',
     sec: '<b>Разрез шеи на уровне VII шейного позвонка</b>, вид сверху, спереди — вверху. Фасции делят шею на футляры: поверхностная пластинка окружает всё, предтрахеальная — органы, предпозвоночная — позвоночник с мышцами, сонные влагалища — сосудисто-нервные пучки. По щелям между ними распространяются гной и кровь.',
   };
   const refs = {};
@@ -459,7 +456,11 @@ function makeNeck() {
     };
     refs.rot = toggle('Вращение', () => st.rot, (v) => { st.rot = v; });
     refs.lab = toggle('Подписи', () => st.labels, (v) => { st.labels = v; });
-    el.append(group('Режим', '1–4', refs.modeSeg), box, group('Вид', 'R · N', refs.rot, refs.lab), ib.el);
+    const gMode = group('Режим', '1–4', refs.modeSeg), gView = group('Вид', 'R · N', refs.rot, refs.lab);
+    // на ПК две колонки: слева «Режим» и «Что видно», справа части и «Вид» — панель ниже, модели больше места
+    const col = (w, ...c) => h('div', { style: 'display:flex;flex-direction:column;gap:14px;min-width:0;flex:' + w }, ...c);
+    if (DK) { [gMode, ib.el, box, gView].forEach((e) => { e.style.flex = '0 0 auto'; }); el.append(col('0 1 455px', gMode, ib.el), col('1 1 500px', box, gView)); }
+    else el.append(gMode, box, gView, ib.el);
     refs.rebuild(); refs.setInfo();
   }
   function onKey(e) {
