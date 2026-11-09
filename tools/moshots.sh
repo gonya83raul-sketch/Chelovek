@@ -1,5 +1,5 @@
 #!/bin/bash
-# снимки сцены mouth для рецензии: sh tools/moshots.sh <name> → review/shots/<name>/ (23 файла, несколько минут; запускать в фоне)
+# снимки сцены mouth для рецензии: bash tools/moshots.sh <name> → review/shots/<name>/ (23 файла, несколько минут; запускать в фоне)
 # образец для новых тем: заменить id сцены, кнопки сегментов и значения ползунка
 cd ~/work/Chelovek; export PATH=~/.local/opt/chelovek-venv/bin:~/.local/bin:$PATH
 D=review/shots/$1; mkdir -p $D

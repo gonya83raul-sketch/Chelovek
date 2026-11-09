@@ -1,4 +1,4 @@
-"""Снимки сцены: python3 tools/snap.py <id> [size:WxH] [lang:en] шаги... — key:2 · adv:3 (промотать 3 с) · sleep:2 · js:<код> · shot:имя → lt/имя.png. Сервер lt/ на 8765 должен быть запущен."""
+"""Снимки сцены: python3 tools/snap.py <id> [size:WxH] [lang:en] шаги... — key:2 · adv:3 (промотать 3 с) · sleep:2 · js:<код> · eval:<код> (печатает результат) · shot:имя → lt/имя.png. Сервер lt/ на 8765 должен быть запущен."""
 import sys, time, os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 from playwright.sync_api import sync_playwright
@@ -17,6 +17,7 @@ with sync_playwright() as p:
         if k == 'key': pg.keyboard.press(v)
         elif k == 'adv': pg.evaluate(f'window.__adv({v})')
         elif k == 'js': pg.evaluate(v)
+        elif k == 'eval': print('EVAL', pg.evaluate(v))
         elif k == 'sleep': time.sleep(float(v))
         elif k == 'shot': pg.screenshot(path=os.path.join(ROOT, 'lt', v + '.png')); print('shot', v)
     print('ERR', [e for e in errs if 'TUNNEL' not in e])
