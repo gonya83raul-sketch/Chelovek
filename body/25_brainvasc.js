@@ -369,6 +369,5 @@ function makeBrainVasc() {
       <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>3</code> режим · <code>Esc</code> сбросить выбор</li><li><code>R</code> вращение · <code>N</code> подписи</li></ul></div>`
   };
   colorBrain(); colorVes();
-  window.__bv = { TER, HM, camera, controls, st, VIEW, vw, V3, setMode, setSel, setTer, setOcc, setSide, reperfuse, applyView };
   return self;
 }
