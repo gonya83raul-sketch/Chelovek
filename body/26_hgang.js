@@ -133,23 +133,26 @@ function makeHGang() {
   const corM = new THREE.MeshPhysicalMaterial({ color: 0xffffff, roughness: 0.05, transmission: 0, transparent: true, opacity: 0.12, clearcoat: 1, depthWrite: false });
   const COR = new THREE.Mesh(new THREE.SphereGeometry(0.66, 32, 16, 0, Math.PI * 2, 0, 1.1), corM); COR.rotation.x = Math.PI / 2; COR.position.z = 0.62; IRG.add(COR);
   let pupBuilt = -1;
-  const buildPupil = () => { const r = Math.round(st.pup * 200) / 200; if (r === pupBuilt) return; pupBuilt = r; IRIS.geometry.dispose(); IRIS.geometry = new THREE.RingGeometry(r, 0.6, 48, 1); lupI.geometry.dispose(); lupI.geometry = new THREE.RingGeometry(r * 0.833, 0.5, 48, 1); };
+  const buildPupil = () => { const r = Math.round(st.pup * 200) / 200; if (r === pupBuilt) return; pupBuilt = r; IRIS.geometry.dispose(); IRIS.geometry = new THREE.RingGeometry(r, 0.6, 48, 1); lupI.geometry.dispose(); lupI.geometry = new THREE.RingGeometry(Math.min(0.56, r * 1.55), 0.62, 64, 1); };
   // лупа: тот же глаз спереди, увеличенный, всегда лицом к камере (зрачок виден при любом виде)
   const LUP = new THREE.Group(); scene.add(LUP);
-  const lupScl = new THREE.Mesh(new THREE.SphereGeometry(1, 40, 28), mphys('#F4EEE6', { r: 0.35, cc: 0.5, em: 0.1, k: 1 })); LUP.add(lupScl);
+  const flat = (geo, col, z, ro, op = 1) => { const m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: op, depthTest: false, depthWrite: false, side: THREE.DoubleSide })); m.position.z = z; m.renderOrder = ro; return m; };
+  LUP.add(flat(new THREE.CircleGeometry(1.14, 64), 0x0c1016, -0.02, 9, 0.9));                  // фон окна
+  LUP.add(flat(new THREE.CircleGeometry(1.0, 64), 0xf2ede4, 0, 10));                         // склера
   const LIG = new THREE.Group(); LUP.add(LIG);
-  const LIRIS = new THREE.Mesh(new THREE.RingGeometry(0.17, 0.5, 48, 1), irM); LIRIS.position.z = 0.88; LIG.add(LIRIS);
-  const LPUP = new THREE.Mesh(new THREE.CircleGeometry(0.52, 48), new THREE.MeshBasicMaterial({ color: 0x050505, side: THREE.DoubleSide })); LPUP.position.z = 0.87; LIG.add(LPUP);
-  const LRIM = new THREE.Mesh(new THREE.TorusGeometry(1.32, 0.05, 8, 64), new THREE.MeshBasicMaterial({ color: 0x9fb4c8, transparent: true, opacity: 0.7 })); LUP.add(LRIM);
-  const LDISC = new THREE.Mesh(new THREE.CircleGeometry(1.32, 64), new THREE.MeshBasicMaterial({ color: 0x10141a, transparent: true, opacity: 0.85, depthWrite: false })); LDISC.position.z = -1.05; LUP.add(LDISC);
-  LUP.traverse((o) => { o.renderOrder = 9; if (o.material) { o.material = o.material.clone(); o.material.depthTest = false; } });
+  LIG.add(flat(new THREE.CircleGeometry(0.62, 64), 0x050505, 0.01, 11));                     // зрачок (под радужкой)
+  const LIRIS = flat(new THREE.RingGeometry(0.2, 0.62, 64, 1), 0x4f86c0, 0.02, 12); LIG.add(LIRIS);
+  LIG.add(flat(new THREE.RingGeometry(0.6, 0.64, 64, 1), 0x2a4a70, 0.025, 13));               // кайма радужки
+  const LGL = flat(new THREE.CircleGeometry(0.06, 16), 0xffffff, 0.03, 14, 0.85); LGL.position.set(0.14, 0.16, 0.03); LIG.add(LGL);   // блик
+  LUP.add(flat(new THREE.RingGeometry(1.0, 1.12, 64, 1), 0x9fb4c8, 0.04, 15, 0.8));          // обод
   const lupI = LIRIS, lupOn = () => (st.mode === 'path' && st.sel === 'cil') || (st.mode === 'ref' && st.ref !== 'food') || (st.mode === 'dis' && st.dis === 'cn3');
-  const LUPN = DK ? [-0.5, 0.0, 0.054] : [0.55, 0.5, 0.075];   // место на экране (NDC) и размер (доля расстояния)
-  const placeLup = () => { const q = V3(LUPN[0], LUPN[1], 0.5).unproject(camera).sub(camera.position).normalize(); const D0 = 12; LUP.position.copy(camera.position).addScaledVector(q, D0); LUP.quaternion.copy(camera.quaternion); LUP.scale.setScalar(D0 * LUPN[2]); };
+  const LUPN = DK ? [-0.5, 0.0, 0.064] : [0.55, 0.5, 0.085];   // место на экране (NDC) и размер (доля расстояния)
+  const placeLup = () => { const q = V3(LUPN[0], LUPN[1], 0.5).unproject(camera).sub(camera.position).normalize(); const D0 = 12; LUP.position.copy(camera.position).addScaledVector(q, D0); LUP.lookAt(camera.position); LUP.scale.setScalar(D0 * LUPN[2]); };
   // луч фонарика
   const beamM = new THREE.MeshBasicMaterial({ color: 0xfff0a0, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false });
-  const BEAM = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.5, 3, 24, 1, true), beamM); BEAM.rotation.x = Math.PI / 2; BEAM.position.set(E.x, E.y, E.z + RE + 1.8); scene.add(BEAM);
-  const TORCH = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.9, 16), mphys('#8A8F98', { r: 0.4, cc: 0.6, em: 0.05 })); TORCH.rotation.x = Math.PI / 2; TORCH.position.set(E.x, E.y, E.z + RE + 3.75); scene.add(TORCH);
+  const TPOS = E.clone().add(V3(-2.2, 0.5, 2.6)), BDIR = TPOS.clone().sub(E).normalize(), BLEN = TPOS.distanceTo(E) - RE - 0.5;
+  const BEAM = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.42, BLEN, 24, 1, true), beamM); BEAM.quaternion.setFromUnitVectors(V3(0, 1, 0), BDIR); BEAM.position.copy(E).addScaledVector(BDIR, RE + 0.05 + BLEN / 2); scene.add(BEAM);
+  const TORCH = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.9, 16), mphys('#8A8F98', { r: 0.4, cc: 0.6, em: 0.05 })); TORCH.quaternion.setFromUnitVectors(V3(0, 1, 0), BDIR); TORCH.position.copy(TPOS).addScaledVector(BDIR, 0.1); scene.add(TORCH);
 
   // =================== сонная артерия, верхний шейный узел, аневризма ===================
   const icaM = mphys('#D05868', { r: 0.45, em: 0.12, op: 0.45 });
@@ -162,9 +165,9 @@ function makeHGang() {
   const SCGm = new THREE.Mesh(new THREE.SphereGeometry(1, 16, 12), scgM); SCGm.scale.set(0.28, 0.95, 0.3); SCGm.position.copy(SCG); scene.add(SCGm);
   // повреждение VII и кожа щеки (сбои)
   const LES = new THREE.Mesh(new THREE.TorusGeometry(0.17, 0.045, 8, 24), new THREE.MeshBasicMaterial({ color: 0xff4050 })); LES.position.copy(C7.getPointAt(uOf(C7, V3(-3.55, -0.85, -5.95)))); LES.lookAt(LES.position.clone().add(C7.getTangentAt(uOf(C7, LES.position)))); scene.add(LES);
-  const SKIN = V3(-8.15, -3.0, -3.6);
-  const skinM = new THREE.MeshBasicMaterial({ color: 0xff6070, transparent: true, opacity: 0, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending });
-  const SKINm = new THREE.Mesh(new THREE.CircleGeometry(0.62, 40), skinM); SKINm.position.copy(SKIN); SKINm.rotation.y = -Math.PI / 2 + 0.25; scene.add(SKINm);
+  const SKIN = V3(-8.3, -3.0, -3.3);
+  const skinM = new THREE.MeshBasicMaterial({ color: 0xff8090, transparent: true, opacity: 0, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending });
+  const SKINm = new THREE.Mesh(new THREE.CircleGeometry(0.45, 40), skinM); SKINm.position.copy(SKIN); SKINm.rotation.y = -Math.PI / 2 + 0.25; scene.add(SKINm);
 
   // =================== пути: первые и вторые нейроны, чувствительные, симпатические ===================
   const PA = [];   // { id, g, k, m, base, flow, len }
@@ -233,7 +236,7 @@ function makeHGang() {
     sweat: cr3([SKIN.clone().add(V3(-0.08, 0.45, 0.1)), SKIN.clone().add(V3(-0.1, -0.15, 0.15)), SKIN.clone().add(V3(-0.1, -0.8, 0.2)), SKIN.clone().add(V3(-0.1, -1.6, 0.25))]),
   };
   const trailM = new THREE.MeshBasicMaterial({ color: 0x9fdcff, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending });
-  const TRAIL = new THREE.Mesh(new THREE.TubeGeometry(cr3(S(FLW.tear, 0.55, 1, 12)), 30, 0.07, 6), trailM); scene.add(TRAIL);
+  const TRAIL = new THREE.Mesh(new THREE.TubeGeometry(cr3(S(FLW.tear, 0.55, 1, 12)), 30, 0.1, 6), trailM); scene.add(TRAIL);
   const PRT = Array.from({ length: NPT }, (_, i) => ({ f: ['tear', 'sub', 'par', 'sweat'][i % 4], u: rnd(), live: false, sp: 0.7 + 0.6 * rnd() }));
   const dum = new THREE.Object3D();
 
@@ -241,19 +244,19 @@ function makeHGang() {
   const VP = DK ? {
     all: [V3(-3.0, -3.0, -1.8), V3(-1, 0.08, 0.15), 38, 4.5, -0.8],
     cil: [V3(-1.9, 1.9, -1.8), V3(-1, 0.25, 0.2), 22, 3.4, -0.4],
-    ptp: [V3(-2.6, 1.0, -2.4), V3(-1, 0.18, 0.18), 24, 3.8, -0.4],
+    ptp: [V3(-2.6, 1.0, -1.5), V3(-1, 0.18, 0.18), 24, 3.8, -0.4],
     smd: [V3(-3.0, -4.3, -2.3), V3(-1, 0.1, 0.2), 32, 3.6, -0.8],
     otic: [V3(-4.0, -2.6, -4.6), V3(-1, 0.15, 0.12), 26, 3.6, -0.6],
     eye: [V3(-1.9, 1.8, -1.1), V3(-1, 0.22, 0.5), 22, 3.4, -0.4],
     fear: [V3(-2.5, -3.2, -2.6), V3(-1, 0.12, 0.22), 40, 4.2, -0.8],
-    frey: [V3(-5.0, -2.8, -4.6), V3(-1, 0.12, 0.2), 24, 3.4, -0.5],
+    frey: [V3(-5.0, -1.7, -3.7), V3(-1, 0.12, 0.2), 24, 3.4, -0.5],
   } : {
     all: [V3(-3.0, -3.2, -1.8), V3(-1, 0.1, 0.22), 38, 0, 0],
     cil: [V3(-1.9, 1.9, -2.2), V3(-0.8, 0.32, 0.55), 17, 0, 0],
     ptp: [V3(-2.8, 1.0, -2.2), V3(-1, 0.18, 0.18), 22, 0, 0],
     smd: [V3(-3.0, -3.9, -2.2), V3(-1, 0.1, 0.25), 34, 0, 0],
     otic: [V3(-3.8, -2.0, -4.0), V3(-1, 0.15, 0.12), 22, 0, 0],
-    eye: [V3(-2.0, 1.6, -1.8), V3(-0.72, 0.28, 0.66), 18, 0, 0],
+    eye: [V3(-2.0, 1.2, -2.0), V3(-1, 0.22, 0.5), 27, 0, 0],
     fear: [V3(-2.6, -3.6, -3.2), V3(-1, 0.12, 0.3), 36, 0, 0],
     frey: [V3(-4.6, -3.0, -4.4), V3(-1, 0.12, 0.2), 22, 0, 0],
   };
@@ -322,7 +325,7 @@ function makeHGang() {
     });
     CAR.forEach(({ m, rel, kind }) => { const on = relOn(rel) || (kind === 'o' && st.mode === 'ref' && st.ref === 'light'); const mm = m.material; if (!mm.userData.c0) mm.userData.c0 = mm.color.clone(); mm.color.copy(mm.userData.c0); if (!on) mm.color.lerp(DIMC, 0.65); setOp(mm, on ? 1 : 0.45); });
     HG_GAN.forEach((g) => { const on = relOn([g.id]), m = GANM[g.id].material; m.color.copy(new THREE.Color(g.col)).multiplyScalar(0.9); if (!on) m.color.lerp(DIMC, 0.7); m.emissiveIntensity = on ? (st.mode === 'path' && st.sel === g.id ? 0.7 : 0.45) : 0.05; });
-    Object.entries(GLD).forEach(([id, G]) => { const on = relOn([G.g]) || (id === 'lac' && st.mode === 'dis' && st.dis === 'croc'); G.m.userData.on = on; setOp(G.m, id === 'par' && st.mode === 'dis' && st.dis === 'frey' ? 0.3 : on ? (id === 'par' ? 0.28 : 0.7) : 0.2); });
+    Object.entries(GLD).forEach(([id, G]) => { const on = relOn([G.g]) || (id === 'lac' && st.mode === 'dis' && st.dis === 'croc'); G.m.userData.on = on; setOp(G.m, id === 'par' && st.mode === 'dis' && st.dis === 'frey' ? 0.3 : on ? (id === 'par' ? 0.28 : 0.7) : (id === 'par' ? 0.1 : 0.2)); });
     const symV = (st.mode === 'path' && st.sym) || (st.mode === 'ref' && st.ref === 'fear');
     ICA.visible = symV || (st.mode === 'dis' && st.dis === 'cn3'); SCGm.visible = symV;
     PCOM.visible = ANE.visible = st.mode === 'dis' && st.dis === 'cn3';
@@ -358,10 +361,10 @@ function makeHGang() {
     const T = targets(), k = 1 - Math.exp(-dt * 2.6);
     st.pup += (T.pup - st.pup) * k; st.yaw += (T.yaw - st.yaw) * k; st.pitch += (T.pitch - st.pitch) * k; st.sal += (T.sal - st.sal) * k;
     ['tear', 'sub', 'par', 'sweat'].forEach((f) => { rate[f] += (T[f] - rate[f]) * k; });
-    buildPupil(); IRG.rotation.set(st.pitch, st.yaw, 0); LIG.rotation.set(st.pitch, st.yaw, 0); LUP.visible = lupOn(); if (LUP.visible) placeLup();
+    buildPupil(); IRG.rotation.set(st.pitch, st.yaw, 0); LIG.position.set(0.5 * Math.sin(st.yaw), -0.5 * Math.sin(st.pitch), 0); LUP.visible = lupOn(); if (LUP.visible) placeLup();
     if (BEAM.visible) { const ph = st.rt % 9; beamM.opacity = ph < 6 ? 0.16 * win(ph, 0.1, 0.3) : 0; }
     trailM.opacity = 0.35 * cl((rate.tear - 0.3) / 0.5);
-    if (SKINm.visible) skinM.opacity = 0.22 * rate.sweat;
+    if (SKINm.visible) skinM.opacity = 0.14 * rate.sweat;
     // железы светятся в цвет своего узла, когда работают
     const act = { lac: rate.tear, par: rate.par, smd: rate.sub, sl: rate.sub, nas: st.mode === 'path' && st.sel === 'ptp' ? 0.6 : 0.05 };
     Object.entries(GLD).forEach(([id, G]) => { const a = G.m.userData.on ? act[id] : 0; G.m.emissive.copy(new THREE.Color('#E8C49A')).lerp(new THREE.Color(GC[G.g]), cl(a)); G.m.emissiveIntensity = 0.08 + 0.5 * cl(a); });
@@ -370,7 +373,7 @@ function makeHGang() {
     PRT.forEach((q) => {
       const r = rate[q.f]; if (!q.live && rnd() < r * dt * 2.2) { q.live = true; q.u = 0; }
       if (q.live) { q.u += dt * q.sp * (q.f === 'sweat' ? 0.25 : q.f === 'tear' ? 0.32 : 0.45); if (q.u >= 1) q.live = false; }
-      dum.position.copy(FLW[q.f].getPointAt(cl(q.u))); dum.scale.setScalar(q.live ? (q.f === 'sweat' ? 1.1 : 1) * (1 - 0.5 * q.u) : 0.0001); dum.updateMatrix(); PTM.setMatrixAt(n++, dum.matrix);
+      dum.position.copy(FLW[q.f].getPointAt(cl(q.u))); dum.scale.setScalar(q.live ? (q.f === 'tear' ? 1.4 : q.f === 'sweat' ? 1.1 : 1) * (1 - 0.5 * q.u) : 0.0001); dum.updateMatrix(); PTM.setMatrixAt(n++, dum.matrix);
     });
     PTM.instanceMatrix.needsUpdate = true;
   }
@@ -393,14 +396,14 @@ function makeHGang() {
     lb('крылонёбный узел', () => PPG.clone().add(V3(0, -0.3, 0)), GC.ptp, () => gOn('ptp')() || dM('croc')()),
     lb('поднижнечелюстной узел', () => SMG.clone(), GC.smd, () => gOn('smd')() || rM('food')(), true),
     lb('ушной узел', () => OG.clone().add(V3(0, -0.2, 0)), GC.otic, () => gOn('otic')() || rM('food')() || dM('frey')(), true),
-    lb('добавочное ядро III', () => NUC.ew.clone(), GC.cil, () => (pM() && st.sel === 'cil') || rM('light')() || dM('cn3')()),
+    lb('добавочное ядро III', () => NUC.ew.clone().add(V3(0, -0.3, 0)), GC.cil, () => (pM() && st.sel === 'cil') || rM('light')() || dM('cn3')()),
     lb('верхнее слюноотделительное ядро', () => NUC.ssn.clone(), '#B8E890', () => (pM() && (st.sel === 'ptp' || st.sel === 'smd')) || dM('croc')(), true),
     lb('нижнее слюноотделительное ядро', () => NUC.isn.clone(), GC.otic, () => (pM() && st.sel === 'otic') || dM('frey')()),
     lb('ядро одиночного пути', () => NUC.nts.clone(), '#C8A8FF', rM('food')),
     lb('претектальное ядро', () => NUC.pre.clone(), '#C8A8FF', rM('light')),
     lb('ствол мозга', () => STEMC.getPointAt(0.5).add(V3(0, 0, -1.0)), '#D8C8D0', () => (pM() && !st.sel && DK), true),
     lb('глазодвигательный нерв (III)', at(C3, V3(-1.35, 1.65, -3.6)), '#E8E0C8', () => (pM() && st.sel === 'cil') || dM('cn3')()),
-    lb('лицевой нерв (VII)', at(C7, V3(-2.0, -1.3, -6.2)), '#E8E0C8', () => (pM() && (st.sel === 'ptp' || st.sel === 'smd')) || dM('croc')(), true),
+    lb('лицевой нерв (VII)', at(C7, V3(-1.5, -1.45, -6.2)), '#E8E0C8', () => (pM() && (st.sel === 'ptp' || st.sel === 'smd')) || dM('croc')(), true),
     lb('языкоглоточный нерв (IX)', at(C9, V3(-3.3, -3.0, -6.85)), '#E8E0C8', () => (pM() && st.sel === 'otic') || rM('food')(), true),
     lb('коленце VII', () => GEN.clone().add(V3(0, 0.2, 0)), '#E8E0C8', () => (pM() && st.sel === 'ptp') || dM('croc')()),
     lb('большой каменистый нерв', () => GPN[2].clone(), GC.ptp, () => (pM() && st.sel === 'ptp') || dM('croc')()),
@@ -419,7 +422,7 @@ function makeHGang() {
     lb('околоушная железа', () => PARP.clone().add(V3(-0.6, -1.0, 0)), '#F0D8B0', () => gOn('otic', true)() || rM('food')()),
     lb('поднижнечелюстная железа', () => V3(-3.4, -10.2, -2.3), '#F0D8B0', () => gOn('smd', true)() || rM('food')(), true),
     lb('подъязычная железа', () => V3(-1.75, -7.75, 1.9), '#F0D8B0', () => (pM() && st.sel === 'smd') || (rM('food')() && DK)),
-    lb('зрачок', () => LUP.position.clone().add(V3(0, 1, 0).applyQuaternion(camera.quaternion).multiplyScalar(-LUP.scale.x * 1.45)), '#C8E4FF', () => LUP.visible),
+    lb('зрачок', () => LUP.position.clone().add(V3(0, 1, 0).applyQuaternion(camera.quaternion).multiplyScalar(-LUP.scale.x * 1.3)), '#C8E4FF', () => LUP.visible),
     lb('зрительный нерв', at(CON, V3(-2.45, 2.5, -0.2)), '#F2E6A0', () => rM('light')() && DK, true),
     lb('верхний шейный узел', () => SCG.clone(), '#FFB070', () => rM('fear')() || (pM() && st.sym), true),
     lb('внутренняя сонная артерия', () => CICA.getPointAt(0.18), '#F08A8A', () => rM('fear')() || dM('cn3')(), true),
@@ -478,7 +481,7 @@ function makeHGang() {
       if (st.sel === 'cil') return [['Зрачок', pupMM(), 'мм'], ['Размер узла', '≈ 2', 'мм']];
       if (st.sel === 'ptp') return [['Слёзы', '≈ 1', 'мкл/мин'], ['Размер узла', '3–5', 'мм']];
       if (st.sel === 'smd') return [['Доля слюны в покое', '≈ 70', '%'], ['Желёз', '2', '']];
-      if (st.sel === 'otic') return [['Доля слюны при еде', '≈ 50', '%'], ['Размер узла', '2–4', 'мм']];
+      if (st.sel === 'otic') return [['Доля слюны при еде', '≈ 50', '%'], ['Нервы', 'IX → V₃', '']];
       return [['Узлов', '4', 'пары'], ['Нервы', 'III, VII, IX', '']];
     }
     if (st.mode === 'ref') {
@@ -498,7 +501,7 @@ function makeHGang() {
     lede: 'Зрачок сужается на свет, текут слёзы и слюна — без нашего ведома. Этим управляют четыре маленьких узла: волокна из ствола мозга переключаются в них и по чужим нервам добираются до глаза и желёз.',
     notes: `
       <div><h2>Устройство</h2>
-        <p>Парасимпатический отдел в голове — это четыре пары узлов, и у каждого своё ядро в стволе мозга: добавочное ядро глазодвигательного нерва → ресничный узел; верхнее слюноотделительное ядро (со слёзным) → по нерву VII к крылонёбному и поднижнечелюстному узлам; нижнее слюноотделительное → по нерву IX к ушному. Блуждающий нерв (X) тоже парасимпатический, но его узлы лежат в стенках органов шеи, груди и живота.</p>
+        <p>Парасимпатический отдел в голове — это четыре пары узлов, а их ядра лежат в стволе мозга: добавочное ядро глазодвигательного нерва → ресничный узел; верхнее слюноотделительное ядро (со слёзным) → по нерву VII к крылонёбному и поднижнечелюстному узлам; нижнее слюноотделительное → по нерву IX к ушному. Блуждающий нерв (X) тоже парасимпатический, но его узлы лежат в стенках органов шеи, груди и живота.</p>
         <p>Каждый узел связан с ветвью тройничного нерва. Через узел проходят и чувствительные волокна V, и симпатические волокна от верхнего шейного узла, но переключаются в нём только парасимпатические.</p></div>
       <div><h2>Как это работает</h2>
         <p>В узле сигнал передаёт ацетилхолин (никотиновые рецепторы), на мышце или железе — тоже ацетилхолин (мускариновые рецепторы). Парасимпатика сужает зрачок и настраивает глаз на близкое, вызывает слёзы, обильную жидкую слюну и выделения желёз носа. Симпатика действует на те же органы своими путями: расширяет зрачок и сужает сосуды желёз.</p></div>
@@ -508,7 +511,7 @@ function makeHGang() {
         <li><b>Тонический зрачок Эйди</b> — повреждение ресничного узла, часто после вирусной инфекции: зрачок широкий, на свет почти не реагирует и медленно сужается при взгляде вблизи.</li>
         <li><b>Синдром Горнера</b> — поражение симпатического пути: узкий зрачок, опущенное веко, сухая кожа на половине лица.</li>
         <li><b>Синдром Шёгрена</b> — аутоиммунное поражение слёзных и слюнных желёз: сухость глаз и рта.</li></ul></div>
-      <div><h2>Условности</h2><ul><li>Показана правая сторона головы. Нервы нарисованы толще настоящих, узлы увеличены (на самом деле 2–5 мм); ход нервов в костных каналах упрощён. Чувствительные корешки узлов и симпатическое сплетение наружной сонной артерии не показаны. Рефлексы замедлены: в жизни они занимают доли секунды.</li></ul></div>
+      <div><h2>Условности</h2><ul><li>Показана правая сторона головы. Нервы нарисованы толще настоящих, узлы увеличены (на самом деле 2–5 мм); ход нервов в костных каналах упрощён. Чувствительные корешки узлов и симпатическое сплетение наружной сонной артерии не показаны. Рефлексы замедлены: в жизни они занимают доли секунды. Круглое окно «зрачок» — тот же глаз спереди, увеличенный; оно всегда повёрнуто к вам.</li></ul></div>
       <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>3</code> режим · <code>Esc</code> сбросить выбор</li><li><code>R</code> вращение · <code>N</code> подписи</li></ul></div>`
   };
   window.__hg = { st, camera, controls, VIEW, vw, V3, setMode, setSel, setRef, setDis, applyView, colorAll };
