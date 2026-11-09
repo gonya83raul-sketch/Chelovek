@@ -14,7 +14,7 @@ const HG_GAN = [
 ];
 const HG_REF = [
   { id: 'light', name: 'Свет', col: '#F8E070', text: '<b>Зрачковый рефлекс.</b> Свет на сетчатке → зрительный нерв → претектальные ядра среднего мозга → добавочные ядра III с обеих сторон → ресничный узел → мышца, сужающая зрачок. Поэтому свет в один глаз сужает оба зрачка (здесь показана одна сторона). В жизни — около 0,2 с. Фонарик врача проверяет зрительный нерв, средний мозг и нерв III.' },
-  { id: 'food', name: 'Еда', col: '#E8C860', text: '<b>Слюна на еду.</b> Вкус и запах возбуждают ядро одиночного пути, а оно — слюноотделительные ядра. Поток слюны растёт с ≈ 0,3 до 1,5–2 мл/мин, слюна жидкая. В покое больше всего слюны дают поднижнечелюстные железы (≈ 70 %), при еде — околоушные (≈ 50 %). Слюна при одном виде еды — условный рефлекс (опыты Павлова).' },
+  { id: 'food', name: 'Еда', col: '#E8C860', text: '<b>Слюна на еду.</b> Вкус возбуждает ядро одиночного пути, запах и вид еды — высшие центры, а они — слюноотделительные ядра. Поток слюны растёт с ≈ 0,3 до 1,5–2 мл/мин, слюна жидкая. В покое больше всего слюны дают поднижнечелюстные железы (≈ 70 %), при еде — околоушные (≈ 50 %). Слюна при одном виде еды — условный рефлекс (опыты Павлова).' },
   { id: 'fear', name: 'Страх', col: '#FF9A48', text: '<b>Страх — перевес симпатики.</b> Её волокна выходят из верхних грудных сегментов спинного мозга, переключаются в верхнем шейном узле и поднимаются сплетением по внутренней сонной артерии. Через глазницу (транзитом через ресничный узел) они идут к мышце, расширяющей зрачок. Парасимпатика стихает: слюны мало, она густая — «во рту пересохло».' },
 ];
 const HG_DIS = [
@@ -236,7 +236,7 @@ function makeHGang() {
     sweat: cr3([SKIN.clone().add(V3(-0.08, 0.45, 0.1)), SKIN.clone().add(V3(-0.1, -0.15, 0.15)), SKIN.clone().add(V3(-0.1, -0.8, 0.2)), SKIN.clone().add(V3(-0.1, -1.6, 0.25))]),
   };
   const trailM = new THREE.MeshBasicMaterial({ color: 0x9fdcff, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending });
-  const TRAIL = new THREE.Mesh(new THREE.TubeGeometry(cr3(S(FLW.tear, 0.55, 1, 12)), 30, 0.1, 6), trailM); scene.add(TRAIL);
+  const TRAIL = new THREE.Mesh(new THREE.TubeGeometry(cr3(S(FLW.tear, 0.55, 1, 12)), 30, 0.14, 6), trailM); scene.add(TRAIL);
   const PRT = Array.from({ length: NPT }, (_, i) => ({ f: ['tear', 'sub', 'par', 'sweat'][i % 4], u: rnd(), live: false, sp: 0.7 + 0.6 * rnd() }));
   const dum = new THREE.Object3D();
 
@@ -246,7 +246,7 @@ function makeHGang() {
     cil: [V3(-1.9, 1.9, -1.8), V3(-1, 0.25, 0.2), 22, 3.4, -0.4],
     ptp: [V3(-2.6, 1.0, -1.5), V3(-1, 0.18, 0.18), 24, 3.8, -0.4],
     smd: [V3(-3.0, -4.3, -2.3), V3(-1, 0.1, 0.2), 32, 3.6, -0.8],
-    otic: [V3(-4.0, -2.6, -4.6), V3(-1, 0.15, 0.12), 26, 3.6, -0.6],
+    otic: [V3(-4.0, -2.2, -4.6), V3(-1, 0.15, 0.12), 27, 3.6, -0.6],
     eye: [V3(-1.9, 1.8, -1.1), V3(-1, 0.22, 0.5), 22, 3.4, -0.4],
     fear: [V3(-2.5, -3.2, -2.6), V3(-1, 0.12, 0.22), 40, 4.2, -0.8],
     frey: [V3(-5.0, -1.7, -3.7), V3(-1, 0.12, 0.2), 24, 3.4, -0.5],
@@ -349,7 +349,7 @@ function makeHGang() {
       else { const w = win(t, 2.6, 1.0); pup = 0.2 + 0.14 * w; sub = 0.15 * (1 - w) + 0.02; par = 0.08 * (1 - w); sal = 0.15 - 0.1 * w; }
     } else {
       if (st.dis === 'cn3') { pup = 0.36; yaw = -0.38; pitch = 0.3; }
-      if (st.dis === 'croc') { const w = win(t, 2.2, 1.0); tear = 0.08 + 0.8 * w; sub = 0.15; sal = 0.4; }
+      if (st.dis === 'croc') { const w = win(t, 2.2, 1.0); tear = 0.08 + 0.92 * w; sub = 0.15; sal = 0.4; }
       if (st.dis === 'frey') { const w = win(t, 2.2, 1.0); sweat = w; par = 0; }
     }
     return { pup, yaw, pitch, tear, sal, sub, par, sweat };
@@ -372,8 +372,8 @@ function makeHGang() {
     let n = 0;
     PRT.forEach((q) => {
       const r = rate[q.f]; if (!q.live && rnd() < r * dt * 2.2) { q.live = true; q.u = 0; }
-      if (q.live) { q.u += dt * q.sp * (q.f === 'sweat' ? 0.25 : q.f === 'tear' ? 0.32 : 0.45); if (q.u >= 1) q.live = false; }
-      dum.position.copy(FLW[q.f].getPointAt(cl(q.u))); dum.scale.setScalar(q.live ? (q.f === 'tear' ? 1.4 : q.f === 'sweat' ? 1.1 : 1) * (1 - 0.5 * q.u) : 0.0001); dum.updateMatrix(); PTM.setMatrixAt(n++, dum.matrix);
+      if (q.live) { q.u += dt * q.sp * (q.f === 'sweat' ? 0.17 : q.f === 'tear' ? 0.32 : 0.45); if (q.u >= 1) q.live = false; }
+      dum.position.copy(FLW[q.f].getPointAt(cl(q.u))); dum.scale.setScalar(q.live ? (q.f === 'tear' ? 1.8 : q.f === 'sweat' ? 1.4 : 1) * (1 - 0.5 * q.u) : 0.0001); dum.updateMatrix(); PTM.setMatrixAt(n++, dum.matrix);
     });
     PTM.instanceMatrix.needsUpdate = true;
   }
@@ -400,9 +400,9 @@ function makeHGang() {
     lb('верхнее слюноотделительное ядро', () => NUC.ssn.clone(), '#B8E890', () => (pM() && (st.sel === 'ptp' || st.sel === 'smd')) || dM('croc')(), true),
     lb('нижнее слюноотделительное ядро', () => NUC.isn.clone(), GC.otic, () => (pM() && st.sel === 'otic') || dM('frey')()),
     lb('ядро одиночного пути', () => NUC.nts.clone(), '#C8A8FF', rM('food')),
-    lb('претектальное ядро', () => NUC.pre.clone(), '#C8A8FF', rM('light')),
+    lb('претектальное ядро', () => NUC.pre.clone().add(V3(0, DK ? 0 : 0.4, 0)), '#C8A8FF', rM('light')),
     lb('ствол мозга', () => STEMC.getPointAt(0.5).add(V3(0, 0, -1.0)), '#D8C8D0', () => (pM() && !st.sel && DK), true),
-    lb('глазодвигательный нерв (III)', at(C3, V3(-1.35, 1.65, -3.6)), '#E8E0C8', () => (pM() && st.sel === 'cil') || dM('cn3')()),
+    lb('глазодвигательный нерв (III)', at(C3, V3(-1.35, 1.65, -3.6)), '#E8E0C8', () => (pM() && st.sel === 'cil') || (dM('cn3')() && DK)),
     lb('лицевой нерв (VII)', at(C7, V3(-1.5, -1.45, -6.2)), '#E8E0C8', () => (pM() && (st.sel === 'ptp' || st.sel === 'smd')) || dM('croc')(), true),
     lb('языкоглоточный нерв (IX)', at(C9, V3(-3.3, -3.0, -6.85)), '#E8E0C8', () => (pM() && st.sel === 'otic') || rM('food')(), true),
     lb('коленце VII', () => GEN.clone().add(V3(0, 0.2, 0)), '#E8E0C8', () => (pM() && st.sel === 'ptp') || dM('croc')()),
@@ -430,7 +430,7 @@ function makeHGang() {
     lb('повреждение', () => LES.position.clone().add(V3(0, -0.45, 0)), '#FF8A8A', dM('croc'), true),
     lb('ошибочный путь', () => GPN[3].clone(), GC.smd, dM('croc'), true),
     lb('кожа щеки', () => SKIN.clone().add(V3(0, -0.75, 0.3)), '#FF9AA8', dM('frey')),
-    lb('остаток железы', () => PARP.clone().add(V3(-0.5, -0.4, 0)), '#F0D8B0', dM('frey'), true),
+    lb('остаток железы', () => PARP.clone().add(V3(-0.2, -0.4, 0)), '#F0D8B0', dM('frey'), true),
   ];
   labels.forEach((l) => { if (typeof l.pos === 'function') { const f = l.pos; Object.defineProperty(l, 'pos', { get: f }); } });
 

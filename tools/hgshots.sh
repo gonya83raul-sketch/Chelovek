@@ -3,10 +3,11 @@
 cd ~/work/Chelovek; export PATH=/c/Users/Grisha/work/venv/Scripts:$PATH PYTHONUTF8=1
 D=review/shots/$1; mkdir -p $D
 L='g_all g_cil g_ptp g_smd g_otic g_sym r_light r_light2 r_food r_fear d_cn3 d_croc d_frey e1 e2'
+for n in $L p1 p2 p3; do rm -f lt/$n.png; done
 CL='js:[...document.querySelectorAll("button")].find(b=>b.textContent.trim()=="X").click()'
 S='size:1400x860'
 python tools/snap.py hgang $S sleep:9 shot:g_all "${CL/X/Ресничный}" sleep:4 shot:g_cil "${CL/X/Крылонёбный}" sleep:4 shot:g_ptp "${CL/X/Поднижнечелюстной}" sleep:4 shot:g_smd "${CL/X/Ушной}" sleep:4 shot:g_otic "${CL/X/Все}" "${CL/X/Симпатика}" sleep:4 shot:g_sym >/dev/null 2>&1
-python tools/snap.py hgang $S key:2 sleep:6 shot:r_light sleep:3 shot:r_light2 "${CL/X/Еда}" sleep:6 shot:r_food "${CL/X/Испуг}" sleep:6 shot:r_fear >/dev/null 2>&1
+python tools/snap.py hgang $S key:2 sleep:6 shot:r_light sleep:3 shot:r_light2 "${CL/X/Еда}" sleep:6 shot:r_food "${CL/X/Страх}" sleep:6 shot:r_fear >/dev/null 2>&1
 python tools/snap.py hgang $S key:3 sleep:7 shot:d_cn3 "${CL/X/Крокодиловы слёзы}" sleep:6 shot:d_croc "${CL/X/Синдром Фрея}" sleep:6 shot:d_frey >/dev/null 2>&1
 python tools/snap.py hgang size:390x844 sleep:9 shot:p1 key:2 sleep:6 shot:p2 key:3 sleep:7 shot:p3 >/dev/null 2>&1
 python tools/snap.py hgang $S lang:en sleep:9 shot:e1 key:2 sleep:8 shot:e2 >/dev/null 2>&1
