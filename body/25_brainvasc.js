@@ -203,10 +203,10 @@ function makeBrainVasc() {
   }
 
   // =================== виды ===================
-  const VP = DK ? { art: [V3(-0.25, -0.75, 0), V3(0, -1, -0.12), 6.0, 1.2, -0.12], lat: [V3(-0.1, 0.05, 0), V3(0.02, 0.06, -1), 10.5, 1.1, -0.2], med: [V3(-0.1, 0.05, 0.1), V3(0.02, 0.06, -1), 10, 1.1, -0.2], occ: [V3(-0.05, -0.35, 0), V3(0.35, -0.5, -1), 10.5, 1.1, -0.3] }
-    : { art: [V3(-0.2, -0.75, 0), V3(0.12, -1, 0), 6.4, 0, 0], lat: [V3(-0.1, 0.05, 0), V3(0.02, 0.06, -1), 7.6, 0, 0.1], med: [V3(-0.1, 0.05, 0.1), V3(0.02, 0.06, -1), 7.3, 0, 0.1], occ: [V3(-0.05, -0.35, 0), V3(0.35, -0.5, -1), 8.0, 0, 0.1] };
+  const VP = DK ? { art: [V3(-0.25, -0.75, 0), V3(0, -1, -0.12), 6.0, 1.2, -0.12], lat: [V3(-0.1, 0.05, 0), V3(0.02, 0.06, -1), 10.5, 1.1, -0.2], med: [V3(-0.1, 0.05, 0.1), V3(0.02, 0.06, -1), 10, 1.1, -0.2], occ: [V3(-0.05, -0.35, 0), V3(0.35, -0.5, -1), 10.5, 1.1, -0.3], occb: [V3(-0.6, -0.45, 0), V3(-0.9, -0.4, -0.75), 10.5, 1.1, -0.3] }
+    : { art: [V3(-0.2, -0.75, 0), V3(0.12, -1, 0), 6.4, 0, 0], lat: [V3(-0.1, 0.05, 0), V3(0.02, 0.06, -1), 7.6, 0, 0.1], med: [V3(-0.1, 0.05, 0.1), V3(0.02, 0.06, -1), 7.3, 0, 0.1], occ: [V3(-0.05, -0.35, 0), V3(0.35, -0.5, -1), 8.0, 0, 0.1], occb: [V3(-0.6, -0.45, 0), V3(-0.9, -0.4, -0.75), 8.2, 0, 0.1] };
   const VIEW = {}; Object.entries(VP).forEach(([k, a]) => { VIEW[k] = vw(...a); });
-  const curView = () => (st.mode === 'art' ? 'art' : st.mode === 'ter' ? st.side : 'occ');
+  const curView = () => (st.mode === 'art' ? 'art' : st.mode === 'ter' ? st.side : st.occ === 'ba' ? 'occb' : 'occ');
   function applyView() { st.fly = VIEW[curView()]; }
   camera.position.copy(VIEW.art.pos); controls.target.copy(VIEW.art.target);
 
@@ -230,7 +230,7 @@ function makeBrainVasc() {
   function setSel(id) { st.sel = id === 'all' || st.sel === id ? null : id; colorVes(); refs.aseg && refs.aseg.sync(); refs.setInfo(); }
   function setTer(id) { st.ter = id === 'all' || st.ter === id ? null : id; if (st.ter) { const side = st.ter === 'mca' ? 'lat' : 'med'; if (side !== st.side) { st.side = side; applyView(); refs.vseg && refs.vseg.sync(); } } colorBrain(); colorVes(); refs.tseg && refs.tseg.sync(); refs.setInfo(); }
   function setSide(v) { st.side = v; colorVes(); applyView(); refs.vseg && refs.vseg.sync(); }
-  function setOcc(id) { st.occ = id; st.tm = 0; st.rep = false; st.repA = 0; lastF = -1; colorBrain(); colorVes(); refs.oseg && refs.oseg.sync(); refs.setInfo(); }
+  function setOcc(id) { const vb = (st.occ === 'ba') !== (id === 'ba'); st.occ = id; if (vb) applyView(); st.tm = 0; st.rep = false; st.repA = 0; lastF = -1; colorBrain(); colorVes(); refs.oseg && refs.oseg.sync(); refs.setInfo(); }
   function reperfuse() { if (st.occ === 'ica_ok' || st.rep) return; st.rep = true; st.repA = 0; colorVes(); refs.setInfo(); }
   pickOn(() => self, camera, () => pick.filter((m) => m.visible !== false), (id, hit) => {
     if (id.startsWith('a:') && st.mode === 'art') setSel(id.slice(2));
@@ -285,6 +285,7 @@ function makeBrainVasc() {
     lb('передняя соединительная', () => CH.acom.getPointAt(0.5), '#8FF0D0', () => occ() && st.occ === 'ica_ok', true),
     lb('задняя соединительная', () => CH.pcom[-1].getPointAt(0.5), '#8FF0D0', () => occ() && st.occ === 'ica_ok'),
     lb('мост и мозжечок', () => pS(-1.0, 70, -1, -0.02), '#E08090', () => occ() && st.occ === 'ba'),
+    lb('затылочные доли', P(() => pL(-1.45, 0.1, -1)), '#E08090', () => occ() && st.occ === 'ba', true),
   ];
   labels.forEach((l) => { if (typeof l.pos === 'function') { const f = l.pos; Object.defineProperty(l, 'pos', { get: f }); } });
 
