@@ -10,7 +10,7 @@ const MN_LAY = [
   { id: 'scalp', name: 'Скальп', col: '#E8B8A0', text: '<b>Мягкие ткани свода</b> — пять слоёв: кожа с волосами, плотная клетчатка с сосудами, сухожильный шлем (апоневроз), рыхлая клетчатка и надкостница. Сосуды плотного слоя не спадаются, поэтому раны головы сильно кровоточат. По рыхлому слою скальп легко сдвигается, и в нём растекаются гематомы.' },
   { id: 'bone', name: 'Кость', col: '#F2E6C8', text: '<b>Кости свода</b> — наружная и внутренняя компактные пластинки, а между ними губчатое диплоэ с красным костным мозгом и диплоическими венами. Внутренняя пластинка тоньше и хрупче. Выпускники соединяют вены скальпа с синусами через кость — путь, по которому инфекция может проникнуть внутрь черепа.' },
   { id: 'dura', name: 'Твёрдая', col: '#9FC2E8', text: '<b>Твёрдая мозговая оболочка</b> — плотная двухслойная пластинка. Наружный слой прирастает к кости, внутренний образует складки — серп мозга между полушариями и намёт мозжечка. Где слои расходятся, лежат венозные синусы. В оболочке идут менингеальные артерии и нервы — она чувствительна к боли, в отличие от самого мозга.' },
-  { id: 'arach', name: 'Паутинная', col: '#C8D8E8', text: '<b>Паутинная оболочка</b> — тонкая прозрачная плёнка под твёрдой. От неё к мягкой оболочке тянутся нити-трабекулы, а между ними — <b>подпаутинное пространство</b> с ликвором и крупными сосудами мозга. Ворсинки паутинной оболочки (пахионовы грануляции) вдаются в синусы и возвращают ликвор в кровь.' },
+  { id: 'arach', name: 'Паутинная', col: '#C8D8E8', text: '<b>Паутинная оболочка</b> — тонкая прозрачная плёнка под твёрдой. От неё к мягкой оболочке тянутся нити-трабекулы, а между паутинной и мягкой — <b>подпаутинное пространство</b> с ликвором и крупными сосудами мозга. Ворсинки паутинной оболочки (пахионовы грануляции) вдаются в синусы и возвращают ликвор в кровь.' },
   { id: 'pia', name: 'Мягкая', col: '#E890A8', text: '<b>Мягкая оболочка</b> — самая тонкая, она плотно облегает мозг и заходит во все борозды. На ней лежат мелкие сосуды; входя в мозг, они уводят за собой мягкую оболочку, вокруг них остаются щели, по которым ликвор омывает ткань.' },
   { id: 'sss', name: 'Синус', col: '#6F8FE8', text: '<b>Верхний сагиттальный синус</b> — треугольный канал в твёрдой оболочке вдоль верхнего края серпа. Его стенки не сжимаются и не имеют клапанов. В него впадают вены мозга — мостовые вены пересекают подпаутинное пространство и паутинную оболочку — и через грануляции возвращается ликвор.' },
 ];
@@ -22,7 +22,7 @@ const MN_BLEED = [
 ];
 const MN_SIN = [
   { id: 'sss', name: 'Верхний сагиттальный', col: '#6F8FE8', text: '<b>Верхний сагиттальный синус</b> идёт по верхнему краю серпа от петушиного гребня до внутреннего затылочного выступа. В него впадают верхние мозговые вены и через грануляции возвращается ликвор. Сзади он сливается с другими синусами в <b>сток синусов</b>.' },
-  { id: 'iss', name: 'Прямой и нижний', col: '#9F7FE8', text: '<b>Нижний сагиттальный синус</b> идёт по свободному нижнему краю серпа над мозолистым телом. Сливаясь с <b>большой мозговой веной</b> (Галена), которая собирает кровь глубоких отделов мозга, он продолжается в <b>прямой синус</b> — по линии соединения серпа с намётом к стоку.' },
+  { id: 'iss', name: 'Прямой и нижний', col: '#9F7FE8', text: '<b>Нижний сагиттальный синус</b> идёт по свободному нижнему краю серпа над мозолистым телом. Он впадает в <b>большую мозговую вену</b> (Галена), которая собирает кровь глубоких отделов мозга; от их слияния начинается <b>прямой синус</b> — по линии соединения серпа с намётом к стоку.' },
   { id: 'tr', name: 'Поперечный и сигмовидный', col: '#5FB8E0', text: '<b>Поперечные синусы</b> идут от стока в стороны по краю намёта мозжечка, затем изгибаются S-образно (<b>сигмовидные синусы</b>) и через яремные отверстия переходят во внутренние яремные вены. Правый обычно крупнее. Сигмовидный синус лежит сразу за сосцевидными ячейками — мастоидит может вызвать его тромбоз.' },
   { id: 'cav', name: 'Пещеристый', col: '#E8A050', text: '<b>Пещеристый синус</b> — венозное сплетение по бокам от турецкого седла. Сквозь него проходит внутренняя сонная артерия с отводящим нервом (VI), а в боковой стенке лежат III, IV, V₁ и V₂ нервы. Спереди в синус впадают глазные вены, поэтому инфекция из «опасного треугольника» лица может вызвать тромбоз пещеристого синуса.' },
   { id: 'pet', name: 'Каменистые', col: '#7FD3A8', text: '<b>Верхний и нижний каменистые синусы</b> отводят кровь из пещеристого синуса назад: верхний — по гребню пирамиды височной кости в поперечный синус, нижний — к яремному отверстию. Межпещеристые синусы соединяют правый и левый пещеристые вокруг гипофиза.' },
@@ -76,8 +76,8 @@ function makeMenin() {
   half('ar', 'arach', '#D8E4F0', R.ar1, R.ar0, 0.12);
   half('sas', 'arach', '#5FA8E0', R.ar0, R.pia1, 0.045, { op: 0.35 });
   half('pia', 'pia', '#E890A8', R.pia1, R.cx, 0.035);
-  half('gm', 'pia', '#B8A0A8', R.cx, R.wm, 0.035, { m: { em: 0.04 } });
-  half('wm', 'pia', '#EDE6E0', R.wm, () => 7.8, 0.035, { m: { em: 0.04 } });
+  half('gm', 'pia', '#9C8C94', R.cx, R.wm, 0.035, { m: { em: 0.04 } });
+  half('wm', 'pia', '#EDE6E0', R.wm, () => 8.2, 0.035, { m: { em: 0.04 } });
   function buildLayers() {
     LAYDEF.forEach((d) => {
       const g = new THREE.ExtrudeGeometry(band(d.th0, d.th1, d.rOut, d.rIn, d.n), { depth: DZ, bevelEnabled: false, curveSegments: 1, steps: 1 }); g.translate(0, 0, -ZF);
@@ -90,7 +90,7 @@ function makeMenin() {
   const sssS = new THREE.Shape(); [P2(-0.16, 9.64), P2(0.16, 9.64), P2(0, 8.8)].forEach((p, i) => (i ? sssS.lineTo(p.x, p.y) : sssS.moveTo(p.x, p.y)));
   const sssG = new THREE.ExtrudeGeometry(sssS, { depth: DZ + 0.02, bevelEnabled: false }); sssG.translate(0, 0, -ZF - 0.01);
   const SSSm = new THREE.Mesh(sssG, sssM); SSSm.userData.pick = 'sss'; pick.push(SSSm); SLAB.add(SSSm);
-  const falxS = new THREE.Shape(); { const a = P2(0, 8.8); falxS.moveTo(a.x - 0.03, a.y); falxS.lineTo(-0.1, a.y - 0.4); falxS.lineTo(-0.1, 1.85); falxS.lineTo(0.1, 1.85); falxS.lineTo(0.1, a.y - 0.4); falxS.lineTo(a.x + 0.03, a.y); }
+  const falxS = new THREE.Shape(); { const a = P2(0, 8.8); falxS.moveTo(a.x - 0.03, a.y); falxS.lineTo(-0.1, a.y - 0.4); falxS.lineTo(-0.1, 2.25); falxS.lineTo(0.1, 2.25); falxS.lineTo(0.1, a.y - 0.4); falxS.lineTo(a.x + 0.03, a.y); }
   const falxG = new THREE.ExtrudeGeometry(falxS, { depth: DZ, bevelEnabled: false }); falxG.translate(0, 0, -ZF);
   const FALX = new THREE.Mesh(falxG, LM.dmL); FALX.userData.pick = 'dura'; pick.push(FALX); SLAB.add(FALX);
   // мелкие детали на срезе (на передней грани, z = ZF)
@@ -146,7 +146,7 @@ function makeMenin() {
     out.forEach((m) => { if (m !== head) m.geometry.dispose(); });
   }).catch(() => {});
   const XM = -0.5;
-  const SSSP = [[6.92, 3.14], [10.11, 1.66], [12.28, -0.8], [13.17, -3.96], [13.42, -6.99], [13.4, -10.05], [12.25, -12.77], [10.3, -14.67], [7.35, -15.89], [4.6, -16.55]].map(([y, z]) => V3(XM, y, z));
+  const SSSP = [[5.3, 3.25], [10.11, 1.66], [12.28, -0.8], [13.17, -3.96], [13.42, -6.99], [13.4, -10.05], [12.25, -12.77], [10.3, -14.67], [7.35, -15.89], [4.6, -16.55]].map(([y, z]) => V3(XM, y, z));
   const CONF = V3(XM, 3.95, -16.55), GAL = V3(XM, 7.0, -10.3);
   const ISSP = [V3(XM, 6.2, 2.4), V3(XM, 7.2, 0.2), V3(XM, 8.1, -2.8), V3(XM, 8.4, -5.8), V3(XM, 8.0, -8.4), GAL];
   const STR = [GAL, V3(XM, 6.1, -12.3), V3(XM, 4.9, -14.6), CONF];
@@ -160,8 +160,8 @@ function makeMenin() {
   const OPH = (s) => [...side(s, [[2.6, 3.0, 1.6], [2.0, 2.4, -1.4]]), CAVC(s).clone().add(V3(0, 0.25, 1.15))];
   const SINM = Object.fromEntries(MN_SIN.map((s) => [s.id, mphys(s.col, { r: 0.35, cc: 0.4, em: 0.22 })]));
   const SINCURVES = [];   // для потока: { c, id, r }
-  const FARM = [], cavFar = SINM.cav.clone();   // клиновидно-теменной синус и глазная вена правой стороны — при выборе пещеристого приглушены (тянутся под текст)
-  const sinus = (pts, r, id, mat) => { const c = cr3(pts); const m = new THREE.Mesh(taperTube(c, typeof r === 'function' ? r : () => r, 64, 10), mat || SINM[id]); m.userData.pick = 's:' + id; pick.push(m); SKG.add(m); if (mat === cavFar) FARM.push(m); SINCURVES.push({ c, id, len: c.getLength(), far: mat === cavFar }); return m; };
+  const FARM = [], SINMESH = [], cavFar = SINM.cav.clone();   // клиновидно-теменной синус и глазная вена правой стороны — при выборе пещеристого приглушены (тянутся под текст)
+  const sinus = (pts, r, id, mat) => { const c = cr3(pts); const m = new THREE.Mesh(taperTube(c, typeof r === 'function' ? r : () => r, 64, 10), mat || SINM[id]); m.userData.pick = 's:' + id; pick.push(m); SKG.add(m); SINMESH.push({ m, id }); if (mat === cavFar) FARM.push(m); SINCURVES.push({ c, id, len: c.getLength(), far: mat === cavFar }); return m; };
   sinus(SSSP, (u) => 0.22 + 0.3 * u, 'sss');
   sinus(ISSP, (u) => 0.12 + 0.08 * u, 'iss'); sinus(STR, 0.3, 'iss');
   const galv = sinus([V3(XM, 5.6, -7.9), V3(XM, 6.5, -9.4), GAL], 0.26, 'iss');
@@ -182,7 +182,7 @@ function makeMenin() {
   const PIT = new THREE.Mesh(new THREE.SphereGeometry(0.55, 16, 12), mphys('#E8B0C8', { r: 0.5, em: 0.12 })); PIT.position.set(XM, 0.9, -4.8); SKG.add(PIT);
   // серп и намёт
   const durM = mphys('#9FC2E8', { r: 0.6, em: 0.1, op: 0.26, side: THREE.DoubleSide });
-  const sCurve = cr3(SSSP), lCurve = cr3([V3(XM, 6.0, 2.9), ...ISSP.slice(1), ...STR.slice(1)]);
+  const sCurve = cr3(SSSP), lCurve = cr3([V3(XM, 2.8, 2.3), ...ISSP.slice(1), ...STR.slice(1)]);
   const sheet = (A, B, n, m) => { const pos = [], ix = []; for (let i = 0; i <= n; i++) { const a = A(i / n), b = B(i / n); for (let j = 0; j <= m; j++) { const p = a.clone().lerp(b, j / m); pos.push(p.x, p.y, p.z); } }
     for (let i = 0; i < n; i++) for (let j = 0; j < m; j++) { const a = i * (m + 1) + j, b = a + 1, c = a + m + 1, d = c + 1; ix.push(a, c, b, b, c, d); } const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(ix); g.computeVertexNormals(); return g; };
   const FALX3 = new THREE.Mesh(sheet((u) => sCurve.getPointAt(u), (u) => lCurve.getPointAt(u), 60, 8), durM); SKG.add(FALX3);
@@ -199,8 +199,8 @@ function makeMenin() {
   const dum = new THREE.Object3D();
 
   // =================== виды ===================
-  const VP = DK ? { lay: [V3(80, 3.4, 2.5), V3(0.2, 0.14, 1), 13, 2, -0.2], sin: [V3(-0.5, 4.5, -6.5), V3(0.95, 0.42, 0.42), 50, 7, 0.3], cav: [V3(0.2, 1.0, -4.8), V3(0.45, 0.4, 1), 11, 2.6, 0] }
-    : { lay: [V3(80, 3.4, 2.5), V3(0.2, 0.14, 1), 10.5, 0.3, -0.2], sin: [V3(-0.5, 4.5, -6.5), V3(0.95, 0.42, 0.42), 44, 0, -0.5], cav: [V3(0.2, 1.0, -4.8), V3(0.45, 0.4, 1), 17, 0, 0] };
+  const VP = DK ? { lay: [V3(80, 3.4, 2.5), V3(0.2, 0.14, 1), 13, 2, -0.2], sin: [V3(-0.5, 4.5, -6.5), V3(0.95, 0.42, 0.42), 55, 7.4, 0.3], cav: [V3(0.2, 1.0, -4.8), V3(0.45, 0.4, 1), 11, 2.6, 0] }
+    : { lay: [V3(80, 3.5, 2.5), V3(0.2, 0.14, 1), 12.5, 0, -0.2], sin: [V3(-0.5, 4.5, -6.5), V3(0.95, 0.42, 0.42), 40, 0, -0.3], cav: [V3(0.2, 1.0, -4.8), V3(0.45, 0.4, 1), 20, 0, 0.3] };
   const VIEW = {}; Object.entries(VP).forEach(([k, a]) => { VIEW[k] = vw(...a); });
   const curView = () => (st.mode === 'sin' ? (st.sin === 'cav' ? 'cav' : 'sin') : 'lay');
   function applyView() { st.fly = VIEW[curView()]; }
@@ -217,7 +217,7 @@ function makeMenin() {
     dimM(granM, st.mode !== 'lay' || !st.sel || st.sel === 'arach' || st.sel === 'sss'); dimM(artM, st.mode !== 'lay' || !st.sel || ['dura', 'arach', 'pia'].includes(st.sel));
     trabM.opacity = st.mode !== 'lay' || !st.sel || st.sel === 'arach' ? 0.7 : 0.1;
     MN_SIN.forEach((s) => { const m = SINM[s.id], on = !st.sin || st.sin === s.id; setOp(m, on ? 1 : st.sin === 'cav' ? (s.id === 'pet' ? 0.3 : 0.06) : 0.18); m.emissiveIntensity = st.sin === s.id ? 0.5 : 0.22; });
-    setOp(cavFar, !st.sin ? 1 : 0.18); FARM.forEach((m) => { m.visible = st.sin !== 'cav'; }); cavFar.emissiveIntensity = 0.22;
+    setOp(cavFar, !st.sin ? 1 : 0.18); FARM.forEach((m) => { m.visible = st.sin !== 'cav'; }); SINMESH.forEach(({ m, id }) => { if (m.material !== cavFar) m.visible = st.sin !== 'cav' || id === 'cav' || id === 'pet'; }); confM.visible = st.sin !== 'cav'; cavFar.emissiveIntensity = 0.22;
     setOp(cavM, !st.sin || st.sin === 'cav' ? (st.sin === 'cav' ? 0.3 : 0.42) : 0.1); CAVN.forEach((m) => { m.visible = st.sin === 'cav' && !m.userData.far; }); SKS.visible = st.sin !== 'cav';
     setOp(durM, st.sin === 'cav' ? 0.04 : st.sin && st.sin !== 'sss' && st.sin !== 'iss' && st.sin !== 'tr' ? 0.1 : 0.26);
   }
@@ -230,7 +230,7 @@ function makeMenin() {
     const gq = Math.round(st.g * 40) / 40; if (gq !== lastG) { lastG = gq; buildLayers(); buildFace(); buildBleed(); }
     if (st.mode === 'sin') {
       let n = 0; parts.forEach((p) => { const c = SINCURVES[p.ci]; if (st.flow) { p.u += dt * p.sp * 2.2 / c.len; if (p.u > 1) p.u -= 1; } const on = (!st.sin || st.sin === c.id) && !(c.far && st.sin === 'cav'); dum.position.copy(c.c.getPointAt(p.u)); dum.scale.setScalar(on ? 1 : 0.001); dum.updateMatrix(); PF.setMatrixAt(n++, dum.matrix); });
-      PF.instanceMatrix.needsUpdate = true; PF.visible = st.flow;
+      PF.instanceMatrix.needsUpdate = true; PF.visible = st.flow && st.sin !== 'cav';
     }
   }
 
@@ -254,48 +254,52 @@ function makeMenin() {
     lb('сухожильный шлем', S(-0.5, 10.67), '#F0EEE8', () => lay1() && st.sel === 'scalp', true),
     lb('рыхлая клетчатка', S(-0.36, 10.53), '#F4E2C8', () => lay1() && st.sel === 'scalp', true),
     lb('надкостница', S(-0.22, 10.42), '#E8E0D0', () => lay1() && st.sel === 'scalp', true),
+    lb('плотная клетчатка', S(-0.58, 10.85), '#E8C4A8', () => lay1() && st.sel === 'scalp', true),
+    lb('наружный листок', S(0.3, 9.74), '#B8D4F0', () => lay1() && st.sel === 'dura'),
+    lb('внутренний листок', S(0.62, 9.54), '#9FC2E8', () => lay1() && st.sel === 'dura'),
     lb('кость', S(-0.7, 10.1), '#F2E6C8', lOn('bone'), true),
     lb('диплоэ', S(0.62, 10.12), '#D8B890', () => lay1() && st.sel === 'bone'),
     lb('диплоическая вена', S(0.35, 10.12), '#9CB8FF', () => lay1() && st.sel === 'bone'),
     lb('выпускник', S(-0.12, 10.6, ZF + 0.06), '#9CB8FF', () => lay1() && (st.sel === 'bone' || st.sel === 'sss'), true),
     lb('твёрдая оболочка', S(0.45, 9.6), '#9FC2E8', lOn('dura')),
-    lb('серп мозга', () => SLAB.localToWorld(V3(0, 2.6, ZF)), '#9FC2E8', () => lay1() && (!st.sel || st.sel === 'dura'), true),
+    lb('серп мозга', () => SLAB.localToWorld(V3(0, 2.8, ZF)), '#9FC2E8', () => lay1() && (st.sel === 'dura' || (!st.sel && DK)), true),
     lb('средняя менингеальная артерия', () => SLAB.localToWorld(MMA.position.clone().setZ(ZF)), '#F08A8A', () => (lay1() && st.sel === 'dura') || (bl() && st.bleed === 'epi')),
     lb('паутинная оболочка', S(0.55, (th) => R.ar1(th) - 0.04), '#D8E4F0', lOn('arach')),
     lb('подпаутинное пространство', S(0.65, (th) => (R.ar0(th) + R.pia1(th)) / 2), '#7FC0F0', () => lOn('arach', true)() || (bl() && st.bleed === 'sah')),
     lb('грануляции', () => SLAB.localToWorld(gran[1].userData.head.position.clone().setZ(ZF + 0.05)), '#E8EEF4', () => lay1() && (st.sel === 'arach' || st.sel === 'sss')),
     lb('мягкая оболочка', S(0.75, (th) => R.pia1(th) - 0.03), '#E890A8', lOn('pia')),
     lb('кора', S(0.5, (th) => R.cx(th) - 0.35), '#C8B0B8', () => lay1() && st.sel === 'pia'),
-    lb('верхний сагиттальный синус', S(0, 9.3), '#9CB0FF', () => lay1() || bl(), true),
+    lb('верхний сагиттальный синус', S(-0.07, 9.15), '#9CB0FF', () => lay1() || bl(), true),
     lb('мостовая вена', S(0.22, (th) => R.ar0(th) - 0.05, ZF + 0.06), '#9CB8FF', () => (lay1() && st.sel === 'sss') || (bl() && st.bleed === 'sub')),
     lb('гематома', S(0.48, (th) => 9.84 - dEpi(th) / 2), '#FF8A8A', () => bl() && st.bleed === 'epi' && st.g > 0.5),
     lb('гематома', S(0.42, (th) => 9.44 - dEpi(th) - dSub(th) / 2), '#FF8A8A', () => bl() && st.bleed === 'sub' && st.g > 0.5),
     lb('кровь в бороздах', S(0.2, (th) => R.cx(th) - 0.4), '#FF8A8A', () => bl() && st.bleed === 'sah' && st.g > 0.5),
     lb('кость', S(-0.6, 10.1), '#F2E6C8', bl, true),
-    lb('твёрдая', S(-0.42, 9.6), '#9FC2E8', bl, true),
+    lb('твёрдая', S(-0.42, 9.6), '#9FC2E8', () => bl() && (DK || st.bleed !== 'epi'), true),
     lb('паутинная', S(-0.3, (th) => R.ar1(th)), '#D8E4F0', () => bl() && DK, true),
     lb('верхний сагиттальный синус', () => SSSP[3].clone(), '#9CB0FF', sOn('sss')),
     lb('сток синусов', () => CONF.clone(), '#9CB0FF', sOn('sss', true), true),
     lb('нижний сагиттальный', () => ISSP[2].clone(), '#C8B0FF', sOn('iss', true)),
-    lb('большая мозговая вена', () => galv.geometry ? V3(XM, 6.3, -9.0) : V3(), '#C8B0FF', () => sinM() && st.sin === 'iss'),
+    lb('большая мозговая вена', () => V3(XM, 5.9, -8.4), '#C8B0FF', () => sinM() && st.sin === 'iss'),
     lb('прямой синус', () => STR[1].clone(), '#C8B0FF', sOn('iss')),
     lb('поперечный синус', () => TRS(1)[2].clone(), '#8FD8F0', sOn('tr'), true),
     lb('сигмовидный синус', () => SIG(1)[2].clone(), '#8FD8F0', sOn('tr'), true),
     lb('внутренняя яремная вена', () => SIG(1)[6].clone(), '#8FD8F0', sOn('tr', true), true),
     lb('серп мозга', () => sCurve.getPointAt(0.35).lerp(lCurve.getPointAt(0.35), 0.5), '#B8D4F0', () => sinM() && !st.sin && DK),
-    lb('намёт мозжечка', () => TRS(1)[2].clone().lerp(V3(XM, 5.0, -10), 0.5), '#B8D4F0', () => sinM() && (!st.sin || st.sin === 'tr') && DK),
-    lb('пещеристый синус', () => CAVC(1).clone().add(V3(0.4, 0.9, 0)), '#F0C080', () => sinM() && (st.sin === 'cav' || (!st.sin && DK))),
+    lb('намёт мозжечка', () => TRS(1)[3].clone().lerp(V3(XM, 4.2, -9), 0.45), '#B8D4F0', () => sinM() && (!st.sin || st.sin === 'tr') && DK),
+    lb('пещеристый синус', () => CAVC(1).add(V3(0.35, 1.05, -0.9)), '#F0C080', () => sinM() && (st.sin === 'cav' || (!st.sin && DK))),
     lb('верхний каменистый', () => SPS(1)[1].clone(), '#A8E8C8', () => sinM() && st.sin === 'pet'),
     lb('нижний каменистый', () => IPS(1)[2].clone(), '#A8E8C8', () => sinM() && st.sin === 'pet'),
     lb('внутренняя сонная артерия', () => CAVC(1).add(V3(-0.3, 1.5, 0.2)), '#F08A8A', () => sinM() && st.sin === 'cav', true),
     lb('гипофиз', () => PIT.position.clone().add(V3(0, -0.5, 0)), '#F0B8D0', () => sinM() && st.sin === 'cav'),
     ...CAV_N.map((n, k) => lb(n[2], () => nEnd(k), '#F4D06A', () => sinM() && st.sin === 'cav', k === 4)),
+    lb('межпещеристые синусы', () => V3(XM, 1.05, -3.8), '#A8E8C8', () => sinM() && st.sin === 'pet'),
     lb('глазная вена', () => OPH(1)[1].clone(), '#F0C080', () => sinM() && st.sin === 'cav'),
   ];
   labels.forEach((l) => { if (typeof l.pos === 'function') { const f = l.pos; Object.defineProperty(l, 'pos', { get: f }); } });
 
   // =================== панель ===================
-  const INTRO = '<b>От кожи до коры</b> — около сантиметра: скальп, кость и три оболочки мозга. Твёрдая прирастает к кости, паутинная прилегает к твёрдой, мягкая облегает мозг. Между паутинной и мягкой — подпаутинное пространство с ликвором, в котором мозг словно плавает. Толщины слоёв на срезе изменены для наглядности. Выберите слой.';
+  const INTRO = '<b>От кожи до коры</b> — около 1,5 см: скальп, кость и три оболочки мозга. Твёрдая прирастает к кости, паутинная прилегает к твёрдой, мягкая облегает мозг. Между паутинной и мягкой — подпаутинное пространство с ликвором, в котором мозг словно плавает. Толщины слоёв на срезе изменены для наглядности. Выберите слой.';
   const INTRO3 = '<b>Синусы твёрдой оболочки</b> — каналы между её слоями, по которым кровь мозга оттекает к внутренним яремным венам. Стенки синусов не спадаются, клапанов в них нет. Почти вся кровь сходится к стоку на затылке, а оттуда по поперечным и сигмовидным синусам уходит в шею. Выберите синус.';
   const refs = {};
   function ui(el) {
@@ -338,7 +342,7 @@ function makeMenin() {
   function stats() {
     if (st.mode === 'lay') return [['Ликвора', '≈ 150', 'мл'], ['Образуется', '≈ 500', 'мл/сут']];
     if (st.mode === 'bleed') return [['Пространство', st.bleed === 'epi' ? 'над твёрдой' : st.bleed === 'sub' ? 'под твёрдой' : 'с ликвором', '']];
-    return [['Кровоток мозга', '≈ 750', 'мл/мин'], ['Синусов', '≈ 11', 'видов']];
+    return [['Кровоток мозга', '≈ 750', 'мл/мин'], ['Синусов', '≈ 11', 'типов']];
   }
   const self = {
     labelBg: true, mobZoom: 0.85, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null,
