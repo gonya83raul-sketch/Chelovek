@@ -5337,7 +5337,6 @@ function makeCranial() {
   }
   function stats() { if (st.mode === 'base' && st.sel === null) return [['Пар', 12, ''], ['Отверстий', '9', 'видов']]; if (st.sel !== null) { const nv = nerves[st.sel]; return [['Пара', nv.n, ''], ['Тип', CN_TYPES[nv.type].name.split(' ')[0], '']]; } return [['Пар', 12, ''], ['Чувствительных', 3, ''], ['Смешанных', 4, '']]; }
   apply();
-  window.__cn = { camera, controls, st, BASE, FOR, setMode, V3, BVIEW, flyTarget };
   const self = {
     labelBg: true, mobZoom: 0.7, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, get accent() { return st.sel !== null ? CN_TYPES[nerves[st.sel].type].color : '#C77DFF'; },
     kicker: 'Мозг · черепные нервы', title: 'Черепные нервы',
