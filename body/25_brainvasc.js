@@ -10,7 +10,7 @@
 const BV_ART = [
   { id: 'ica', name: 'Внутренние сонные', col: '#E05555', text: '<b>Внутренние сонные артерии</b> несут около 80 % крови мозга. Каждая входит в череп через сонный канал, изгибается (сифон) в пещеристом синусе, отдаёт глазную артерию и у зрительного перекрёста делится на переднюю и среднюю мозговые. Бляшка там, где на шее от общей сонной отходит внутренняя, — частая причина инсульта.' },
   { id: 'aca', name: 'Передние мозговые', col: '#5E9FEF', text: '<b>Передние мозговые артерии</b> идут вперёд над зрительными нервами, соединяются передней соединительной и поднимаются в продольную щель между полушариями. Там они огибают мозолистое тело и питают внутреннюю поверхность лобной и теменной долей — в том числе кору, которая управляет ногой.' },
-  { id: 'mca', name: 'Средние мозговые', col: '#F08A3C', text: '<b>Средние мозговые артерии</b> — самые крупные ветви сонных. Каждая уходит вбок в глубину боковой борозды и веером расходится по наружной поверхности полушария. От её начала вверх отходят тонкие чечевицеобразно-полосатые артерии к базальным ядрам и внутренней капсуле; их закупорка даёт мелкие (лакунарные) инфаркты.' },
+  { id: 'mca', name: 'Средние мозговые', col: '#F08A3C', text: '<b>Средние мозговые артерии</b> — самые крупные ветви сонных. Каждая уходит вбок в глубину боковой борозды и веером расходится по наружной поверхности полушария. От её начала вверх отходят тонкие чечевицеобразно-полосатые артерии к базальным ядрам и внутренней капсуле (на модели не показаны); их закупорка даёт мелкие (лакунарные) инфаркты.' },
   { id: 'acom', name: 'Передняя соединительная', col: '#6FE0C0', text: '<b>Передняя соединительная артерия</b> — перемычка длиной несколько миллиметров между передними мозговыми. Если одна сонная сужена, кровь по ней перетекает из другой. Это самое частое место аневризм: здесь находят около трети всех аневризм артерий мозга.' },
   { id: 'pcom', name: 'Задние соединительные', col: '#6FE0C0', text: '<b>Задние соединительные артерии</b> связывают сонные с задними мозговыми и замыкают круг сзади. В норме кровоток по ним мал, но при закупорке одной из систем они становятся обходным путём. Аневризма у начала задней соединительной может сдавить лежащий рядом глазодвигательный нерв — веко опускается, зрачок расширяется.' },
   { id: 'va', name: 'Позвоночные', col: '#B070E8', text: '<b>Позвоночные артерии</b> отходят от подключичных, поднимаются в отверстиях поперечных отростков шейных позвонков и входят в череп через большое отверстие. Вдоль продолговатого мозга они отдают задние нижние мозжечковые артерии, а у нижнего края моста сливаются в основную. Позвоночно-основная система даёт около 20 % притока крови к мозгу.' },
@@ -24,10 +24,10 @@ const BV_TER = [
   { id: 'pca', name: 'Задняя', col: '#E8C440', text: '<b>Задняя мозговая артерия</b> питает затылочную долю со зрительной корой, нижнюю поверхность височной доли и таламус. Её закупорка выключает противоположную половину поля зрения обоих глаз. При поражении слева бывает чистая алексия: человек пишет, но не может прочитать написанное.' },
 ];
 const BV_OCC = [
-  { id: 'mca', name: 'Средняя мозговая', text: '<b>Тромб в левой средней мозговой.</b> В центре бассейна кровотока нет, нейроны гибнут за минуты — это ядро инфаркта (тёмное). Вокруг — полутень (оранжевая): кровь подтекает от соседних артерий, клетки молчат, но живы. Растворить тромб (тромболизис) или удалить его катетером (тромбэктомия) — значит спасти полутень.' },
+  { id: 'mca', name: 'Средняя мозговая', text: '<b>Тромб в левой средней мозговой.</b> В центре бассейна кровотока нет, нейроны гибнут за минуты — это ядро инфаркта (тёмное). Вокруг — полутень (оранжевая): кровь подтекает от соседних артерий, клетки молчат, но живы. Растворить тромб (тромболизис) или удалить его катетером (тромбэктомия) — шанс спасти полутень.' },
   { id: 'ica_ok', name: 'Сонная, круг замкнут', text: '<b>Закупорка левой внутренней сонной при полном круге.</b> Кровь в левые переднюю и среднюю мозговые приходит в обход: справа — через переднюю соединительную, сзади — через заднюю соединительную (по ней кровь идёт в обратную сторону). Если сонная сужается медленно, её закрытие может пройти незаметно.' },
   { id: 'ica_bad', name: 'Сонная, круг разомкнут', text: '<b>Та же закупорка, но соединительные артерии недоразвиты</b> — так бывает у многих людей. Обходного пути нет, и инфаркт охватывает бассейны левых передней и средней мозговых — почти всё полушарие.' },
-  { id: 'ba', name: 'Основная', text: '<b>Тромб в основной артерии.</b> Без крови остаются мост, мозжечок и обе затылочные доли. Это редкий, но самый опасный инсульт: без лечения погибает большинство больных.' },
+  { id: 'ba', name: 'Основная', text: '<b>Тромб в основной артерии.</b> Без крови остаются мост, большая часть мозжечка, таламус и обе затылочные доли. Это редкий, но самый опасный инсульт: без лечения погибает большинство больных.' },
 ];
 function makeBrainVasc() {
   rnd = mulberry(2512);
@@ -44,7 +44,7 @@ function makeBrainVasc() {
 
   // =================== мозг ===================
   const BK = brainKit();
-  const BASEC = new THREE.Color('#D8BCB8'), GRAYC = new THREE.Color('#5A5458'), COREC = new THREE.Color('#6A1626'), PENC = new THREE.Color('#F0A040');
+  const VGRAY = new THREE.Color('#7A747A'), BASEC = new THREE.Color('#D8BCB8'), GRAYC = new THREE.Color('#5A5458'), COREC = new THREE.Color('#6A1626'), PENC = new THREE.Color('#F0A040');
   const TCOL = BV_TER.map((t) => new THREE.Color(t.col));
   const brainM = new THREE.MeshPhysicalMaterial({ vertexColors: true, roughness: 0.55, clearcoat: 0.25, clearcoatRoughness: 0.5, sheen: 0.25, sheenColor: new THREE.Color(0xffd8e0), envMapIntensity: 0.35 });
   const HM = BK.hemi.map((g0, k) => { const g = g0.clone(); g.setAttribute('color', new THREE.BufferAttribute(new Float32Array(g.attributes.position.count * 3), 3)); const m = new THREE.Mesh(g, brainM); m.userData.pick = 'h:' + k; scene.add(m); pick.push(m); return m; });
@@ -133,15 +133,15 @@ function makeBrainVasc() {
     return { ...g, mesh, m, flow, fm, c0: m.color.clone(), e0: artCol[g.art].clone() };
   });
   // тромб
-  const clotM = tissue(new THREE.Color('#3A0C12'), { roughness: 0.7, emissive: new THREE.Color('#5A0A14'), emissiveIntensity: 0.4 });
+  const clotM = tissue(new THREE.Color('#B01830'), { roughness: 0.6, emissive: new THREE.Color('#E0203C'), emissiveIntensity: 0.8 });
   const CLOT = new THREE.Mesh(new THREE.SphereGeometry(1, 18, 12), clotM); CLOT.visible = false; scene.add(CLOT);
-  const clotAt = { mca: () => [CH.mca[-1].getPointAt(0.45), 0.06], ica_ok: () => [CH.ica[-1].getPointAt(0.3), 0.075], ica_bad: () => [CH.ica[-1].getPointAt(0.3), 0.075], ba: () => [CH.ba.getPointAt(0.45), 0.065] };
+  const clotAt = { mca: () => [CH.mca[-1].getPointAt(0.45), 0.085], ica_ok: () => [CH.ica[-1].getPointAt(0.3), 0.09], ica_bad: () => [CH.ica[-1].getPointAt(0.3), 0.09], ba: () => [CH.ba.getPointAt(0.45), 0.085] };
 
   // =================== бассейны ===================
   const bkPo = (y) => -1.08 - 0.08 * y;
   const terr = (p, n, s) => {
     const u = p.z * s - 0.55, x = p.x, y = p.y;
-    if (u < -0.44) return x < -0.72 - 0.35 * y || (y < -0.22 && x < 0.3) ? 2 : 0;   // внутренняя поверхность: сзади от теменно-затылочной борозды и внизу — задняя
+    if (u < -0.44) return x < -0.72 - 0.55 * y || (y < -0.22 && x < 0.3) ? 2 : 0;   // внутренняя поверхность: сзади от теменно-затылочной борозды и внизу — задняя
     if (n.y < -0.55) { if (x > 0.55) return u < -0.15 ? 0 : 1; return x < 0.42 ? 2 : 1; }   // нижняя поверхность
     if (x < bkPo(y) - 0.12) return 2;   // затылочный полюс
     if (y > 0.15 && u < -0.18) return 0;   // полоса по верхнему краю
@@ -155,6 +155,12 @@ function makeBrainVasc() {
     const d = new Float32Array(P.count), mx = [0, 0, 0];
     for (let i = 0; i < P.count; i++) { p.fromBufferAttribute(P, i); const t = TER[k][i]; d[i] = p.distanceTo(C[t]); mx[t] = Math.max(mx[t], d[i]); }
     for (let i = 0; i < P.count; i++) d[i] /= mx[TER[k][i]] || 1; return d; });
+  const CAND = (() => { const g = HM[1].geometry, P = g.attributes.position, N = g.attributes.normal, out = [];
+    for (let i = 0; i < P.count; i += 7) if (TER[1][i] === 1 && N.getZ(i) < -0.55 && P.getY(i) > -0.3) out.push([DN[1][i], V3(P.getX(i), P.getY(i), P.getZ(i)).addScaledVector(V3(N.getX(i), N.getY(i), N.getZ(i)), 0.01)]);
+    return out; })();
+  const candAt = (dv, yw) => { let b = null, bs = 9; CAND.forEach(([dd, p]) => { const sc = Math.abs(dd - dv) + 0.15 * Math.abs(p.y - yw); if (sc < bs) { bs = sc; b = p; } }); return b || V3(0, 0, -1); };
+  const LP = { core: V3(0, 0, -1), pen: V3(0, 0, -1) };
+  const placeOcc = () => { const f = coreF(); LP.core.copy(candAt(Math.max(0.04, f * 0.35), 0.1)); LP.pen.copy(candAt(Math.min(0.97, f + 0.12), 0.55)); };
   const coreF = () => Math.min(1, 0.12 + 0.88 * (1 - Math.exp(-st.tm / 180)));
   const occTer = () => ({ mca: [[1, 1]], ica_ok: [], ica_bad: [[1, 0], [1, 1]], ba: [[0, 2], [1, 2]] }[st.occ]);   // [полушарие, бассейн]
   const tmp = new THREE.Color();
@@ -179,7 +185,7 @@ function makeBrainVasc() {
     if (st.mode === 'art') { const on = !st.sel || st.sel === g.art || (st.sel === 'cbl' && g.art === 'cbl'); return [true, on, st.flow && on ? (g.art === 'acom' || g.art === 'pcom' ? 0 : 1) : 0]; }
     if (st.mode === 'ter') {
       const med = st.side === 'med'; if (med && (g.s < 0 || g.s === 0)) return [false, false, 0];
-      if (med && g.kind !== 'med' && !['aca', 'pca'].includes(g.art)) return [false, false, 0];
+      if (med && g.kind !== 'med') return [false, false, 0];
       const on = st.ter ? TERART[st.ter].includes(g.art) : ['aca', 'mca', 'pca'].includes(g.art); return [true, on, 0];
     }
     // инсульт
@@ -196,15 +202,15 @@ function makeBrainVasc() {
   }
   function colorVes() {
     VG.forEach((g) => { const [vis, on, fl] = vesState(g); g.mesh.visible = vis; g.flow.visible = vis && fl !== 0; g.fm.uniforms.uSpeed.value = 0.5 * (fl || 1);
-      g.m.color.copy(g.c0); g.m.emissive.copy(g.e0); if (!on) { g.m.color.lerp(GRAYC, 0.75); g.m.emissiveIntensity = 0; } else g.m.emissiveIntensity = st.mode === 'art' && st.sel === g.art ? 0.55 : 0.25;
+      g.m.color.copy(g.c0); g.m.emissive.copy(g.e0); if (!on) { g.m.color.lerp(VGRAY, 0.55); g.m.emissiveIntensity = 0.06; } else g.m.emissiveIntensity = st.mode === 'art' && st.sel === g.art ? 0.55 : 0.25;
       if (st.mode === 'occ' && fl === 0 && !(g.art === 'acom' || g.art === 'pcom')) { g.m.color.lerp(GRAYC, 0.55); g.m.emissiveIntensity = 0.05; } });
     const c = st.mode === 'occ' && !st.rep ? clotAt[st.occ]() : null; CLOT.visible = !!c; if (c) { CLOT.position.copy(c[0]); CLOT.scale.setScalar(c[1]); }
     const med = st.mode === 'ter' && st.side === 'med'; HM[1].visible = !med; STEM.visible = CERE.visible = !med; CCM.visible = med;
   }
 
   // =================== виды ===================
-  const VP = DK ? { art: [V3(-0.25, -0.75, 0), V3(0, -1, -0.12), 6.0, 1.2, -0.12], lat: [V3(-0.1, 0.05, 0), V3(0.02, 0.06, -1), 10.5, 1.1, -0.2], med: [V3(-0.1, 0.05, 0.1), V3(0.02, 0.06, -1), 10, 1.1, -0.2], occ: [V3(-0.05, -0.35, 0), V3(0.35, -0.5, -1), 10.5, 1.1, -0.3], occb: [V3(-0.6, -0.45, 0), V3(-0.9, -0.4, -0.75), 10.5, 1.1, -0.3] }
-    : { art: [V3(-0.2, -0.75, 0), V3(0.12, -1, 0), 6.4, 0, 0], lat: [V3(-0.1, 0.05, 0), V3(0.02, 0.06, -1), 7.6, 0, 0.1], med: [V3(-0.1, 0.05, 0.1), V3(0.02, 0.06, -1), 7.3, 0, 0.1], occ: [V3(-0.05, -0.35, 0), V3(0.35, -0.5, -1), 8.0, 0, 0.1], occb: [V3(-0.6, -0.45, 0), V3(-0.9, -0.4, -0.75), 8.2, 0, 0.1] };
+  const VP = DK ? { art: [V3(-0.25, -0.75, 0), V3(0, -1, -0.12), 7.2, 1.25, -0.15], lat: [V3(-0.1, 0.05, 0), V3(0.02, 0.06, -1), 9.2, 1.1, 0], med: [V3(-0.02, 0.05, 0.1), V3(0.02, 0.06, -1), 8.8, 1.1, 0], occ: [V3(-0.05, -0.35, 0), V3(0.35, -0.5, -1), 9.6, 1.1, -0.15], occb: [V3(-0.35, -0.75, 0), V3(0, -1, -0.12), 7.4, 1.25, -0.15] }
+    : { art: [V3(-0.2, -0.75, 0), V3(0.12, -1, 0), 6.4, 0, 0], lat: [V3(-0.1, 0.05, 0), V3(0.02, 0.06, -1), 7.6, 0, 0.1], med: [V3(-0.1, 0.05, 0.1), V3(0.02, 0.06, -1), 7.3, 0, 0.1], occ: [V3(-0.05, -0.35, 0), V3(0.35, -0.5, -1), 8.0, 0, 0.1], occb: [V3(-0.3, -0.75, 0), V3(0.12, -1, 0), 6.8, 0, 0] };
   const VIEW = {}; Object.entries(VP).forEach(([k, a]) => { VIEW[k] = vw(...a); });
   const curView = () => (st.mode === 'art' ? 'art' : st.mode === 'ter' ? st.side : st.occ === 'ba' ? 'occb' : 'occ');
   function applyView() { st.fly = VIEW[curView()]; }
@@ -214,13 +220,13 @@ function makeBrainVasc() {
   let lastF = -1;
   function update(dt) {
     st.t += dt; controls.autoRotate = st.rot && !st.fly; controls.autoRotateSpeed = 0.6; flyStep(st, camera, controls, dt);
-    VG.forEach((g) => { g.fm.uniforms.uTime.value = st.t; });
+    VG.forEach((g) => { g.fm.uniforms.uTime.value = st.t; }); if (CLOT.visible) clotM.emissiveIntensity = 0.6 + 0.4 * Math.sin(st.t * 4);
     if (st.mode === 'occ') {
       const grow = st.occ !== 'ica_ok' && !st.rep;
       if (grow && st.tm < 360) st.tm = Math.min(360, st.tm + dt * 20);
       if (st.rep && st.repA < 1) st.repA = Math.min(1, st.repA + dt / 1.5);
       const q = Math.round(coreF() * 60) / 60 + (st.rep ? 10 + Math.round(st.repA * 20) : 0);
-      if (q !== lastF) { lastF = q; colorBrain(); }
+      if (q !== lastF) { lastF = q; colorBrain(); if (!st.rep) placeOcc(); }
     }
   }
 
@@ -247,28 +253,28 @@ function makeBrainVasc() {
   const P = (f) => { let c = null; return () => (c ||= f() || V3(0, 0, 0)); };
   const labels = [
     lb('внутренняя сонная', () => CH.ica[-1].getPointAt(0.55), '#F08A8A', artOn('ica')),
-    lb('передняя мозговая', () => CH.aca[1].getPointAt(0.6), '#8FC0FF', artOn('aca'), true),
+    lb('передняя мозговая', () => CH.aca[1].getPointAt(0.6), '#8FC0FF', () => st.mode === 'art' && st.sel === 'aca', true),
     lb('средняя мозговая', () => CH.mca[1].getPointAt(0.55), '#FFB070', artOn('mca'), true),
-    lb('передняя соединительная', () => CH.acom.getPointAt(0.5), '#8FF0D0', artOn('acom')),
-    lb('задняя соединительная', () => CH.pcom[1].getPointAt(0.5), '#8FF0D0', artOn('pcom'), true),
+    lb('передняя соединительная', () => CH.acom.getPointAt(0.5), '#8FF0D0', artOn('acom', true)),
+    lb('задняя соединительная', () => CH.pcom[1].getPointAt(0.5), '#8FF0D0', () => st.mode === 'art' && st.sel === 'pcom', true),
     lb('задняя мозговая', () => J[-1].clone().add(V3(-0.25, 0.02, -0.12)), '#F2D870', artOn('pca')),
     lb('основная', () => CH.ba.getPointAt(0.55), '#B8A0FF', artOn('ba')),
-    lb('позвоночная', () => VG.find((g) => g.art === 'va' && g.s === -1).list[0].curve.getPointAt(0.45), '#D0A0FF', artOn('va')),
+    lb('позвоночная', () => VG.find((g) => g.art === 'va' && g.s === -1).list[0].curve.getPointAt(0.45), '#D0A0FF', () => st.mode === 'art' && st.sel === 'va'),
     lb('верхняя мозжечковая', () => VG.find((g) => g.art === 'cbl' && g.s === 1 && g.kind === 'base').list[0].curve.getPointAt(0.8), '#F0A0D0', () => st.mode === 'art' && st.sel === 'cbl', true),
     lb('передняя нижняя мозжечковая', () => VG.find((g) => g.art === 'cbl' && g.s === 1 && g.kind === 'base').list[1].curve.getPointAt(0.85), '#F0A0D0', () => st.mode === 'art' && st.sel === 'cbl', true),
     lb('задняя нижняя мозжечковая', () => VG.find((g) => g.art === 'cbl' && g.s === 1 && g.kind === 'pica').list[0].curve.getPointAt(0.8), '#F0A0D0', () => st.mode === 'art' && st.sel === 'cbl', true),
     lb('мозжечковые', () => VG.find((g) => g.art === 'cbl' && g.s === 1 && g.kind === 'pica').list[0].curve.getPointAt(0.8), '#F0A0D0', () => st.mode === 'art' && !st.sel && DK, true),
     lb('глазная', () => VG.find((g) => g.art === 'ica' && g.s === -1).list[1].curve.getPointAt(0.8), '#F08A8A', () => st.mode === 'art' && st.sel === 'ica'),
-    lb('зрительный перекрёст', () => V3(0.5, chiY - 0.04, -0.04), '#E8E0D0', () => st.mode === 'art' && (!st.sel ? DK : ['ica', 'aca', 'acom'].includes(st.sel))),
-    lb('воронка гипофиза', () => V3(0.38, chiY - 0.18, 0), '#F0C0A0', () => st.mode === 'art' && st.sel === 'ica', true),
+    lb('зрительный перекрёст', () => V3(0.5, chiY - 0.04, -0.04), '#E8E0D0', () => st.mode === 'art' && ['aca', 'acom'].includes(st.sel)),
     lb('мост', () => pS(-0.9, 35, -1, -0.02), '#E0C8D0', () => st.mode === 'art' && st.sel === 'ba'),
+    lb('сифон', () => CH.ica[1].getPointAt(0.45), '#F08A8A', () => st.mode === 'art' && st.sel === 'ica', true),
     // бассейны, снаружи (левое полушарие)
     lb('средняя мозговая', P(() => pL(0.0, 0.28, -1)), '#FFC090', () => terL() && !st.ter),
     lb('передняя мозговая', P(() => pT(0.15, -0.2)), '#A8D0FF', () => terL() && !st.ter),
-    lb('задняя мозговая', P(() => pL(-1.42, 0.05, -1)), '#F8E090', () => terL() && !st.ter, true),
+    lb('задняя мозговая', P(() => pL(-1.42, -0.1, -1)), '#F8E090', () => terL() && !st.ter, true),
     lb('лицо и рука', P(() => pL(bkCs(0.35) + 0.08, 0.35, -1)), '#FFD8B8', () => terL() && st.ter === 'mca'),
-    lb('зона Брока', P(() => pL(0.78, -0.06, -1)), '#FFD8B8', () => terL() && st.ter === 'mca'),
-    lb('зона Вернике', P(() => pL(-0.55, bkLs(-0.55) - 0.12, -1)), '#FFD8B8', () => terL() && st.ter === 'mca', true),
+    lb('зона Брока', P(() => pL(0.78, -0.06, -1)), '#FFD8B8', () => terL() && st.ter === 'mca', true),
+    lb('зона Вернике', P(() => pL(-0.55, bkLs(-0.55) - 0.12, -1)), '#FFD8B8', () => terL() && st.ter === 'mca'),
     lb('нога', P(() => pT(bkCs(1.0) + 0.04, -0.12)), '#C8E0FF', () => terL() && st.ter === 'aca'),
     lb('зрительная кора', P(() => pL(-1.5, 0.0, -1)), '#F8E8B0', () => terL() && st.ter === 'pca', true),
     // бассейны, изнутри (правое полушарие)
@@ -276,16 +282,17 @@ function makeBrainVasc() {
     lb('задняя мозговая', P(() => pM(-1.3, 0.1, 1, -0.02)), '#F8E090', () => terM() && !st.ter, true),
     lb('нога', P(() => pM(bkCs(0.85) + 0.02, 0.85, 1, -0.02)), '#C8E0FF', () => terM() && st.ter === 'aca'),
     lb('зрительная кора', P(() => pM(-1.45, -0.05, 1, -0.02)), '#F8E8B0', () => terM() && st.ter === 'pca', true),
-    lb('таламус', P(() => pM(0.05, -0.12, 1, -0.02)), '#F8E8B0', () => terM() && st.ter === 'pca'),
     lb('мозолистое тело', () => BKP.cc[2].clone().add(V3(0, 0, -0.05)), '#EDE4D8', () => terM() && !st.ter),
     // инсульт
     lb('тромб', () => CLOT.position.clone(), '#FF8080', () => occ() && CLOT.visible),
-    lb('ядро инфаркта', P(() => pL(0.12, 0.02, -1)), '#E08090', () => occ() && (st.occ === 'mca' || st.occ === 'ica_bad')),
-    lb('полутень', P(() => pL(0.55, 0.62, -1)), '#F8C080', () => occ() && (st.occ === 'mca' || st.occ === 'ica_bad') && !st.rep),
+    lb('ядро инфаркта', () => LP.core, '#E08090', () => occ() && (st.occ === 'mca' || st.occ === 'ica_bad')),
+    lb('полутень', () => LP.pen, '#F8C080', () => occ() && (st.occ === 'mca' || st.occ === 'ica_bad') && !st.rep),
+    lb('спасённая полутень', () => LP.pen, '#F8E0C0', () => occ() && (st.occ === 'mca' || st.occ === 'ica_bad') && st.rep),
     lb('передняя соединительная', () => CH.acom.getPointAt(0.5), '#8FF0D0', () => occ() && st.occ === 'ica_ok', true),
     lb('задняя соединительная', () => CH.pcom[-1].getPointAt(0.5), '#8FF0D0', () => occ() && st.occ === 'ica_ok'),
-    lb('мост и мозжечок', () => pS(-1.0, 70, -1, -0.02), '#E08090', () => occ() && st.occ === 'ba'),
-    lb('затылочные доли', P(() => pL(-1.45, 0.1, -1)), '#E08090', () => occ() && st.occ === 'ba', true),
+    lb('мост', () => pS(-1.0, 0, 1, -0.02).add(V3(0, 0, 0.12)), '#E08090', () => occ() && st.occ === 'ba', true),
+    lb('мозжечок', P(() => pC(-1.35, -0.55, 'up')), '#F8C080', () => occ() && st.occ === 'ba'),
+    lb('затылочные доли', P(() => pI(-1.3, -0.4, -0.01)), '#E08090', () => occ() && st.occ === 'ba'),
   ];
   labels.forEach((l) => { if (typeof l.pos === 'function') { const f = l.pos; Object.defineProperty(l, 'pos', { get: f }); } });
 
@@ -334,11 +341,11 @@ function makeBrainVasc() {
     return false;
   }
   function stats() {
-    if (st.mode === 'art') return [['От выброса сердца', '≈ 15', '%'], ['Через сонные', '≈ 80', '%']];
+    if (st.mode === 'art') return [['Мозг получает', '≈ 15', '% крови сердца'], ['Из неё — по сонным', '≈ 80', '%']];
     if (st.mode === 'ter') return [['Масса мозга', '≈ 2', '% тела'], ['Потребляет', '≈ 20', '% кислорода']];
     if (st.occ === 'ica_ok') return [['Инфаркт', 'нет', '']];
     const m = Math.round(st.tm), hh = Math.floor(m / 60), mm = String(m % 60).padStart(2, '0');
-    return [['С начала', `${hh}:${mm}`, 'ч:мин'], ['Погибло нейронов', `≈ ${Math.round(1.9 * m)}`, 'млн']];
+    return [[st.rep ? 'Кровоток вернули через' : 'С начала', `${hh}:${mm}`, 'ч:мин'], ['Погибло нейронов', `≈ ${Math.round(1.9 * m)}`, 'млн']];
   }
   const self = {
     labelBg: true, mobZoom: 0.8, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null,
@@ -357,7 +364,7 @@ function makeBrainVasc() {
         <li><b>Время — мозг:</b> при закупорке крупной артерии гибнет около 1,9 млн нейронов в минуту. Тромболизис помогает в первые 4,5 часа, тромбэктомия — обычно до 6 часов, а у части больных и позже.</li>
         <li><b>Транзиторная ишемическая атака</b> — признаки инсульта, которые проходят сами за минуты. Это предупреждение: риск настоящего инсульта в ближайшие дни высок.</li>
         <li><b>Геморрагический инсульт</b> — разрыв сосуда: кровоизлияние в мозг (чаще при высоком давлении) или разрыв аневризмы артерий круга с субарахноидальным кровоизлиянием.</li></ul></div>
-      <div><h2>Условности</h2><ul><li>Модель мозга упрощена; артерии показаны толще, а их ход и ветвление — схематично. Глубокие ветви, вены и оболочки не показаны. Границы бассейнов приблизительные. Рост инфаркта ускорен: 20 минут — за секунду; число погибших нейронов — средняя оценка для закупорки крупной артерии.</li></ul></div>
+      <div><h2>Условности</h2><ul><li>Модель мозга упрощена; артерии показаны толще, а их ход и ветвление — схематично. Глубокие ветви, вены и оболочки не показаны. Границы бассейнов приблизительные. Рост инфаркта ускорен: 20 минут — за секунду; число погибших нейронов — средняя оценка для закупорки крупной артерии переднего бассейна, для основной артерии она иная.</li></ul></div>
       <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>3</code> режим · <code>Esc</code> сбросить выбор</li><li><code>R</code> вращение · <code>N</code> подписи</li></ul></div>`
   };
   colorBrain(); colorVes();
