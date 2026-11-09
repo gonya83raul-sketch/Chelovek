@@ -203,14 +203,14 @@ function makeBrainVasc() {
   }
   function colorVes() {
     VG.forEach((g) => { const [vis, on, fl] = vesState(g); g.mesh.visible = vis; g.flow.visible = vis && fl !== 0; g.fm.uniforms.uSpeed.value = 0.5 * (fl || 1);
-      g.m.color.copy(g.c0); g.m.emissive.copy(g.e0); { const top = st.mode === 'art' && st.sel === g.art; if (g.m.depthTest === top) { g.m.depthTest = !top; g.m.needsUpdate = true; } g.mesh.renderOrder = top ? 4 : 0; } if (!on) { g.m.color.lerp(VGRAY, 0.55); g.m.emissiveIntensity = 0.06; } else g.m.emissiveIntensity = st.mode === 'art' && st.sel === g.art ? 0.55 : 0.25;
+      g.m.color.copy(g.c0); g.m.emissive.copy(g.e0); { const top = st.mode === 'art' && st.sel === g.art && g.kind !== 'lat' && g.kind !== 'med'; if (g.m.depthTest === top) { g.m.depthTest = !top; g.m.needsUpdate = true; } g.mesh.renderOrder = top ? 4 : 0; } if (!on) { g.m.color.lerp(VGRAY, 0.55); g.m.emissiveIntensity = 0.06; } else g.m.emissiveIntensity = st.mode === 'art' && st.sel === g.art ? 0.55 : 0.25;
       if (st.mode === 'occ' && fl === 0 && !(g.art === 'acom' || g.art === 'pcom')) { g.m.color.lerp(GRAYC, 0.55); g.m.emissiveIntensity = 0.05; } });
     const c = st.mode === 'occ' && !st.rep ? clotAt[st.occ]() : null; CLOT.visible = !!c; if (c) { CLOT.position.copy(c[0]); CLOT.scale.setScalar(c[1]); }
     const med = st.mode === 'ter' && st.side === 'med'; HM[1].visible = !med; STEM.visible = CERE.visible = !med; CCM.visible = med; LMK.forEach((m) => { m.visible = !med; });
   }
 
   // =================== виды ===================
-  const VP = DK ? { art: [V3(-0.25, -0.75, 0), V3(0, -1, -0.12), 7.2, 1.25, -0.15], lat: [V3(-0.1, 0.05, 0), V3(0.02, 0.42, -1), 9.2, 1.1, 0.2], med: [V3(-0.02, 0.05, 0.1), V3(0.02, 0.06, -1), 8.0, 1.1, 0.12], occ: [V3(-0.05, -0.35, 0), V3(0.35, -0.5, -1), 9.6, 1.1, -0.15], occb: [V3(-0.35, -0.75, 0), V3(0, -1, -0.12), 7.4, 1.25, -0.15] }
+  const VP = DK ? { art: [V3(-0.25, -0.75, 0), V3(0, -1, -0.12), 7.2, 1.25, -0.15], lat: [V3(-0.1, 0.05, 0), V3(0.02, 0.42, -1), 9.2, 1.1, 0.2], med: [V3(-0.02, 0.05, 0.1), V3(0.02, 0.06, -1), 8.0, 1.1, 0.12], occ: [V3(-0.05, -0.35, 0), V3(0.35, -0.5, -1), 9.6, 1.1, -0.06], occb: [V3(-0.35, -0.75, 0), V3(0, -1, -0.12), 7.4, 1.25, -0.15] }
     : { art: [V3(-0.2, -0.75, 0), V3(0.12, -1, 0), 6.4, 0, 0], lat: [V3(-0.1, 0.05, 0), V3(0.02, 0.42, -1), 7.6, 0, 0.1], med: [V3(-0.1, 0.05, 0.1), V3(0.02, 0.06, -1), 7.3, 0, 0.1], occ: [V3(-0.05, -0.35, 0), V3(0.35, -0.5, -1), 8.0, 0, 0.1], occb: [V3(-0.3, -0.75, 0), V3(0.12, -1, 0), 6.8, 0, 0] };
   const VIEW = {}; Object.entries(VP).forEach(([k, a]) => { VIEW[k] = vw(...a); });
   const curView = () => (st.mode === 'art' ? 'art' : st.mode === 'ter' ? st.side : st.occ === 'ba' ? 'occb' : 'occ');
@@ -272,7 +272,7 @@ function makeBrainVasc() {
     // бассейны, снаружи (левое полушарие)
     lb('средняя мозговая', P(() => pL(0.0, 0.28, -1)), '#FFC090', () => terL() && !st.ter),
     lb('передняя мозговая', P(() => pT(0.15, -0.2)), '#A8D0FF', () => terL() && !st.ter),
-    lb('задняя мозговая', P(() => pL(-1.42, -0.1, -1)), '#F8E090', () => terL() && !st.ter, true),
+    lb('задняя мозговая', P(() => pL(-1.42, -0.22, -1)), '#F8E090', () => terL() && !st.ter, true),
     lb('лицо и рука', P(() => pL(bkCs(0.35) + 0.08, 0.35, -1)), '#FFD8B8', () => terL() && st.ter === 'mca'),
     lb('зона Брока', P(() => pL(0.78, -0.06, -1)), '#FFD8B8', () => terL() && st.ter === 'mca', true),
     lb('зона Вернике', P(() => pL(-0.55, bkLs(-0.55) - 0.12, -1)), '#FFD8B8', () => terL() && st.ter === 'mca'),
@@ -293,7 +293,7 @@ function makeBrainVasc() {
     lb('задняя соединительная', () => CH.pcom[-1].getPointAt(0.5), '#8FF0D0', () => occ() && st.occ === 'ica_ok'),
     lb('мост', () => pS(-1.0, 0, 1, -0.02).add(V3(0, 0, 0.12)), '#E08090', () => occ() && st.occ === 'ba', true),
     lb('мозжечок', P(() => pC(-1.35, -0.55, 'up')), '#F8C080', () => occ() && st.occ === 'ba'),
-    lb('затылочные доли', P(() => pI(-0.95, -0.85, -0.01)), '#E08090', () => occ() && st.occ === 'ba'),
+    lb('бассейны задних мозговых', P(() => pI(-0.6, -0.9, -0.01)), '#E08090', () => occ() && st.occ === 'ba'),
   ];
   labels.forEach((l) => { if (typeof l.pos === 'function') { const f = l.pos; Object.defineProperty(l, 'pos', { get: f }); } });
 
@@ -344,7 +344,7 @@ function makeBrainVasc() {
   function stats() {
     if (st.mode === 'art') return [['Мозг получает', '≈ 15', '% крови сердца'], ['Из неё — по сонным', '≈ 80', '%']];
     if (st.mode === 'ter') return [['Масса мозга', '≈ 2', '% тела'], ['Потребляет', '≈ 20', '% кислорода']];
-    if (st.occ === 'ica_ok') return [['Инфаркт', 'нет', '']];
+    if (st.occ === 'ica_ok') return [['Инфаркт мозга', 'не развивается', '']];
     const m = Math.round(st.tm), hh = Math.floor(m / 60), mm = String(m % 60).padStart(2, '0');
     return [[st.rep ? 'Кровоток вернули через' : 'С начала', `${hh}:${mm}`, 'ч:мин'], ['Погибло нейронов', `≈ ${Math.round(1.9 * m)}`, 'млн']];
   }
