@@ -1,6 +1,4 @@
-import { THREE, V3, __set_rnd, envTex, flyStep, flyTarget, group, h, infoBox, labLights, makeControls, mulberry, pickOn, range, rnd, seg, toggle } from '../core.js';
-import { BIO_MOL, loadSkeletonStatic } from './kit.js';
-Object.assign(BIO_MOL, {"ala":{"name":"Alanine","el":"N C C C O O H H H H H H H","xyz":"eP9pAD0AuP/n/ycAc/+f/7P/SwD8/wYAoQC6/0AAcgBbAKT/vv+sAFoAMf9gAIUAr/+r/4EAof+9/1X/fP80/8D/Cf+6/7H/cgA7AEj/","b":"AAABAAEAAgABAAMAAwAEAAMABQAAAAYAAAAHAAEACAACAAkAAgAKAAIACwAFAAwA","o":"111211111111"}});
+import { THREE, V3, __set_rnd, envTex, flyStep, flyTarget, group, h, infoBox, labLights, loadSkeletonStatic, makeControls, mulberry, pickOn, range, rnd, seg, toggle } from '../core.js';
 
 
 // @scene nose makeNose | Нос и околоносовые пазухи | @body Системы органов

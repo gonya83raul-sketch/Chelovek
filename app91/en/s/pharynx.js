@@ -1,6 +1,4 @@
-import { THREE, V3, __set_rnd, envTex, flyStep, flyTarget, group, h, infoBox, labLights, makeControls, mulberry, pickOn, range, rnd, seg, toggle } from '../core.js';
-import { BIO_MOL, loadSkeletonStatic } from './kit.js';
-Object.assign(BIO_MOL, {"val":{"name":"Валин","el":"N C C C C C O O H H H H H H H H H H H","xyz":"9v9F/0kABADU/0kAigDy/wUAgQDk/27/rwB/AC8AkP8YAAEASv/Z/7T/c/+iABgABgAf/6UAOAAb/wgACAD5/7AA1ACr/ywARwA3AEX/UQCG/1T/5QDm/0P/ngCMAJoAcgDHAPj/GAGSABkAfP/cAMv/","b":"AAABAAEAAgACAAMAAgAEAAEABQAFAAYABQAHAAAACAAAAAkAAQAKAAIACwADAAwAAwANAAMADgAEAA8ABAAQAAQAEQAHABIA","o":"111112111111111111"}});
+import { THREE, V3, __set_rnd, envTex, flyStep, flyTarget, group, h, infoBox, labLights, loadSkeletonStatic, makeControls, mulberry, pickOn, range, rnd, seg, toggle } from '../core.js';
 
 
 // @scene pharynx makePharynx | Глотка и глотание | @body Системы органов
@@ -11,21 +9,21 @@ Object.assign(BIO_MOL, {"val":{"name":"Валин","el":"N C C C C C O O H H H H
    Начало координат — точка скана черепа (0.11, 16.0, 0.6), 1 ед. скана ≈ 12,5 см (как в сценах nose и face).
    ========================================================= */
 const PH_REG = [
-  { id: 'naso', name: 'Носоглотка', col: '#6FB7F0', text: '<b>Носоглотка</b> — верхний отдел, позади хоан, над мягким нёбом. Только для воздуха: при глотании мягкое нёбо её закрывает. На своде — глоточная миндалина (аденоиды), на боковых стенках — устья слуховых труб, которые выравнивают давление в среднем ухе.' },
-  { id: 'oro', name: 'Ротоглотка', col: '#7FD39A', text: '<b>Ротоглотка</b> — от мягкого нёба до верхнего края надгортанника, позади корня языка. Через неё идут и воздух, и пища — пути здесь перекрещиваются. На боковых стенках между нёбными дужками лежат нёбные миндалины, на корне языка — язычная.' },
-  { id: 'laryngo', name: 'Гортаноглотка', col: '#C79BF0', text: '<b>Гортаноглотка</b> — позади гортани, от надгортанника до нижнего края перстневидного хряща (уровень VI шейного позвонка), где глотка переходит в пищевод. Спереди — вход в гортань; по бокам от него — грушевидные карманы, по которым пища стекает в пищевод.' },
+  { id: 'naso', name: 'Nasopharynx', col: '#6FB7F0', text: '<b>Nasopharynx</b> — the upper part, behind the choanae and above the soft palate. It carries air only: during swallowing the soft palate seals it off. On its roof lies the pharyngeal tonsil (adenoids); on its side walls open the auditory tubes, which equalize pressure in the middle ear.' },
+  { id: 'oro', name: 'Oropharynx', col: '#7FD39A', text: '<b>Oropharynx</b> — from the soft palate to the upper edge of the epiglottis, behind the root of the tongue. Both air and food pass through it — this is where their paths cross. The palatine tonsils sit on its side walls between the palatoglossal and palatopharyngeal arches; the lingual tonsil covers the root of the tongue.' },
+  { id: 'laryngo', name: 'Laryngopharynx', col: '#C79BF0', text: '<b>Laryngopharynx</b> — behind the larynx, from the epiglottis to the lower edge of the cricoid cartilage (level of the 6th cervical vertebra), where the pharynx becomes the esophagus. In front is the laryngeal inlet; on either side of it are the piriform recesses, which channel food down into the esophagus.' },
 ];
 const PH_MUS = [
-  { id: 'sup', name: 'Верхний', col: '#E8505E', text: '<b>Верхний констриктор</b> начинается от крючка крыловидного отростка, крылонижнечелюстного шва и нижней челюсти. Его волокна огибают глотку и сходятся сзади в срединном шве. Сокращаясь, сужает верхнюю часть глотки и подтягивает её стенку к мягкому нёбу.' },
-  { id: 'mid', name: 'Средний', col: '#F08A4B', text: '<b>Средний констриктор</b> веером начинается от рогов подъязычной кости: верхние волокна поднимаются, нижние опускаются, а снаружи он прикрывает нижний край верхнего констриктора. Сзади все волокна вплетаются в срединный шов глотки.' },
-  { id: 'inf', name: 'Нижний', col: '#E8C04A', text: '<b>Нижний констриктор</b> — самый толстый. Щитоглоточная часть идёт от щитовидного хряща косо вверх к шву. Перстнеглоточная — от перстневидного хряща; её волокна идут почти горизонтально, охватывают глотку кольцом и в покое сомкнуты: это верхний пищеводный сфинктер. Между частями сзади — треугольник Киллиана.' },
-  { id: 'long', name: 'Продольные', col: '#45C4B0', text: '<b>Продольные мышцы</b> — шилоглоточная, нёбно-глоточная и трубно-глоточная. Шилоглоточная идёт от шиловидного отростка вниз, входит между верхним и средним констрикторами и вплетается в стенку и щитовидный хрящ. При глотании они укорачивают глотку и поднимают гортань.' },
+  { id: 'sup', name: 'Superior', col: '#E8505E', text: '<b>Superior constrictor</b> arises from the pterygoid hamulus, the pterygomandibular raphe and the mandible. Its fibers curve around the pharynx and meet behind it at the midline raphe. When it contracts, it narrows the upper pharynx and draws its wall toward the soft palate.' },
+  { id: 'mid', name: 'Middle', col: '#F08A4B', text: '<b>Middle constrictor</b> fans out from the horns of the hyoid bone: its upper fibers rise, its lower fibers descend, and on the outside it overlaps the lower edge of the superior constrictor. Behind, all its fibers insert into the pharyngeal raphe.' },
+  { id: 'inf', name: 'Inferior', col: '#E8C04A', text: '<b>Inferior constrictor</b> is the thickest. Its thyropharyngeal part runs from the thyroid cartilage obliquely up to the raphe. The cricopharyngeal part arises from the cricoid cartilage; its fibers run almost horizontally, encircle the pharynx like a ring and stay closed at rest — this is the upper esophageal sphincter. Killian’s triangle lies between the two parts at the back.' },
+  { id: 'long', name: 'Longitudinal', col: '#45C4B0', text: '<b>Longitudinal muscles</b> — stylopharyngeus, palatopharyngeus and salpingopharyngeus. Stylopharyngeus runs down from the styloid process, passes between the superior and middle constrictors and blends into the wall and the thyroid cartilage. During swallowing these muscles shorten the pharynx and raise the larynx.' },
 ];
 const PH_PHASE = [
-  [0.0, 'покой', '<b>Глотание</b> — путь комка от рта до пищевода — занимает около секунды. Ниже оно замедлено примерно в четыре раза. Нажмите «Пуск» или двигайте ползунок: комок пищи пройдёт из рта через глотку в пищевод, а пути к носу и гортани на это время закроются.'],
-  [0.06, 'ротовая', '<b>Ротовая фаза</b> — произвольная. Кончик языка упирается в нёбо, и волна сокращения языка спереди назад выдавливает комок к зеву. Как только комок касается корня языка и нёбных дужек, рецепторы запускают рефлекс — дальше глотание идёт само.'],
-  [0.38, 'глоточная', '<b>Глоточная фаза</b> — рефлекторная, ≈ 0,5 с. Мягкое нёбо поднимается и закрывает носоглотку; гортань и подъязычная кость идут вверх и вперёд, надгортанник опускается на вход в гортань, голосовые складки смыкаются — дыхание прерывается. Верхний пищеводный сфинктер расслабляется, а констрикторы волной сверху вниз гонят к нему комок.'],
-  [0.6, 'пищеводная', '<b>Пищеводная фаза.</b> Комок проходит через раскрытый верхний пищеводный сфинктер, и тот смыкается за ним. Перистальтическая волна несёт комок к желудку за 8–10 с. Нёбо, надгортанник и гортань возвращаются на место — дыхание возобновляется.'],
+  [0.0, 'rest', '<b>Swallowing</b> — the trip of a bolus from the mouth into the esophagus — takes about a second. Here it is slowed down about fourfold. Press “Play” or drag the slider: the food bolus will pass from the mouth through the pharynx into the esophagus, while the routes to the nose and larynx close for that moment.'],
+  [0.06, 'oral', '<b>Oral phase</b> — voluntary. The tip of the tongue presses against the palate, and a wave of tongue contraction from front to back squeezes the bolus toward the back of the mouth (the fauces). As soon as the bolus touches the root of the tongue and the tonsillar pillars, receptors trigger the reflex — from then on, swallowing runs by itself.'],
+  [0.38, 'pharyngeal', '<b>Pharyngeal phase</b> — reflexive, ≈ 0.5 s. The soft palate rises and closes off the nasopharynx; the larynx and hyoid move up and forward, the epiglottis folds down over the laryngeal inlet, the vocal folds close — breathing stops. The upper esophageal sphincter relaxes, and the constrictors drive the bolus down toward it in a wave.'],
+  [0.6, 'esophageal', '<b>Esophageal phase.</b> The bolus passes through the open upper esophageal sphincter, which closes behind it. A peristaltic wave carries the bolus to the stomach in 8–10 s. The palate, epiglottis and larynx return to their places — breathing resumes.'],
 ];
 function makePharynx() {
   __set_rnd(mulberry(2104));
@@ -284,47 +282,47 @@ function makePharynx() {
   const regOn = (k) => () => sec() && (!st.reg || st.reg === k);
   const mOn = (k) => () => mus() && (!st.msel || st.msel === k);
   const labels = [
-    lb('носоглотка', sp(-2.75, -1.95), '#9CD0FF', regOn('naso')),
-    lb('ротоглотка', sp(-3.3, -5.8), '#A8E8BC', regOn('oro')),
-    lb('гортаноглотка', sp(-3.5, -11.2), '#DCC0FF', regOn('laryngo')),
-    lb('глоточная миндалина', sp(-2.9, -0.75), '#E8B8DC', () => sec() && (!st.reg || st.reg === 'naso') && DK),
-    lb('хоаны', sp(-0.8, -1.0), '#E8DCC8', () => sec() && (!st.reg || st.reg === 'naso') && DK, true),
-    lb('клиновидная пазуха', sp(-0.2, 1.45), '#E8DCC8', () => sec() && !st.reg && DK, true),
-    lb('спинной мозг', sp(-7.6, -9.0), '#E3D9B6', () => sec() && !st.reg && DK),
-    lb('устье слуховой трубы', V3(-1.2, -1.85, -1.85), '#E8C8D0', () => sec() && (!st.reg || st.reg === 'naso'), true),
-    lb('мягкое нёбо', sp(-1.4, -3.45), '#F0A0A8', () => (sec() && (!st.reg || st.reg === 'naso' || st.reg === 'oro')) || sw(), true),
-    lb('твёрдое нёбо', sp(3.2, -3.2), '#E8DCC8', () => sec() && !st.reg && DK, true),
-    lb('нёбная миндалина', V3(-1.2, -5.35, -2.95), '#E8B8DC', () => sec() && ((!st.reg && DK) || st.reg === 'oro'), true),
-    lb('носовые раковины', V3(-1.2, -1.85, 2.2), '#F0B8C0', () => sec() && !st.reg && DK, true),
-    lb('язык', sp(1.6, -6.9), '#F0A0A8', () => (sec() && !st.reg && DK) || sw(), true),
-    lb('надгортанник', () => V3(0.25, epiP[1], epiP[0]), '#F0E4A0', () => sec() || sw()),
-    lb('подъязычная кость', () => V3(0.25, -10.3 + HYO.position.y, -0.2 + HYO.position.z), '#E8DCC8', () => sec() && (!st.reg || st.reg === 'laryngo'), true),
-    lb('щитовидный хрящ', lp(0.35, -12.4), '#CFE3F0', () => sec() && (!st.reg || st.reg === 'laryngo') && DK, true),
-    lb('голосовая складка', lp(-1.0, -12.62), '#F2EEE6', () => sec() && ((!st.reg && DK) || st.reg === 'laryngo')),
-    lb('перстневидный хрящ', lp(-2.4, -14.1), '#CFE3F0', () => sec() && (!st.reg || st.reg === 'laryngo') && DK),
-    lb('трахея', sp(-1.0, -17.6), '#CFE3F0', () => sec() && !st.reg, true),
-    lb('пищевод', sp(-2.75, -18.0), '#F0A0A8', () => (sec() && !st.reg) || (sw() && (st.s < 0.66 || st.s > 0.95))),
-    lb('позвонок C2', sp(-6.0, -5.3), '#E8DCC8', () => sec() && !st.reg && DK),
-    lb('позвонок C6', sp(-5.9, -15.1), '#E8DCC8', () => sec() && !st.reg && DK),
-    lb('верхний пищеводный сфинктер', () => V3(0.25, -14.7, pwZ(-14.7) - 0.3), '#F09080', () => (sw() && DK) || (sec() && st.reg === 'laryngo')),
-    lb('комок пищи', () => V3(0.3, SW.by - 0.25, SW.bz), '#FFD08A', () => sw() && SW.bOn > 0 && st.s > 0.2 && st.s < 0.7),
-    lb('верхний констриктор', () => tubeP(-3.6, 0.7, -1, 0.1), '#F08890', mOn('sup')),
-    lb('средний констриктор', () => tubeP(-8.0, 0.8, -1, 0.25), '#F8B080', mOn('mid')),
-    lb('нижний констриктор', () => tubeP(-12.0, 0.75, -1, 0.4), '#F0D880', mOn('inf')),
-    lb('перстнеглоточная часть', () => tubeP(-14.65, 0.9, -1, 0.4), '#F0D880', () => mus() && (st.msel === 'inf' || (st.back && !st.msel))),
-    lb('шилоглоточная мышца', V3(-2.9, -5.2, -3.6), '#80E0D0', mOn('long')),
-    lb('шиловидный отросток', V3(-3.6, -3.4, -4.4), '#E8DCC8', () => mus() && (st.msel === 'long' || !st.msel) && DK),
-    lb('шов глотки', () => tubeP(-6.0, 0, 1, 0.45), '#F2EEE6', () => mus() && st.back && !st.msel, true),
-    lb('треугольник Киллиана', () => tubeP(-14.05, 0.12, 1, 0.45), '#F2EEE6', () => mus() && st.back && (!st.msel || st.msel === 'inf'), true),
-    lb('пищевод', V3(-0.9, -17.8, -3.6), '#F0A0A8', () => mus() && !st.msel),
-    lb('крылонижнечелюстной шов', V3(-2.1, -4.6, -0.45), '#F2EEE6', () => mus() && !st.back && st.msel === 'sup', true),
+    lb('nasopharynx', sp(-2.75, -1.95), '#9CD0FF', regOn('naso')),
+    lb('oropharynx', sp(-3.3, -5.8), '#A8E8BC', regOn('oro')),
+    lb('laryngopharynx', sp(-3.5, -11.2), '#DCC0FF', regOn('laryngo')),
+    lb('pharyngeal tonsil', sp(-2.9, -0.75), '#E8B8DC', () => sec() && (!st.reg || st.reg === 'naso') && DK),
+    lb('choanae', sp(-0.8, -1.0), '#E8DCC8', () => sec() && (!st.reg || st.reg === 'naso') && DK, true),
+    lb('sphenoid sinus', sp(-0.2, 1.45), '#E8DCC8', () => sec() && !st.reg && DK, true),
+    lb('spinal cord', sp(-7.6, -9.0), '#E3D9B6', () => sec() && !st.reg && DK),
+    lb('auditory tube opening', V3(-1.2, -1.85, -1.85), '#E8C8D0', () => sec() && (!st.reg || st.reg === 'naso'), true),
+    lb('soft palate', sp(-1.4, -3.45), '#F0A0A8', () => (sec() && (!st.reg || st.reg === 'naso' || st.reg === 'oro')) || sw(), true),
+    lb('hard palate', sp(3.2, -3.2), '#E8DCC8', () => sec() && !st.reg && DK, true),
+    lb('palatine tonsil', V3(-1.2, -5.35, -2.95), '#E8B8DC', () => sec() && ((!st.reg && DK) || st.reg === 'oro'), true),
+    lb('nasal conchae', V3(-1.2, -1.85, 2.2), '#F0B8C0', () => sec() && !st.reg && DK, true),
+    lb('tongue', sp(1.6, -6.9), '#F0A0A8', () => (sec() && !st.reg && DK) || sw(), true),
+    lb('epiglottis', () => V3(0.25, epiP[1], epiP[0]), '#F0E4A0', () => sec() || sw()),
+    lb('hyoid bone', () => V3(0.25, -10.3 + HYO.position.y, -0.2 + HYO.position.z), '#E8DCC8', () => sec() && (!st.reg || st.reg === 'laryngo'), true),
+    lb('thyroid cartilage', lp(0.35, -12.4), '#CFE3F0', () => sec() && (!st.reg || st.reg === 'laryngo') && DK, true),
+    lb('vocal fold', lp(-1.0, -12.62), '#F2EEE6', () => sec() && ((!st.reg && DK) || st.reg === 'laryngo')),
+    lb('cricoid cartilage', lp(-2.4, -14.1), '#CFE3F0', () => sec() && (!st.reg || st.reg === 'laryngo') && DK),
+    lb('trachea', sp(-1.0, -17.6), '#CFE3F0', () => sec() && !st.reg, true),
+    lb('esophagus', sp(-2.75, -18.0), '#F0A0A8', () => (sec() && !st.reg) || (sw() && (st.s < 0.66 || st.s > 0.95))),
+    lb('C2 vertebra', sp(-6.0, -5.3), '#E8DCC8', () => sec() && !st.reg && DK),
+    lb('C6 vertebra', sp(-5.9, -15.1), '#E8DCC8', () => sec() && !st.reg && DK),
+    lb('upper esophageal sphincter', () => V3(0.25, -14.7, pwZ(-14.7) - 0.3), '#F09080', () => (sw() && DK) || (sec() && st.reg === 'laryngo')),
+    lb('food bolus', () => V3(0.3, SW.by - 0.25, SW.bz), '#FFD08A', () => sw() && SW.bOn > 0 && st.s > 0.2 && st.s < 0.7),
+    lb('superior constrictor', () => tubeP(-3.6, 0.7, -1, 0.1), '#F08890', mOn('sup')),
+    lb('middle constrictor', () => tubeP(-8.0, 0.8, -1, 0.25), '#F8B080', mOn('mid')),
+    lb('inferior constrictor', () => tubeP(-12.0, 0.75, -1, 0.4), '#F0D880', mOn('inf')),
+    lb('cricopharyngeal part', () => tubeP(-14.65, 0.9, -1, 0.4), '#F0D880', () => mus() && (st.msel === 'inf' || (st.back && !st.msel))),
+    lb('stylopharyngeus', V3(-2.9, -5.2, -3.6), '#80E0D0', mOn('long')),
+    lb('styloid process', V3(-3.6, -3.4, -4.4), '#E8DCC8', () => mus() && (st.msel === 'long' || !st.msel) && DK),
+    lb('pharyngeal raphe', () => tubeP(-6.0, 0, 1, 0.45), '#F2EEE6', () => mus() && st.back && !st.msel, true),
+    lb('Killian’s triangle', () => tubeP(-14.05, 0.12, 1, 0.45), '#F2EEE6', () => mus() && st.back && (!st.msel || st.msel === 'inf'), true),
+    lb('esophagus', V3(-0.9, -17.8, -3.6), '#F0A0A8', () => mus() && !st.msel),
+    lb('pterygomandibular raphe', V3(-2.1, -4.6, -0.45), '#F2EEE6', () => mus() && !st.back && st.msel === 'sup', true),
   ];
   labels.forEach((l) => { if (typeof l.pos === 'function') { const f = l.pos; Object.defineProperty(l, 'pos', { get: f }); } });
 
   // =================== панель ===================
-  const INTRO = '<b>Глотка</b> — мышечная трубка длиной 12–14 см от основания черепа до VI шейного позвонка. Спереди она открыта в полость носа, рта и гортани, поэтому делится на носо-, рото- и гортаноглотку. В ротоглотке пути воздуха и пищи перекрещиваются. Выберите отдел.';
-  const PATHT = '<b>Перекрёст путей.</b> Воздух (голубой) идёт из носа через носоглотку и ротоглотку вперёд, в гортань и трахею. Пища (оранжевая) — из рта назад, в гортаноглотку и пищевод, который лежит позади трахеи. Пути пересекаются в ротоглотке, поэтому при глотании дыхание на миг прерывается.';
-  const INTRO2 = '<b>Мышцы глотки.</b> Снаружи — три констриктора, вложенные друг в друга, как стопка стаканов: нижний прикрывает средний, средний — верхний. Изнутри — продольные мышцы. Иннервация — IX и X пары через глоточное сплетение (шилоглоточная — только IX). Включите «Волну» или выберите мышцу; вид сзади — без позвоночника.';
+  const INTRO = '<b>The pharynx</b> is a muscular tube 12–14 cm long, running from the skull base to the 6th cervical vertebra. In front it opens into the nasal cavity, the mouth and the larynx, so it is divided into the naso-, oro- and laryngopharynx. In the oropharynx the paths of air and food cross. Choose a region.';
+  const PATHT = '<b>Where the paths cross.</b> Air (blue) flows from the nose through the nasopharynx and oropharynx forward into the larynx and trachea. Food (orange) goes from the mouth backward into the laryngopharynx and the esophagus, which lies behind the trachea. The paths cross in the oropharynx, so breathing pauses for an instant during each swallow.';
+  const INTRO2 = '<b>Pharyngeal muscles.</b> Outside are three constrictors nested inside one another like a stack of cups: the inferior overlaps the middle, the middle overlaps the superior. Inside are the longitudinal muscles. Nerve supply: cranial nerves IX and X via the pharyngeal plexus (stylopharyngeus — IX alone). Turn on “Wave” or choose a muscle; the back view hides the spine.';
   const refs = {};
   function ui(el) {
     const ib = infoBox('1 1 440px'); if (DK) ib.info.style.minHeight = '8.2em';
@@ -333,29 +331,29 @@ function makePharynx() {
       if (st.mode === 'mus') { ib.info.innerHTML = st.msel ? PH_MUS.find((m) => m.id === st.msel).text : INTRO2; return; }
       ib.info.innerHTML = st.reg ? PH_REG.find((r) => r.id === st.reg).text : st.paths ? PATHT : INTRO;
     };
-    refs.modeSeg = seg([{ id: 'sec', label: 'Отделы' }, { id: 'mus', label: 'Мышцы' }, { id: 'sw', label: 'Глотание' }], () => st.mode, (v) => setMode(v));
+    refs.modeSeg = seg([{ id: 'sec', label: 'Regions' }, { id: 'mus', label: 'Muscles' }, { id: 'sw', label: 'Swallowing' }], () => st.mode, (v) => setMode(v));
     const box = h('div', { class: 'grp', style: 'flex:1 1 520px' }), view = h('div', { class: 'gctl' });
     refs.rebuild = () => {
       box.innerHTML = ''; view.innerHTML = ''; refs.rseg = refs.mseg = refs.syncS = null;
       if (st.mode === 'sec') {
-        refs.rseg = seg([{ id: 'all', label: 'Все' }, ...PH_REG.map((r) => ({ id: r.id, label: r.name, color: r.col }))], () => st.reg || 'all', (v) => setReg(v));
-        box.append(h('div', { class: 'glabel' }, 'Отдел'), h('div', { class: 'gctl' }, refs.rseg));
-        view.append(toggle('Пути воздуха и пищи', () => st.paths, (v) => { st.paths = v; refs.setInfo(); }));
+        refs.rseg = seg([{ id: 'all', label: 'All' }, ...PH_REG.map((r) => ({ id: r.id, label: r.name, color: r.col }))], () => st.reg || 'all', (v) => setReg(v));
+        box.append(h('div', { class: 'glabel' }, 'Region'), h('div', { class: 'gctl' }, refs.rseg));
+        view.append(toggle('Pathways of air and food', () => st.paths, (v) => { st.paths = v; refs.setInfo(); }));
       } else if (st.mode === 'mus') {
-        refs.mseg = seg([{ id: 'all', label: 'Все' }, ...PH_MUS.map((m) => ({ id: m.id, label: m.name, color: m.col }))], () => st.msel || 'all', (v) => setMus(v));
-        box.append(h('div', { class: 'glabel' }, 'Мышцы', h('kbd', {}, 'клик')), h('div', { class: 'gctl' }, refs.mseg));
-        view.append(toggle('Вид сзади', () => st.back, (v) => { st.back = v; st.fly = v ? VIEW.back : VIEW.mus; }), toggle('Волна', () => st.wave, (v) => { st.wave = v; }), refs.rot);
+        refs.mseg = seg([{ id: 'all', label: 'All' }, ...PH_MUS.map((m) => ({ id: m.id, label: m.name, color: m.col }))], () => st.msel || 'all', (v) => setMus(v));
+        box.append(h('div', { class: 'glabel' }, 'Muscles', h('kbd', {}, 'click')), h('div', { class: 'gctl' }, refs.mseg));
+        view.append(toggle('Back view', () => st.back, (v) => { st.back = v; st.fly = v ? VIEW.back : VIEW.mus; }), toggle('Wave', () => st.wave, (v) => { st.wave = v; }), refs.rot);
       } else {
         const rg = range('phS', 0, 1, 0.005, () => st.s, (v) => { st.s = v; st.play = false; refs.playT && refs.playT.sync(); }, (v) => PH_PHASE[phaseOf(v)][1]);
         refs.syncS = () => { const r = rg.querySelector ? rg.querySelector('input') : null; if (r) r.value = st.s; const o = rg.querySelector ? rg.querySelector('output, .val, span:last-child') : null; if (o) o.textContent = PH_PHASE[phaseOf(st.s)][1]; };
-        box.append(h('div', { class: 'glabel' }, 'Ход глотания'), h('div', { class: 'gctl' }, rg));
-        refs.playT = toggle('Пуск', () => st.play, (v) => { st.play = v; }); view.append(refs.playT);
+        box.append(h('div', { class: 'glabel' }, 'Swallowing progress'), h('div', { class: 'gctl' }, rg));
+        refs.playT = toggle('Play', () => st.play, (v) => { st.play = v; }); view.append(refs.playT);
       }
       view.append(refs.lab);
     };
-    refs.rot = toggle('Вращение', () => st.rot, (v) => { st.rot = v; });
-    refs.lab = toggle('Подписи', () => st.labels, (v) => { st.labels = v; });
-    el.append(group('Режим', '1–3', refs.modeSeg), box, h('div', { class: 'grp' }, h('div', { class: 'glabel' }, 'Вид', h('kbd', {}, 'N · Space')), view), ib.el);
+    refs.rot = toggle('Rotate', () => st.rot, (v) => { st.rot = v; });
+    refs.lab = toggle('Labels', () => st.labels, (v) => { st.labels = v; });
+    el.append(group('Mode', '1–3', refs.modeSeg), box, h('div', { class: 'grp' }, h('div', { class: 'glabel' }, 'View', h('kbd', {}, 'N · Space')), view), ib.el);
     refs.rebuild(); refs.setInfo();
   }
   function onKey(e) {
@@ -368,30 +366,30 @@ function makePharynx() {
     return false;
   }
   function stats() {
-    if (st.mode === 'sw') return [['Фаза', PH_PHASE[phaseOf(st.s)][1], ''], ['Дыхание', SW.lar > 0.15 ? 'пауза' : 'идёт', '']];
-    if (st.mode === 'mus') return [['Констрикторов', 3, 'пары'], ['Нервы', 'IX, X', '']];
-    return [['Длина глотки', '12–14', 'см'], ['Отделов', 3, '']];
+    if (st.mode === 'sw') return [['Phase', PH_PHASE[phaseOf(st.s)][1], ''], ['Breathing', SW.lar > 0.15 ? 'paused' : 'ongoing', '']];
+    if (st.mode === 'mus') return [['Constrictors', 3, 'pairs'], ['Nerves', 'IX, X', '']];
+    return [['Pharynx length', '12–14', 'cm'], ['Regions', 3, '']];
   }
   const self = {
     labelBg: true, mobZoom: 0.8, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null,
     get accent() { return st.mode === 'sec' ? (st.reg ? PH_REG.find((r) => r.id === st.reg).col : '#7FD39A') : st.mode === 'mus' ? (st.msel ? PH_MUS.find((m) => m.id === st.msel).col : '#E8505E') : '#E0A458'; },
-    kicker: 'Тело · системы органов', title: 'Глотка и глотание',
-    lede: 'Глотка — перекрёсток: через неё идут и воздух, и пища. За секунду глотания мягкое нёбо закрывает нос, надгортанник — гортань, дыхание замирает, а три мышцы-констриктора волной проталкивают комок в пищевод.',
+    kicker: 'Body · organ systems', title: 'Pharynx and Swallowing',
+    lede: 'The pharynx is a crossroads: both air and food pass through it. In the second or so that a swallow lasts, the soft palate seals off the nose, the epiglottis covers the larynx, breathing stops, and three constrictor muscles push the bolus into the esophagus in a wave.',
     notes: `
-      <div><h2>Устройство</h2>
-        <p>Глотка — мышечная трубка позади полостей носа, рта и гортани. Её стенка состоит из слизистой оболочки, фиброзного слоя (глоточно-базилярной фасции) и мышц: снаружи — три констриктора, изнутри — продольные мышцы. Сзади от неё — рыхлое заглоточное пространство и предпозвоночные мышцы.</p>
-        <p>Вход в глотку окружает лимфоидное кольцо Пирогова — Вальдейера: глоточная и трубные миндалины вверху, нёбные по бокам, язычная внизу. Они первыми встречают микробы из воздуха и пищи.</p></div>
-      <div><h2>Как это работает</h2>
-        <p>Мы глотаем 500–1000 раз в сутки, в том числе во сне. Ротовая фаза произвольная, глоточная и пищеводная идут рефлекторно: центр глотания в продолговатом мозге по очереди включает мышцы и на это время выключает вдох.</p>
-        <p>Чтобы пища не попала в нос и гортань, работают четыре «затвора»: мягкое нёбо, надгортанник, черпалонадгортанные складки и сомкнутые голосовые складки. Подъём гортани под корень языка добавляет защиты и открывает верхний пищеводный сфинктер.</p></div>
-      <div><h2>Медицина</h2><ul>
-        <li><b>Дисфагия</b> — нарушение глотания после инсульта, при болезни Паркинсона и миастении; опасна аспирацией — попаданием пищи в дыхательные пути и пневмонией.</li>
-        <li><b>Аденоиды</b> — увеличенная глоточная миндалина у детей: затруднённое носовое дыхание, храп, отиты из-за закрытия устьев слуховых труб.</li>
-        <li><b>Ангина (тонзиллит)</b> — воспаление нёбных миндалин; паратонзиллярный абсцесс сдвигает язычок в здоровую сторону.</li>
-        <li><b>Дивертикул Ценкера</b> — выпячивание слизистой через треугольник Киллиана над перстнеглоточной частью: срыгивание непереваренной пищей, неприятный запах изо рта.</li>
-        <li><b>Приём Геймлиха</b> — при закупорке гортани куском пищи толчки в верхнюю часть живота выталкивают его током воздуха из лёгких.</li></ul></div>
-      <div><h2>Условности</h2><ul><li>Режимы 1 и 3 — схематичный срединный разрез головы и шеи (правая половина, вид изнутри): ткани упрощены, слизистая не показана целиком; боковая стенка просвета — тёмный фон, миндалина, устье трубы и носовые раковины на ней — без перспективы; перегородка носа убрана. Срез ограничен основанием черепа, профиль лица и шеи условен.</li><li>Режим 2: позвоночник убран, череп полупрозрачный, его свод срезан; подъязычная кость и хрящи гортани упрощены и почти скрыты мышцами; мышцы — тонкие листы на условной трубке глотки, нёбно-глоточная и трубно-глоточная мышцы внутри не показаны.</li><li>Глотание замедлено примерно в 4 раза; движения нёба, языка, гортани и надгортанника — средние, форма и размер комка схематичны, грушевидные карманы (по ним комок обходит вход в гортань) не показаны.</li></ul></div>
-      <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>3</code> режим · <code>Esc</code> сбросить выбор</li><li><code>Space</code> пуск глотания · <code>R</code> вращение · <code>N</code> подписи</li></ul></div>`,
+      <div><h2>Structure</h2>
+        <p>The pharynx is a muscular tube behind the nasal cavity, the mouth and the larynx. Its wall consists of mucosa, a fibrous layer (the pharyngobasilar fascia) and muscle: three constrictors outside and longitudinal muscles inside. Behind it lie the loose retropharyngeal space and the prevertebral muscles.</p>
+        <p>The entrance to the pharynx is ringed by Waldeyer’s lymphoid ring: the pharyngeal and tubal tonsils above, the palatine tonsils at the sides, the lingual tonsil below. They are the first to meet microbes from air and food.</p></div>
+      <div><h2>How it works</h2>
+        <p>We swallow 500–1000 times a day, including during sleep. The oral phase is voluntary; the pharyngeal and esophageal phases are reflexive: the swallowing center in the medulla switches the muscles on in sequence and briefly shuts off inhalation.</p>
+        <p>Four “gates” keep food out of the nose and larynx: the soft palate, the epiglottis, the aryepiglottic folds and the closed vocal folds. Lifting the larynx up under the root of the tongue adds protection and opens the upper esophageal sphincter.</p></div>
+      <div><h2>Medicine</h2><ul>
+        <li><b>Dysphagia</b> — impaired swallowing after a stroke, in Parkinson’s disease and myasthenia gravis; dangerous because of aspiration — food entering the airway — and pneumonia.</li>
+        <li><b>Adenoids</b> — an enlarged pharyngeal tonsil in children: blocked nasal breathing, snoring, ear infections when the auditory tube openings are covered.</li>
+        <li><b>Tonsillitis</b> — inflammation of the palatine tonsils; a peritonsillar abscess pushes the uvula toward the healthy side.</li>
+        <li><b>Zenker’s diverticulum</b> — an outpouching of mucosa through Killian’s triangle above the cricopharyngeal part: regurgitation of undigested food, bad breath.</li>
+        <li><b>The Heimlich maneuver</b> — when a piece of food blocks the larynx, abdominal thrusts just below the rib cage expel it with a burst of air from the lungs.</li></ul></div>
+      <div><h2>Conventions</h2><ul><li>Modes 1 and 3 show a schematic midline section of the head and neck (right half, seen from inside): tissues are simplified and the mucosa is not shown in full; the side wall of the lumen is a dark backdrop, and the tonsil, the tube opening and the nasal conchae on it are drawn without perspective; the nasal septum is removed. The section stops at the skull base, and the face and neck profile is schematic.</li><li>Mode 2: the spine is removed, and the skull is translucent with its vault cut away; the hyoid bone and laryngeal cartilages are simplified and mostly hidden by the muscles; the muscles are thin sheets on a schematic pharyngeal tube, and palatopharyngeus and salpingopharyngeus inside are not shown.</li><li>Swallowing is slowed about fourfold; movements of the palate, tongue, larynx and epiglottis are averaged, the bolus shape and size are schematic, and the piriform recesses (where the bolus flows around the laryngeal inlet) are not shown.</li></ul></div>
+      <div class="keys"><h2>Keys</h2><ul><li><code>1</code>–<code>3</code> mode · <code>Esc</code> clear selection</li><li><code>Space</code> play swallow · <code>R</code> rotate · <code>N</code> labels</li></ul></div>`,
   };
   { const RR = 4.2, cz = -8.4 + RR, cy = 2.6 - RR, CLP = [new THREE.Plane(V3(0, 1, 0), 19.5)];
     [0.2, 0.45, 0.7, 0.95, 1.2, 1.37].forEach((th) => CLP.push(new THREE.Plane(V3(0, -Math.sin(th), Math.cos(th)), RR - Math.cos(th) * cz + Math.sin(th) * cy)));

@@ -1,5 +1,4 @@
-import { THREE, V3, __set_rnd, envTex, flyStep, flyTarget, group, h, infoBox, labLights, makeControls, mulberry, pickOn, range, rnd, seg, toggle } from '../core.js';
-import { loadSkeletonStatic } from './kit.js';
+import { THREE, V3, __set_rnd, envTex, flyStep, flyTarget, group, h, infoBox, labLights, loadSkeletonStatic, makeControls, mulberry, pickOn, range, rnd, seg, toggle } from '../core.js';
 
 
 // @scene nose makeNose | Нос и околоносовые пазухи | @body Системы органов

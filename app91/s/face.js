@@ -1,5 +1,4 @@
-import { THREE, V3, __set_rnd, envTex, flyStep, flyTarget, group, h, infoBox, labLights, makeControls, mulberry, pickOn, range, rnd, seg, toggle } from '../core.js';
-import { loadSkeletonStatic } from './kit.js';
+import { THREE, V3, __set_rnd, envTex, flyStep, flyTarget, group, h, infoBox, labLights, loadSkeletonStatic, makeControls, mulberry, pickOn, range, rnd, seg, toggle } from '../core.js';
 
 
 // @scene face makeFace | Мимика и жевание | @body Опора и движение
@@ -10,48 +9,48 @@ import { loadSkeletonStatic } from './kit.js';
    Начало координат — точка скана черепа (MX, 16.0, 0.6), 1 ед. скана ≈ 12,5 см (как в сцене nose).
    ========================================================= */
 const FA_MUS = [
-  { id: 'front', name: 'frontal belly', text: 'The <b>frontal belly</b> of the occipitofrontalis arises from the galea aponeurotica on the top of the skull and blends into the skin of the eyebrows. It raises the brows and folds the forehead into horizontal wrinkles, the look of surprise and attention.' },
-  { id: 'oculi', name: 'orbicularis oculi', text: '<b>Orbicularis oculi</b> is a ring around the eye opening. Its palpebral part, in the lids, closes them when you blink or sleep; its orbital part, along the rim of the orbit, squeezes the eyes shut and gathers crow\'s feet at their corners. The lacrimal part helps tears drain.' },
-  { id: 'corr', name: 'corrugator supercilii', text: '<b>Corrugator supercilii</b> lies under the frontal belly and orbicularis oculi, running from the nasal part of the frontal bone to the skin of the mid-brow. It pulls the brows down and together, raising vertical frown lines above the bridge of the nose.' },
-  { id: 'proc', name: 'procerus', text: '<b>Procerus</b> is a small strip on the bridge of the nose, from the nasal bones to the skin between the brows. It pulls that skin down, creasing the bridge of the nose crosswise: a look of threat, distaste or strain.' },
-  { id: 'nasal', name: 'nasalis', text: '<b>Nasalis.</b> Its transverse part runs from the maxilla above the canine over the bridge of the nose to an aponeurosis there and compresses the nostril. The alar part pulls the wing of the nose down and widens the nostril: the flared nostrils of a deep breath or anger.' },
-  { id: 'llab', name: 'levator labii superioris', text: '<b>Levator labii superioris</b> arises at the lower rim of the orbit, above the infraorbital foramen, and blends into the upper lip. It raises and everts the lip and deepens the nasolabial fold: in disgust, crying and squinting.' },
-  { id: 'zmin', name: 'zygomaticus minor', text: '<b>Zygomaticus minor</b> runs from the zygomatic bone to the upper lip, medial to the major. It lifts the upper lip and deepens the nasolabial fold; it works in a smile and in a sad face.' },
-  { id: 'zmaj', name: 'zygomaticus major', text: '<b>Zygomaticus major</b> is the main smiling muscle: from the zygomatic bone to the corner of the mouth, where it joins the modiolus, a knot where fibers of several muscles meet. It pulls the corner up and out. When it is split in two, a smile shows a dimple.' },
-  { id: 'ris', name: 'risorius', text: '<b>Risorius</b> is a thin, inconstant band from the fascia over the parotid gland and masseter to the corner of the mouth. It pulls the corner straight sideways: a wide grin, a bared-teeth grimace, a look of strain.' },
-  { id: 'oris', name: 'orbicularis oris', text: '<b>Orbicularis oris</b> is the core of the lips. Its fibers do not attach to bone; they interlace with other muscles at the corners of the mouth. It closes and presses the lips and purses them; speech, whistling, drinking and keeping food in the mouth depend on it.' },
-  { id: 'dao', name: 'depressor anguli oris', text: '<b>Depressor anguli oris</b> is triangular: its broad base arises from the mandible and its apex reaches the corner of the mouth. It pulls the corner down and out: sadness, displeasure, doubt.' },
-  { id: 'dli', name: 'depressor labii inferioris', text: '<b>Depressor labii inferioris</b> runs from the mandible, deep to the triangular depressor, to the skin of the lower lip. It pulls the lip down and out, baring the lower teeth: in disgust, fright and speech.' },
-  { id: 'ment', name: 'mentalis', text: '<b>Mentalis</b> runs from the sockets of the lower incisors down to the skin of the chin. It raises and wrinkles the chin skin (“orange peel”) and pushes out the lower lip: when hurt, doubtful or about to cry.' },
-  { id: 'bucc', name: 'buccinator', text: '<b>Buccinator</b> is the core of the cheek: from both jaws near the molars and from the pterygomandibular raphe to the corner of the mouth. It presses the cheek against the teeth so food does not lodge outside them, and pushes air out when you blow out a candle or play the trumpet.' },
-  { id: 'plat', name: 'platysma', text: '<b>Platysma</b>, a thin, broad sheet under the skin of the neck: from the skin above the clavicle and chest to the edge of the mandible and the corner of the mouth. It pulls the corners of the mouth down and tenses the neck skin: in fright and great strain.' },
+  { id: 'front', name: 'лобное брюшко', text: '<b>Лобное брюшко</b> затылочно-лобной мышцы начинается от сухожильного шлема на своде черепа и вплетается в кожу бровей. Сокращаясь, оно поднимает брови и собирает лоб в поперечные морщины — так выглядят удивление и внимание.' },
+  { id: 'oculi', name: 'круговая мышца глаза', text: '<b>Круговая мышца глаза</b> — кольцо вокруг глазной щели. Вековая часть в веках смыкает их при моргании и во сне, глазничная часть по краю глазницы с силой зажмуривает глаза и собирает у их углов «гусиные лапки». Слёзная часть помогает оттоку слёз.' },
+  { id: 'corr', name: 'сморщивающая бровь', text: '<b>Мышца, сморщивающая бровь,</b> лежит под лобным брюшком и круговой мышцей глаза: от носовой части лобной кости к коже середины брови. Тянет брови вниз и к середине — над переносицей появляются вертикальные складки хмурости и сосредоточенности.' },
+  { id: 'proc', name: 'мышца гордецов', text: '<b>Мышца гордецов</b> — небольшая полоска на спинке носа: от носовых костей к коже между бровями. Опускает кожу межбровья, и на переносице появляются поперечные складки — выражение угрозы, неприязни или напряжения.' },
+  { id: 'nasal', name: 'носовая', text: '<b>Носовая мышца.</b> Её поперечная часть идёт от верхней челюсти над клыком через спинку носа к сухожилию на ней и сжимает ноздрю. Крыльная часть оттягивает крыло носа вниз и расширяет ноздрю — так «раздуваются ноздри» при глубоком вдохе и гневе.' },
+  { id: 'llab', name: 'поднимающая верхнюю губу', text: '<b>Мышца, поднимающая верхнюю губу,</b> начинается у нижнего края глазницы, над подглазничным отверстием, и вплетается в верхнюю губу. Поднимает и выворачивает губу, углубляя носогубную складку, — при брезгливости, плаче, зажмуривании.' },
+  { id: 'zmin', name: 'малая скуловая', text: '<b>Малая скуловая мышца</b> идёт от скуловой кости к верхней губе, медиальнее большой. Приподнимает верхнюю губу и углубляет носогубную складку; работает в улыбке и в печальном выражении лица.' },
+  { id: 'zmaj', name: 'большая скуловая', text: '<b>Большая скуловая мышца</b> — главная мышца улыбки: от скуловой кости к углу рта, где вплетается в модиолус — узел, в котором сходятся волокна нескольких мышц. Тянет угол рта вверх и в сторону. Иногда она раздвоена — тогда при улыбке на щеке видна ямочка.' },
+  { id: 'ris', name: 'мышца смеха', text: '<b>Мышца смеха</b> — тонкий и непостоянный пучок: от фасции над околоушной железой и жевательной мышцей к углу рта. Тянет угол рта прямо в сторону — широкая улыбка, оскал, гримаса напряжения.' },
+  { id: 'oris', name: 'круговая мышца рта', text: '<b>Круговая мышца рта</b> — основа губ. Её волокна не прикрепляются к кости, а переплетаются у углов рта с волокнами других мышц. Смыкает и сжимает губы, вытягивает их «трубочкой»; без неё невозможны речь, свист, питьё и удержание пищи во рту.' },
+  { id: 'dao', name: 'опускающая угол рта', text: '<b>Мышца, опускающая угол рта,</b> треугольная: широким основанием начинается от нижней челюсти, верхушкой подходит к углу рта. Тянет угол рта вниз и в сторону — выражение грусти, недовольства, сомнения.' },
+  { id: 'dli', name: 'опускающая нижнюю губу', text: '<b>Мышца, опускающая нижнюю губу,</b> идёт от нижней челюсти, глубже треугольной мышцы, к коже нижней губы. Тянет губу вниз и в сторону, обнажая нижние зубы, — при брезгливости, испуге и в речи.' },
+  { id: 'ment', name: 'подбородочная', text: '<b>Подбородочная мышца</b> идёт от альвеол нижних резцов вниз, к коже подбородка. Поднимает и морщит кожу подбородка («апельсиновая корка») и выпячивает нижнюю губу — при обиде, сомнении, перед плачем.' },
+  { id: 'bucc', name: 'щёчная', text: '<b>Щёчная мышца</b> — основа щеки: от челюстей у коренных зубов и от крыловидно-нижнечелюстного шва к углу рта. Прижимает щёку к зубам, чтобы пища не застревала за ними, и выталкивает воздух, когда задуваешь свечу или играешь на трубе.' },
+  { id: 'plat', name: 'платизма', text: '<b>Подкожная мышца шеи</b> (платизма) — тонкий широкий пласт под кожей шеи: от кожи над ключицей и грудью до края нижней челюсти и угла рта. Тянет углы рта вниз и натягивает кожу шеи — при испуге и сильном напряжении.' },
 ];
 const FA_EXP = [
-  { id: 'rest', name: 'Rest', act: {} },
-  { id: 'smile', name: 'Smile', act: { zmaj: 1, zmin: 0.5, ris: 0.45, oculi: 0.35, llab: 0.25 }, text: '<b>Smile.</b> Zygomaticus major pulls the corners of the mouth up and out, zygomaticus minor and levator labii raise the lip, risorius widens the mouth. In a genuine smile the orbital part of orbicularis oculi joins in, and crow\'s feet gather at the eyes.' },
-  { id: 'surp', name: 'Surprise', act: { front: 1, oculi: -0.7 }, text: '<b>Surprise.</b> The frontal bellies raise the brows, and the forehead folds into horizontal wrinkles. The eyes open wide: the upper lid is lifted not by a facial muscle but by the levator palpebrae superioris, supplied by the oculomotor nerve. The mouth often drops open.' },
-  { id: 'frown', name: 'Frown', act: { corr: 1, proc: 1, oculi: 0.3 }, text: '<b>Frown.</b> The corrugators draw the brows together and down, raising vertical lines, and procerus pulls the skin between the brows down, creasing the bridge of the nose crosswise. The orbital part of orbicularis oculi narrows the eyes.' },
-  { id: 'sad', name: 'Sadness', act: { dao: 1, ment: 0.6, corr: 0.5, front: 0.35, dli: 0.3 }, text: '<b>Sadness.</b> The depressors pull the corners of the mouth down; mentalis raises the chin skin and pushes out the lower lip. The inner ends of the brows rise (medial fibers of the frontal belly) and draw together (corrugators).' },
-  { id: 'squeeze', name: 'Squeeze shut', act: { oculi: 1, corr: 0.7, proc: 0.7, nasal: 0.7, llab: 0.5, zmaj: 0.2 }, text: '<b>Squeezing the eyes shut.</b> Orbicularis oculi contracts as a whole, orbital part included: the lids close tight, the brows come down, and the skin around the eyes bunches into folds. Corrugator, procerus, nasalis and levator labii work with it.' },
-  { id: 'pucker', name: 'Pucker', act: { oris: 1, ment: 0.4, bucc: 0.5 }, text: '<b>Pucker.</b> Orbicularis oris presses the lips together and pushes them forward: for whistling, kissing, drinking through a straw. The buccinators press the cheeks against the teeth, and mentalis raises the skin of the chin.' },
+  { id: 'rest', name: 'Покой', act: {} },
+  { id: 'smile', name: 'Улыбка', act: { zmaj: 1, zmin: 0.5, ris: 0.45, oculi: 0.35, llab: 0.25 }, text: '<b>Улыбка.</b> Большая скуловая мышца тянет углы рта вверх и в стороны, малая скуловая и поднимающая верхнюю губу приподнимают губу, мышца смеха растягивает рот. В искренней улыбке включается и глазничная часть круговой мышцы глаза — у глаз собираются «гусиные лапки».' },
+  { id: 'surp', name: 'Удивление', act: { front: 1, oculi: -0.7 }, text: '<b>Удивление.</b> Лобные брюшка поднимают брови, лоб собирается в поперечные морщины. Глаза широко открываются: верхнее веко поднимает уже не мимическая мышца, а мышца, поднимающая верхнее веко (её иннервирует глазодвигательный нерв). Рот часто приоткрыт.' },
+  { id: 'frown', name: 'Хмурость', act: { corr: 1, proc: 1, oculi: 0.3 }, text: '<b>Хмурость.</b> Мышцы, сморщивающие брови, сводят брови к середине и опускают их — появляются вертикальные складки, а мышца гордецов опускает кожу межбровья — на переносице появляются поперечные. Глазничная часть круговой мышцы прищуривает глаза.' },
+  { id: 'sad', name: 'Грусть', act: { dao: 1, ment: 0.6, corr: 0.5, front: 0.35, dli: 0.3 }, text: '<b>Грусть.</b> Мышцы, опускающие углы рта, тянут их вниз; подбородочная поднимает кожу подбородка и выпячивает нижнюю губу. Внутренние концы бровей поднимаются (медиальные волокна лобного брюшка) и сдвигаются к середине (мышцы, сморщивающие брови).' },
+  { id: 'squeeze', name: 'Зажмуриться', act: { oculi: 1, corr: 0.7, proc: 0.7, nasal: 0.7, llab: 0.5, zmaj: 0.2 }, text: '<b>Зажмуривание.</b> Круговые мышцы глаз сокращаются целиком, вместе с глазничной частью: веки плотно смыкаются, брови опускаются, кожа вокруг глаз собирается в складки. С ними работают мышцы, сморщивающие брови, мышца гордецов, носовая и поднимающая верхнюю губу.' },
+  { id: 'pucker', name: '«Трубочка»', act: { oris: 1, ment: 0.4, bucc: 0.5 }, text: '<b>«Трубочка».</b> Круговая мышца рта сжимает губы и вытягивает их вперёд — для свиста, поцелуя, питья через соломинку. Щёчные мышцы прижимают щёки к зубам, подбородочная поднимает кожу подбородка.' },
 ];
 const FA_MAS = [
-  { id: 'temp', name: 'Temporalis', col: '#F0A050', text: '<b>Temporalis</b> fans out from the temporal fossa and temporal fascia; its tendon passes under the zygomatic arch to the coronoid process. Its front fibers raise the jaw, the rear, nearly horizontal ones pull it back. Clench your teeth and you feel it tighten at the temple.' },
-  { id: 'mass', name: 'Masseter', col: '#E8505E', text: '<b>Masseter</b>, the strongest of the four: from the zygomatic arch to the outer surface of the ramus and angle of the mandible. The superficial part runs obliquely back, the deep part almost vertically. It raises the jaw powerfully; clench your teeth to feel it on the cheek.' },
-  { id: 'medp', name: 'Medial pterygoid', col: '#B87BE0', text: '<b>Medial pterygoid</b>, from the fossa between the plates of the pterygoid process and the maxillary tuberosity to the inner surface of the angle of the mandible. It raises the jaw and helps protrude it and shift it to the other side. With the masseter it slings the angle.' },
-  { id: 'latp', name: 'Lateral pterygoid', col: '#45C4B0', text: '<b>Lateral pterygoid</b> runs almost horizontally: the upper head from the greater wing of the sphenoid to the articular disc and capsule, the lower head from the pterygoid process to the neck of the condyle. It protrudes the jaw and starts mouth opening; acting on one side, it shifts the jaw to the opposite side.' },
+  { id: 'temp', name: 'Височная мышца', col: '#F0A050', text: '<b>Височная мышца</b> веером начинается в височной ямке и от височной фасции; её сухожилие проходит под скуловой дугой к венечному отростку. Передние волокна поднимают челюсть, задние, почти горизонтальные, оттягивают её назад. Когда стискиваешь зубы, она напрягается на виске.' },
+  { id: 'mass', name: 'Жевательная', col: '#E8505E', text: '<b>Жевательная мышца</b> — самая сильная из четырёх: от скуловой дуги к наружной поверхности ветви и угла челюсти. Поверхностная часть идёт косо назад, глубокая — почти вертикально. Мощно поднимает челюсть; её легко нащупать на щеке, стиснув зубы.' },
+  { id: 'medp', name: 'Медиальная крыловидная', col: '#B87BE0', text: '<b>Медиальная крыловидная мышца</b> — от ямки между пластинками крыловидного отростка и от бугра верхней челюсти к внутренней поверхности угла челюсти. Поднимает челюсть, помогает выдвигать её и сдвигать в противоположную сторону. С жевательной образует петлю вокруг угла.' },
+  { id: 'latp', name: 'Латеральная крыловидная', col: '#45C4B0', text: '<b>Латеральная крыловидная мышца</b> идёт почти горизонтально: верхняя головка — от большого крыла клиновидной кости к суставному диску и капсуле, нижняя — от крыловидного отростка к шейке мыщелка. Выдвигает челюсть, начинает открывание рта; сокращаясь с одной стороны, сдвигает челюсть в противоположную.' },
 ];
 const FA_MOVE = [
-  { id: 'close', name: 'Close', text: '<b>Closing.</b> The temporalis, masseter and medial pterygoid raise the jaw. The masseter and medial pterygoid hold the angle of the mandible from both sides like a sling. An adult\'s bite force at the molars is usually 40–80 kg (90–175 lb).' },
-  { id: 'open', name: 'Open', text: '<b>Opening.</b> The lower heads of the lateral pterygoids pull the condyles forward onto the articular eminences, and the muscles under the chin (digastric and other suprahyoids; not shown) lower the jaw. Meanwhile the elevators relax and stretch.' },
-  { id: 'prot', name: 'Protrude', text: '<b>Protrusion.</b> Both lateral pterygoids pull the condyles forward and down along the eminences at once, helped by the medial pterygoids. The lower incisors move ahead of the upper ones. The rear fibers of the temporalis pull the jaw back.' },
-  { id: 'side', name: 'Sideways', text: '<b>Lateral shift.</b> The jaw moves left: the right condyle slides forward onto the eminence (pulled by the right lateral and medial pterygoids), while the left one turns almost in place about a vertical axis. This is how the teeth grind food.' },
-  { id: 'chew', name: 'Chew', text: '<b>Chewing</b> is a cycle of about a second: the jaw drops, swings to the working side, rises with force and, teeth sliding on teeth, returns to the midline. A pattern generator in the brainstem sets the rhythm; receptors in the ligaments of the teeth tune the force.' },
+  { id: 'close', name: 'Сомкнуть', text: '<b>Смыкание.</b> Челюсть поднимают височные, жевательные и медиальные крыловидные мышцы. Жевательная и медиальная крыловидная охватывают угол челюсти с двух сторон, как петля. Сила смыкания на коренных зубах у взрослого — обычно 40–80 кг.' },
+  { id: 'open', name: 'Открыть', text: '<b>Открывание.</b> Нижние головки латеральных крыловидных мышц тянут мыщелки вперёд, на суставные бугорки, а мышцы под подбородком (двубрюшная и другие надподъязычные; здесь не показаны) опускают челюсть. Поднимающие мышцы в это время расслаблены и растягиваются.' },
+  { id: 'prot', name: 'Выдвинуть', text: '<b>Выдвижение.</b> Обе латеральные крыловидные мышцы одновременно тянут мыщелки вперёд и вниз по суставным бугоркам, им помогают медиальные крыловидные. Нижние резцы выходят вперёд верхних. Назад челюсть возвращают задние волокна височных мышц.' },
+  { id: 'side', name: 'В сторону', text: '<b>Сдвиг в сторону.</b> Челюсть уходит влево: правый мыщелок выезжает вперёд на бугорок (его тянут правые латеральная и медиальная крыловидные), а левый почти на месте поворачивается вокруг вертикальной оси. Так зубы перетирают пищу.' },
+  { id: 'chew', name: 'Жевать', text: '<b>Жевание</b> — цикл около секунды: челюсть опускается, уходит в рабочую сторону, с силой поднимается и, скользя зубами по зубам, возвращается к середине. Ритм задаёт генератор в стволе мозга, а силу подстраивают рецепторы в связках зубов.' },
 ];
 const FA_TMJ = [
-  [0.03, '<b>Temporomandibular joint</b>, section through the right condyle. The head of the mandible sits in the mandibular fossa of the temporal bone, with the articular eminence in front. Between them is a disc of dense fibrous tissue that splits the joint into upper and lower compartments. Move the slider to open the mouth.'],
-  [0.4, '<b>Rotation.</b> Early in opening (up to about 20–25 mm, 1 in, between the incisors) the head turns under the disc like a hinge: the lower compartment works. The condyle barely moves, while the chin drops and swings slightly back.'],
-  [1.01, '<b>Gliding.</b> Then the lateral pterygoid pulls the head and disc together forward onto the eminence: the upper compartment works. The disc rotates backward relative to the head, and the retrodiscal tissue stretches. The mouth usually opens 40–50 mm (about 2 in).'],
+  [0.03, '<b>Височно-нижнечелюстной сустав</b>, разрез через правый мыщелок. Головка нижней челюсти лежит в суставной ямке височной кости, впереди — суставной бугорок. Между ними — диск из плотной волокнистой ткани; он делит сустав на верхний и нижний этажи. Двигайте ползунок — рот откроется.'],
+  [0.4, '<b>Вращение.</b> В начале открывания (примерно до 20–25 мм между резцами) головка поворачивается под диском, как в шарнире, — работает нижний этаж сустава. Мыщелок почти не смещается, а подбородок опускается и немного уходит назад.'],
+  [1.01, '<b>Скольжение.</b> Дальше латеральная крыловидная мышца тянет головку вместе с диском вперёд, на суставной бугорок, — работает верхний этаж. Диск поворачивается назад относительно головки, ретродискальная ткань растягивается. Обычно рот открывается на 40–50 мм.'],
 ];
 function makeFace() {
   __set_rnd(mulberry(2003));
@@ -448,74 +447,74 @@ function makeFace() {
   const nb0 = (k, i, off = 0.7) => () => { const d = NBR[k][i]; return snap(V3(-d[0], d[1], d[2]), off) || V3(-d[0], d[1], d[2]); };
   const labels = [
     ...FA_MUS.map((mu) => ({ text: mu.name, get pos() { return MUS[mu.id] ? MUS[mu.id].anchor : V3(0, 0, 0); }, color: '#FFB0A0', left: !!LEFTM[mu.id], show: () => st.labels && st.loaded && musShow(mu.id)() })),
-    lb('facial nerve', V3(-4.6, -2.7, -6.4), '#F2D45A', () => mim() && st.nerve && !st.sel && DK, true),
-    lb('parotid gland', V3(-8.3, -6.2, -4.6), '#F2C78A', () => mim() && st.nerve && !st.sel, true),
-    lb('parotid duct', nb0('bucc', 2, 1.3), '#F5E2B8', () => mim() && st.nerve && !st.sel && DK, false),
-    lb('temporal branches', nb0('temp', 3), '#F2D45A', () => mim() && st.nerve && !st.sel, true),
-    lb('zygomatic branches', nb0('zyg', 3), '#F2D45A', () => mim() && st.nerve && !st.sel, true),
-    lb('buccal branches', nb0('bucc', 3, 0.8), '#F2D45A', () => mim() && st.nerve && !st.sel, false),
-    lb('marginal mandibular branch', nb0('mand', 3, 1.0), '#F2D45A', () => mim() && st.nerve && !st.sel, true),
-    lb('cervical branch', V3(-6.2, -13.6, -3.6), '#F2D45A', () => mim() && st.nerve && !st.sel, true),
-    lb('palsy', V3(5.2, -6.5, 3.2), '#E8DCC8', () => mim() && st.bell && !st.sel),
+    lb('лицевой нерв', V3(-4.6, -2.7, -6.4), '#F2D45A', () => mim() && st.nerve && !st.sel && DK, true),
+    lb('околоушная железа', V3(-8.3, -6.2, -4.6), '#F2C78A', () => mim() && st.nerve && !st.sel, true),
+    lb('околоушный проток', nb0('bucc', 2, 1.3), '#F5E2B8', () => mim() && st.nerve && !st.sel && DK, false),
+    lb('височные ветви', nb0('temp', 3), '#F2D45A', () => mim() && st.nerve && !st.sel, true),
+    lb('скуловые ветви', nb0('zyg', 3), '#F2D45A', () => mim() && st.nerve && !st.sel, true),
+    lb('щёчные ветви', nb0('bucc', 3, 0.8), '#F2D45A', () => mim() && st.nerve && !st.sel, false),
+    lb('краевая ветвь', nb0('mand', 3, 1.0), '#F2D45A', () => mim() && st.nerve && !st.sel, true),
+    lb('шейная ветвь', V3(-6.2, -13.6, -3.6), '#F2D45A', () => mim() && st.nerve && !st.sel, true),
+    lb('паралич', V3(5.2, -6.5, 3.2), '#E8DCC8', () => mim() && st.bell && !st.sel),
     // режим 2
-    lb('temporalis', () => { const o = MS.find((q) => q.id === 'temp' && q.s === -1); return o ? o.guides[2].S[0] : V3(0, 0, 0); }, '#F0A050', () => chew() && (!st.msel || st.msel === 'temp')),
-    lb('masseter', msMid('mass'), '#FF8A94', () => chew() && (!st.msel || st.msel === 'mass')),
-    lb('deep part', msMid('massD'), '#E8707A', () => chew() && st.msel === 'mass', true),
-    lb('medial pterygoid', msMid('medp'), '#D8A8F0', () => chew() && (st.msel === 'medp' || st.msel === 'latp'), true),
-    lb('lateral pterygoid', msMid('latp'), '#7FE0D0', () => chew() && (st.msel === 'medp' || st.msel === 'latp')),
-    lb('zygomatic arch', V3(-8.3, 0.4, -1.6), '#E8DCC8', () => chew() && DK && !st.msel),
-    lb('condyle', jawW(-6.9, -1.2, -5.1), '#E8DCC8', () => chew() && (DK || st.msel === 'latp'), true),
-    lb('coronoid process', jawW(-6.8, -1.6, -2.3), '#E8DCC8', () => chew() && st.msel === 'temp'),
-    lb('angle of mandible', jawW(-5.6, -10.3, -3.6), '#E8DCC8', () => chew() && DK && st.msel === 'medp', true),
+    lb('височная', () => { const o = MS.find((q) => q.id === 'temp' && q.s === -1); return o ? o.guides[2].S[0] : V3(0, 0, 0); }, '#F0A050', () => chew() && (!st.msel || st.msel === 'temp')),
+    lb('жевательная', msMid('mass'), '#FF8A94', () => chew() && (!st.msel || st.msel === 'mass')),
+    lb('глубокая часть', msMid('massD'), '#E8707A', () => chew() && st.msel === 'mass', true),
+    lb('медиальная крыловидная', msMid('medp'), '#D8A8F0', () => chew() && (st.msel === 'medp' || st.msel === 'latp'), true),
+    lb('латеральная крыловидная', msMid('latp'), '#7FE0D0', () => chew() && (st.msel === 'medp' || st.msel === 'latp')),
+    lb('скуловая дуга', V3(-8.3, 0.4, -1.6), '#E8DCC8', () => chew() && DK && !st.msel),
+    lb('мыщелок', jawW(-6.9, -1.2, -5.1), '#E8DCC8', () => chew() && (DK || st.msel === 'latp'), true),
+    lb('венечный отросток', jawW(-6.8, -1.6, -2.3), '#E8DCC8', () => chew() && st.msel === 'temp'),
+    lb('угол челюсти', jawW(-5.6, -10.3, -3.6), '#E8DCC8', () => chew() && DK && st.msel === 'medp', true),
     // режим 3
-    lb('mandibular fossa', tw(0.1, 0.88), '#E8DCC8', () => tmj()),
-    lb('articular eminence', tw(2.3, 0.45), '#E8DCC8', () => tmj()),
-    lb('disc', () => { const p = discPt(118, true); return tw(p[0], p[1]); }, '#9CC8F0', () => tmj(), true),
-    lb('head of mandible', () => { const p = jawPt([0.0, -0.7]); return tw(p[0], p[1]); }, '#F2E8D2', () => tmj(), true),
-    lb('capsule', () => { const a = jawPt([0.52, -1.0]); return tw((a[0] + 2.45) / 2 + 0.05, (a[1] + 0.42) / 2); }, '#9FD0F0', () => tmj() && DK),
-    lb('lateral pterygoid', () => { const a = jawPt([0.5, -0.62]); return tw((a[0] + 3.7) / 2 + 0.4, (a[1] - 0.78) / 2 - 0.05); }, '#7FE0D0', () => tmj()),
-    lb('retrodiscal tissue', () => { const a = discPt(146, true); return tw((a[0] - 0.8) / 2, (a[1] + 0.48) / 2 - 0.25); }, '#F2B0BC', () => tmj() && DK, true),
-    lb('external acoustic meatus', tw(-2.1, -0.32), '#E8DCC8', () => tmj() && DK, true),
-    lb('middle cranial fossa', tw(0.9, 1.55), '#C8BCD0', () => tmj() && DK),
+    lb('суставная ямка', tw(0.1, 0.88), '#E8DCC8', () => tmj()),
+    lb('суставной бугорок', tw(2.3, 0.45), '#E8DCC8', () => tmj()),
+    lb('диск', () => { const p = discPt(118, true); return tw(p[0], p[1]); }, '#9CC8F0', () => tmj(), true),
+    lb('головка нижней челюсти', () => { const p = jawPt([0.0, -0.7]); return tw(p[0], p[1]); }, '#F2E8D2', () => tmj(), true),
+    lb('капсула', () => { const a = jawPt([0.52, -1.0]); return tw((a[0] + 2.45) / 2 + 0.05, (a[1] + 0.42) / 2); }, '#9FD0F0', () => tmj() && DK),
+    lb('латеральная крыловидная', () => { const a = jawPt([0.5, -0.62]); return tw((a[0] + 3.7) / 2 + 0.4, (a[1] - 0.78) / 2 - 0.05); }, '#7FE0D0', () => tmj()),
+    lb('ретродискальная ткань', () => { const a = discPt(146, true); return tw((a[0] - 0.8) / 2, (a[1] + 0.48) / 2 - 0.25); }, '#F2B0BC', () => tmj() && DK, true),
+    lb('наружный слуховой проход', tw(-2.1, -0.32), '#E8DCC8', () => tmj() && DK, true),
+    lb('средняя черепная ямка', tw(0.9, 1.55), '#C8BCD0', () => tmj() && DK),
   ];
   labels.forEach((l) => { if (typeof l.pos === 'function') { const f = l.pos; Object.defineProperty(l, 'pos', { get: f }); } });
   // ---------- панель ----------
-  const INTRO = '<b>Muscles of facial expression</b>: about twenty pairs of thin muscles that arise on the facial bones and insert straight into the skin. As they contract, they shift skin, folds, eyelids and lips, and expressions appear. All are supplied by the facial nerve (cranial nerve VII). Pick an expression or click a muscle.';
-  const NERVT = 'The <b>facial nerve</b> (cranial nerve VII) leaves the skull through the stylomastoid foramen, enters the parotid gland and splits there into five groups of branches: temporal, zygomatic, buccal, marginal mandibular and cervical. Fanning out over the face, they supply all the facial muscles of their side.';
-  const BELLT = '<b>Bell\'s palsy</b> is a sudden lesion of the facial nerve on one side, often after a viral infection. Half the face is still: the eye will not close, the corner of the mouth droops, the forehead does not wrinkle. Most people recover within weeks or months. In a stroke, by contrast, the forehead usually still moves.';
-  const INTRO2 = '<b>Muscles of mastication</b>, four pairs: temporalis, masseter, medial and lateral pterygoids. They arise on the skull, insert on the mandible and move it at the temporomandibular joints. All are supplied by the mandibular nerve (V₃). Pick a muscle or a movement.';
+  const INTRO = '<b>Мимические мышцы</b> — около двадцати пар тонких мышц, которые начинаются на костях лица и вплетаются прямо в кожу. Сокращаясь, они сдвигают кожу, складки, края век и губ — так рождаются выражения. Все их иннервирует лицевой нерв (VII пара). Выберите выражение или нажмите на мышцу.';
+  const NERVT = '<b>Лицевой нерв</b> (VII пара) выходит из черепа через шилососцевидное отверстие, входит в околоушную железу и делится в ней на пять групп ветвей: височные, скуловые, щёчные, краевую ветвь нижней челюсти и шейную. Веером расходясь по лицу, они иннервируют все мимические мышцы своей стороны.';
+  const BELLT = '<b>Паралич Белла</b> — внезапное поражение лицевого нерва одной стороны, чаще после вирусной инфекции. Половина лица неподвижна: глаз не закрывается, угол рта опущен, лоб не морщится. Большинство выздоравливает за несколько недель или месяцев. При инсульте, в отличие от этого, лоб обычно двигается.';
+  const INTRO2 = '<b>Жевательные мышцы</b> — четыре пары: височная, жевательная, медиальная и латеральная крыловидные. Они начинаются на черепе, прикрепляются к нижней челюсти и двигают её в височно-нижнечелюстных суставах. Все их иннервирует нижнечелюстной нерв (V₃). Выберите мышцу или движение.';
   const tmjText = () => FA_TMJ.find(([a]) => st.open < a)[1];
   const refs = {};
   function ui(el) {
     const ib = infoBox('1 1 440px');
     refs.setInfo = () => {
-      if (st.err) { ib.info.textContent = 'Could not load the skull model: ' + st.err; return; }
+      if (st.err) { ib.info.textContent = 'Не удалось загрузить модель черепа: ' + st.err; return; }
       if (st.mode === 'tmj') { ib.info.innerHTML = tmjText(); return; }
       if (st.mode === 'chew') { ib.info.innerHTML = st.msel ? FA_MAS.find((m) => m.id === st.msel).text : st.move === 'close' ? INTRO2 : FA_MOVE.find((m) => m.id === st.move).text; return; }
       ib.info.innerHTML = st.sel ? FA_MUS.find((m) => m.id === st.sel).text : st.bell ? BELLT : st.nerve ? NERVT : st.exp === 'rest' ? INTRO : curExp().text;
     };
-    refs.modeSeg = seg([{ id: 'mim', label: 'Face' }, { id: 'chew', label: 'Chewing' }, { id: 'tmj', label: 'Joint' }], () => st.mode, (v) => setMode(v));
+    refs.modeSeg = seg([{ id: 'mim', label: 'Мимика' }, { id: 'chew', label: 'Жевание' }, { id: 'tmj', label: 'Сустав' }], () => st.mode, (v) => setMode(v));
     const box = h('div', { class: 'grp', style: 'flex:1 1 520px' }), view = h('div', { class: 'gctl' });
     refs.rebuild = () => {
       box.innerHTML = ''; view.innerHTML = ''; refs.eseg = refs.mseg = refs.vseg = null;
       if (st.mode === 'mim') {
         refs.eseg = seg(FA_EXP.map((e) => ({ id: e.id, label: e.name })), () => st.exp, (v) => setExp(v));
-        box.append(h('div', { class: 'glabel' }, 'Expression', h('kbd', {}, 'click a muscle')), h('div', { class: 'gctl' }, refs.eseg));
-        refs.nervT = toggle('Facial nerve', () => st.nerve, (v) => { st.nerve = v; if (!v && st.bell) { st.bell = false; refs.bellT.sync(); } refs.setInfo(); });
-        refs.bellT = toggle('Left palsy', () => st.bell, (v) => { st.bell = v; if (v && !st.nerve) { st.nerve = true; refs.nervT.sync(); } st.sel = null; st.fly = v ? VIEW.front : VIEW.mim; refreshDim(); refs.setInfo(); });
+        box.append(h('div', { class: 'glabel' }, 'Выражение', h('kbd', {}, 'клик — мышца')), h('div', { class: 'gctl' }, refs.eseg));
+        refs.nervT = toggle('Лицевой нерв', () => st.nerve, (v) => { st.nerve = v; if (!v && st.bell) { st.bell = false; refs.bellT.sync(); } refs.setInfo(); });
+        refs.bellT = toggle('Паралич слева', () => st.bell, (v) => { st.bell = v; if (v && !st.nerve) { st.nerve = true; refs.nervT.sync(); } st.sel = null; st.fly = v ? VIEW.front : VIEW.mim; refreshDim(); refs.setInfo(); });
         view.append(refs.nervT, refs.bellT);
       } else if (st.mode === 'chew') {
         refs.vseg = seg(FA_MOVE.map((m) => ({ id: m.id, label: m.name })), () => st.move, (v) => setMove(v));
-        refs.mseg = seg([{ id: 'all', label: 'All' }, ...FA_MAS.map((m) => ({ id: m.id, label: m.name, color: m.col }))], () => st.msel || 'all', (v) => selMas(v));
-        box.append(h('div', { class: 'glabel' }, 'Movement'), h('div', { class: 'gctl' }, refs.vseg), h('div', { class: 'glabel' }, 'Muscles', h('kbd', {}, 'click')), h('div', { class: 'gctl' }, refs.mseg));
+        refs.mseg = seg([{ id: 'all', label: 'Все' }, ...FA_MAS.map((m) => ({ id: m.id, label: m.name, color: m.col }))], () => st.msel || 'all', (v) => selMas(v));
+        box.append(h('div', { class: 'glabel' }, 'Движение'), h('div', { class: 'gctl' }, refs.vseg), h('div', { class: 'glabel' }, 'Мышцы', h('kbd', {}, 'клик')), h('div', { class: 'gctl' }, refs.mseg));
       } else {
-        box.append(h('div', { class: 'glabel' }, 'Mouth opening'), h('div', { class: 'gctl' }, range('faOpen', 0, 1, 0.01, () => st.open, (v) => { const b = FA_TMJ.findIndex(([a]) => st.open < a); st.open = v; if (FA_TMJ.findIndex(([a]) => v < a) !== b) refs.setInfo(); }, (v) => openMM(v) + ' mm')));
+        box.append(h('div', { class: 'glabel' }, 'Открывание рта'), h('div', { class: 'gctl' }, range('faOpen', 0, 1, 0.01, () => st.open, (v) => { const b = FA_TMJ.findIndex(([a]) => st.open < a); st.open = v; if (FA_TMJ.findIndex(([a]) => v < a) !== b) refs.setInfo(); }, (v) => openMM(v) + ' мм')));
       }
       view.append(refs.rot, refs.lab);
     };
-    refs.rot = toggle('Rotate', () => st.rot, (v) => { st.rot = v; });
-    refs.lab = toggle('Labels', () => st.labels, (v) => { st.labels = v; });
-    el.append(group('Mode', '1–3', refs.modeSeg), box, h('div', { class: 'grp' }, h('div', { class: 'glabel' }, 'View', h('kbd', {}, 'R · N')), view), ib.el);
+    refs.rot = toggle('Вращение', () => st.rot, (v) => { st.rot = v; });
+    refs.lab = toggle('Подписи', () => st.labels, (v) => { st.labels = v; });
+    el.append(group('Режим', '1–3', refs.modeSeg), box, h('div', { class: 'grp' }, h('div', { class: 'glabel' }, 'Вид', h('kbd', {}, 'R · N')), view), ib.el);
     refs.rebuild(); refs.setInfo();
   }
   function onKey(e) {
@@ -526,35 +525,35 @@ function makeFace() {
     if ((k === 'f' || k === 'а') && refs.nervT && st.mode === 'mim') { refs.nervT.click(); return true; }
     return false;
   }
-  const musWord = (n) => (n % 10 === 1 && n !== 11 ? 'muscle' : n % 10 >= 2 && n % 10 <= 4 && (n < 10 || n > 20) ? 'muscles' : 'muscles');
+  const musWord = (n) => (n % 10 === 1 && n !== 11 ? 'мышца' : n % 10 >= 2 && n % 10 <= 4 && (n < 10 || n > 20) ? 'мышцы' : 'мышц');
   function stats() {
-    if (st.mode === 'tmj') { const o = st.open; return [['Opening', openMM(o), 'mm'], ['Phase', o < 0.03 ? 'rest' : o < 0.4 ? 'rotation' : 'gliding', '']]; }
-    if (st.mode === 'chew') return [['Opening', st.mm, 'mm'], st.move === 'prot' ? ['Protrusion', st.fwd, 'mm'] : st.move === 'side' ? ['Lateral shift', st.lat, 'mm'] : ['Bite force', '40–80', 'kg']];
-    if (st.bell) return [['Left side', 'palsy', ''], ['Cranial nerve', 'VII', '']];
-    const e = curExp(); if (st.exp === 'rest') return [['Expression muscles', '≈ 20', 'pairs'], ['Cranial nerve', 'VII', '']];
-    const n = Object.values(e.act).filter((a) => a > 0.15).length; return [['Active', n, musWord(n)], ['Cranial nerve', 'VII', '']];
+    if (st.mode === 'tmj') { const o = st.open; return [['Открывание', openMM(o), 'мм'], ['Фаза', o < 0.03 ? 'покой' : o < 0.4 ? 'вращение' : 'скольжение', '']]; }
+    if (st.mode === 'chew') return [['Открывание', st.mm, 'мм'], st.move === 'prot' ? ['Выдвижение', st.fwd, 'мм'] : st.move === 'side' ? ['Сдвиг вбок', st.lat, 'мм'] : ['Сила смыкания', '40–80', 'кг']];
+    if (st.bell) return [['Левая сторона', 'паралич', ''], ['Черепной нерв', 'VII', '']];
+    const e = curExp(); if (st.exp === 'rest') return [['Мимических мышц', '≈ 20', 'пар'], ['Черепной нерв', 'VII', '']];
+    const n = Object.values(e.act).filter((a) => a > 0.15).length; return [['Работают', n, musWord(n)], ['Черепной нерв', 'VII', '']];
   }
   const self = {
     labelBg: true, mobZoom: 0.8, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null,
     get accent() { return st.mode === 'mim' ? '#E0685A' : st.mode === 'chew' ? (st.msel ? FA_MAS.find((m) => m.id === st.msel).col : '#E8505E') : '#6FA8E8'; },
-    kicker: 'Body · support and movement', title: 'Facial Expression and Chewing',
-    lede: 'About twenty pairs of facial muscles pull on the skin of the face, and that is how smiles, surprise and frowns appear. Four pairs of chewing muscles move the lower jaw, and in its joints the head both rotates and glides forward, which is why the mouth opens so wide.',
+    kicker: 'Тело · опора и движение', title: 'Мимика и жевание',
+    lede: 'Около двадцати пар мимических мышц тянут кожу лица — так рождаются улыбка, удивление и хмурость. Четыре пары жевательных мышц двигают нижнюю челюсть, а в её суставах головка и вращается, и скользит вперёд — поэтому рот открывается так широко.',
     notes: `
-      <div><h2>Structure</h2>
-        <p>The muscles of facial expression develop from the second pharyngeal arch, so all of them are supplied by that arch's nerve, the facial nerve. Unlike skeletal muscles, they lie right under the skin and insert into it at least at one end. Around the eyes and mouth they form ring muscles, while radial ones open these apertures.</p>
-        <p>The muscles of mastication come from the first pharyngeal arch; they are supplied by the mandibular nerve, the third division of the trigeminal (V₃). The mandible is the only movable bone of the skull, and its two temporomandibular joints always work together.</p></div>
-      <div><h2>How it works</h2>
-        <p>Facial muscles do more than show feelings: orbicularis oculi blinks 15–20 times a minute, protecting the eye and spreading tears, and orbicularis oris and the buccinator hold food in place and take part in speech. Basic expressions such as joy, surprise, disgust and fear are understood alike across cultures.</p>
-        <p>In chewing the jaw traces a loop: it drops, swings to the working side and, as it rises, grinds food between the teeth on that side. The tongue and cheeks keep pushing food back under the teeth, and saliva binds it into a bolus.</p></div>
-      <div><h2>Medicine</h2><ul>
-        <li><b>Bell's palsy</b>: sudden weakness of one whole half of the face from a facial nerve lesion; the eye must be protected from drying out. It usually resolves within weeks or months.</li>
-        <li><b>Central facial palsy</b> (in a stroke) affects the lower half of the face on the opposite side, while the forehead still moves: the upper face receives commands from both hemispheres.</li>
-        <li><b>TMJ disorder</b>: clicking as the disc slips, pain, limited mouth opening; often linked to bruxism, grinding the teeth during sleep.</li>
-        <li><b>Jaw dislocation</b>: in a wide yawn the head slips forward past the articular eminence and the mouth will not close; a doctor reduces it by pressing the molars down and back.</li>
-        <li><b>Trismus</b>, spasm of the chewing muscles so the mouth will not open: with inflammation around a wisdom tooth, with tetanus.</li>
-        <li><b>Botulinum toxin</b> switches facial muscles off for several months; anti-wrinkle injections rely on this.</li></ul></div>
-      <div><h2>Simplifications</h2><ul><li>Muscles are shown as ribbons on a scan of an adult skull; skin, fat and fasciae are removed, and muscle shapes are simplified. The nose is a schematic cartilage shell, and the eyeballs are spheres.</li><li>Contraction is shown by the muscles shortening and glowing; the facial skin does not deform, and wrinkles are not shown. Each real expression uses more muscles.</li><li>The mandible is separated from the scan along an arbitrary border (teeth and joints are fused in the scan, cuts are patched); the condyle path and opening angles are averages. The joint section is schematic and enlarged 3.5×.</li></ul></div>
-      <div class="keys"><h2>Keys</h2><ul><li><code>1</code>–<code>3</code> mode · <code>Esc</code> clear selection</li><li><code>F</code> facial nerve · <code>R</code> rotate · <code>N</code> labels</li></ul></div>`,
+      <div><h2>Устройство</h2>
+        <p>Мимические мышцы развиваются из второй глоточной дуги, поэтому все их иннервирует нерв этой дуги — лицевой. В отличие от скелетных мышц, они лежат прямо под кожей и хотя бы одним концом вплетаются в неё. Вокруг глаз и рта они образуют кольцевые мышцы, а радиальные — раскрывают эти отверстия.</p>
+        <p>Жевательные мышцы — производные первой глоточной дуги; их иннервирует нижнечелюстной нерв, третья ветвь тройничного (V₃). Нижняя челюсть — единственная подвижная кость черепа, а два её височно-нижнечелюстных сустава работают только вместе.</p></div>
+      <div><h2>Как это работает</h2>
+        <p>Мимика нужна не только для чувств: круговая мышца глаза при моргании (15–20 раз в минуту) защищает глаз и разносит слёзы, круговая мышца рта и щёчная удерживают пищу и участвуют в речи. Основные выражения — радость, удивление, отвращение, страх — люди разных культур понимают одинаково.</p>
+        <p>При жевании челюсть описывает петлю: опускается, уходит в рабочую сторону и, поднимаясь, перетирает пищу между зубами этой стороны. Язык и щёки всё время подкладывают пищу под зубы, а слюна склеивает её в комок.</p></div>
+      <div><h2>Медицина</h2><ul>
+        <li><b>Паралич Белла</b> — внезапная слабость всей половины лица из-за поражения лицевого нерва; глаз нужно защищать от высыхания. Обычно проходит за недели или месяцы.</li>
+        <li><b>Центральный паралич</b> (при инсульте) затрагивает нижнюю половину лица противоположной стороны, а лоб двигается: верхняя часть лица получает команды от обоих полушарий.</li>
+        <li><b>Дисфункция ВНЧС</b>: щелчки при смещении диска, боль, ограничение открывания рта; часто связана с бруксизмом — скрежетом зубами во сне.</li>
+        <li><b>Вывих нижней челюсти</b>: при широком зевке головка проскакивает вперёд за суставной бугорок, и рот не закрывается; врач вправляет её, надавливая на коренные зубы вниз и назад.</li>
+        <li><b>Тризм</b> — спазм жевательных мышц, рот не открывается: при воспалении у зуба мудрости, при столбняке.</li>
+        <li><b>Ботулотоксин</b> на несколько месяцев выключает мимические мышцы — на этом основаны инъекции против морщин.</li></ul></div>
+      <div><h2>Условности</h2><ul><li>Мышцы показаны лентами на скане черепа взрослого; кожа, жировая клетчатка и фасции убраны, формы мышц упрощены. Нос — условная хрящевая оболочка, глазные яблоки — шары.</li><li>Сокращение показано укорочением и свечением мышц; кожа лица не деформируется, морщины не показаны. В каждом выражении на деле работает больше мышц.</li><li>Нижняя челюсть отделена от скана по условной границе (зубы и суставы в скане срослись, срезы закрыты заплатками); путь мыщелка и углы открывания — средние. Разрез сустава схематичен и увеличен в 3,5 раза.</li></ul></div>
+      <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>3</code> режим · <code>Esc</code> сбросить выбор</li><li><code>F</code> лицевой нерв · <code>R</code> вращение · <code>N</code> подписи</li></ul></div>`,
   };
   setMode('mim'); st.fly = null; camera.position.copy(VIEW.mim.pos); controls.target.copy(VIEW.mim.target);
   updSection(0);

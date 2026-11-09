@@ -1,5 +1,5 @@
-import { SKEL_META, THREE, V3, __set_rnd, ell3, envTex, flyStep, flyTarget, glassMat, group, h, infoBox, labLights, makeControls, mulberry, organMat, rnd, seg, smooth, taperTube, toggle } from '../core.js';
-import { blobGeo, loadSkeletonStatic, skelShell } from './kit.js';
+import { SKEL_META, THREE, V3, __set_rnd, ell3, envTex, flyStep, flyTarget, glassMat, group, h, infoBox, labLights, loadSkeletonStatic, makeControls, mulberry, organMat, rnd, seg, smooth, taperTube, toggle } from '../core.js';
+import { blobGeo, skelShell } from './kit.js';
 
 function makePlanes() {
   __set_rnd(mulberry(1001));

@@ -1,6 +1,4 @@
-import { ANIM, THREE, V3, __set_rnd, envTex, flyTarget, group, h, infoBox, labLights, makeControls, mulberry, pickOn, rnd, seg, toggle } from '../core.js';
-import { BIO_MOL, loadSkeletonStatic } from './kit.js';
-Object.assign(BIO_MOL, {"gap":{"name":"Glyceraldehyde-3-phosphate","el":"O C C O C O P O O O H H H H H H H","xyz":"Lv9W/wgAVv+6/87/XP9AABYAbf+pALn/x/88AIIARQBjAFYAlAD2//r/LAEOAAoAdwBa/yYAcQALAFn/dv+y/2b/+v5PAEgAFv/IAJr/p/+CANIAyP/Z/7EAxQA+/1kAhgC2/y//","b":"AAABAAEAAgACAAMAAgAEAAQABQAFAAYABgAHAAYACAAGAAkAAQAKAAIACwADAAwABAANAAQADgAIAA8ACQAQAA==","o":"2111112111111111"}});
+import { ANIM, THREE, V3, __set_rnd, envTex, flyTarget, group, h, infoBox, labLights, loadSkeletonStatic, makeControls, mulberry, pickOn, rnd, seg, toggle } from '../core.js';
 
 
 // @scene skull makeSkull | Череп | @body Опора и движение
@@ -10,40 +8,40 @@ Object.assign(BIO_MOL, {"gap":{"name":"Glyceraldehyde-3-phosphate","el":"O C C O
    череп новорождённого — маленькое лицо и роднички (табл. 21)
    ========================================================= */
 const SK_BONES = [
-  { id: 'front', name: 'Frontal bone', col: '#6FA8E8', n: 1, cran: 1, text: '<b>Frontal bone</b> — the forehead and upper rims of the orbits; its orbital plates form the orbital roofs. Above the bridge of the nose it contains the frontal sinus. At birth the bone is in two halves; the suture between them (metopic) usually closes within the first months of life and in some people persists for life.' },
-  { id: 'par', name: 'Parietal', col: '#7CC86A', n: 2, cran: 1, text: '<b>Parietal bones</b> — paired, they form most of the cranial vault. They meet each other at the sagittal suture, the frontal bone at the coronal, the occipital at the lambdoid and the temporal at the squamous suture.' },
-  { id: 'occ', name: 'Occipital bone', col: '#9A7FE0', n: 1, cran: 1, text: '<b>Occipital bone</b> — the back of the vault and of the base. It contains the <b>foramen magnum</b>, where the medulla oblongata becomes the spinal cord. On each side of the foramen the condyles articulate with the first cervical vertebra (atlas) — the nodding joint.' },
-  { id: 'temp', name: 'Temporal', col: '#F08AB0', n: 2, cran: 1, text: '<b>Temporal bones</b> — at the sides of the skull. Their petrous parts hide the middle and inner ear; outside are the external acoustic meatus, the mastoid process behind it and, in front, the zygomatic process and the fossa for the mandible.' },
-  { id: 'sph', name: 'Sphenoid', col: '#F2C84E', n: 1, cran: 1, text: '<b>Sphenoid bone</b> is shaped like a butterfly and sits in the middle of the base, meeting every bone of the neurocranium. Its body holds the sella turcica with the pituitary and the sphenoid sinus; the greater wings show at the temples and deep in the orbits, the pterygoid processes from below.' },
-  { id: 'eth', name: 'Ethmoid', col: '#FF7A5A', n: 1, cran: 1, text: '<b>Ethmoid bone</b> — a light bone between the orbits. Its cribriform plate lets olfactory nerve fibers pass from the nose to the brain, its perpendicular plate forms the upper nasal septum, and its air-cell labyrinth forms orbital walls and the superior and middle nasal conchae.' },
-  { id: 'nas', name: 'Nasal', col: '#FFD3A0', n: 2, text: '<b>Nasal bones</b> — two small plates that form the bridge of the nose. They are the most often fractured facial bones.' },
-  { id: 'lac', name: 'Lacrimal', col: '#E890E0', n: 2, text: '<b>Lacrimal bones</b> — the smallest facial bones, thin plates at the front of the medial orbital wall. Their fossa holds the lacrimal sac, from which tears drain down the nasolacrimal canal into the nose.' },
-  { id: 'zyg', name: 'Zygomatic', col: '#3FC4E8', n: 2, text: '<b>Zygomatic bones</b> form the cheekbones and the lateral rims of the orbits; with the zygomatic process of the temporal bone they make the zygomatic arch, where the masseter muscle begins.' },
-  { id: 'max', name: 'Maxilla', col: '#86DCA8', n: 2, text: '<b>Maxilla</b> — a paired bone: floor of the orbit, walls of the nose, the front two thirds of the hard palate and the alveolar process with the upper teeth. Inside is the largest sinus, the maxillary sinus.' },
-  { id: 'pal', name: 'Palatine', col: '#8FA0FF', n: 2, text: '<b>Palatine bones</b> — L-shaped plates behind the maxillae: their horizontal plates form the back of the hard palate, their vertical plates part of the nasal wall. Best seen from below.' },
-  { id: 'vom', name: 'Vomer', col: '#E04848', n: 1, text: '<b>Vomer</b> — an unpaired plate deep in the nose: the lower and back part of the nasal septum. The ethmoid joins it above, the septal cartilage in front.' },
-  { id: 'conch', name: 'Inferior conchae', col: '#B08CFF', n: 2, text: '<b>Inferior nasal conchae</b> — separate scrolls on the side walls of the nose (the superior and middle conchae belong to the ethmoid). Covered with mucosa, they warm and moisten inhaled air.' },
-  { id: 'mand', name: 'Mandible', col: '#D8C0A0', n: 1, text: '<b>Mandible</b> — the only movable bone of the skull. Its condyles form the two temporomandibular joints with the temporal bones, which always work together: when the mouth opens wide, the condyle glides forward onto the articular tubercle.' },
+  { id: 'front', name: 'Лобная', col: '#6FA8E8', n: 1, cran: 1, text: '<b>Лобная кость</b> — лоб и верхние края глазниц; её глазничные части образуют крышу глазниц. Над переносицей внутри кости — лобная пазуха. У новорождённого кость из двух половин, шов между ними (метопический) обычно зарастает в первые месяцы жизни, а у части людей остаётся на всю жизнь.' },
+  { id: 'par', name: 'Теменные', col: '#7CC86A', n: 2, cran: 1, text: '<b>Теменные кости</b> — парные, образуют большую часть свода. Между собой соединены сагиттальным швом, с лобной — венечным, с затылочной — ламбдовидным, с височной — чешуйчатым.' },
+  { id: 'occ', name: 'Затылочная', col: '#9A7FE0', n: 1, cran: 1, text: '<b>Затылочная кость</b> — задняя часть свода и основания. В ней <b>большое затылочное отверстие</b>: здесь продолговатый мозг переходит в спинной. По бокам от отверстия мыщелки сочленяются с первым шейным позвонком (атлантом) — на этом суставе голова кивает.' },
+  { id: 'temp', name: 'Височные', col: '#F08AB0', n: 2, cran: 1, text: '<b>Височные кости</b> — по бокам черепа. В их пирамидах спрятаны среднее и внутреннее ухо; снаружи — наружный слуховой проход, за ним сосцевидный отросток, впереди — скуловой отросток и суставная ямка для нижней челюсти.' },
+  { id: 'sph', name: 'Клиновидная', col: '#F2C84E', n: 1, cran: 1, text: '<b>Клиновидная кость</b> похожа на бабочку и лежит в центре основания, соединяясь со всеми костями мозгового отдела. В её теле — турецкое седло с гипофизом и клиновидная пазуха; большие крылья видны на висках и в глубине глазниц, крыловидные отростки — снизу.' },
+  { id: 'eth', name: 'Решётчатая', col: '#FF7A5A', n: 1, cran: 1, text: '<b>Решётчатая кость</b> — лёгкая кость между глазницами. Её дырчатая пластинка пропускает обонятельные нити из носа к мозгу, перпендикулярная пластинка — верх перегородки носа, а лабиринт с воздушными ячейками образует стенки глазниц и верхнюю и среднюю носовые раковины.' },
+  { id: 'nas', name: 'Носовые', col: '#FFD3A0', n: 2, text: '<b>Носовые кости</b> — две маленькие пластинки, образующие спинку носа. Их переломы — самые частые среди переломов лица.' },
+  { id: 'lac', name: 'Слёзные', col: '#E890E0', n: 2, text: '<b>Слёзные кости</b> — самые маленькие кости лица, тонкие пластинки в передней части внутренней стенки глазницы. В их ямке лежит слёзный мешок, отсюда слёзы стекают по носослёзному каналу в нос.' },
+  { id: 'zyg', name: 'Скуловые', col: '#3FC4E8', n: 2, text: '<b>Скуловые кости</b> формируют скулы и наружный край глазниц; вместе со скуловым отростком височной кости образуют скуловую дугу, от которой начинается жевательная мышца.' },
+  { id: 'max', name: 'Верхняя челюсть', col: '#86DCA8', n: 2, text: '<b>Верхняя челюсть</b> — парная кость: дно глазницы, стенки носа, передние ⅔ твёрдого нёба и альвеолярный отросток с верхними зубами. Внутри — самая большая пазуха, верхнечелюстная (гайморова).' },
+  { id: 'pal', name: 'Нёбные', col: '#8FA0FF', n: 2, text: '<b>Нёбные кости</b> — L-образные пластинки позади верхней челюсти: их горизонтальные части образуют задний край твёрдого нёба, вертикальные — часть стенки носа. Лучше всего видны снизу.' },
+  { id: 'vom', name: 'Сошник', col: '#E04848', n: 1, text: '<b>Сошник</b> — непарная пластинка в глубине носа: нижняя и задняя часть перегородки носа. Сверху к нему примыкает решётчатая кость, спереди — хрящ перегородки.' },
+  { id: 'conch', name: 'Нижние раковины', col: '#B08CFF', n: 2, text: '<b>Нижние носовые раковины</b> — самостоятельные завитки на боковых стенках носа (верхняя и средняя раковины — части решётчатой кости). Покрытые слизистой, они согревают и увлажняют вдыхаемый воздух.' },
+  { id: 'mand', name: 'Нижняя челюсть', col: '#D8C0A0', n: 1, text: '<b>Нижняя челюсть</b> — единственная подвижная кость черепа. Её мыщелки с височными костями образуют два височно-нижнечелюстных сустава, которые работают только вместе: при широком открывании рта головка выезжает вперёд на суставной бугорок.' },
 ];
 // отверстия основания черепа (вид снизу): X — от срединной плоскости, z — вперёд (ед. ≈ 10 см)
 const SK_FOR = [
-  { id: 'magn', name: 'Foramen magnum', X: 0, z: -0.01, y: 15.73, col: '#9A7FE0', text: '<b>Foramen magnum</b> — the largest opening. Here the medulla oblongata becomes the spinal cord; the vertebral arteries and the spinal roots of the accessory nerve (XI) pass alongside. Its rim lies in the occipital bone.' },
-  { id: 'hypo', L: 1, name: 'Hypoglossal canal', X: 0.13, z: 0.1, col: '#C0B0FF', text: '<b>Hypoglossal canal</b> — above the occipital condyle. The hypoglossal nerve (XII), the motor nerve of the tongue, leaves through it.' },
-  { id: 'jug', name: 'Jugular foramen', X: 0.22, z: 0.1, col: '#5A8CFF', text: '<b>Jugular foramen</b> — between the occipital and temporal bones. The internal jugular vein (draining blood from the brain) leaves through it, with three cranial nerves: glossopharyngeal (IX), vagus (X) and accessory (XI).' },
-  { id: 'car', L: 1, name: 'Carotid canal', X: 0.25, z: 0.16, col: '#FF5A5A', text: '<b>Carotid canal</b> — in the petrous temporal bone. The internal carotid artery bends through it into the cranial cavity to supply the brain.' },
-  { id: 'stylo', name: 'Stylomastoid', X: 0.38, z: 0.06, col: '#F2D27A', text: '<b>Stylomastoid foramen</b> — between the styloid and mastoid processes. The facial nerve (VII) exits here to the muscles of facial expression; when it is damaged, half of the face droops (Bell’s palsy).' },
-  { id: 'ovale', L: 1, name: 'Foramen ovale', X: 0.26, z: 0.3, col: '#F2A040', text: '<b>Foramen ovale</b> — in the greater wing of the sphenoid. The third division of the trigeminal nerve (V₃) passes through it to the chewing muscles, the lower teeth and the skin of the chin.' },
-  { id: 'spin', name: 'Foramen spinosum', X: 0.31, z: 0.26, col: '#FF8C8C', text: '<b>Foramen spinosum</b> — small, behind the foramen ovale. The middle meningeal artery enters the skull through it; its tear after a blow to the temple causes a dangerous epidural hematoma.' },
-  { id: 'lac', L: 1, name: 'Foramen lacerum', X: 0.12, z: 0.27, col: '#C8C8C8', text: '<b>Foramen lacerum</b> — a gap between the petrous temporal, occipital and sphenoid bones. In life it is closed by cartilage; the internal carotid artery runs across its upper surface.' },
-  { id: 'gpal', name: 'Greater palatine', X: 0.13, z: 0.53, col: '#8FA0FF', text: '<b>Greater palatine foramen</b> — at the back corner of the hard palate. The greater palatine nerve and vessels emerge here to the palatal mucosa; dentists inject anesthetic at this spot.' },
-  { id: 'inc', name: 'Incisive', X: 0, z: 0.84, col: '#86DCA8', text: '<b>Incisive foramen</b> — behind the upper incisors, in the midline of the palate. The nasopalatine nerve passes through it to the mucosa of the front of the palate.' },
+  { id: 'magn', name: 'Большое затылочное', X: 0, z: -0.01, y: 15.73, col: '#9A7FE0', text: '<b>Большое затылочное отверстие</b> — самое крупное. Через него продолговатый мозг переходит в спинной; рядом проходят позвоночные артерии и корешки добавочного нерва (XI). Его края — в затылочной кости.' },
+  { id: 'hypo', L: 1, name: 'Подъязычный канал', X: 0.13, z: 0.1, col: '#C0B0FF', text: '<b>Подъязычный канал</b> — над мыщелком затылочной кости. Через него выходит подъязычный нерв (XII) — двигательный нерв языка.' },
+  { id: 'jug', name: 'Яремное', X: 0.22, z: 0.1, col: '#5A8CFF', text: '<b>Яремное отверстие</b> — между затылочной и височной костями. Через него выходят внутренняя яремная вена (уносит кровь от мозга) и три черепных нерва: языкоглоточный (IX), блуждающий (X) и добавочный (XI).' },
+  { id: 'car', L: 1, name: 'Сонный канал', X: 0.25, z: 0.16, col: '#FF5A5A', text: '<b>Сонный канал</b> — в пирамиде височной кости. По нему внутренняя сонная артерия, изогнувшись, входит в полость черепа и несёт кровь к мозгу.' },
+  { id: 'stylo', name: 'Шилососцевидное', X: 0.38, z: 0.06, col: '#F2D27A', text: '<b>Шилососцевидное отверстие</b> — между шиловидным и сосцевидным отростками. Через него лицевой нерв (VII) выходит к мимическим мышцам; при его поражении «перекашивает» половину лица (паралич Белла).' },
+  { id: 'ovale', L: 1, name: 'Овальное', X: 0.26, z: 0.3, col: '#F2A040', text: '<b>Овальное отверстие</b> — в большом крыле клиновидной кости. Через него проходит третья ветвь тройничного нерва (V₃) — к жевательным мышцам, нижним зубам и коже подбородка.' },
+  { id: 'spin', name: 'Остистое', X: 0.31, z: 0.26, col: '#FF8C8C', text: '<b>Остистое отверстие</b> — маленькое, позади овального. Через него в череп входит средняя менингеальная артерия; её разрыв при ударе в висок даёт опасную эпидуральную гематому.' },
+  { id: 'lac', L: 1, name: 'Рваное', X: 0.12, z: 0.27, col: '#C8C8C8', text: '<b>Рваное отверстие</b> — щель между пирамидой височной, затылочной и клиновидной костями. В жизни закрыто хрящом; по его верхней поверхности проходит внутренняя сонная артерия.' },
+  { id: 'gpal', name: 'Большое нёбное', X: 0.13, z: 0.53, col: '#8FA0FF', text: '<b>Большое нёбное отверстие</b> — в заднем углу твёрдого нёба. Через него выходят большой нёбный нерв и сосуды к слизистой нёба; стоматологи здесь делают анестезию.' },
+  { id: 'inc', name: 'Резцовое', X: 0, z: 0.84, col: '#86DCA8', text: '<b>Резцовое отверстие</b> — позади верхних резцов, на средней линии нёба. Через него проходит носонёбный нерв к слизистой передней части нёба.' },
 ];
 // роднички новорождённого
 const SK_FONT = [
-  { id: 'ant', name: 'Anterior', text: '<b>Anterior (large) fontanelle</b> — a diamond where the frontal and both parietal bones meet, about 2–3 cm across. The largest; it closes by 1–2 years. Doctors use it to judge intracranial pressure and dehydration: it sinks when the baby lacks fluid.' },
-  { id: 'post', name: 'Posterior', text: '<b>Posterior (small) fontanelle</b> — a triangle between the parietal and occipital bones. It closes early, by 2–3 months (in many babies it is almost closed at birth).' },
-  { id: 'sph', name: 'Sphenoidal', text: '<b>Sphenoidal fontanelle</b> — at the side, where the frontal, parietal, temporal and sphenoid bones meet (in adults this spot is called the pterion). It closes at about 6 months.' },
-  { id: 'mast', name: 'Mastoid', text: '<b>Mastoid fontanelle</b> — at the back of the side, where the parietal, occipital and temporal bones meet (the asterion). It closes by 6–18 months.' },
+  { id: 'ant', name: 'Передний', text: '<b>Передний (большой) родничок</b> — ромб на стыке лобной и двух теменных костей, около 2–3 см. Самый большой; закрывается к 1–2 годам. По нему врачи судят о внутричерепном давлении и обезвоживании: западает, если ребёнку не хватает жидкости.' },
+  { id: 'post', name: 'Задний', text: '<b>Задний (малый) родничок</b> — треугольник между теменными и затылочной костями. Закрывается рано — к 2–3 месяцам (у многих детей почти закрыт уже при рождении).' },
+  { id: 'sph', name: 'Клиновидный', text: '<b>Клиновидный родничок</b> — сбоку, где сходятся лобная, теменная, височная и клиновидная кости (у взрослых это место называется птерион). Закрывается примерно к полугоду.' },
+  { id: 'mast', name: 'Сосцевидный', text: '<b>Сосцевидный родничок</b> — сзади-сбоку, на стыке теменной, затылочной и височной костей (астерион). Закрывается к 6–18 месяцам.' },
 ];
 function makeSkull() {
   __set_rnd(mulberry(1414));
@@ -371,43 +369,43 @@ function makeSkull() {
   const labels = [
     ...SK_BONES.map((b) => ({ text: b.name.toLowerCase(), pos: BN[b.id].anchor, color: b.col, left: false, show: () => st.loaded && st.labels && st.mode === 'bones' && (st.sel ? st.sel === b.id : MAJOR[b.id]) && !(b.id === 'mand' && st.view === 'bottom') && faces(BN[b.id].anchor, BN[b.id].nrm) })),
     ...SK_FOR.map((f) => ({ text: f.name.toLowerCase(), pos: FOR[f.id].pos, color: f.col, left: (!!f.L && f.id !== 'hypo') || f.id === 'stylo', show: () => st.loaded && st.labels && st.mode === 'base' && (st.fsel ? st.fsel === f.id : DK || PH_FOR[f.id]) })),
-    ...SK_FONT.map((f) => ({ text: f.name.toLowerCase() + ' fontanelle', pos: () => (FONT[f.id] ? FONT[f.id].pos : SC), color: '#FFB8C8', show: () => st.loaded && st.labels && st.mode === 'baby' && st.baby > 0.8 && !!FONT[f.id] && (!st.nsel || st.nsel === f.id) && !(st.view === 'front' && !st.nsel && (f.id === 'sph' || f.id === 'mast')) && faces(FONT[f.id].pos, FONT[f.id].pos.clone().sub(SC).normalize()) })),
-    { text: 'coronal suture', pos: V3(MX + 0.42, 16.78, 0.42), color: '#E8D8C0', show: () => DK && st.loaded && st.labels && st.sut && st.mode === 'bones' && !st.sel && (st.view === 'side' || st.view === 'top') },
-    { text: 'lambdoid suture', pos: V3(MX + 0.42, 16.55, -0.6), color: '#E8D8C0', left: true, show: () => DK && st.loaded && st.labels && st.sut && st.mode === 'bones' && !st.sel && st.view === 'side' },
-    { text: 'squamous suture', pos: V3(MX + 0.68, 16.36, 0.05), color: '#E8D8C0', show: () => DK && st.loaded && st.labels && st.sut && st.mode === 'bones' && !st.sel && st.view === 'side' },
-    { text: 'sagittal suture', pos: V3(MX, 17.12, -0.2), color: '#E8D8C0', show: () => DK && st.loaded && st.labels && st.sut && st.mode === 'bones' && !st.sel && st.view === 'top' },
+    ...SK_FONT.map((f) => ({ text: f.name.toLowerCase() + ' родничок', pos: () => (FONT[f.id] ? FONT[f.id].pos : SC), color: '#FFB8C8', show: () => st.loaded && st.labels && st.mode === 'baby' && st.baby > 0.8 && !!FONT[f.id] && (!st.nsel || st.nsel === f.id) && !(st.view === 'front' && !st.nsel && (f.id === 'sph' || f.id === 'mast')) && faces(FONT[f.id].pos, FONT[f.id].pos.clone().sub(SC).normalize()) })),
+    { text: 'венечный шов', pos: V3(MX + 0.42, 16.78, 0.42), color: '#E8D8C0', show: () => DK && st.loaded && st.labels && st.sut && st.mode === 'bones' && !st.sel && (st.view === 'side' || st.view === 'top') },
+    { text: 'ламбдовидный шов', pos: V3(MX + 0.42, 16.55, -0.6), color: '#E8D8C0', left: true, show: () => DK && st.loaded && st.labels && st.sut && st.mode === 'bones' && !st.sel && st.view === 'side' },
+    { text: 'чешуйчатый шов', pos: V3(MX + 0.68, 16.36, 0.05), color: '#E8D8C0', show: () => DK && st.loaded && st.labels && st.sut && st.mode === 'bones' && !st.sel && st.view === 'side' },
+    { text: 'сагиттальный шов', pos: V3(MX, 17.12, -0.2), color: '#E8D8C0', show: () => DK && st.loaded && st.labels && st.sut && st.mode === 'bones' && !st.sel && st.view === 'top' },
   ];
   const dyn = labels.filter((l) => typeof l.pos === 'function'); dyn.forEach((l) => { l.fn = l.pos; l.pos = V3(0, 0, 0); });
   const refs = {};
-  const INTRO = '<b>Skull</b> — 22 bones (not counting the ear ossicles): 8 form the neurocranium, 14 the face. All except the mandible are joined by immovable sutures. Click a bone on the model or pick it from the list below.';
-  const BASE_INTRO = '<b>Skull base from below</b> (mandible removed). The spinal cord, the brain’s blood vessels and the cranial nerves pass through the openings of the base. Pick an opening to see what goes through it.';
-  const BABY_INTRO = '<b>Newborn skull</b>: the face is small — about 1/8 of the skull (≈ 1/2 in adults) — and the vault bones have not yet fused. Between them are soft membranes, the <b>fontanelles</b>: during birth the bones can overlap slightly, and later the brain grows fast.';
+  const INTRO = '<b>Череп</b> — 22 кости (без слуховых косточек): 8 образуют мозговой отдел, 14 — лицевой. Все, кроме нижней челюсти, соединены неподвижными швами. Нажмите на кость в модели или выберите её в списке ниже.';
+  const BASE_INTRO = '<b>Основание черепа снизу</b> (нижняя челюсть убрана). Через отверстия основания проходят спинной мозг, сосуды мозга и черепные нервы. Выберите отверстие — покажу, что через него идёт.';
+  const BABY_INTRO = '<b>Череп новорождённого</b>: лицо маленькое — около 1/8 черепа (у взрослого ≈ 1/2), а кости свода ещё не срослись. Между ними — мягкие перепонки, <b>роднички</b>: при родах кости могут слегка заходить друг на друга, а мозг потом быстро растёт.';
   function ui(el) {
     const ib = infoBox('1 1 360px');
     refs.setInfo = () => {
-      ib.info.innerHTML = st.err ? 'Could not load the model: ' + st.err : !st.loaded ? 'Loading the skull model…'
+      ib.info.innerHTML = st.err ? 'Не удалось загрузить модель: ' + st.err : !st.loaded ? 'Загружаю модель черепа…'
         : st.mode === 'base' ? (st.fsel ? FOR[st.fsel].text : BASE_INTRO)
           : st.mode === 'baby' ? (st.nsel ? SK_FONT.find((f) => f.id === st.nsel).text : BABY_INTRO)
             : st.sel ? BN[st.sel].text : INTRO;
     };
-    refs.modeSeg = seg([{ id: 'bones', label: 'Bones' }, { id: 'base', label: 'Base from below' }, { id: 'baby', label: 'Newborn' }], () => st.mode, (v) => setMode(v));
+    refs.modeSeg = seg([{ id: 'bones', label: 'Кости' }, { id: 'base', label: 'Основание снизу' }, { id: 'baby', label: 'Новорождённый' }], () => st.mode, (v) => setMode(v));
     const box = h('div', { class: 'grp', style: 'flex:1 1 560px' });
     refs.rebuild = () => {
       box.innerHTML = ''; refs.seg = null;
       if (st.mode === 'bones') {
-        refs.seg = seg([{ id: 'all', label: 'All' }, ...SK_BONES.map((b) => ({ id: b.id, label: b.name, color: b.col }))], () => st.sel || 'all', (v) => select(v));
-        box.append(h('div', { class: 'glabel' }, 'Bones', h('kbd', {}, 'click')), h('div', { class: 'gctl' }, refs.seg));
+        refs.seg = seg([{ id: 'all', label: 'Все' }, ...SK_BONES.map((b) => ({ id: b.id, label: b.name, color: b.col }))], () => st.sel || 'all', (v) => select(v));
+        box.append(h('div', { class: 'glabel' }, 'Кости', h('kbd', {}, 'клик')), h('div', { class: 'gctl' }, refs.seg));
       } else if (st.mode === 'base') {
-        box.append(h('div', { class: 'glabel' }, 'Foramina'), h('div', { class: 'gctl' }, seg([{ id: 'all', label: 'All' }, ...SK_FOR.map((f) => ({ id: f.id, label: f.name, color: f.col }))], () => st.fsel || 'all', (v) => { st.fsel = v === 'all' ? null : v; applyMode(); refs.setInfo(); })));
+        box.append(h('div', { class: 'glabel' }, 'Отверстия'), h('div', { class: 'gctl' }, seg([{ id: 'all', label: 'Все' }, ...SK_FOR.map((f) => ({ id: f.id, label: f.name, color: f.col }))], () => st.fsel || 'all', (v) => { st.fsel = v === 'all' ? null : v; applyMode(); refs.setInfo(); })));
       } else {
-        box.append(h('div', { class: 'glabel' }, 'Fontanelles'), h('div', { class: 'gctl' }, seg([{ id: 'all', label: 'All' }, ...SK_FONT.map((f) => ({ id: f.id, label: f.name, color: '#FFB8C8' }))], () => st.nsel || 'all', (v) => { st.nsel = v === 'all' ? null : v; st.view = st.nsel ? 'baby' : 'front'; st.fly = st.nsel === 'post' ? VIEW.babyPost : st.nsel === 'ant' ? VIEW.babyAnt : st.nsel === 'mast' ? VIEW.babyBack : st.nsel ? VIEW.baby : VIEW.babyFront; refs.vs.sync(); refs.setInfo(); })));
+        box.append(h('div', { class: 'glabel' }, 'Роднички'), h('div', { class: 'gctl' }, seg([{ id: 'all', label: 'Все' }, ...SK_FONT.map((f) => ({ id: f.id, label: f.name, color: '#FFB8C8' }))], () => st.nsel || 'all', (v) => { st.nsel = v === 'all' ? null : v; st.view = st.nsel ? 'baby' : 'front'; st.fly = st.nsel === 'post' ? VIEW.babyPost : st.nsel === 'ant' ? VIEW.babyAnt : st.nsel === 'mast' ? VIEW.babyBack : st.nsel ? VIEW.baby : VIEW.babyFront; refs.vs.sync(); refs.setInfo(); })));
       }
     };
-    refs.vs = seg([{ id: 'front', label: 'Front' }, { id: 'side', label: 'Lateral' }, { id: 'top', label: 'Top' }, { id: 'bottom', label: 'Below' }], () => st.view, (v) => setView(v));
-    refs.rot = toggle('Rotate', () => st.rot, (v) => { st.rot = v; });
-    refs.sut = toggle('Sutures', () => st.sut, (v) => { st.sut = v; });
-    refs.lab = toggle('Labels', () => st.labels, (v) => { st.labels = v; });
-    el.append(group('Mode', '1–3', refs.modeSeg), box, group('View', 'R · S · N', refs.vs, refs.rot, refs.sut, refs.lab), ib.el);
+    refs.vs = seg([{ id: 'front', label: 'Спереди' }, { id: 'side', label: 'Сбоку' }, { id: 'top', label: 'Сверху' }, { id: 'bottom', label: 'Снизу' }], () => st.view, (v) => setView(v));
+    refs.rot = toggle('Вращение', () => st.rot, (v) => { st.rot = v; });
+    refs.sut = toggle('Швы', () => st.sut, (v) => { st.sut = v; });
+    refs.lab = toggle('Подписи', () => st.labels, (v) => { st.labels = v; });
+    el.append(group('Режим', '1–3', refs.modeSeg), box, group('Вид', 'R · S · N', refs.vs, refs.rot, refs.sut, refs.lab), ib.el);
     refs.rebuild(); refs.setInfo();
   }
   function onKey(e) {
@@ -418,24 +416,24 @@ function makeSkull() {
     return false;
   }
   function stats() {
-    if (st.mode === 'base') return [['Foramina', SK_FOR.length, 'shown']];
-    if (st.mode === 'baby') return [['Face : skull', '1 : 8', ''], ['Fontanelles', 6, '']];
-    if (st.sel) { const b = BN[st.sel]; return [['Region', b.cran ? 'neurocranium' : 'face', ''], ['Bones', b.n, b.n === 2 ? 'paired' : 'unpaired']]; }
-    return [['Bones', 22, ''], ['Neurocranium', 8, ''], ['Facial', 14, '']];
+    if (st.mode === 'base') return [['Отверстий', SK_FOR.length, 'показано']];
+    if (st.mode === 'baby') return [['Лицо : череп', '1 : 8', ''], ['Родничков', 6, '']];
+    if (st.sel) { const b = BN[st.sel]; return [['Отдел', b.cran ? 'мозговой' : 'лицевой', ''], ['Костей', b.n, b.n === 2 ? 'парная' : 'непарная']]; }
+    return [['Костей', 22, ''], ['Мозговой отдел', 8, ''], ['Лицевой', 14, '']];
   }
   camera.position.copy(VIEW.front.pos); controls.target.copy(VIEW.front.target); controls.update();
   const self = {
     mobZoom: 0.62, scene, camera, controls, update: (dt) => { update(dt); dyn.forEach((l) => { l.pos.copy(l.fn()); }); }, ui, onKey, stats, labels, drawScope: null, accent: '#6FA8E8',
-    kicker: 'Body · support and movement', title: 'Skull',
-    lede: 'Twenty-two bones: all but the mandible are joined by sutures into a sturdy case for the brain and a frame for the face. We take them one by one, look at the openings in the skull base and at a newborn’s skull.',
+    kicker: 'Тело · опора и движение', title: 'Череп',
+    lede: 'Двадцать две кости: все, кроме нижней челюсти, сцеплены швами в прочную коробку для мозга и каркас лица. Разбираем их по одной, смотрим отверстия основания и череп новорождённого.',
     notes: `
-      <div><h2>Structure</h2>
-        <p><b>Neurocranium</b> (8 bones): frontal, two parietal, occipital, two temporal, sphenoid, ethmoid. <b>Face</b> (14): two maxillae, the mandible, two zygomatic, two nasal, two lacrimal, two palatine, two inferior nasal conchae, the vomer. The hyoid and the ear ossicles are usually counted separately.</p>
-        <h3>Sutures</h3><p>Coronal (frontal–parietals), sagittal (between the parietals), lambdoid (parietals–occipital), squamous (temporal–parietal). The spot where the frontal, parietal, temporal and sphenoid bones meet is the <b>pterion</b>: the bone is thin here and the middle meningeal artery runs beneath it.</p>
-        <h3>Base</h3><p>From inside, the base is divided into the anterior, middle and posterior cranial fossae (for the frontal lobes, the temporal lobes, the cerebellum and brainstem). Besides the openings seen from below there are inner ones: the optic canal (nerve II), superior orbital fissure (III, IV, V₁, VI), foramen rotundum (V₂), internal acoustic meatus (VII, VIII).</p>
-        <h3>Medicine</h3><p>A basal skull fracture betrays itself by “raccoon eyes” and clear fluid (CSF) leaking from the nose or ear. Premature fusion of sutures in a child (craniosynostosis) deforms the head and is corrected surgically. A blow to the temple is dangerous because it can tear the middle meningeal artery.</p></div>
-      <div><h2>Simplifications</h2><ul><li>The bones are colored on a real 3D skeleton model; the borders between them are drawn by landmarks and smoothed, so the sutures are approximate. The model has no ear ossicles and no inner walls of the cranial fossae.</li><li>The openings of the base are marked by dots at their approximate places; not all of them are visible as holes on the model. The ethmoid, vomer and conchae deep in the nose are simplified; in the scan the skull is fused with the neck vertebrae and the mandible: where they were separated, the base is closed with smooth patches and the foramen magnum is drawn as an even oval; the palate has gaps in places. The sphenoid and palatine bones are seen from below only as the scan’s outer shell, so the pterygoid processes and the choanae are hard to make out.</li><li>The newborn skull is made from the adult one: the face and jaws are smoothly shrunk, the teeth are squeezed into low ridges, and the fontanelles are drawn over the vault. In a real baby the teeth are hidden in the jaws, the sutures are straighter than in an adult, there is no mastoid process, and the vault bones are thinner and separated by wide membranes.</li></ul></div>
-      <div class="keys"><h2>Keys</h2><ul><li><code>1</code>–<code>3</code> mode · <code>Esc</code> all bones</li><li><code>R</code> rotate · <code>S</code> sutures · <code>N</code> labels</li></ul></div>`,
+      <div><h2>Строение</h2>
+        <p><b>Мозговой отдел</b> (8 костей): лобная, две теменные, затылочная, две височные, клиновидная, решётчатая. <b>Лицевой</b> (14): две верхние челюсти, нижняя челюсть, две скуловые, две носовые, две слёзные, две нёбные, две нижние носовые раковины, сошник. Подъязычную кость и слуховые косточки обычно считают отдельно.</p>
+        <h3>Швы</h3><p>Венечный (лобная–теменные), сагиттальный (между теменными), ламбдовидный (теменные–затылочная), чешуйчатый (височная–теменная). Место, где сходятся лобная, теменная, височная и клиновидная кости, — <b>птерион</b>: кость здесь тонкая, а под ней идёт средняя менингеальная артерия.</p>
+        <h3>Основание</h3><p>Изнутри основание делится на переднюю, среднюю и заднюю черепные ямки (для лобных долей, височных долей, мозжечка и ствола). Кроме отверстий, видимых снизу, есть внутренние: зрительный канал (II нерв), верхняя глазничная щель (III, IV, V₁, VI), круглое отверстие (V₂), внутренний слуховой проход (VII, VIII).</p>
+        <h3>Медицина</h3><p>Перелом основания черепа выдаёт себя «симптомом очков» и истечением прозрачной жидкости (ликвора) из носа или уха. Раннее зарастание швов у ребёнка (краниосиностоз) деформирует голову — его исправляют операцией. Удар в висок опасен разрывом средней менингеальной артерии.</p></div>
+      <div><h2>Условности</h2><ul><li>Кости раскрашены по настоящей 3D-модели скелета; границы между ними проведены по ориентирам и сглажены, поэтому швы показаны приблизительно. Ушные косточки и внутренние стенки черепных ямок модель не содержит.</li><li>Отверстия основания отмечены точками примерно в их местах; на модели сами отверстия видны не все. Решётчатая кость, сошник и раковины в глубине носа показаны упрощённо; в скане череп сросся с шейными позвонками и нижней челюстью: где их отделили, основание закрыто гладкими заплатками, а большое затылочное отверстие нарисовано ровным овалом; в нёбе местами есть просвет. Клиновидная и нёбные кости снизу видны только внешней оболочкой скана, поэтому крыловидные отростки и хоаны различаются плохо.</li><li>Череп новорождённого получен из взрослого: лицо и челюсти плавно уменьшены, зубы сжаты в низкие валики, роднички нарисованы поверх свода. На деле зубы младенца спрятаны в челюстях, швы прямее, чем у взрослого, нет сосцевидного отростка, а кости свода тоньше и разделены широкими перепонками.</li></ul></div>
+      <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>3</code> режим · <code>Esc</code> все кости</li><li><code>R</code> вращение · <code>S</code> швы · <code>N</code> подписи</li></ul></div>`,
   };
   return self;
 }

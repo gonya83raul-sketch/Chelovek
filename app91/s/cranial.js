@@ -1,4 +1,4 @@
-import { THREE, V3, __set_rnd, accentSet, brainKit, brainShell, envTex, flowTubeMat, flyStep, flyTarget, group, h, infoBox, labLights, makeControls, mergeGeometries, mulberry, pickOn, rand, rnd, seg, taperTube, tissue, toggle } from '../core.js';
+import { THREE, V3, __set_rnd, accentSet, brainKit, brainShell, envTex, flowTubeMat, flyStep, flyTarget, group, h, infoBox, labLights, loadSkeletonStatic, makeControls, mergeGeometries, mulberry, pickOn, rand, rnd, seg, taperTube, tissue, toggle } from '../core.js';
 
 
 /* =========================================================
@@ -24,6 +24,22 @@ const CN = [
   { n: 'XI', name: 'Добавочный', type: 'mot', target: 'трапециевидная и грудино-ключично-сосцевидная мышцы', text: '<b>XI — добавочный нерв</b> обособляется у амниот (рептилий, птиц, млекопитающих). Чисто двигательный; корешки отчасти идут из спинного мозга. Работает с мышцами плечевого пояса и шеи: поворачивает голову.' },
   { n: 'XII', name: 'Подъязычный', type: 'mot', target: 'мышцы языка', text: '<b>XII — подъязычный нерв</b> выходит из продолговатого мозга между пирамидой и оливой. Возник у рептилий при слиянии ветвей спинномозговых нервов. Управляет мышцами языка.' },
 ];
+
+const CN_EXIT0 = '<b>Основание черепа изнутри</b>, свод снят. Нервы покидают череп через отверстия трёх черепных ямок: передней (I), средней (II–VI) и задней (VII–XII). Где через одно отверстие идут несколько нервов, болезнь этого места поражает их вместе. Выберите нерв.';
+const CN_EXIT = {
+  I: '<b>I — решётчатая пластинка.</b> Около 20 обонятельных нитей проходят из носа через отверстия решётчатой кости к обонятельной луковице. При переломе основания черепа нити рвутся — пропадает обоняние, а из носа может течь ликвор.',
+  II: '<b>II — зрительный канал</b> в малом крыле клиновидной кости; вместе с нервом через него идёт глазная артерия. Сразу за каналом нервы сходятся в хиазму над турецким седлом — при опухоли гипофиза, давящей на неё снизу, выпадают наружные (височные) поля зрения.',
+  III: '<b>III — верхняя глазничная щель.</b> Нерв идёт в стенке пещеристого синуса и через щель входит в глазницу. Через ту же щель проходят IV, VI и глазной нерв V₁, поэтому поражение щели нарушает почти все движения глаза.',
+  IV: '<b>IV — верхняя глазничная щель.</b> Самый тонкий нерв с самым длинным путём в черепе: он огибает ствол мозга, идёт в стенке пещеристого синуса и входит в глазницу к верхней косой мышце.',
+  V: '<b>V — три ветви, три отверстия.</b> Глазной нерв V₁ уходит через верхнюю глазничную щель, верхнечелюстной V₂ — через круглое отверстие, нижнечелюстной V₃ — через овальное. Тройничный узел лежит во вдавлении на верхушке пирамиды височной кости.',
+  VI: '<b>VI — верхняя глазничная щель.</b> Нерв поднимается по скату, перегибается через верхушку пирамиды и проходит внутри пещеристого синуса рядом с сонной артерией. Из-за длинного пути он часто страдает при повышении внутричерепного давления.',
+  VII: '<b>VII — внутренний слуховой проход.</b> Лицевой нерв входит в него вместе с VIII, идёт в узком костном канале сквозь височную кость и выходит из черепа через шилососцевидное отверстие. Отёк нерва в тесном канале — причина паралича Белла.',
+  VIII: '<b>VIII — внутренний слуховой проход.</b> Путь короткий: из прохода нерв сразу входит во внутреннее ухо в пирамиде височной кости. Опухоль его оболочки (вестибулярная шваннома) растёт в проходе и вызывает одностороннюю тугоухость и шум в ухе.',
+  IX: '<b>IX — яремное отверстие.</b> Через него вместе проходят IX, X и XI нервы и венозная кровь сигмовидного синуса, которая здесь переходит во внутреннюю яремную вену. Опухоль в этом месте поражает сразу три нерва: страдают глотание, голос и повороты головы.',
+  X: '<b>X — яремное отверстие.</b> Блуждающий нерв выходит из черепа вместе с IX и XI и спускается по шее рядом с сонной артерией и яремной веной к органам грудной и брюшной полостей.',
+  XI: '<b>XI — путь туда и обратно.</b> Нерв дважды пересекает основание черепа. Корешки добавочного нерва начинаются в шейном отделе спинного мозга, поднимаются в череп через большое отверстие и выходят обратно через яремное — к трапециевидной и грудино-ключично-сосцевидной мышцам.',
+  XII: '<b>XII — подъязычный канал</b> над мыщелком затылочной кости, у переднебокового края большого отверстия. Нерв идёт к мышцам языка; при его поражении высунутый язык отклоняется в больную сторону.',
+};
 
 function makeCranial() {
   __set_rnd(mulberry(404));
@@ -109,7 +125,51 @@ function makeCranial() {
     nerves.push({ ...nv, m, flows, grp, meshes, col });
   });
 
-  const st = { t: 0, sel: null, type: 'all', labels: true, rot: false, fly: null };
+  /* ---------- режим 2: отверстия основания черепа — скан черепа без свода (1 ед. ≈ 1 см, y вверх, z вперёд, x > 0 — левая сторона), вынесен в сторону ---------- */
+  const BASE = new THREE.Group(); BASE.position.set(60, 0, 0); BASE.visible = false; scene.add(BASE);
+  const CUTY = 4.4, XM = -0.5, STEMP = V3(XM, 0.6, -6.2);   // куда сходятся культи нервов (ствол над скатом)
+  const KS = 12.5, SKS = new THREE.Group(); SKS.scale.setScalar(KS); SKS.position.set(-0.11 * KS, -16 * KS, -0.6 * KS); BASE.add(SKS);
+  const boneM = new THREE.MeshPhysicalMaterial({ color: 0xb8ac96, roughness: 0.75, clearcoat: 0.08, emissive: 0x231d15, side: THREE.DoubleSide });
+  loadSkeletonStatic(new THREE.Group(), new THREE.MeshBasicMaterial()).then((out) => {
+    const head = out.find((m) => { m.geometry.computeBoundingBox(); return m.geometry.boundingBox.max.y > 17; }); if (!head) return;
+    const g = head.geometry, Pz = g.attributes.position, IX = g.index.array, keep = [];
+    const ok = (i) => { const y = (Pz.getY(i) - 16) * KS, z = (Pz.getZ(i) - 0.6) * KS; return y < CUTY && y > -7.5 && z < 2.6 && z > -11.8; };   // без лица и затылочной чешуи — основание целиком в кадре
+    for (let t = 0; t < IX.length; t += 3) if (ok(IX[t]) && ok(IX[t + 1]) && ok(IX[t + 2])) keep.push(IX[t], IX[t + 1], IX[t + 2]);
+    g.setIndex(keep); g.computeVertexNormals(); SKS.add(new THREE.Mesh(g, boneM));
+    out.forEach((m) => { if (m !== head) m.geometry.dispose(); });
+  }).catch(() => {});
+  const FOR = [   // p — для левой стороны (x от средней линии); у большого отверстия одна позиция
+    { id: 'crib', name: 'решётчатая пластинка', n: ['I'], p: [0.42, 0.05, -0.4], r: 0.3 },
+    { id: 'opt', name: 'зрительный канал', n: ['II'], p: [1.2, 0.25, -2.25], r: 0.2 },
+    { id: 'sof', name: 'верхняя глазничная щель', n: ['III', 'IV', 'V', 'VI'], p: [2.15, -0.2, -2.6], r: 0.28 },
+    { id: 'rot', name: 'круглое отверстие', n: ['V'], p: [2.4, -0.7, -3.2], r: 0.14 },
+    { id: 'ov', name: 'овальное отверстие', n: ['V'], p: [2.8, -1.1, -4.3], r: 0.2 },
+    { id: 'iam', name: 'внутренний слуховой проход', n: ['VII', 'VIII'], p: [3.0, -1.5, -6.0], r: 0.22 },
+    { id: 'jug', name: 'яремное отверстие', n: ['IX', 'X', 'XI'], p: [2.75, -3.4, -7.1], r: 0.3 },
+    { id: 'hyp', name: 'подъязычный канал', n: ['XII'], p: [1.5, -4.3, -6.5], r: 0.14 },
+    { id: 'fm', name: 'большое отверстие', n: ['XI'], p: [0, -5.0, -7.3], r: 1.25, one: true },
+  ];
+  const forPos = (f, s) => V3(XM + s * f.p[0], f.p[1], f.p[2]);
+  const nIdx = Object.fromEntries(CN.map((nv, i) => [nv.n, i]));
+  const FMESH = [];   // { f, s, ring, m }
+  const STUB = CN.map(() => []);   // культи нервов у отверстий, по номерам нервов
+  FOR.forEach((f) => (f.one ? [1] : [1, -1]).forEach((s) => {
+    const c = forPos(f, s), col = new THREE.Color(CN_TYPES[CN[nIdx[f.n[0]]].type].color);
+    const m = new THREE.MeshPhysicalMaterial({ color: col.clone().multiplyScalar(0.5), emissive: col, emissiveIntensity: 0.5, roughness: 0.4, transparent: true, opacity: 1 });
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(f.one ? f.r : f.r * 1.3 + 0.05, f.one ? 0.12 : 0.075, 8, 40), m); ring.rotation.x = Math.PI / 2; ring.position.copy(c); ring.userData.pick = nIdx[f.n[0]]; BASE.add(ring);
+    FMESH.push({ f, s, ring, m });
+    if (f.one) return;
+    f.n.forEach((nn, k) => {   // культя: от ствола к отверстию и чуть вглубь
+      const i = nIdx[nn], off = (k - (f.n.length - 1) / 2) * 0.12, a = c.clone().add(V3(s * off, 0, off * 0.5)), toS = STEMP.clone().setX(XM + s * 0.5).sub(a);
+      const pts = [a.clone().addScaledVector(toS, 0.38).add(V3(0, 0.7, 0)), a.clone().addScaledVector(toS, 0.12).add(V3(0, 0.3, 0)), a, a.clone().add(V3(0, -0.5, 0))];
+      const ms = new THREE.Mesh(taperTube(new THREE.CatmullRomCurve3(pts), () => (nn === 'V' || nn === 'II' ? 0.13 : 0.1), 20, 8), nerves[i].m); ms.userData.pick = i; BASE.add(ms); STUB[i].push(ms);
+    });
+  }));
+  { // XI: спинномозговые корешки поднимаются через большое отверстие и уходят к яремному
+    const i = nIdx.XI; [1, -1].forEach((s) => { const j = forPos(FOR[6], s), pts = [V3(XM + s * 0.55, -6.6, -7.4), V3(XM + s * 0.6, -4.6, -7.3), V3(XM + s * 1.6, -3.6, -7.0), j.clone().add(V3(0, 0.1, 0)), j.clone().add(V3(0, -0.6, 0))];
+      const ms = new THREE.Mesh(taperTube(new THREE.CatmullRomCurve3(pts), () => 0.04, 30, 8), nerves[i].m); ms.userData.pick = i; BASE.add(ms); STUB[i].push(ms); }); }
+  const BVIEW = matchMedia('(max-width:700px)').matches ? flyTarget(V3(60 + XM, -1.5, -3.7), V3(60 + XM, 31.5, -18.9)) : flyTarget(V3(69.5, -1.5, -5.5), V3(69.5, 43.8, -26.6));   // сверху-сзади: лицо вверху экрана
+  const st = { t: 0, sel: null, type: 'all', labels: true, rot: false, fly: null, mode: 'brain' };
   const CN_ICONS = { I: ['nose'], II: ['eye'], III: ['eye'], IV: ['eye'], V: ['eye', 'tongue'], VI: ['eye'], VII: ['tongue'], VIII: ['ear'], IX: ['tongue'], X: ['heart', 'gut'], XI: ['trap'], XII: ['tongue'] };
   function apply() {
     nerves.forEach((nv, i) => {
@@ -117,6 +177,7 @@ function makeCranial() {
       if (nv.m.transparent === on) nv.m.needsUpdate = true; nv.m.opacity = on ? 1 : 0.1; nv.m.transparent = !on; nv.m.depthWrite = on; nv.m.emissiveIntensity = st.sel === i ? 0.9 : on ? 0.3 : 0.05;
       nv.flows.forEach((f) => { f.uniforms.uOn.value = st.sel === i ? 1.2 : on && st.type !== 'all' ? 0.6 : 0; });
     });
+    FMESH.forEach(({ f, m, ring }) => { const on = st.sel === null ? st.type === 'all' || f.n.some((nn) => CN[nIdx[nn]].type === st.type) : f.n.includes(nerves[st.sel].n), hi = st.sel !== null && on; m.opacity = on ? 1 : 0.18; m.emissiveIntensity = hi ? 1.3 : on ? 0.5 : 0.1; ring.scale.setScalar(hi && !f.one ? 1.8 : 1); m.depthTest = !hi; ring.renderOrder = hi ? 5 : 0; });
     const want = new Set(st.sel === null ? ['eye', 'nose'] : CN_ICONS[nerves[st.sel].n] || []);
     Object.entries(T).forEach(([k, o]) => [].concat(o).forEach((m) => { m.visible = want.has(k); }));
     accentSet(st.sel !== null ? CN_TYPES[nerves[st.sel].type].color : '#C77DFF');
@@ -124,7 +185,8 @@ function makeCranial() {
   function select(i) {
     st.sel = i === 'all' ? null : i; if (st.sel !== null) st.type = 'all';
     apply(); refs.seg && refs.seg.sync(); refs.tseg && refs.tseg.sync(); refs.setInfo && refs.setInfo();
-    if (st.sel !== null) { const nv = nerves[st.sel], p = nv.p1.clone().lerp(V3(0.3, -1.0, 0.5), 0.3), pc = p.clone().add(V3(-0.45, nv.n === 'X' ? -1.0 : 0, 0.65)); st.fly = flyTarget(pc, pc.clone().add(V3(4.3, -3.0, 3.0))); } else st.fly = HOME;
+    if (st.mode === 'base') st.fly = BVIEW;
+    else if (st.sel !== null) { const nv = nerves[st.sel], p = nv.p1.clone().lerp(V3(0.3, -1.0, 0.5), 0.3), pc = p.clone().add(V3(-0.45, nv.n === 'X' ? -1.0 : 0, 0.65)); st.fly = flyTarget(pc, pc.clone().add(V3(4.3, -3.0, 3.0))); } else st.fly = HOME;
   }
   function update(dt) {
     st.t += dt; controls.autoRotate = st.rot; controls.autoRotateSpeed = 0.4;
@@ -132,7 +194,9 @@ function makeCranial() {
     nerves.forEach((nv) => nv.flows.forEach((f) => { f.uniforms.uTime.value = st.t; }));
     T.eye.forEach((e, i) => { e.rotation.z = 0.08 * Math.sin(st.t * 0.7 + i); e.rotation.y = 0.12 * Math.sin(st.t * 0.5); });
   }
-  pickOn(() => self, camera, () => nerves.flatMap((nv) => nv.meshes), (i) => select(i));
+  pickOn(() => self, camera, () => (st.mode === 'base' ? [...FMESH.map((o) => o.ring), ...STUB.flat()] : nerves.flatMap((nv) => nv.meshes)), (i) => select(i));
+  const BRAINOBJ = scene.children.filter((o) => o !== BASE && !o.isLight);   // мозг и мишени — прячем в режиме 2
+  function setMode(m) { st.mode = m; BASE.visible = m === 'base'; controls.maxDistance = m === 'base' ? 45 : 14; BRAINOBJ.forEach((o) => { o.visible = m !== 'base'; }); if (m !== 'base') apply(); select(st.sel === null ? 'all' : st.sel); refs.mseg && refs.mseg.sync(); refs.setInfo && refs.setInfo(); }
   const labels = [
     ...nerves.map((nv, i) => ({ text: nv.n, pos: nv.p1.clone().add(V3(0, -0.04, i % 2 ? 0.14 : 0.0)), color: CN_TYPES[nv.type].color, show: () => st.labels && (st.sel === null || st.sel === i) && (st.type === 'all' || st.type === nv.type) })),
     { text: 'мост', pos: V3(0.16, -1.0, 0.0), show: () => st.labels && st.sel === null },
@@ -143,16 +207,23 @@ function makeCranial() {
     { text: 'обонятельная луковица', pos: V3(1.32, -0.58, -0.22), color: '#e8d8c0', show: () => st.labels && st.sel === null },
     ...nerves.map((nv, i) => ({ text: nv.target, pos: (ROUTES[nv.n](1)[0][nv.type === 'sens' ? 0 : ROUTES[nv.n](1)[0].length - 1]).clone().add(V3(0.05, -0.07, 0.05)), color: '#D2CBD0', show: () => st.labels && st.sel === i })),
   ];
+  labels.forEach((l) => { const f = l.show; l.show = () => st.mode === 'brain' && f(); });
+  const FSHOW = { crib: 1, opt: 1, sof: 1, rot: 1, ov: 1, iam: 1, jug: 1, hyp: 1, fm: 1 }, MOBC = matchMedia('(max-width:700px)').matches;
+  FOR.forEach((f) => labels.push({ text: f.name, pos: forPos(f, f.one ? 1 : -1).add(BASE.position).add(V3(0, f.one ? 0 : 0.1, f.one ? -1.7 : 0)), color: '#E8DCC8',
+    show: () => st.labels && st.mode === 'base' && (st.sel === null ? !MOBC && FSHOW[f.id] && (st.type === 'all' || f.n.some((nn) => CN[nIdx[nn]].type === st.type)) : f.n.includes(nerves[st.sel].n)) }));
+  FOR.forEach((f) => { if (!f.one) labels.push({ text: f.n.join(', '), pos: forPos(f, 1).add(BASE.position).add(V3(0, 0.1, 0)), color: CN_TYPES[CN[nIdx[f.n[0]]].type].color, left: true,
+    show: () => st.labels && st.mode === 'base' && !MOBC && (st.sel === null ? st.type === 'all' || f.n.some((nn) => CN[nIdx[nn]].type === st.type) : f.n.includes(nerves[st.sel].n)) }); });
   const refs = {};
   function ui(el) {
     const ib = infoBox('1 1 300px');
-    refs.setInfo = () => { ib.info.innerHTML = st.sel !== null ? nerves[st.sel].text : st.type !== 'all' ? `<b>${CN_TYPES[st.type].name}:</b> ` + nerves.filter((n) => n.type === st.type).map((n) => n.n + ' ' + n.name.toLowerCase()).join(', ') + '. Светлые волны показывают направление сигнала: к мозгу у чувствительных, от мозга у двигательных.' : 'Нижняя поверхность мозга. В спинном мозге 31 пара одинаковых нервов, а в головном — 12 пар уникальных, у каждого своё имя и функции. Нажмите на нерв или выберите его номер.'; };
+    refs.setInfo = () => { ib.info.innerHTML = st.mode === 'base' ? (st.sel !== null ? CN_EXIT[nerves[st.sel].n] : CN_EXIT0) : st.sel !== null ? nerves[st.sel].text : st.type !== 'all' ? `<b>${CN_TYPES[st.type].name}:</b> ` + nerves.filter((n) => n.type === st.type).map((n) => n.n + ' ' + n.name.toLowerCase()).join(', ') + '. Светлые волны показывают направление сигнала: к мозгу у чувствительных, от мозга у двигательных.' : 'Нижняя поверхность мозга. В спинном мозге 31 пара одинаковых нервов, а в головном — 12 пар уникальных, у каждого своё имя и функции. Нажмите на нерв или выберите его номер.'; };
     refs.seg = seg([{ id: 'all', label: 'Все' }, ...nerves.map((nv, i) => ({ id: i, label: nv.n, color: CN_TYPES[nv.type].color }))], () => (st.sel === null ? 'all' : st.sel), (v) => select(v));
     refs.tseg = seg([{ id: 'all', label: 'Все типы' }, ...Object.entries(CN_TYPES).map(([k, v]) => ({ id: k, label: v.name, color: v.color }))], () => st.type, (v) => { st.type = v; st.sel = null; apply(); refs.seg.sync(); refs.setInfo(); });
     const rot = toggle('Вращение', () => st.rot, (v) => { st.rot = v; });
     const lab = toggle('Подписи', () => st.labels, (v) => { st.labels = v; });
     Object.assign(refs, { rot, lab });
-    el.append(h('div', { class: 'grp', style: 'flex:1 1 520px' }, h('div', { class: 'glabel' }, 'Нерв', h('kbd', {}, 'клик по нерву · ← →')), h('div', { class: 'gctl' }, refs.seg), h('div', { class: 'gctl' }, refs.tseg)), group('Вид', 'R · N', rot, lab), ib.el);
+    refs.mseg = seg([{ id: 'brain', label: 'Мозг' }, { id: 'base', label: 'Отверстия черепа' }], () => st.mode, (v) => setMode(v));
+    el.append(group('Режим', '1–2', refs.mseg), h('div', { class: 'grp', style: 'flex:1 1 520px' }, h('div', { class: 'glabel' }, 'Нерв', h('kbd', {}, 'клик по нерву · ← →')), h('div', { class: 'gctl' }, refs.seg), h('div', { class: 'gctl' }, refs.tseg)), group('Вид', 'R · N', rot, lab), ib.el);
     refs.setInfo();
   }
   function onKey(e) {
@@ -160,11 +231,12 @@ function makeCranial() {
     if (e.key === 'ArrowRight') { select(st.sel === null ? 0 : (st.sel + 1) % 12); return true; }
     if (e.key === 'ArrowLeft') { select(st.sel === null ? 11 : (st.sel + 11) % 12); return true; }
     if (e.key === 'Escape') { select('all'); return true; }
+    if (e.key === '1' || e.key === '2') { setMode(e.key === '1' ? 'brain' : 'base'); return true; }
     if (k === 'r' || k === 'к') { refs.rot.click(); return true; }
     if (k === 'n' || k === 'т') { refs.lab.click(); return true; }
     return false;
   }
-  function stats() { if (st.sel !== null) { const nv = nerves[st.sel]; return [['Пара', nv.n, ''], ['Тип', CN_TYPES[nv.type].name.split(' ')[0], '']]; } return [['Пар', 12, ''], ['Чувствительных', 3, ''], ['Смешанных', 4, '']]; }
+  function stats() { if (st.mode === 'base' && st.sel === null) return [['Пар', 12, ''], ['Отверстий', '9', 'видов']]; if (st.sel !== null) { const nv = nerves[st.sel]; return [['Пара', nv.n, ''], ['Тип', CN_TYPES[nv.type].name.split(' ')[0], '']]; } return [['Пар', 12, ''], ['Чувствительных', 3, ''], ['Смешанных', 4, '']]; }
   apply();
   const self = {
     labelBg: true, mobZoom: 0.7, scene, camera, controls, update, ui, onKey, stats, labels, drawScope: null, get accent() { return st.sel !== null ? CN_TYPES[nerves[st.sel].type].color : '#C77DFF'; },
@@ -178,9 +250,9 @@ function makeCranial() {
         <h3>Эволюция</h3>
         <p>Набор формируется не сразу: у рыб и амфибий нет отдельных XI и XII нервов (их волокна идут в составе блуждающего и спинномозговых), полный набор из 12 пар — у амниот: рептилий, птиц и млекопитающих. В продолговатом мозге и мосту сохраняется план спинного: чувствительные ядра лежат латерально, двигательные — медиально, парасимпатические — между ними.</p></div>
       <div><h2>Что здесь настоящее</h2><ul>
-        <li>Места выхода нервов на нижней поверхности мозга.</li><li>Классификация по функциям и направление сигнала.</li><li>Ганглий и три ветви тройничного нерва.</li></ul>
-        <h2 style="margin-top:22px">Условности</h2><ul><li>Мишени (глаз, ухо, язык, сердце) придвинуты к мозгу и нарисованы значками.</li><li>Ход нервов в черепе упрощён.</li></ul></div>
-      <div class="keys"><h2>Клавиши</h2><ul><li>клик по нерву: выбрать</li><li><code>←</code> <code>→</code> следующий нерв</li><li><code>Esc</code> все</li><li><code>R</code> вращение</li><li><code>N</code> подписи</li></ul></div>`,
+        <li>Места выхода нервов на нижней поверхности мозга.</li><li>Классификация по функциям и направление сигнала.</li><li>Ганглий и три ветви тройничного нерва.</li><li>Отверстия основания черепа и нервы, которые через них проходят (режим 2, скан настоящего черепа).</li></ul>
+        <h2 style="margin-top:22px">Условности</h2><ul><li>Мишени (глаз, ухо, язык, сердце) придвинуты к мозгу и нарисованы значками.</li><li>Ход нервов в черепе упрощён.</li><li>В режиме «Отверстия черепа» положение отверстий на скане приблизительное, нервы показаны короткими отрезками.</li></ul></div>
+      <div class="keys"><h2>Клавиши</h2><ul><li>клик по нерву: выбрать</li><li><code>1</code> <code>2</code> режим</li><li><code>←</code> <code>→</code> следующий нерв</li><li><code>Esc</code> все</li><li><code>R</code> вращение</li><li><code>N</code> подписи</li></ul></div>`,
   };
   return self;
 }

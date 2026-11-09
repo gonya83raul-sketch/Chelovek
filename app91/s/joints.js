@@ -1,5 +1,5 @@
-import { SKEL_META, Sparks, THREE, V3, __set_rnd, envTex, flyStep, flyTarget, glassMat, glowNucleus, group, h, infoBox, labLights, makeControls, mulberry, rand, randUnit, rnd, seg, smooth, toggle } from '../core.js';
-import { blobGeo, loadSkeletonStatic } from './kit.js';
+import { SKEL_META, Sparks, THREE, V3, __set_rnd, envTex, flyStep, flyTarget, glassMat, glowNucleus, group, h, infoBox, labLights, loadSkeletonStatic, makeControls, mulberry, rand, randUnit, rnd, seg, smooth, toggle } from '../core.js';
+import { blobGeo } from './kit.js';
 
 
 // @scene joints makeJoints | Кости и суставы | @body Опора и движение
