@@ -106,6 +106,7 @@ function makeBrainVasc() {
   CH.acom = ves('acom', 0, 'base', [A[1], A[1].clone().lerp(A[-1], 0.5).add(V3(0.012, -0.004, 0)), A[-1]], 0.016);
   CH.ba = ves('ba', 0, 'base', [VJ, pS(-1.15, 0), pS(-0.95, 0), pS(-0.8, 0), BT], 0.042);
 
+  const LMK = [];
   // ориентиры: перекрёст, зрительные нервы и тракты, гипофиз
   const optM = tissue(new THREE.Color('#E8E0D0').multiplyScalar(0.55), { transparent: true, opacity: 0.55, depthWrite: false }), pitM = tissue(new THREE.Color('#E8B090').multiplyScalar(0.5));
   { const a = []; const C0 = V3(0.47, chiY, 0);
@@ -113,8 +114,8 @@ function makeBrainVasc() {
       a.push(taperTube(cr3([C0.clone().add(V3(-0.02, 0, 0.03 * s)), pI(0.3, 0.2 * s, 0.025), pI(0.12, 0.34 * s, 0.025)]), () => 0.026, 20, 8)); });
     const x = new THREE.BoxGeometry(0.1, 0.035, 0.14); x.translate(C0.x, C0.y, C0.z); a.push(x.toNonIndexed());
     const ML = mergeGeometries(a.map((g) => (g.index ? g.toNonIndexed() : g)));
-    scene.add(new THREE.Mesh(ML, optM));
-    scene.add(new THREE.Mesh(taperTube(cr3([V3(0.4, chiY - 0.02, 0), V3(0.39, chiY - 0.1, 0), V3(0.38, chiY - 0.18, 0)]), () => 0.022, 10, 8), pitM));   // воронка гипофиза (срезана)
+    LMK.push(new THREE.Mesh(ML, optM)); scene.add(LMK[0]);
+    LMK.push(new THREE.Mesh(taperTube(cr3([V3(0.4, chiY - 0.02, 0), V3(0.39, chiY - 0.1, 0), V3(0.38, chiY - 0.18, 0)]), () => 0.022, 10, 8), pitM)); scene.add(LMK[1]);   // воронка гипофиза (срезана)
     }
 
   // мозолистое тело на внутренней поверхности правого полушария (вид «изнутри»)
@@ -141,10 +142,10 @@ function makeBrainVasc() {
   const bkPo = (y) => -1.08 - 0.08 * y;
   const terr = (p, n, s) => {
     const u = p.z * s - 0.55, x = p.x, y = p.y;
-    if (u < -0.44) return x < -0.72 - 0.55 * y || (y < -0.22 && x < 0.3) ? 2 : 0;   // внутренняя поверхность: сзади от теменно-затылочной борозды и внизу — задняя
+    if (u < -0.44 || n.z * s < -0.35) return x < -0.72 - 0.55 * y || (y < -0.22 && x < 0.3) ? 2 : 0;   // внутренняя поверхность: сзади от теменно-затылочной борозды и внизу — задняя
     if (n.y < -0.55) { if (x > 0.55) return u < -0.15 ? 0 : 1; return x < 0.42 ? 2 : 1; }   // нижняя поверхность
     if (x < bkPo(y) - 0.12) return 2;   // затылочный полюс
-    if (y > 0.15 && u < -0.18) return 0;   // полоса по верхнему краю
+    if (y > 0.15 && u < -0.12) return 0;   // полоса по верхнему краю
     if (y < bkLs(x) - 0.42 && x < 0.2) return 2;   // нижняя височная извилина
     return 1;
   };
@@ -202,15 +203,15 @@ function makeBrainVasc() {
   }
   function colorVes() {
     VG.forEach((g) => { const [vis, on, fl] = vesState(g); g.mesh.visible = vis; g.flow.visible = vis && fl !== 0; g.fm.uniforms.uSpeed.value = 0.5 * (fl || 1);
-      g.m.color.copy(g.c0); g.m.emissive.copy(g.e0); if (!on) { g.m.color.lerp(VGRAY, 0.55); g.m.emissiveIntensity = 0.06; } else g.m.emissiveIntensity = st.mode === 'art' && st.sel === g.art ? 0.55 : 0.25;
+      g.m.color.copy(g.c0); g.m.emissive.copy(g.e0); { const top = st.mode === 'art' && st.sel === g.art; if (g.m.depthTest === top) { g.m.depthTest = !top; g.m.needsUpdate = true; } g.mesh.renderOrder = top ? 4 : 0; } if (!on) { g.m.color.lerp(VGRAY, 0.55); g.m.emissiveIntensity = 0.06; } else g.m.emissiveIntensity = st.mode === 'art' && st.sel === g.art ? 0.55 : 0.25;
       if (st.mode === 'occ' && fl === 0 && !(g.art === 'acom' || g.art === 'pcom')) { g.m.color.lerp(GRAYC, 0.55); g.m.emissiveIntensity = 0.05; } });
     const c = st.mode === 'occ' && !st.rep ? clotAt[st.occ]() : null; CLOT.visible = !!c; if (c) { CLOT.position.copy(c[0]); CLOT.scale.setScalar(c[1]); }
-    const med = st.mode === 'ter' && st.side === 'med'; HM[1].visible = !med; STEM.visible = CERE.visible = !med; CCM.visible = med;
+    const med = st.mode === 'ter' && st.side === 'med'; HM[1].visible = !med; STEM.visible = CERE.visible = !med; CCM.visible = med; LMK.forEach((m) => { m.visible = !med; });
   }
 
   // =================== виды ===================
-  const VP = DK ? { art: [V3(-0.25, -0.75, 0), V3(0, -1, -0.12), 7.2, 1.25, -0.15], lat: [V3(-0.1, 0.05, 0), V3(0.02, 0.06, -1), 9.2, 1.1, 0], med: [V3(-0.02, 0.05, 0.1), V3(0.02, 0.06, -1), 8.8, 1.1, 0], occ: [V3(-0.05, -0.35, 0), V3(0.35, -0.5, -1), 9.6, 1.1, -0.15], occb: [V3(-0.35, -0.75, 0), V3(0, -1, -0.12), 7.4, 1.25, -0.15] }
-    : { art: [V3(-0.2, -0.75, 0), V3(0.12, -1, 0), 6.4, 0, 0], lat: [V3(-0.1, 0.05, 0), V3(0.02, 0.06, -1), 7.6, 0, 0.1], med: [V3(-0.1, 0.05, 0.1), V3(0.02, 0.06, -1), 7.3, 0, 0.1], occ: [V3(-0.05, -0.35, 0), V3(0.35, -0.5, -1), 8.0, 0, 0.1], occb: [V3(-0.3, -0.75, 0), V3(0.12, -1, 0), 6.8, 0, 0] };
+  const VP = DK ? { art: [V3(-0.25, -0.75, 0), V3(0, -1, -0.12), 7.2, 1.25, -0.15], lat: [V3(-0.1, 0.05, 0), V3(0.02, 0.42, -1), 9.2, 1.1, 0.2], med: [V3(-0.02, 0.05, 0.1), V3(0.02, 0.06, -1), 8.0, 1.1, 0.12], occ: [V3(-0.05, -0.35, 0), V3(0.35, -0.5, -1), 9.6, 1.1, -0.15], occb: [V3(-0.35, -0.75, 0), V3(0, -1, -0.12), 7.4, 1.25, -0.15] }
+    : { art: [V3(-0.2, -0.75, 0), V3(0.12, -1, 0), 6.4, 0, 0], lat: [V3(-0.1, 0.05, 0), V3(0.02, 0.42, -1), 7.6, 0, 0.1], med: [V3(-0.1, 0.05, 0.1), V3(0.02, 0.06, -1), 7.3, 0, 0.1], occ: [V3(-0.05, -0.35, 0), V3(0.35, -0.5, -1), 8.0, 0, 0.1], occb: [V3(-0.3, -0.75, 0), V3(0.12, -1, 0), 6.8, 0, 0] };
   const VIEW = {}; Object.entries(VP).forEach(([k, a]) => { VIEW[k] = vw(...a); });
   const curView = () => (st.mode === 'art' ? 'art' : st.mode === 'ter' ? st.side : st.occ === 'ba' ? 'occb' : 'occ');
   function applyView() { st.fly = VIEW[curView()]; }
@@ -255,8 +256,8 @@ function makeBrainVasc() {
     lb('внутренняя сонная', () => CH.ica[-1].getPointAt(0.55), '#F08A8A', artOn('ica')),
     lb('передняя мозговая', () => CH.aca[1].getPointAt(0.6), '#8FC0FF', () => st.mode === 'art' && st.sel === 'aca', true),
     lb('средняя мозговая', () => CH.mca[1].getPointAt(0.55), '#FFB070', artOn('mca'), true),
-    lb('передняя соединительная', () => CH.acom.getPointAt(0.5), '#8FF0D0', artOn('acom', true)),
-    lb('задняя соединительная', () => CH.pcom[1].getPointAt(0.5), '#8FF0D0', () => st.mode === 'art' && st.sel === 'pcom', true),
+    lb('передняя соединительная', () => CH.acom.getPointAt(0.5), '#8FF0D0', artOn('acom', true), true),
+    lb('задняя соединительная', () => CH.pcom[-1].getPointAt(0.5), '#8FF0D0', () => st.mode === 'art' && st.sel === 'pcom'),
     lb('задняя мозговая', () => J[-1].clone().add(V3(-0.25, 0.02, -0.12)), '#F2D870', artOn('pca')),
     lb('основная', () => CH.ba.getPointAt(0.55), '#B8A0FF', artOn('ba')),
     lb('позвоночная', () => VG.find((g) => g.art === 'va' && g.s === -1).list[0].curve.getPointAt(0.45), '#D0A0FF', () => st.mode === 'art' && st.sel === 'va'),
@@ -285,14 +286,14 @@ function makeBrainVasc() {
     lb('мозолистое тело', () => BKP.cc[2].clone().add(V3(0, 0, -0.05)), '#EDE4D8', () => terM() && !st.ter),
     // инсульт
     lb('тромб', () => CLOT.position.clone(), '#FF8080', () => occ() && CLOT.visible),
-    lb('ядро инфаркта', () => LP.core, '#E08090', () => occ() && (st.occ === 'mca' || st.occ === 'ica_bad')),
+    lb('ядро инфаркта', () => LP.core, '#FFB0B8', () => occ() && (st.occ === 'mca' || st.occ === 'ica_bad')),
     lb('полутень', () => LP.pen, '#F8C080', () => occ() && (st.occ === 'mca' || st.occ === 'ica_bad') && !st.rep),
     lb('спасённая полутень', () => LP.pen, '#F8E0C0', () => occ() && (st.occ === 'mca' || st.occ === 'ica_bad') && st.rep),
     lb('передняя соединительная', () => CH.acom.getPointAt(0.5), '#8FF0D0', () => occ() && st.occ === 'ica_ok', true),
     lb('задняя соединительная', () => CH.pcom[-1].getPointAt(0.5), '#8FF0D0', () => occ() && st.occ === 'ica_ok'),
     lb('мост', () => pS(-1.0, 0, 1, -0.02).add(V3(0, 0, 0.12)), '#E08090', () => occ() && st.occ === 'ba', true),
     lb('мозжечок', P(() => pC(-1.35, -0.55, 'up')), '#F8C080', () => occ() && st.occ === 'ba'),
-    lb('затылочные доли', P(() => pI(-1.3, -0.4, -0.01)), '#E08090', () => occ() && st.occ === 'ba'),
+    lb('затылочные доли', P(() => pI(-0.95, -0.85, -0.01)), '#E08090', () => occ() && st.occ === 'ba'),
   ];
   labels.forEach((l) => { if (typeof l.pos === 'function') { const f = l.pos; Object.defineProperty(l, 'pos', { get: f }); } });
 
