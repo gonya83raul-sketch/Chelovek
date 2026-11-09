@@ -308,7 +308,7 @@ function makeBrainVasc() {
       if (st.mode === 'art') { const a = BV_ART.find((x) => x.id === st.sel); ib.info.innerHTML = a ? a.text : INTRO1; return; }
       if (st.mode === 'ter') { const t = BV_TER.find((x) => x.id === st.ter); ib.info.innerHTML = t ? t.text : INTRO2; return; }
       const o = BV_OCC.find((x) => x.id === st.occ);
-      ib.info.innerHTML = st.rep ? REPT : o.text;
+      ib.info.innerHTML = st.rep ? REPT : o.text; if (refs.repBtn) refs.repBtn.disabled = st.occ === 'ica_ok' || st.rep;
     };
     refs.modeSeg = seg([{ id: 'art', label: 'Артерии' }, { id: 'ter', label: 'Бассейны' }, { id: 'occ', label: 'Инсульт' }], () => st.mode, (v) => setMode(v));
     const box = h('div', { class: 'grp', style: 'flex:1 1 520px' }), view = h('div', { class: 'gctl' });
@@ -324,7 +324,7 @@ function makeBrainVasc() {
         box.append(h('div', { class: 'glabel' }, 'Мозговая артерия', h('kbd', {}, 'клик')), h('div', { class: 'gctl' }, refs.tseg), h('div', { class: 'glabel' }, 'Поверхность'), h('div', { class: 'gctl' }, refs.vseg));
       } else {
         refs.oseg = seg(BV_OCC.map((o) => ({ id: o.id, label: o.name })), () => st.occ, (v) => setOcc(v));
-        box.append(h('div', { class: 'glabel' }, 'Закупорка'), h('div', { class: 'gctl' }, refs.oseg, button('Восстановить кровоток', reperfuse, true), button('Заново', () => setOcc(st.occ))));
+        box.append(h('div', { class: 'glabel' }, 'Закупорка'), h('div', { class: 'gctl' }, refs.oseg, (refs.repBtn = button('Восстановить кровоток', reperfuse, true)), button('Заново', () => setOcc(st.occ))));
       }
       view.append(refs.rot, refs.lab);
     };
@@ -365,7 +365,7 @@ function makeBrainVasc() {
         <li><b>Время — мозг:</b> при закупорке крупной артерии гибнет около 1,9 млн нейронов в минуту. Тромболизис помогает в первые 4,5 часа, тромбэктомия — обычно до 6 часов, а у части больных и позже.</li>
         <li><b>Транзиторная ишемическая атака</b> — признаки инсульта, которые проходят сами за минуты. Это предупреждение: риск настоящего инсульта в ближайшие дни высок.</li>
         <li><b>Геморрагический инсульт</b> — разрыв сосуда: кровоизлияние в мозг (чаще при высоком давлении) или разрыв аневризмы артерий круга с субарахноидальным кровоизлиянием.</li></ul></div>
-      <div><h2>Условности</h2><ul><li>Модель мозга упрощена; артерии показаны толще, а их ход и ветвление — схематично. Глубокие ветви, вены и оболочки не показаны. Границы бассейнов приблизительные. Рост инфаркта ускорен: 20 минут — за секунду; число погибших нейронов — средняя оценка для закупорки крупной артерии переднего бассейна, для основной артерии она иная.</li></ul></div>
+      <div><h2>Условности</h2><ul><li>Модель мозга упрощена; артерии показаны толще, а их ход и ветвление — схематично. Глубокие ветви, вены и оболочки не показаны. Границы бассейнов приблизительные. Рост инфаркта ускорен: 20 минут — за секунду; число погибших нейронов — средняя оценка для закупорки крупной артерии переднего бассейна, для основной артерии она иная. При тромбе основной мозжечок закрашен целиком, хотя нижнюю его часть питают задние нижние мозжечковые артерии от позвоночных.</li></ul></div>
       <div class="keys"><h2>Клавиши</h2><ul><li><code>1</code>–<code>3</code> режим · <code>Esc</code> сбросить выбор</li><li><code>R</code> вращение · <code>N</code> подписи</li></ul></div>`
   };
   colorBrain(); colorVes();
