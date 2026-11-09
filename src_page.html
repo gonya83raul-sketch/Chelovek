@@ -5255,19 +5255,19 @@ function makeCranial() {
   FOR.forEach((f) => (f.one ? [1] : [1, -1]).forEach((s) => {
     const c = forPos(f, s), col = new THREE.Color(CN_TYPES[CN[nIdx[f.n[0]]].type].color);
     const m = new THREE.MeshPhysicalMaterial({ color: col.clone().multiplyScalar(0.5), emissive: col, emissiveIntensity: 0.5, roughness: 0.4, transparent: true, opacity: 1 });
-    const ring = new THREE.Mesh(new THREE.TorusGeometry(f.r, Math.max(0.035, f.r * 0.14), 8, 40), m); ring.rotation.x = Math.PI / 2; ring.position.copy(c); ring.userData.pick = nIdx[f.n[0]]; BASE.add(ring);
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(f.one ? f.r : f.r * 1.3 + 0.05, f.one ? 0.12 : 0.075, 8, 40), m); ring.rotation.x = Math.PI / 2; ring.position.copy(c); ring.userData.pick = nIdx[f.n[0]]; BASE.add(ring);
     FMESH.push({ f, s, ring, m });
     if (f.one) return;
     f.n.forEach((nn, k) => {   // культя: от ствола к отверстию и чуть вглубь
       const i = nIdx[nn], off = (k - (f.n.length - 1) / 2) * 0.12, a = c.clone().add(V3(s * off, 0, off * 0.5)), toS = STEMP.clone().setX(XM + s * 0.5).sub(a);
       const pts = [a.clone().addScaledVector(toS, 0.38).add(V3(0, 0.7, 0)), a.clone().addScaledVector(toS, 0.12).add(V3(0, 0.3, 0)), a, a.clone().add(V3(0, -0.5, 0))];
-      const ms = new THREE.Mesh(taperTube(new THREE.CatmullRomCurve3(pts), () => (nn === 'V' || nn === 'II' ? 0.07 : 0.045), 20, 8), nerves[i].m); ms.userData.pick = i; BASE.add(ms); STUB[i].push(ms);
+      const ms = new THREE.Mesh(taperTube(new THREE.CatmullRomCurve3(pts), () => (nn === 'V' || nn === 'II' ? 0.1 : 0.07), 20, 8), nerves[i].m); ms.userData.pick = i; BASE.add(ms); STUB[i].push(ms);
     });
   }));
   { // XI: спинномозговые корешки поднимаются через большое отверстие и уходят к яремному
     const i = nIdx.XI; [1, -1].forEach((s) => { const j = forPos(FOR[6], s), pts = [V3(XM + s * 0.55, -6.6, -7.4), V3(XM + s * 0.6, -4.6, -7.3), V3(XM + s * 1.6, -3.6, -7.0), j.clone().add(V3(0, 0.1, 0)), j.clone().add(V3(0, -0.6, 0))];
       const ms = new THREE.Mesh(taperTube(new THREE.CatmullRomCurve3(pts), () => 0.04, 30, 8), nerves[i].m); ms.userData.pick = i; BASE.add(ms); STUB[i].push(ms); }); }
-  const BVIEW = matchMedia('(max-width:700px)').matches ? flyTarget(V3(60 + XM, -1.5, -4.8), V3(60 + XM, 23, 4.2)) : flyTarget(V3(60 + XM - 4.2, -1.5, -5.0), V3(60 + XM - 4.2, 19.5, 2.6));
+  const BVIEW = matchMedia('(max-width:700px)').matches ? flyTarget(V3(60 + XM, -1.5, -5.5), V3(60 + XM, 38, -24)) : flyTarget(V3(65.6, -1.5, -6.5), V3(65.6, 32.9, -22.6));   // сверху-сзади: лицо вверху экрана
   const st = { t: 0, sel: null, type: 'all', labels: true, rot: false, fly: null, mode: 'brain' };
   const CN_ICONS = { I: ['nose'], II: ['eye'], III: ['eye'], IV: ['eye'], V: ['eye', 'tongue'], VI: ['eye'], VII: ['tongue'], VIII: ['ear'], IX: ['tongue'], X: ['heart', 'gut'], XI: ['trap'], XII: ['tongue'] };
   function apply() {
@@ -5295,7 +5295,7 @@ function makeCranial() {
   }
   pickOn(() => self, camera, () => (st.mode === 'base' ? [...FMESH.map((o) => o.ring), ...STUB.flat()] : nerves.flatMap((nv) => nv.meshes)), (i) => select(i));
   const BRAINOBJ = scene.children.filter((o) => o !== BASE && !o.isLight);   // мозг и мишени — прячем в режиме 2
-  function setMode(m) { st.mode = m; BASE.visible = m === 'base'; controls.maxDistance = m === 'base' ? 45 : 14; BRAINOBJ.forEach((o) => { o.visible = m !== 'base'; }); if (m !== 'base') apply(); if (m === 'base') st.fly = BVIEW; else select(st.sel === null ? 'all' : st.sel); refs.mseg && refs.mseg.sync(); refs.setInfo && refs.setInfo(); }
+  function setMode(m) { st.mode = m; BASE.visible = m === 'base'; controls.maxDistance = m === 'base' ? 45 : 14; BRAINOBJ.forEach((o) => { o.visible = m !== 'base'; }); if (m !== 'base') apply(); select(st.sel === null ? 'all' : st.sel); refs.mseg && refs.mseg.sync(); refs.setInfo && refs.setInfo(); }
   const labels = [
     ...nerves.map((nv, i) => ({ text: nv.n, pos: nv.p1.clone().add(V3(0, -0.04, i % 2 ? 0.14 : 0.0)), color: CN_TYPES[nv.type].color, show: () => st.labels && (st.sel === null || st.sel === i) && (st.type === 'all' || st.type === nv.type) })),
     { text: 'мост', pos: V3(0.16, -1.0, 0.0), show: () => st.labels && st.sel === null },
